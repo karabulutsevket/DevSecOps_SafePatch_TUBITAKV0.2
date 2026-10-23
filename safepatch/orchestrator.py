@@ -146,6 +146,7 @@ class NewJob(Strict):
     max_attempts: int = Field(default=3, ge=1, le=3)
     second_review: bool = False
     memory_mode: str = Field(default="guarded", pattern=r"^(off|guarded)$")
+    strategy: str = Field(default="v01", pattern=r"^(v01|sampling|guided|guided\+context)$")
 
 
 @app.post("/v1/jobs", status_code=201)
@@ -155,7 +156,7 @@ def create_job(req: NewJob, user=Depends(identity)):
     if req.case_id not in cases or cases[req.case_id].get("project", "owned-java-demo") not in user["projects"]:
         raise HTTPException(404, "Yetkili proje bulunamadı")
     now = time.time()
-    data = {"id": uuid.uuid4().hex, "project": cases[req.case_id].get("project", "owned-java-demo"), "memory_mode": req.memory_mode, "case_id": req.case_id, "base_commit": cases[req.case_id]["commit"], "split": cases[req.case_id]["split"], "policy_version": POLICY, "scanner": req.scanner, "mode": "real-local-model", "status": "queued", "started_at": now, "deadline": now + int(setting("JOB_BUDGET_SECONDS", "1200")), "max_attempts": req.max_attempts, "attempt_count": 0, "attempts": [], "events": [{"time": now, "status": "queued"}], "owner": user["subject"], "second_review": req.second_review, "approval": None}
+    data = {"id": uuid.uuid4().hex, "project": cases[req.case_id].get("project", "owned-java-demo"), "memory_mode": req.memory_mode, "strategy": req.strategy, "case_id": req.case_id, "base_commit": cases[req.case_id]["commit"], "split": cases[req.case_id]["split"], "policy_version": POLICY, "scanner": req.scanner, "mode": "real-local-model", "status": "queued", "started_at": now, "deadline": now + int(setting("JOB_BUDGET_SECONDS", "1200")), "max_attempts": req.max_attempts, "attempt_count": 0, "attempts": [], "events": [{"time": now, "status": "queued"}], "owner": user["subject"], "second_review": req.second_review, "approval": None}
     try:
         job, created = store.create(data, user["subject"] + ":" + req.idempotency_key)
     except ValueError as exc:

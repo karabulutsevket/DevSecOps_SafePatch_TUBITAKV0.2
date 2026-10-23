@@ -79,6 +79,66 @@ def test_mock_result_not_accepted_as_real(job_store, patch_factory):
     assert db.get(job["id"])["reason"] == "mock_result_on_real_job"
 
 
+def security_failure():
+    return {"passed": False, "feedback": {"code": "validation_failed", "remaining_rules": [],
+            "behavior": {"passed": True, "details": []},
+            "security": {"passed": False, "details": [{"name": "noInjection", "type": "failure", "assertion": "SQL_INJECTION_REGRESSION"}]}}}
+
+
+def run_strategy(job_store, patch_factory, source, monkeypatch, strategy, failures):
+    monkeypatch.delenv("RETRY_TEMPERATURE", raising=False)
+    db, job = job_store
+    if strategy:
+        db.mutate(job["id"], lambda j: j.update(strategy=strategy))
+    bodies, verified = [], iter(failures)
+    def call(url, method="GET", **kwargs):
+        body = kwargs.get("body", {})
+        if url.endswith("/propose"):
+            bodies.append(body)
+            return {"mode": "mock-test", "patch": patch_factory(source[SOURCE] + f"// mock variation {len(bodies)}\n").model_dump()}
+        return fake_initial() if body.get("attempt") == 0 else next(verified)
+    Engine(db, call).run(job["id"])
+    return db.get(job["id"]), bodies
+
+
+def test_v01_strategy_sends_unchanged_requests(job_store, patch_factory, source, monkeypatch):
+    job, bodies = run_strategy(job_store, patch_factory, source, monkeypatch, None, [security_failure()] * 3)
+    assert job["reason"] == "no_progress"
+    assert all(not {"temperature", "guidance", "context_files"} & set(b) for b in bodies)
+    assert bodies[1]["feedback"]["code"] == "validation_failed"
+
+
+def test_sampling_raises_temperature_but_keeps_no_progress_stop(job_store, patch_factory, source, monkeypatch):
+    job, bodies = run_strategy(job_store, patch_factory, source, monkeypatch, "sampling", [security_failure()] * 3)
+    assert job["reason"] == "no_progress"
+    assert [b["temperature"] for b in bodies] == [0.0, 0.4]
+    assert all("guidance" not in b and "context_files" not in b for b in bodies)
+
+
+def test_guided_context_escalates_guidance_until_budget(job_store, patch_factory, source, monkeypatch):
+    from safepatch.feedback import GUIDANCE
+    job, bodies = run_strategy(job_store, patch_factory, source, monkeypatch, "guided+context", [security_failure()] * 3)
+    assert job["reason"] == "attempt_budget_exhausted"
+    assert [b["temperature"] for b in bodies] == [0.0, 0.4, 0.4]
+    assert "guidance" not in bodies[0] and bodies[0]["feedback"] is None
+    assert [b["guidance"] for b in bodies[1:]] == GUIDANCE["sql"]["security_witness_failed"]
+    assert bodies[1]["feedback"]["category"] == "security_witness_failed"
+    assert all(SOURCE not in b["context_files"] and "src/main/java/demo/EchoMain.java" in b["context_files"] for b in bodies)
+    assert [a["retry"]["guidance_level"] for a in job["attempts"]] == [None, 0, 1]
+    assert all(a["failure"]["category"] == "security_witness_failed" for a in job["attempts"])
+
+
+def test_guided_without_context_sends_no_files(job_store, patch_factory, source, monkeypatch):
+    _, bodies = run_strategy(job_store, patch_factory, source, monkeypatch, "guided", [security_failure()] * 3)
+    assert len(bodies) == 3 and all("context_files" not in b for b in bodies)
+
+
+def test_unknown_strategy_is_rejected(job_store, patch_factory, source, monkeypatch):
+    job, bodies = run_strategy(job_store, patch_factory, source, monkeypatch, "bogus", [])
+    assert job["status"] == "rejected" and job["reason"] == "unknown_retry_strategy"
+    assert bodies == []
+
+
 def test_success_waits_for_human(job_store, patch_factory, source):
     success = {"passed": True, "candidate_commit": "a" * 40, "artifact_sha256": "b" * 64, "review_repository": "mock-only", "review_branch": "candidate"}
     job, _ = scenario(job_store, patch_factory, source, [success])

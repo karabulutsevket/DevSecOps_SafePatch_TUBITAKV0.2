@@ -3,10 +3,36 @@ import time
 from safepatch.common import POLICY, SOURCE, Patch, canonical, digest, remaining, request, secret, setting
 from safepatch.memory import Memory, context_for
 from safepatch.acceptance import manifest
+from safepatch.feedback import classify, guidance_for
 from safepatch.policy import PolicyError, validate_patch
 from safepatch.repository import baseline
 
 TERMINAL = {"awaiting_review", "rejected", "needs_human", "infrastructure_error", "cancelled", "expired", "approved", "deployed"}
+# v01: original loop. sampling: retries at higher temperature. guided: plus classified
+# feedback and static guidance. guided+context: plus read-only sibling sources.
+STRATEGIES = ("v01", "sampling", "guided", "guided+context")
+
+
+def read_only_context(files, limit=8000):
+    """Other main sources of the trusted baseline; the model may read them, never edit."""
+    context, size = {}, 0
+    for path, content in sorted(files.items()):
+        if path.startswith("src/main/java/") and path.endswith(".java") and path != SOURCE and size + len(content) <= limit:
+            context[path] = content
+            size += len(content)
+    return context
+
+
+def retry_options(strategy, kind, attempt, failure, context_files):
+    """Extra worker1 fields per strategy; v01 sends none so its requests stay unchanged."""
+    if strategy == "v01":
+        return {}
+    options = {"temperature": 0.0 if attempt == 1 else float(setting("RETRY_TEMPERATURE", "0.4"))}
+    if strategy.startswith("guided") and failure:
+        options["guidance"] = guidance_for(kind, failure, attempt - 2)
+    if context_files:
+        options["context_files"] = context_files
+    return options
 
 
 class Engine:
@@ -73,7 +99,11 @@ class Engine:
             if job.get("memory_mode", "guarded") == "guarded" and selected["context"].get("source_sha256") == digest(files[SOURCE]):
                 replay = {"mode": "approved-memory-replay", "patch": selected["patch"], "memory_id": selected["id"],
                           "metrics": {"duration_seconds": lookup["duration_seconds"], "prompt_tokens_measured": 0, "output_tokens_measured": 0}}
-        seen, previous_feedback, feedback = set(), None, None
+        strategy = job.get("strategy", "v01")
+        if strategy not in STRATEGIES:
+            raise PolicyError("unknown_retry_strategy")
+        context_files = read_only_context(files) if strategy == "guided+context" else {}
+        seen, previous_feedback, feedback, failure = set(), None, None, None
         for attempt in range(1, job["max_attempts"] + 1):
             self.active(job_id)
             self.set(job_id, "patching", attempt_count=attempt)
@@ -85,11 +115,14 @@ class Engine:
             if not (replay and attempt == 1) and used + reservation > int(setting("JOB_TOKEN_BUDGET", "32768")):
                 self.set(job_id, "needs_human", reason="token_budget_exhausted")
                 return
+            options = {}
             if replay and attempt == 1:
                 proposal = replay
             else:
                 self.store.mutate(job_id, lambda j: j.update(tokens_reserved=used + reservation))
-                proposal = self.worker("worker1", "/propose", {"job_id": job_id, "attempt": attempt, "deadline": job["deadline"], "source": {SOURCE: files[SOURCE]}, "finding": finding, "feedback": feedback, "memory_data": memory_data, "seed": job.get("seed", 42) + attempt}, job["deadline"])
+                options = retry_options(strategy, case["kind"], attempt, failure, context_files)
+                proposal = self.worker("worker1", "/propose", {"job_id": job_id, "attempt": attempt, "deadline": job["deadline"], "source": {SOURCE: files[SOURCE]}, "finding": finding, "feedback": feedback, "memory_data": memory_data, "seed": job.get("seed", 42) + attempt, **options}, job["deadline"])
+            retry = {"strategy": strategy, "temperature": options.get("temperature", 0.0), "guidance_level": attempt - 2 if "guidance" in options else None, "context_paths": sorted(options.get("context_files", {}))}
             self.active(job_id)
             if proposal.get("mode") not in ("real-local-model", "mock-test", "approved-memory-replay"):
                 raise PolicyError("unknown_model_mode")
@@ -103,7 +136,7 @@ class Engine:
             except PolicyError as exc:
                 self.store.mutate(job_id, lambda j: j["attempts"].append({"number": attempt, "proposal": proposal, "policy_error": str(exc)}))
                 raise
-            record = {"number": attempt, "proposal": proposal, **meta}
+            record = {"number": attempt, "proposal": proposal, "retry": retry, **meta}
             if meta["patch_sha256"] in seen:
                 self.store.mutate(job_id, lambda j: j["attempts"].append({**record, "stopped": "duplicate_patch"}))
                 self.set(job_id, "needs_human", reason="duplicate_patch")
@@ -113,6 +146,8 @@ class Engine:
             verified = self.worker("worker2", "/verify", {**verify, "attempt": attempt, "patch": patch.model_dump()}, job["deadline"])
             self.active(job_id)
             record["verification"] = verified
+            failure = None if verified.get("passed") else classify(verified)
+            record["failure"] = failure
             self.store.mutate(job_id, lambda j: j["attempts"].append(record))
             if verified.get("passed"):
                 current = self.active(job_id)
@@ -128,6 +163,10 @@ class Engine:
                 self.active(job_id)
                 self.set(job_id, "awaiting_review", candidate={"evidence_sha256": digest(canonical(acceptance_manifest)), "commit": verified["candidate_commit"], "artifact_sha256": verified["artifact_sha256"], "patch_sha256": meta["patch_sha256"], "policy_version": POLICY, "diff": meta["diff"], "review_repository": verified["review_repository"], "review_branch": verified["review_branch"]}, advisory=review, review_expires_at=time.time() + int(setting("REVIEW_TTL_SECONDS", "86400")), duration_seconds=round(time.time() - job["started_at"], 3))
                 return
+            if strategy.startswith("guided"):
+                # Each retry receives deeper guidance, so the attempt budget bounds the loop.
+                feedback = failure
+                continue
             feedback = verified.get("feedback", {"code": "unknown_verification_failure"})
             # Only deterministic failure categories enter no-progress comparison.
             signature = (feedback.get("code"), tuple(feedback.get("remaining_rules", [])), bool(feedback.get("behavior", {}).get("passed")), bool(feedback.get("security", {}).get("passed")))
