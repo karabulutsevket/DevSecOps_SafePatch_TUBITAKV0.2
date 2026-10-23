@@ -116,16 +116,41 @@ def test_sampling_raises_temperature_but_keeps_no_progress_stop(job_store, patch
 
 
 def test_guided_context_escalates_guidance_until_budget(job_store, patch_factory, source, monkeypatch):
-    from safepatch.feedback import GUIDANCE
+    from safepatch.feedback import guidance_for
     job, bodies = run_strategy(job_store, patch_factory, source, monkeypatch, "guided+context", [security_failure()] * 3)
     assert job["reason"] == "attempt_budget_exhausted"
     assert [b["temperature"] for b in bodies] == [0.0, 0.4, 0.4]
     assert "guidance" not in bodies[0] and bodies[0]["feedback"] is None
-    assert [b["guidance"] for b in bodies[1:]] == GUIDANCE["sql"]["security_witness_failed"]
+    failure = {"category": "security_witness_failed"}
+    assert [b["guidance"] for b in bodies[1:]] == [guidance_for("sql", failure, 0), guidance_for("sql", failure, 1)]
     assert bodies[1]["feedback"]["category"] == "security_witness_failed"
+    assert bodies[1]["feedback"]["previous_patch_diff"].strip().endswith("+// mock variation 1")
+    assert "---" not in bodies[1]["feedback"]["previous_patch_diff"]
     assert all(SOURCE not in b["context_files"] and "src/main/java/demo/EchoMain.java" in b["context_files"] for b in bodies)
     assert [a["retry"]["guidance_level"] for a in job["attempts"]] == [None, 0, 1]
     assert all(a["failure"]["category"] == "security_witness_failed" for a in job["attempts"])
+
+
+def test_guided_duplicate_skips_verification_and_escalates(job_store, patch_factory, source, monkeypatch):
+    from safepatch.feedback import guidance_for
+    db, job = job_store
+    db.mutate(job["id"], lambda j: j.update(strategy="guided"))
+    bodies, verified = [], []
+    def call(url, method="GET", **kwargs):
+        body = kwargs.get("body", {})
+        if url.endswith("/propose"):
+            bodies.append(body)
+            return {"mode": "mock-test", "patch": patch_factory(source[SOURCE] + "// same\n").model_dump()}
+        if body.get("attempt") == 0:
+            return fake_initial()
+        verified.append(body)
+        return security_failure()
+    Engine(db, call).run(job["id"])
+    job = db.get(job["id"])
+    assert (len(bodies), len(verified)) == (3, 1)
+    assert job["reason"] == "attempt_budget_exhausted"
+    assert [a.get("stopped") for a in job["attempts"]] == [None, "duplicate_patch", "duplicate_patch"]
+    assert bodies[2]["guidance"] == guidance_for("sql", {"category": "security_witness_failed"}, 1)
 
 
 def test_guided_without_context_sends_no_files(job_store, patch_factory, source, monkeypatch):

@@ -1,3 +1,4 @@
+import difflib
 import time
 
 from safepatch.common import POLICY, SOURCE, Patch, canonical, digest, remaining, request, secret, setting
@@ -21,6 +22,12 @@ def read_only_context(files, limit=8000):
             context[path] = content
             size += len(content)
     return context
+
+
+def changed_lines(before, after, limit=1500):
+    """Previous attempt as changed lines only (no context, no file headers)."""
+    lines = list(difflib.unified_diff(before.splitlines(True), after.splitlines(True), n=0))[2:]
+    return "".join(lines)[:limit]
 
 
 def retry_options(strategy, kind, attempt, failure, context_files):
@@ -139,6 +146,9 @@ class Engine:
             record = {"number": attempt, "proposal": proposal, "retry": retry, **meta}
             if meta["patch_sha256"] in seen:
                 self.store.mutate(job_id, lambda j: j["attempts"].append({**record, "stopped": "duplicate_patch"}))
+                if strategy.startswith("guided"):
+                    # Same patch, same verdict: skip verification and retry with deeper guidance.
+                    continue
                 self.set(job_id, "needs_human", reason="duplicate_patch")
                 return
             seen.add(meta["patch_sha256"])
@@ -165,7 +175,8 @@ class Engine:
                 return
             if strategy.startswith("guided"):
                 # Each retry receives deeper guidance, so the attempt budget bounds the loop.
-                feedback = failure
+                edited = next(e.content for e in patch.edits if e.path == SOURCE)
+                feedback = {**failure, "previous_patch_diff": changed_lines(files[SOURCE], edited)}
                 continue
             feedback = verified.get("feedback", {"code": "unknown_verification_failure"})
             # Only deterministic failure categories enter no-progress comparison.

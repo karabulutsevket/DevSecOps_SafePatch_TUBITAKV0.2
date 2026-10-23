@@ -8,63 +8,38 @@ from safepatch.common import canonical, digest
 
 CATEGORIES = ("compilation_failed", "behavior_regression", "security_witness_failed", "finding_remaining", "unknown")
 
-# Level 0 names the failure; level 1 adds a concrete repair strategy.
+# Guidance has two levels. Level 0 is a diagnosis of the failure category. Level 1 adds
+# the weakness recipe (the standard secure repair), whatever the category: a model that
+# keeps a wrong approach needs the right approach, not another compiler hint.
 # Written from development cases (*-01) only; evaluation cases are reported separately.
-GUIDANCE = {
+DIAGNOSIS = {
     "sql": {
-        "security_witness_failed": [
-            "The input is still interpreted as SQL: a quote in the input changes the query result.",
-            "Build the query with a '?' placeholder, call conn.prepareStatement(sql) and statement.setString(1, input). Never concatenate input into SQL. Keep try-with-resources, sorting and the comma-joined result.",
-        ],
-        "behavior_regression": [
-            "Normal account lookups must return the same names as before.",
-            "Keep the table setup, the 'WHERE name = ?' semantics, sorting and the comma-joined result; change only how input reaches the query.",
-        ],
+        "security_witness_failed": "The input is still interpreted as SQL: a quote in the input changes the query result.",
+        "behavior_regression": "Normal account lookups must return the same names as before.",
     },
     "path": {
-        "security_witness_failed": [
-            "A parent-directory input such as '../x' still reads outside the root. A startsWith check on a path that is not canonical does not stop '..' segments.",
-            "Canonicalize before checking: make the root canonical with toRealPath(), resolve the input against it, make the target canonical with toRealPath() or normalize(), and throw unless target.startsWith(root). Nested relative paths such as 'sub/file.txt' must keep working.",
-        ],
-        "behavior_regression": [
-            "Reading files inside the root, including nested relative paths, must keep working.",
-            "Do not reject every input that contains a separator; canonicalize the target and compare it with the canonical root instead.",
-        ],
+        "security_witness_failed": "A parent-directory input such as '../x' still reads outside the root. A startsWith check on a path that is not canonical does not stop '..' segments.",
+        "behavior_regression": "Reading files inside the root, including nested relative paths such as 'sub/file.txt', must keep working.",
     },
     "command": {
-        "behavior_regression": [
-            "Legitimate inputs must still produce exactly \"echo:\" followed by the input. The previous patch changed what the child process prints.",
-            "Do not run a shell and do not build a command string. Start a fixed executable with the input as its own argv element. If read_only_context_data contains a helper main class, run it with the current classpath: new ProcessBuilder(java, \"-cp\", System.getProperty(\"java.class.path\"), \"<helper class>\", input). Keep the timeout and exit-code checks.",
-        ],
-        "security_witness_failed": [
-            "Shell metacharacters in the input are still interpreted. The input must be one literal argv element, never part of a shell command.",
-            "Do not run a shell and do not build a command string. Start a fixed executable with the input as its own argv element. If read_only_context_data contains a helper main class, run it with the current classpath: new ProcessBuilder(java, \"-cp\", System.getProperty(\"java.class.path\"), \"<helper class>\", input). Keep the timeout and exit-code checks.",
-        ],
+        "security_witness_failed": "Shell metacharacters in the input are still interpreted. The input must be one literal argv element, never part of a shell command.",
+        "behavior_regression": "Legitimate inputs must still produce exactly \"echo:\" followed by the input. The previous patch changed what the child process prints.",
     },
     "*": {
-        "compilation_failed": [
-            "The previous patch does not compile. Fix the reported compiler errors.",
-            "Keep the package, class name, public method signature and required imports; change only the vulnerable statements.",
-        ],
-        "behavior_regression": [
-            "The previous patch changed legitimate behavior.",
-            "Preserve the original output for normal inputs; change only how untrusted input reaches the sink.",
-        ],
-        "security_witness_failed": [
-            "The security test can still exploit the code.",
-            "Fix the root cause at the sink instead of adding a check that can be bypassed.",
-        ],
-        "finding_remaining": [
-            "The scanner still reports the weakness at the same sink.",
-            "Remove the vulnerable construction itself; do not suppress or wrap it.",
-        ],
-        "unknown": [
-            "The previous patch failed verification.",
-            "Re-read the source and produce a minimal root-cause fix.",
-        ],
+        "compilation_failed": "The previous patch does not compile; see the compiler diagnostics in feedback_data. Keep the package, class name, public method signature and required imports.",
+        "behavior_regression": "The previous patch changed legitimate behavior.",
+        "security_witness_failed": "The security test can still exploit the code.",
+        "finding_remaining": "The scanner still reports the weakness at the same sink; remove the vulnerable construction itself, do not suppress or wrap it.",
+        "unknown": "The previous patch failed verification.",
     },
 }
-GUIDANCE_SHA256 = digest(canonical(GUIDANCE))
+RECIPES = {
+    "sql": "Build the query with a '?' placeholder, call conn.prepareStatement(sql) and statement.setString(1, input). Never concatenate input into SQL. Keep try-with-resources, sorting and the comma-joined result.",
+    "path": "Canonicalize before checking: make the root canonical with toRealPath(), resolve the input against it, make the target canonical with toRealPath() or normalize(), and throw unless target.startsWith(root). Nested relative paths must keep working.",
+    "command": "Do not run a shell and do not build a command string. Start a fixed executable with the input as its own argv element. If read_only_context_data contains a helper main class, run it with the current classpath: new ProcessBuilder(java, \"-cp\", System.getProperty(\"java.class.path\"), \"<helper class>\", input). Keep the timeout and exit-code checks.",
+    "*": "Fix the root cause at the sink with the standard safe API for this weakness; keep the public API and legitimate behavior.",
+}
+GUIDANCE_SHA256 = digest(canonical({"diagnosis": DIAGNOSIS, "recipes": RECIPES}))
 
 
 def classify(verified):
@@ -87,9 +62,9 @@ def classify(verified):
 
 
 def guidance_for(kind, failure, level):
-    """Static guidance for a failure; level is clamped to the deepest available text."""
+    """Static guidance: level 0 is the diagnosis, level 1 and deeper add the weakness recipe."""
     if not failure:
         return None
     category = failure["category"]
-    texts = GUIDANCE.get(kind, {}).get(category) or GUIDANCE["*"].get(category) or GUIDANCE["*"]["unknown"]
-    return texts[max(0, min(level, len(texts) - 1))]
+    diagnosis = DIAGNOSIS.get(kind, {}).get(category) or DIAGNOSIS["*"].get(category) or DIAGNOSIS["*"]["unknown"]
+    return diagnosis if level <= 0 else diagnosis + " " + RECIPES.get(kind, RECIPES["*"])

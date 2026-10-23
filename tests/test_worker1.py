@@ -33,10 +33,10 @@ def test_default_request_keeps_v01_prompt(sent):
 def test_guidance_and_context_are_added_only_when_given(sent):
     context = {"src/main/java/demo/EchoMain.java": "class EchoMain {}\n"}
     result = worker1.propose(propose(temperature=0.4, guidance="Use a fixed argv.", context_files=context))
-    assert sent["system"].startswith(worker1.SYSTEM)
-    assert worker1.GUIDANCE_NOTE + "Use a fixed argv." in sent["system"]
-    assert worker1.CONTEXT_NOTE in sent["system"]
-    assert json.loads(sent["prompt"])["read_only_context_data"] == [{"path": "src/main/java/demo/EchoMain.java", "content": "class EchoMain {}\n"}]
+    assert sent["system"] == worker1.SYSTEM + worker1.CONTEXT_NOTE
+    data, note = sent["prompt"].split(worker1.RETRY_NOTE)
+    assert note == "Use a fixed argv."
+    assert json.loads(data)["read_only_context_data"] == [{"path": "src/main/java/demo/EchoMain.java", "content": "class EchoMain {}\n"}]
     assert sent["options"]["temperature"] == 0.4
     assert result["metrics"]["temperature"] == 0.4
 
@@ -45,6 +45,26 @@ def test_guidance_and_context_are_added_only_when_given(sent):
 def test_context_cannot_include_editable_source_tests_or_build(sent, path):
     with pytest.raises(ValueError):
         worker1.propose(propose(context_files={path: "x"}))
+
+
+def test_budget_drops_largest_context_file_first(sent):
+    files = {"src/main/java/demo/Big.java": "x" * 4500, "src/main/java/demo/Small.java": "y" * 100}
+    result = worker1.propose(propose(context_files=files, feedback={"previous_patch_diff": "+z\n"}))
+    assert result["metrics"]["dropped_optional_context"] == ["src/main/java/demo/Big.java"]
+    data = json.loads(sent["prompt"])
+    assert [f["path"] for f in data["read_only_context_data"]] == ["src/main/java/demo/Small.java"]
+    assert data["feedback_data"]["previous_patch_diff"] == "+z\n"
+
+
+def test_budget_drops_previous_diff_after_context(sent):
+    result = worker1.propose(propose(feedback={"category": "unknown", "previous_patch_diff": "+z" * 2500}))
+    assert result["metrics"]["dropped_optional_context"] == ["previous_patch_diff"]
+    assert json.loads(sent["prompt"])["feedback_data"] == {"category": "unknown"}
+
+
+def test_required_data_over_budget_is_rejected(sent):
+    with pytest.raises(ValueError):
+        worker1.propose(worker1.Propose(job_id="a" * 32, attempt=1, deadline=time.time() + 60, source={SOURCE: "x" * 6000}, finding={}))
 
 
 def test_context_size_is_bounded(sent):
