@@ -22,7 +22,7 @@
 | Katman | İçerik | Nerede durur? | Nereden gelir? |
 |---|---|---|---|
 | **L1 — Kurum hafızası** | Kurumda doğrulanmış ve insan onaylı düzeltmeler, başarısız denemeler, kullanım izi | Yalnız müşteride. Dışarı çıkmaz. | Kurumun kendi işleri (model ve uzman düzeltmeleri) |
-| **L2 — Ortak bilgi paketi** | Doğrulanmış düzeltme kalıpları ve "bu bağlamda çalışmaz" türü başarısızlık kalıpları | SafePatch'te üretilir; müşteriye **imzalı paketle içeri** girer | **Açık kaynak** düzeltme geçmişi (CVE düzeltme commit'leri) ve SafePatch'in kendi deneyleri |
+| **L2 — Ortak bilgi paketi** | Doğrulanmış düzeltme kalıpları ve "bu bağlamda çalışmaz" türü başarısızlık kalıpları | SafePatch'te üretilir; müşteriye **imzalı paketle içeri** girer | Zafiyet sınıfı paketlerinin (Bölüm 5) laboratuvarda doğrulanmış düzeltmeleri, **açık kaynak** düzeltme geçmişi (CVE düzeltme commit'leri) ve SafePatch'in kendi deneyleri |
 | **L3 — Değerlendirme altyapısı** | Test seti, gizli değerlendirme testleri, ölçüm betikleri, model karşılaştırmaları | SafePatch'te | Vul4J, OWASP Benchmark (Java) ve sentetik vakalar |
 
 > **Önemli tasarım kararı:** L2 müşteri verisinden toplanmaz. Hava boşluklu ağlardan veri çıkarmak hedef müşterinin büyük olasılıkla reddedeceği bir şeydir. L2 açık kaynaktan üretilir ve antivirüs imza güncellemesi gibi içeri gönderilir. Müşteriden geri bilgi alma ileride yalnız isteğe bağlı olur: müşteri dışarı çıkacak dosyayı satır satır görür ve onaylar, dosya kod içermez.
@@ -45,9 +45,10 @@ Negatif sonuç da raporlanır. Hipotez tutmazsa kapsam doğrulama ve kanıt ür�
 | Hafıza | Hash tabanlı uygunluk (uyumlu / uyumsuz / bilinmiyor), insan onayı, karantina, geri çekme | Yapısal uygunluk imzası, kanıt vektörü, başarısızlık hafızası, otomatik geçersizleşme, açıklanabilir sıralama |
 | İnsan düzeltmesi | Yok | Uzman yaması uç noktası → aynı doğrulama → hafıza |
 | Yeniden deneme | En fazla 3 deneme; `temperature: 0` yüzünden 2. denemede aynı yama | Başarısızlık türüne göre geri bildirim ve strateji |
-| Ölçüm | 3 sentetik aile, 18 koşu, tek seed | L3: Vul4J + OWASP Benchmark, ≥3 seed, A/B/C kolları |
-| Tarayıcı | Semgrep + 3 dar kural; Sonar adaptörü canlı test edilmedi | Semgrep kural genişletme; Sonar adaptörünün canlı testi |
-| Ortak bilgi | Yok | L2 paket formatı, imza, içeri alma |
+| Ölçüm | 3 sentetik aile, 18 koşu, tek seed | L3: OWASP Benchmark + Vul4J; sınıf başına değerlendirme ve güvenli (yanlış pozitif) vakalar, ≥3 seed, A/B/C kolları |
+| Zafiyet kapsamı | 3 sınıf (CWE-89/22/78), yalnız sentetik vakalar | Zafiyet sınıfı paketleri: mevcut 3 + asgari 2, en fazla 5 yeni sınıf (Bölüm 5) |
+| Tarayıcı | Semgrep + 3 dar kural; Sonar adaptörü canlı test edilmedi | Sınıf başına kendi Semgrep kurallarımız (MIT); Sonar adaptörünün canlı testi |
+| Ortak bilgi | Yok | L2 paket formatı, imza, içeri alma; sınıf paketlerinden gelen ilk doğrulanmış kayıtlar |
 
 **V0.1'in ölçülmüş sonuçları (değiştirilmeden kullanılacak):** 97 sistem testi geçti. 18 model koşusunun 6'sı incelemeye hazır aday üretti; kabul edilenlerin hepsi SQL. Kabul deneyinde 6 hatalı yamayı yalnız tarayıcıya bakan kapı 6/6 kabul etti, tam kapı 0/6. Aynı SQL kaynağında hafızadan tekrar uygulama 56,9 sn'yi 46,7 sn'ye indirdi.
 
@@ -57,13 +58,15 @@ Negatif sonuç da raporlanır. Hipotez tutmazsa kapsam doğrulama ve kanıt ür�
 
 ### Kapsam içi
 - Java 17, Maven, JUnit 5
-- CWE-89 (SQL injection), CWE-22 (path traversal), CWE-78 (command injection). L3'te bulunursa en fazla bir CWE daha.
-- Semgrep (birincil), SonarQube adaptörü (canlı doğrulama)
+- Zafiyet sınıfı paketleri (Bölüm 5): mevcut CWE-89 (SQL injection), CWE-22 (path traversal), CWE-78 (command injection) + sırasıyla CWE-330, CWE-614, CWE-643/90, CWE-611, CWE-327/328. Asgari hedef mevcut 3 + 2 yeni sınıf.
+- Semgrep (birincil, kendi kurallarımızla), SonarQube adaptörü (canlı doğrulama)
 - Yerel model: Qwen2.5-Coder 7B Q4_K_M (Ollama), sabit sürüm ve özet
 - Tek sunucu kurulumu; geliştirmede Windows + WSL, pilot profilinde Linux + Docker
 
 ### Kapsam dışı (12 hafta içinde istek gelse de yapılmaz)
 - Python, JavaScript, C/C++ ve diğer diller (C/C++ Ar-Ge yol haritasında ileri aşama)
+- Otomatik düzeltmeye uygun olmayan Java sınıfları: XSS (CWE-79), trust boundary (CWE-501), deserialization (CWE-502)
+- Semgrep'in yayımladığı kural koleksiyonlarını ürüne kopyalamak (ayrı lisans kısıtları var)
 - DAST, IAST, Trivy/Grype/Snyk (bağımlılık taraması müşteri görüşmelerine göre 2027'de değerlendirilir)
 - SaaS, çok kiracılı bulut, Kubernetes, mikroservis bölme
 - Model eğitimi (fine-tuning)
@@ -76,9 +79,9 @@ Negatif sonuç da raporlanır. Hipotez tutmazsa kapsam doğrulama ve kanıt ür�
 | Kişi | Ana sorumluluk | V0.2 bileşenleri |
 |---|---|---|
 | **Şevket Karabulut** | Takım lideri, mimari, DevSecOps | Depo ve CI, Docker sandbox, kurulum paketi, L2 paket formatı, müşteri görüşmeleri |
-| **Yiğithan Koçer** | Güvenlik doğrulama | Güvenlik tanıkları, gizli değerlendirme testleri, Semgrep kuralları, Sonar canlı testi, egress testleri |
+| **Yiğithan Koçer** | Güvenlik doğrulama | Sınıf paketlerinin kuralları ve güvenlik tanıkları, gizli değerlendirme testleri, Sonar canlı testi, egress testleri |
 | **Reşat Eray Öztürk** | Uygulama ve hafıza, ölçüm raporu | Uzman yaması uç noktası, hafıza şeması, arayüz, audit log, maliyet hesabı, finans müşteri görüşmeleri |
-| **Kadir Yıldız** | Model ve deneyler | Yeniden deneme stratejisi, sıralama, L3 veri hazırlığı, benchmark, istatistik |
+| **Kadir Yıldız** | Model ve deneyler | Yeniden deneme stratejisi, sıralama, sınıf paketlerinin vakaları ve L2 kayıtları, L3 veri hazırlığı, benchmark, istatistik |
 
 Her iş bir sahibi ve bir **gözden geçireni** olan küçük bir dal (branch) ile yapılır. Kimse kendi yamasının başarı etiketini vermez.
 
@@ -115,6 +118,35 @@ Her hafta: hedef, görevler (sorumlu), çıktı, geçiş koşulu. Bir fazın ge�
 
 **Faz 0 geçiş koşulu:** Path veya command vakalarından en az biri gerçek modelle kabul edildi **ya da** çözülememe nedeni ham kanıtla belgelendi. Jüri sunumu yapıldı.
 
+### Paralel iş akışı — Zafiyet sınıfı paketleri (Hafta 3–8)
+
+**Amaç:** V0.1'in 3 dar kuralından, otomatik düzeltmeye uygun ve ölçülebilir bir Java zafiyet kümesine genişlemek ve L2 hafızasını şimdiden doğrulanmış kayıtlarla doldurmaya başlamak.
+
+Her zafiyet sınıfı için bir **sınıf paketi** hazırlanır. Paketin beş parçası tamamlanmadan sınıf "destekleniyor" sayılmaz:
+
+1. **Kural:** kendi yazdığımız Semgrep kuralı (MIT). Semgrep'in yayımladığı kural koleksiyonları ayrı lisans kısıtları nedeniyle kopyalanmaz.
+2. **Testler:** davranış testi şablonu ve güvenlik tanığı (saldırı testi) şablonu.
+3. **Geliştirme vakaları:** kendi yazdığımız 3–5 sentetik vaka ve doğrulanmış düzeltmeleri. Düzeltmeyi yazan kişiden farklı biri onaylar. Bu kayıtlar **L2 tohum kayıtları** olur; kökeni `safepatch-lab-verified`.
+4. **Değerlendirme vakaları:** OWASP Benchmark (Java) ve uygunsa Vul4J'den, geliştirme vakalarıyla çakışmayan vakalar. Yalnız L3'te kullanılır; ürünle ve L2 paketiyle dağıtılmaz (lisansı ayrıca kontrol edilir).
+5. **Güvenli vakalar:** tarayıcının işaretlediği ama aslında zafiyet olmayan (yanlış pozitif) kodlar. Sistem bunlarda kodu değiştirmemeli.
+
+**Sıra** (otomatik düzeltilebilirlik, doğrulanabilirlik ve kurumlarda tekrar sıklığına göre):
+
+| Öncelik | Sınıf | CWE | Neden bu sırada? | Hafta |
+|---|---|---|---|---|
+| Mevcut | SQL injection, path traversal, command injection | 89, 22, 78 | V0.1'de var; paket formatına ve OWASP Benchmark vakalarına taşınır | 3–4 |
+| 1 | Zayıf rastgele sayı | 330 | Kalıp hâlinde düzeltilir ve kurumlarda çok tekrar eder; hafızanın etkisini görmek için ideal | 3–4 |
+| 2 | Güvensiz cookie | 614 | Küçük, mekanik düzeltme | 5 |
+| 3 | XPath / LDAP injection | 643 / 90 | SQL injection ile aynı aile; hafızanın aileler arası aktarımını sınar | 6 |
+| 4 | XXE | 611 | XML parser ayarıyla düzeltilir; Java'da yaygın. OWASP Benchmark'ta olmadığı için sentetik vaka | 7 |
+| 5 | Zayıf şifreleme / özet | 327 / 328 | Düzeltme davranışı değiştirir (eski özetler uyumsuz olur). Sistemin çekimser kalıp insana devretmesini göstermek için | 8 |
+
+**Asgari hedef:** mevcut 3 + 2 yeni sınıf. **Genişletilmiş hedef:** mevcut 3 + 5 yeni sınıf. Bir paket geride kalırsa sonraki sınıfa başlanmaz; önemli olan sınıf sayısı değil, paketin eksiksiz olması.
+
+> **Neden "Java'daki zafiyetlerin çoğu" değil?** Her sınıfın düzeltmesini kanıtlamak için o sınıfa özel bir güvenlik tanığı gerekir. Tanıksız bir "düzeltme" hafızaya girerse hafızayı zehirler. Ayrıca bazı sınıflar (XSS, trust boundary, deserialization) bağlama göre kodlama ya da tasarım değişikliği ister ve otomatik düzeltmeye uygun değildir.
+
+Sorumlular: kurallar ve tanıklar *Yiğithan*, vakalar ve L2 kayıtları *Kadir*. Her sınıfın ikinci gözden geçireni farklı bir ekip üyesidir.
+
 ### Faz 1 — L1 hafızasını güçlendirme (Hafta 3–5)
 
 #### Hafta 3 · 9 – 15 Kasım
@@ -148,7 +180,7 @@ Her hafta: hedef, görevler (sorumlu), çıktı, geçiş koşulu. Bir fazın ge�
 #### Hafta 6 · 30 Kasım – 6 Aralık
 **Hedef:** L3 değerlendirme setini kurmak.
 
-- [ ] Vul4J'den derlenebilen ve hedef CWE'lerle ilgili vakaları seç; OWASP Benchmark (Java) CWE-89/22/78 alt kümesini ekle — *Yiğithan, Kadir*
+- [ ] Tamamlanan sınıf paketlerinin değerlendirme ve güvenli vakalarını tek bir L3 setinde birleştir; Vul4J'den derlenebilen ve bu sınıflarla ilgili vakaları ekle — *Yiğithan, Kadir*
 - [ ] Her vaka için: davranış testi, güvenlik tanığı ve doğrulayıcının **görmediği** gizli değerlendirme testleri (yanlış kabulü ölçmek için) — *Yiğithan*
 - [ ] Ayrım: proje ve zafiyet ailesi bazında en az 20 geliştirme + 40 değerlendirme vakası. Aynı proje iki tarafa giremez — *Kadir*
 - [ ] Toplam 8 müşteri görüşmesi — *Şevket*
@@ -156,7 +188,7 @@ Her hafta: hedef, görevler (sorumlu), çıktı, geçiş koşulu. Bir fazın ge�
 #### Hafta 7 · 7 – 13 Aralık
 **Hedef:** L2 ortak bilgi paketinin ilk sürümü.
 
-- [ ] Kaynaklar: açık kaynak Java projelerinin CVE düzeltme commit'leri (ör. SAP project-kb, GitHub Advisory/OSV bağlantıları). **L3 değerlendirme setiyle çakışan projeler dışarıda bırakılır** — *Kadir*
+- [ ] Kaynaklar: sınıf paketlerinin laboratuvarda doğrulanmış geliştirme düzeltmeleri ve açık kaynak Java projelerinin CVE düzeltme commit'leri (ör. SAP project-kb, GitHub Advisory/OSV bağlantıları). **L3 değerlendirme setiyle çakışan projeler ve vakalar dışarıda bırakılır** — *Kadir*
 - [ ] Paket formatı: manifest, her kayıt için SHA-256, paket imzası, sürüm; içeri alma komutu çevrimdışı çalışır — *Şevket*
 - [ ] L2 kayıtları L1'den ayrı güven seviyesinde durur: "dış kaynak, bu kurumda doğrulanmadı". Kurumda bir kez doğrulanınca L1'e terfi eder — *Reşat*
 - [ ] Lisans kontrolü: kaynak kodun ve veri setlerinin lisansı `docs/LISANSLAR.md`'de — *Şevket*
@@ -178,7 +210,8 @@ Her hafta: hedef, görevler (sorumlu), çıktı, geçiş koşulu. Bir fazın ge�
 
 - [ ] Kollar: **A** hafızasız · **B** yalnız benzerlik (yerel embedding modeli ile en benzer kayıt) · **C** SafePatch hafızası (L1) · **C+L2** soğuk başlangıç — *Kadir*
 - [ ] Koşullar: aynı model, aynı bütçe (3 deneme, süre ve token sınırı), en az 3 seed, sıra dengeli — *Kadir*
-- [ ] Yaklaşık yük: 40 vaka × 4 kol × 3 seed = 480 koşu. Koşu başına ~1–1,5 dk ile 8–12 saat GPU — *Kadir*
+- [ ] Yaklaşık yük: sınıf sayısına göre 40–80 değerlendirme vakası × 4 kol × 3 seed = 480–960 koşu. Koşu başına ~1–1,5 dk ile 8–24 saat GPU; birkaç geceye bölünür — *Kadir*
+- [ ] Sonuçlar hem toplam hem **sınıf bazında** raporlanır (hafızanın hangi sınıfta işe yaradığı ayrı görünür) — *Kadir*
 - [ ] Ham sonuçlar `evidence/v02-benchmark/` altında; başarısız koşular paydadan çıkarılmaz — *Reşat*
 
 #### Hafta 10 · 28 Aralık – 3 Ocak (yılbaşı haftası, hafif plan)
@@ -216,6 +249,8 @@ Her hafta: hedef, görevler (sorumlu), çıktı, geçiş koşulu. Bir fazın ge�
 | **Güvenli onarım oranı** | Derleme + davranış testleri + güvenlik tanığı + yeniden tarama temiz + korunan dosyalar değişmemiş olan vakalar / tüm vakalar |
 | **Yanlış kabul oranı** | Doğrulayıcının kabul ettiği ama gizli değerlendirme testlerinde başarısız olan yamalar / kabul edilen yamalar |
 | **Yanlış aktarım oranı** | Hafızadan seçilip uygulandığında doğrulamada başarısız olan kayıtlar / hafızadan seçilen kayıtlar |
+| **Gereksiz değişiklik oranı** | Güvenli (yanlış pozitif) vakalarda kabul edilen yamalar / güvenli vakalar |
+| **Tespit oranı** | Tarayıcının bulduğu gerçek zafiyetler / değerlendirme setindeki gerçek zafiyetler (onarım oranından ayrı raporlanır) |
 | **Çekimserlik oranı** | "Kanıt yetersiz" deyip insana devredilen vakalar / tüm vakalar (hiç yama kabul etmeyen sistem başarılı sayılmaz) |
 | **Süreler** | Model süresi, doğrulama süresi, toplam süre ayrı ayrı |
 | **İnsan inceleme süresi** | Yalnız pilotta, gerçek inceleyenle ölçülür |
@@ -245,6 +280,9 @@ Sunumda, başvuruda ve depoda yalnız ölçülmüş sonuçlar kullanılır.
 | H1 tutmaz (C, B'den iyi değil) | Orta | Negatif sonuç raporlanır; ürün doğrulama ve kanıt katmanına daraltılır |
 | Müşteri görüşmesi bulunamaz | Yüksek | Hızlandırma mentorları ve jüri üyeleri üzerinden tanıştırma; haftalık hedef takibi |
 | 8 GB GPU yetersiz kalır | Orta | 7B modelde kal; benchmark'ı gece çalıştır; büyük model karşılaştırması 2027'ye |
+| Sınıf paketleri yetişmez | Orta | Asgari hedef mevcut 3 + 2; eksik paket "destekleniyor" sayılmaz |
+| Semgrep CE yalnız dosya içi veri akışı analizi yapar; bazı OWASP Benchmark vakalarını kaçırır | Orta | Kaçırılan vakalar ayrı raporlanır; tespit oranı onarım oranından ayrı ölçülür. Müşteri kendi tarayıcısını (Sonar vb.) kullanabilir |
+| Lisans: Semgrep kural koleksiyonları ve OWASP Benchmark kodu ürünle dağıtılamayabilir | Yüksek | Kurallar ve geliştirme vakaları bizim (MIT); OWASP Benchmark yalnız değerlendirmede kullanılır |
 | Kapsam kayması (yeni dil, yeni tarayıcı) | Yüksek | Bölüm 3'teki kapsam dışı listesi; yeni istekler `docs/BACKLOG.md`'ye |
 | Ekip üyelerinin kodu anlatamaması | Orta | Her bileşenin sahibi kendi bölümünü jüriye anlatabilecek düzeyde bilir; haftalık iç sunum |
 
@@ -295,6 +333,7 @@ Kısıtlar: kapsam dışına çıkma, politika/doğrulayıcıyı gevşetme, say�
 - [ ] Path ve command vakalarının durumu ölçüldü ve raporlandı
 - [ ] Uzman yaması → doğrulama → hafıza → sonraki işte kullanım akışı çalışıyor
 - [ ] Yapısal uygunluk imzası, kanıt vektörü, başarısızlık hafızası ve geçersizleşme v1 çalışıyor
+- [ ] En az 5 zafiyet sınıfı paketi (mevcut 3 + 2 yeni) eksiksiz; her biri için L2'de doğrulanmış tohum kayıtları var
 - [ ] L2 paketi imzalı üretilip çevrimdışı içeri alınabiliyor
 - [ ] Doğrulama Docker sandbox'ta, ağ erişimi olmadan çalışıyor
 - [ ] L3'te en az 40 değerlendirme vakasıyla A/B/C/C+L2 deneyi tamamlandı ve raporlandı

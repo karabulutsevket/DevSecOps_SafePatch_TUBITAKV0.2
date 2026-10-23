@@ -2,6 +2,21 @@
 
 > **V0.2 geliştirme aşamasındadır.** Bu depo, aşağıda anlatılan V0.1 kodunu temel alır. Plan, hipotezler ve haftalık görevler için [ROADMAP.md](ROADMAP.md); kod üzerinde çalışma kuralları için [CLAUDE.md](CLAUDE.md). Aşağıdaki bölümler ve `evidence/` altındaki ölçümler V0.1'e aittir; V0.2 ölçümleri ayrı klasörlerde yayımlanacaktır.
 
+### V0.2 hedef kapsamı (plan — henüz uygulanmadı)
+
+V0.1 yalnız 3 dar Semgrep kuralı ve 3 sentetik vaka ailesiyle çalışır. V0.2'de kapsam, her zafiyet sınıfı için **kural + davranış testi + güvenlik tanığı + doğrulanmış düzeltmeler** içeren *sınıf paketleriyle* genişletilecek. Paketlerdeki doğrulanmış düzeltmeler, ortak bilgi katmanının (L2) ilk kayıtları olacak.
+
+| Sıra | Sınıf | CWE |
+|---|---|---|
+| Mevcut | SQL injection, path traversal, command injection | 89, 22, 78 |
+| 1 | Zayıf rastgele sayı | 330 |
+| 2 | Güvensiz cookie | 614 |
+| 3 | XPath / LDAP injection | 643 / 90 |
+| 4 | XXE | 611 |
+| 5 | Zayıf şifreleme / özet (çekimser kalma ve insana devretme örneği) | 327 / 328 |
+
+Asgari hedef mevcut 3 + 2 yeni sınıftır. Kurallar SafePatch'e aittir (MIT); Semgrep'in yayımladığı kural koleksiyonları ayrı lisans kısıtları nedeniyle kopyalanmaz. Değerlendirme OWASP Benchmark (Java) ve Vul4J vakalarıyla yapılacak; bu vakalar ürünle dağıtılmaz. XSS, trust boundary ve deserialization otomatik düzeltme kapsamı dışındadır. Ayrıntı: [ROADMAP.md](ROADMAP.md) Bölüm 5.
+
 **Yerel Java zafiyet giderme ve doğrulama prototipi.** Sabit yerel LLM, uygunluk kontrollü yama hafızası, gerçek derleme/test/tarama, insan onayı ve aynı artifact ile yerel staging.
 
 Bu depo çalışan bir **demo ve Ar-Ge başlangıcıdır**. Yalnız sahip olunan kayıtlı sentetik Java örneklerini işler. Genel müşteri deposu onarımı ve savunma/banka üretim kurulumu henüz desteklenmez.

@@ -47,7 +47,8 @@ Testler, benchmark ve canlı demo aynı makinede aynı anda çalıştırılmaz (
 5. **Sayı uydurulmaz.** Her ölçüm, `evidence/` altında ham bir kayda (JSON/CSV/JUnit) bağlanır. Başarısız koşular paydadan çıkarılmaz. Test sayısı onarım sayısı değildir.
 6. **V0.1 kanıtları değiştirilmez.** `evidence/` altındaki mevcut dosyalar V0.1'e aittir ve bayt düzeyinde korunur (`.gitattributes`: `evidence/** -text`). V0.2 sonuçları `evidence/v02-*` klasörlerine yazılır. **Dikkat:** `run-tests.ps1`, Java entegrasyon/staging testleri, `benchmark_acceptance.py`, `audit_dependencies.py` ve `check_*.py` şu an V0.1 kanıt dosyalarının üzerine yazıyor. Bu değişiklikleri commit'leme, `git restore evidence/` ile geri al. Çıktı yollarının taşınması ROADMAP.md Hafta 1 görevidir.
 7. **Sırlar depoya girmez.** `.secrets/`, `.runtime/`, `.env`, model ağırlıkları ve müşteri kodu Git'e eklenmez.
-8. **Kapsam.** ROADMAP.md Bölüm 3'teki kapsam dışı işler (başka diller, DAST/IAST, SaaS, Kubernetes, model eğitimi) yapılmaz; öneri `docs/BACKLOG.md`'ye yazılır.
+8. **Kural ve veri lisansı.** Semgrep kuralları kendimiz yazarız (MIT); Semgrep'in yayımladığı kural koleksiyonlarından kopyalama yapılmaz. OWASP Benchmark ve Vul4J vakaları yalnız değerlendirmede (L3) kullanılır; L2 paketine, `samples/`'a veya ürüne konmaz. Bir zafiyet sınıfı, sınıf paketinin beş parçası (ROADMAP.md Bölüm 5) tamamlanmadan "destekleniyor" sayılmaz.
+9. **Kapsam.** ROADMAP.md Bölüm 3'teki kapsam dışı işler (başka diller, DAST/IAST, SaaS, Kubernetes, model eğitimi) yapılmaz; öneri `docs/BACKLOG.md`'ye yazılır.
 
 ## Kod üslubu
 
