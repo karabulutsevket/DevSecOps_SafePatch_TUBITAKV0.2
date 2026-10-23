@@ -1,4 +1,6 @@
-# SafePatch V0.1
+# SafePatch V0.1 → V0.2
+
+> **V0.2 geliştirme aşamasındadır.** Bu depo, aşağıda anlatılan V0.1 kodunu temel alır. Plan, hipotezler ve haftalık görevler için [ROADMAP.md](ROADMAP.md); kod üzerinde çalışma kuralları için [CLAUDE.md](CLAUDE.md). Aşağıdaki bölümler ve `evidence/` altındaki ölçümler V0.1'e aittir; V0.2 ölçümleri ayrı klasörlerde yayımlanacaktır.
 
 **Yerel Java zafiyet giderme ve doğrulama prototipi.** Sabit yerel LLM, uygunluk kontrollü yama hafızası, gerçek derleme/test/tarama, insan onayı ve aynı artifact ile yerel staging.
 

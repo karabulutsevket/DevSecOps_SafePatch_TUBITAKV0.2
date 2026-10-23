@@ -93,7 +93,9 @@ Her hafta: hedef, görevler (sorumlu), çıktı, geçiş koşulu. Bir fazın ge�
 #### Hafta 1 · 26 Ekim – 1 Kasım
 **Hedef:** V0.2 deposunu kurmak ve modelin path/command vakalarını çözememe nedenini gidermek.
 
-- [ ] V0.1 kodunu Git geçmişiyle V0.2 deposuna taşı; `CLAUDE.md` ekle (Bölüm 9) — *Şevket*
+- [x] V0.1 kodunu Git geçmişiyle V0.2 deposuna taşı; `CLAUDE.md` ekle (Bölüm 9) — *Şevket*
+- [ ] Test ve betik çıktılarını V0.1 kanıtlarının üzerine yazmayacak şekilde `evidence/v02-*` altına yönlendir (`run-tests.ps1`, `tests/test_java_integration.py`, `tests/test_staging_integration.py`, `scripts/benchmark_acceptance.py`, `scripts/audit_dependencies.py`, `scripts/check_*.py`) — *Reşat*
+- [ ] Temiz makinede kurulum: `.venv`, `requirements.lock`, `./scripts/run-tests.ps1` geçiyor — *Şevket*
 - [ ] Başarısızlık türüne göre yeniden deneme (H2): 2. ve 3. denemede `temperature` 0,3–0,5; başarısız güvenlik tanığının girdisini (ör. `../secret.txt`) ve derleme hatasını yapılandırılmış geri bildirim olarak ver — *Kadir*
 - [ ] `duplicate_patch` duruşunu koru, ama farklı seed/sıcaklıkla gerçek bir ikinci aday üretildiğini kayda geçir — *Kadir*
 - [ ] V0.1 benchmark'ını yeni döngüyle tekrar çalıştır (aynı 9 vaka, 3 seed) — *Kadir, Reşat*
