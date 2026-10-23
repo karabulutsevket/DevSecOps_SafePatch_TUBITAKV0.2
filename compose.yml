@@ -1,0 +1,167 @@
+name: bigg-safepatch
+x-hardening: &hardening
+  restart: unless-stopped
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  pids_limit: 256
+  tmpfs: ["/tmp:size=256m,mode=1777"]
+
+services:
+  db:
+    image: postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3
+    environment:
+      POSTGRES_USER: safepatch
+      POSTGRES_DB: safepatch
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    secrets: [postgres_password]
+    volumes: [postgres:/var/lib/postgresql/data]
+    networks: [database]
+    mem_limit: 1g
+    cpus: 1
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U safepatch]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  orchestrator:
+    <<: *hardening
+    image: bigg-orchestrator:0.1.0
+    build: {context: ., target: orchestrator}
+    environment:
+      WORKER1_URL: http://worker1:8101
+      WORKER2_URL: http://worker2:8102
+      DEPLOYER_URL: http://deployer:8104
+      WORKER1_TOKEN_FILE: /run/secrets/worker1_token
+      WORKER2_TOKEN_FILE: /run/secrets/worker2_token
+      DEPLOYER_TOKEN_FILE: /run/secrets/deployer_token
+      APPROVAL_SIGNING_KEY_FILE: /run/secrets/approval_signing_key
+      USERS_FILE: /run/secrets/users
+      DATABASE_PASSWORD_FILE: /run/secrets/postgres_password
+      DATABASE_HOST: db
+      JOB_BUDGET_SECONDS: 1200
+    secrets: [worker1_token, worker2_token, deployer_token, approval_signing_key, users, postgres_password]
+    volumes: [orchestrator:/data]
+    ports: [127.0.0.1:8100:8100]
+    networks: [control, database]
+    depends_on:
+      db: {condition: service_healthy}
+    mem_limit: 512m
+    cpus: 1
+
+  worker1:
+    <<: *hardening
+    image: bigg-worker1:0.1.0
+    build: {context: ., target: worker1}
+    environment:
+      WORKER1_TOKEN_FILE: /run/secrets/worker1_token
+      OLLAMA_URL: http://ollama:11434
+      OLLAMA_MODEL: qwen2.5-coder:7b-instruct-q4_K_M
+      MODEL_DIGEST: dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364
+      MODEL_CONTEXT: 8192
+      MODEL_OUTPUT_TOKENS: 3072
+    secrets: [worker1_token]
+    networks: [control, inference]
+    mem_limit: 512m
+    cpus: 1
+
+  worker2:
+    <<: *hardening
+    image: bigg-worker2:0.1.0
+    build: {context: ., target: verifier}
+    environment:
+      WORKER2_TOKEN_FILE: /run/secrets/worker2_token
+      RUNNER_TOKEN_FILE: /run/secrets/runner_token
+      ARTIFACT_READ_TOKEN_FILE: /run/secrets/artifact_read_token
+      RUNNER_URL: http://runner:8103
+    secrets: [worker2_token, runner_token, artifact_read_token]
+    volumes: [verifier:/data]
+    networks: [control, validation]
+    mem_limit: 768m
+    cpus: 2
+
+  runner:
+    <<: *hardening
+    image: bigg-runner:0.1.0
+    build: {context: ., target: runner}
+    environment:
+      RUNNER_TOKEN_FILE: /run/secrets/runner_token
+      SEMGREP_SEND_METRICS: 'off'
+      SEMGREP_ENABLE_VERSION_CHECK: '0'
+      SEMGREP_SETTINGS_FILE: /tmp/semgrep-settings.yml
+    secrets: [runner_token]
+    volumes: [runner:/data]
+    networks: [validation]
+    mem_limit: 4g
+    cpus: 4
+
+  ollama:
+    <<: *hardening
+    image: ollama/ollama:0.34.0
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+      OLLAMA_MODELS: /models
+      OLLAMA_NO_CLOUD: '1'
+      OLLAMA_NUM_PARALLEL: '1'
+      OLLAMA_MAX_LOADED_MODELS: '1'
+      OLLAMA_MAX_QUEUE: '2'
+      OLLAMA_CONTEXT_LENGTH: '8192'
+    volumes: [models:/models:ro]
+    networks: [inference]
+    gpus: all
+    mem_limit: 10g
+    cpus: 8
+    tmpfs: ["/tmp:size=256m,mode=1777", "/root/.ollama:size=16m,mode=0700"]
+
+  deployer:
+    <<: *hardening
+    image: bigg-deployer:0.1.0
+    build: {context: ., target: deployer}
+    environment:
+      DEPLOYER_TOKEN_FILE: /run/secrets/deployer_token
+      APPROVAL_SIGNING_KEY_FILE: /run/secrets/approval_signing_key
+      ARTIFACT_READ_TOKEN_FILE: /run/secrets/artifact_read_token
+      WORKER2_URL: http://worker2:8102
+      STAGING_BIND: 0.0.0.0
+    secrets: [deployer_token, approval_signing_key, artifact_read_token]
+    volumes: [staging:/data]
+    ports: [127.0.0.1:18080:18080]
+    networks: [control]
+    mem_limit: 768m
+    cpus: 2
+
+  model-prepare:
+    profiles: [prepare]
+    image: ollama/ollama:0.34.0
+    environment:
+      OLLAMA_MODELS: /models
+      OLLAMA_NO_CLOUD: '1'
+    entrypoint: [/bin/sh, /prepare-model.sh]
+    volumes: [models:/models, ./scripts/prepare-model.sh:/prepare-model.sh:ro]
+    networks: [preparation]
+
+networks:
+  control: {internal: true}
+  validation: {internal: true}
+  database: {internal: true}
+  inference: {internal: true}
+  preparation: {internal: false}
+
+volumes:
+  postgres:
+  orchestrator:
+  verifier:
+  runner:
+  staging:
+  models:
+
+secrets:
+  postgres_password: {file: .secrets/postgres_password}
+  worker1_token: {file: .secrets/worker1_token}
+  worker2_token: {file: .secrets/worker2_token}
+  runner_token: {file: .secrets/runner_token}
+  artifact_read_token: {file: .secrets/artifact_read_token}
+  deployer_token: {file: .secrets/deployer_token}
+  approval_signing_key: {file: .secrets/approval_signing_key}
+  users: {file: .secrets/users.json}

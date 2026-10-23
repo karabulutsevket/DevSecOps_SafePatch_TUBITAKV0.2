@@ -1,0 +1,124 @@
+{
+  "case": "sql-01",
+  "candidate": "constant_response",
+  "expected_acceptable": false,
+  "V0_scanner_only": true,
+  "V1_build_and_scanner": true,
+  "V2_full_acceptance": false,
+  "seconds": 20.844,
+  "result": {
+    "passed": false,
+    "baseline_valid": false,
+    "base_commit": "bac9cf9a007e5ad2ca6203822409991b4fbe4c1c",
+    "source_revision": "de6c2fedb8a2d78bb33b7f0bd05ef4ad62c16c99",
+    "build": {
+      "passed": true,
+      "duration_seconds": 3.922
+    },
+    "behavior": {
+      "passed": false,
+      "tests": 3,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "secondAccount",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        },
+        {
+          "name": "unknownAccount",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        }
+      ],
+      "exit_code": 1,
+      "duration_seconds": 2.75,
+      "junit_sha256": "0dc61f2149652460bdde2f8e710b1d12b098d31957e98c6f1e31984b8b72ac69"
+    },
+    "security": {
+      "passed": false,
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "injectionMustNotReturnAccounts",
+          "type": "failure",
+          "assertion": "SQL_INJECTION_REGRESSION"
+        }
+      ],
+      "exit_code": 1,
+      "duration_seconds": 2.656,
+      "junit_sha256": "c9de22b18203c183737b7b232da76694d625410b79ff332e919ac3a801873669"
+    },
+    "scans": [
+      {
+        "tool": "semgrep",
+        "version": "1.136.0",
+        "status": "ok",
+        "analysis_id": "9a564bf244904ef794c890676259050c",
+        "commit": "de6c2fedb8a2d78bb33b7f0bd05ef4ad62c16c99",
+        "source_sha256": "de3cf42f08e5856000f164b285768a37306259d0e991fe5e842e42f87ea3e34e",
+        "findings": []
+      }
+    ],
+    "patch": {
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -1,24 +1,4 @@\n package demo;\n-\n-import java.sql.*;\n-import java.util.*;\n-\n-// Case sql-01.\n-// Deliberately vulnerable synthetic example. Never use with real data.\n public class DemoService {\n-    public String lookup(String input) throws Exception {\n-        try (Connection conn = DriverManager.getConnection(\"jdbc:h2:mem:demo;DB_CLOSE_DELAY=-1\")) {\n-            try (Statement init = conn.createStatement()) {\n-                init.execute(\"CREATE TABLE IF NOT EXISTS accounts(name VARCHAR PRIMARY KEY)\");\n-                init.execute(\"MERGE INTO accounts KEY(name) VALUES ('alice'), ('bob')\");\n-            }\n-            String sql = \"SELECT name FROM accounts WHERE name = '\" + input + \"'\";\n-            List<String> names = new ArrayList<>();\n-            try (Statement statement = conn.createStatement(); ResultSet rows = statement.executeQuery(sql)) {\n-                while (rows.next()) names.add(rows.getString(1));\n-            }\n-            Collections.sort(names);\n-            return String.join(\",\", names);\n-        }\n-    }\n+ public String lookup(String input) throws Exception { return \"alice\"; }\n }\n",
+      "patch_sha256": "57f5ce4eab16fd31f063317ff0d9c665525f814e5e4b3367cb0319cd23c3fe29",
+      "changed_lines": 22
+    },
+    "feedback": {
+      "code": "validation_failed",
+      "behavior": {
+        "passed": false,
+        "tests": 3,
+        "failures": 2,
+        "errors": 0,
+        "skipped": 0,
+        "details": [
+          {
+            "name": "secondAccount",
+            "type": "failure",
+            "assertion": "BEHAVIOR_REGRESSION"
+          },
+          {
+            "name": "unknownAccount",
+            "type": "failure",
+            "assertion": "BEHAVIOR_REGRESSION"
+          }
+        ],
+        "exit_code": 1,
+        "duration_seconds": 2.75,
+        "junit_sha256": "0dc61f2149652460bdde2f8e710b1d12b098d31957e98c6f1e31984b8b72ac69"
+      },
+      "security": {
+        "passed": false,
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "details": [
+          {
+            "name": "injectionMustNotReturnAccounts",
+            "type": "failure",
+            "assertion": "SQL_INJECTION_REGRESSION"
+          }
+        ],
+        "exit_code": 1,
+        "duration_seconds": 2.656,
+        "junit_sha256": "c9de22b18203c183737b7b232da76694d625410b79ff332e919ac3a801873669"
+      },
+      "remaining_rules": []
+    },
+    "duration_seconds": 20.844,
+    "runner_profile": "native-same-user",
+    "versions": {
+      "java": "17; inspect preparation evidence",
+      "maven": "3.9.16"
+    }
+  },
+  "origin": "hand-authored deterministic control; not LLM"
+}

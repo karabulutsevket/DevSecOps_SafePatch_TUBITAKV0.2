@@ -1,0 +1,15 @@
+{
+  "test": "linux-network-namespace-probe",
+  "time": 1789232913.3958905,
+  "exit_code": 0,
+  "scope": "Probe process only. Maven, LLM and all-host airgap were NOT verified by this probe.",
+  "result": {
+    "probe": {
+      "connected": false,
+      "errno": 101
+    },
+    "routes": "",
+    "namespace": "net:[4026532225]"
+  },
+  "passed": true
+}

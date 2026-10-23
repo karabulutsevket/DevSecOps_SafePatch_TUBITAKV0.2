@@ -1,0 +1,13 @@
+.runtime
+.venv
+.git
+.secrets
+.env
+evidence
+tests
+**/__pycache__
+**/target
+output
+.presentation-build
+.chart-data-*
+presentation

@@ -1,0 +1,91 @@
+{
+  "case": "sql-01",
+  "candidate": "reference_fix",
+  "expected_acceptable": true,
+  "V0_scanner_only": true,
+  "V1_build_and_scanner": true,
+  "V2_full_acceptance": true,
+  "seconds": 29.953,
+  "result": {
+    "passed": true,
+    "baseline_valid": false,
+    "base_commit": "bac9cf9a007e5ad2ca6203822409991b4fbe4c1c",
+    "source_revision": "c1def8b705f65572533b8cea93ed3b178fd1a40f",
+    "build": {
+      "passed": true,
+      "duration_seconds": 4.828
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "exit_code": 0,
+      "duration_seconds": 3.531,
+      "junit_sha256": "260cc7d787fbe31748dc7aac54c7d45fedda2ea726508bfb36f8a376e838e5a7"
+    },
+    "security": {
+      "passed": true,
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "exit_code": 0,
+      "duration_seconds": 3.25,
+      "junit_sha256": "406975ff1deefb0650477ad795081a499f624c028925dd893ed92b3d9edae1b0"
+    },
+    "scans": [
+      {
+        "tool": "semgrep",
+        "version": "1.136.0",
+        "status": "ok",
+        "analysis_id": "23741fb3e93e45b0b5ba75a6f21a1503",
+        "commit": "c1def8b705f65572533b8cea93ed3b178fd1a40f",
+        "source_sha256": "7b21ce65d31b1aa77c6820eebad7ac8fa7dcdcd343c9503dd35a8d0abbea187d",
+        "findings": []
+      }
+    ],
+    "patch": {
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -12,10 +12,13 @@\n                 init.execute(\"CREATE TABLE IF NOT EXISTS accounts(name VARCHAR PRIMARY KEY)\");\n                 init.execute(\"MERGE INTO accounts KEY(name) VALUES ('alice'), ('bob')\");\n             }\n-            String sql = \"SELECT name FROM accounts WHERE name = '\" + input + \"'\";\n+            String sql = \"SELECT name FROM accounts WHERE name = ?\";\n             List<String> names = new ArrayList<>();\n-            try (Statement statement = conn.createStatement(); ResultSet rows = statement.executeQuery(sql)) {\n-                while (rows.next()) names.add(rows.getString(1));\n+            try (PreparedStatement statement = conn.prepareStatement(sql)) {\n+                statement.setString(1, input);\n+                try (ResultSet rows = statement.executeQuery()) {\n+                    while (rows.next()) names.add(rows.getString(1));\n+                }\n             }\n             Collections.sort(names);\n             return String.join(\",\", names);\n",
+      "patch_sha256": "1d94e00ec271b9de49285cf9b80468fca3f698e6d2505d314520e294ca466975",
+      "changed_lines": 9
+    },
+    "feedback": {
+      "code": "verified",
+      "behavior": {
+        "passed": true,
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 3.531,
+        "junit_sha256": "260cc7d787fbe31748dc7aac54c7d45fedda2ea726508bfb36f8a376e838e5a7"
+      },
+      "security": {
+        "passed": true,
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 3.25,
+        "junit_sha256": "406975ff1deefb0650477ad795081a499f624c028925dd893ed92b3d9edae1b0"
+      },
+      "remaining_rules": []
+    },
+    "duration_seconds": 29.953,
+    "runner_profile": "native-same-user",
+    "versions": {
+      "java": "17; inspect preparation evidence",
+      "maven": "3.9.16"
+    },
+    "artifact_sha256": "a25a7ab815fbcbe204c057ebceebba3de8f6bc5f3db4847adba608e783111378"
+  },
+  "origin": "hand-authored deterministic control; not LLM"
+}

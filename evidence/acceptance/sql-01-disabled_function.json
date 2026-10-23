@@ -1,0 +1,112 @@
+{
+  "case": "sql-01",
+  "candidate": "disabled_function",
+  "expected_acceptable": false,
+  "V0_scanner_only": true,
+  "V1_build_and_scanner": true,
+  "V2_full_acceptance": false,
+  "seconds": 29.0,
+  "result": {
+    "passed": false,
+    "baseline_valid": false,
+    "base_commit": "bac9cf9a007e5ad2ca6203822409991b4fbe4c1c",
+    "source_revision": "a7b023aedc2bdc009596f571003d5cdd14f62888",
+    "build": {
+      "passed": true,
+      "duration_seconds": 4.594
+    },
+    "behavior": {
+      "passed": false,
+      "tests": 3,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "knownAccount",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        },
+        {
+          "name": "secondAccount",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        }
+      ],
+      "exit_code": 1,
+      "duration_seconds": 3.063,
+      "junit_sha256": "9d018d8df5e7d0027ad412b63371106eed8ddd46508c8cddd463a5ec1e9b0607"
+    },
+    "security": {
+      "passed": true,
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "exit_code": 0,
+      "duration_seconds": 3.109,
+      "junit_sha256": "e816cf46ea84f8666296b8ca09a86245555df8d5a4c9919741bf286e176e01fa"
+    },
+    "scans": [
+      {
+        "tool": "semgrep",
+        "version": "1.136.0",
+        "status": "ok",
+        "analysis_id": "22ef8693ad9743c3a8be56b159ff4d26",
+        "commit": "a7b023aedc2bdc009596f571003d5cdd14f62888",
+        "source_sha256": "b19902faca7fb248f93075860f543336fac873ca5c655aee53aaf1b027205f11",
+        "findings": []
+      }
+    ],
+    "patch": {
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -1,24 +1,4 @@\n package demo;\n-\n-import java.sql.*;\n-import java.util.*;\n-\n-// Case sql-01.\n-// Deliberately vulnerable synthetic example. Never use with real data.\n public class DemoService {\n-    public String lookup(String input) throws Exception {\n-        try (Connection conn = DriverManager.getConnection(\"jdbc:h2:mem:demo;DB_CLOSE_DELAY=-1\")) {\n-            try (Statement init = conn.createStatement()) {\n-                init.execute(\"CREATE TABLE IF NOT EXISTS accounts(name VARCHAR PRIMARY KEY)\");\n-                init.execute(\"MERGE INTO accounts KEY(name) VALUES ('alice'), ('bob')\");\n-            }\n-            String sql = \"SELECT name FROM accounts WHERE name = '\" + input + \"'\";\n-            List<String> names = new ArrayList<>();\n-            try (Statement statement = conn.createStatement(); ResultSet rows = statement.executeQuery(sql)) {\n-                while (rows.next()) names.add(rows.getString(1));\n-            }\n-            Collections.sort(names);\n-            return String.join(\",\", names);\n-        }\n-    }\n+ public String lookup(String input) throws Exception { return \"\"; }\n }\n",
+      "patch_sha256": "7eaa4a5e0a7ffe59a97cc09177256e6300aea00dbede01618ce5a460233680dd",
+      "changed_lines": 22
+    },
+    "feedback": {
+      "code": "validation_failed",
+      "behavior": {
+        "passed": false,
+        "tests": 3,
+        "failures": 2,
+        "errors": 0,
+        "skipped": 0,
+        "details": [
+          {
+            "name": "knownAccount",
+            "type": "failure",
+            "assertion": "BEHAVIOR_REGRESSION"
+          },
+          {
+            "name": "secondAccount",
+            "type": "failure",
+            "assertion": "BEHAVIOR_REGRESSION"
+          }
+        ],
+        "exit_code": 1,
+        "duration_seconds": 3.063,
+        "junit_sha256": "9d018d8df5e7d0027ad412b63371106eed8ddd46508c8cddd463a5ec1e9b0607"
+      },
+      "security": {
+        "passed": true,
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 3.109,
+        "junit_sha256": "e816cf46ea84f8666296b8ca09a86245555df8d5a4c9919741bf286e176e01fa"
+      },
+      "remaining_rules": []
+    },
+    "duration_seconds": 29.0,
+    "runner_profile": "native-same-user",
+    "versions": {
+      "java": "17; inspect preparation evidence",
+      "maven": "3.9.16"
+    }
+  },
+  "origin": "hand-authored deterministic control; not LLM"
+}

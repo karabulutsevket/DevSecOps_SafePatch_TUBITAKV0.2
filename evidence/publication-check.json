@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "checked_files": 310,
+  "checked_raw_files": 153,
+  "staged_hashes_checked": true,
+  "problems": [],
+  "checks": [
+    "excluded directories",
+    "actual generated secret bytes",
+    "credential patterns",
+    "Markdown local links",
+    "raw evidence SHA-256"
+  ],
+  "scope": "Publication hygiene, not a complete secret scanner or application security audit"
+}

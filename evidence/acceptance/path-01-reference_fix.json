@@ -1,0 +1,91 @@
+{
+  "case": "path-01",
+  "candidate": "reference_fix",
+  "expected_acceptable": true,
+  "V0_scanner_only": true,
+  "V1_build_and_scanner": true,
+  "V2_full_acceptance": true,
+  "seconds": 21.109,
+  "result": {
+    "passed": true,
+    "baseline_valid": false,
+    "base_commit": "320454b6992454d81ebf64c63a9bbb6a333d9f5c",
+    "source_revision": "12e7f9c2138f0809942a46d8f21119630b552224",
+    "build": {
+      "passed": true,
+      "duration_seconds": 4.187
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "exit_code": 0,
+      "duration_seconds": 2.718,
+      "junit_sha256": "105716bcac62dbbe7bfa3ff3c31834087e864bd39101d0557aa0766cedb6bb3b"
+    },
+    "security": {
+      "passed": true,
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "exit_code": 0,
+      "duration_seconds": 2.718,
+      "junit_sha256": "415810dda497c4e127a20a90cecf177b5f29df38a5b4dab51a016dfc4c366f42"
+    },
+    "scans": [
+      {
+        "tool": "semgrep",
+        "version": "1.136.0",
+        "status": "ok",
+        "analysis_id": "3a4bade5281d4fa0aa5754075b7e6fff",
+        "commit": "12e7f9c2138f0809942a46d8f21119630b552224",
+        "source_sha256": "00821ba2a6c4c37c4a2eadf176f01ffb52be992a05ffbabe0a28f64e915296da",
+        "findings": []
+      }
+    ],
+    "patch": {
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -6,8 +6,9 @@\n // Deliberately vulnerable synthetic example. Root is supplied by trusted runner.\n public class DemoService {\n     public String lookup(String input) throws Exception {\n-        Path root = Path.of(System.getProperty(\"demo.root\"));\n-        Path target = root.resolve(input);\n+        Path root = Path.of(System.getProperty(\"demo.root\")).toRealPath();\n+        Path target = root.resolve(input).toRealPath();\n+        if (!target.startsWith(root)) { throw new SecurityException(\"outside root\"); }\n         return Files.readString(target);\n     }\n }\n",
+      "patch_sha256": "4594b81352bb426a733f0cba563c569539d1de3ca5436fc40bee165653c66680",
+      "changed_lines": 5
+    },
+    "feedback": {
+      "code": "verified",
+      "behavior": {
+        "passed": true,
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 2.718,
+        "junit_sha256": "105716bcac62dbbe7bfa3ff3c31834087e864bd39101d0557aa0766cedb6bb3b"
+      },
+      "security": {
+        "passed": true,
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 2.718,
+        "junit_sha256": "415810dda497c4e127a20a90cecf177b5f29df38a5b4dab51a016dfc4c366f42"
+      },
+      "remaining_rules": []
+    },
+    "duration_seconds": 21.109,
+    "runner_profile": "native-same-user",
+    "versions": {
+      "java": "17; inspect preparation evidence",
+      "maven": "3.9.16"
+    },
+    "artifact_sha256": "84380faffe2d69824cd0915220f6ac621c55aa3d7dbcee26f9dc545fb7aa6e07"
+  },
+  "origin": "hand-authored deterministic control; not LLM"
+}

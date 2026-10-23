@@ -1,0 +1,19 @@
+flowchart TD
+    G["Kurum Git deposu ve CI"] --> P["Ön kontrol ve başlangıç taraması"]
+    P --> O["İş orkestratörü ve bütçe"]
+    O --> K["Koşullu geçmiş düzeltme seçimi"]
+    M[("Onaylı kurum hafızası")] --> K
+    K --> R["Yama sağlayıcı: yerel LLM veya uygun tarif"]
+    R --> D["Dosya, kapsam ve diff politikası"]
+    D --> X["Geçici izole build ve test ortamı"]
+    X --> V{"Bağımsız kabul değerlendirmesi"}
+    V -->|"Başarısız; bütçe var"| O
+    V -->|"Eksik kanıt veya bütçe bitti"| H["İnsan müdahalesi gerekli"]
+    V -->|"Kontroller geçti"| Q["Taslak PR/MR ve kanıt paketi"]
+    Q --> A["İnsan kod incelemesi"]
+    A -->|"Ret"| H
+    A -->|"Kabul"| F["Son commit doğrulaması ve dağıtım onayı"]
+    F --> C["Kurumun yetkili CI/CD hattı"]
+    F --> E["Hafızaya terfi koşullarının denetlenmesi"]
+    E --> M
+    C -->|"Dağıtım veya geri dönüş sonucu"| E

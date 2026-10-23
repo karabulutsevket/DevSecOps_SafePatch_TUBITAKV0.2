@@ -1,0 +1,165 @@
+{
+  "at": 1789234476.1718526,
+  "os": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.14",
+  "java": {
+    "exit_code": 0,
+    "text": "openjdk version \"17.0.20.1\" 2026-08-18 LTS\nOpenJDK Runtime Environment Corretto-17.0.20.10.1 (build 17.0.20.1+10-LTS)\nOpenJDK 64-Bit Server VM Corretto-17.0.20.10.1 (build 17.0.20.1+10-LTS, mixed mode, sharing)"
+  },
+  "maven": {
+    "exit_code": 0,
+    "text": "Apache Maven 3.9.16 (2bdd9fddda4b155ebf8000e807eb73fd829a51d5)\nMaven home: C:\\ProgramData\\chocolatey\\lib\\maven\\apache-maven-3.9.16\nJava version: 17.0.20.1, vendor: Amazon.com Inc., runtime: C:\\Program Files\\Amazon Corretto\\jdk17.0.20_10\nDefault locale: tr_TR, platform encoding: Cp1254\nOS name: \"windows 11\", version: \"10.0\", arch: \"amd64\", family: \"windows\""
+  },
+  "gpu": {
+    "exit_code": 0,
+    "text": "NVIDIA GeForce RTX 4070 Laptop GPU, 8188 MiB, 616.92"
+  },
+  "python_packages": [
+    {
+      "name": "annotated-doc",
+      "version": "0.0.5",
+      "license": "MIT"
+    },
+    {
+      "name": "annotated-types",
+      "version": "0.8.0",
+      "license": "MIT"
+    },
+    {
+      "name": "anyio",
+      "version": "4.15.1",
+      "license": "MIT"
+    },
+    {
+      "name": "certifi",
+      "version": "2026.7.22",
+      "license": "MPL-2.0"
+    },
+    {
+      "name": "click",
+      "version": "8.5.0",
+      "license": "BSD-3-Clause"
+    },
+    {
+      "name": "colorama",
+      "version": "0.4.6",
+      "license": "unspecified"
+    },
+    {
+      "name": "fastapi",
+      "version": "0.141.1",
+      "license": "MIT"
+    },
+    {
+      "name": "greenlet",
+      "version": "3.5.5",
+      "license": "MIT AND PSF-2.0"
+    },
+    {
+      "name": "h11",
+      "version": "0.16.0",
+      "license": "MIT"
+    },
+    {
+      "name": "httpcore",
+      "version": "1.0.9",
+      "license": "BSD-3-Clause"
+    },
+    {
+      "name": "httpx",
+      "version": "0.28.1",
+      "license": "BSD-3-Clause"
+    },
+    {
+      "name": "idna",
+      "version": "3.19",
+      "license": "BSD-3-Clause"
+    },
+    {
+      "name": "iniconfig",
+      "version": "2.3.0",
+      "license": "MIT"
+    },
+    {
+      "name": "packaging",
+      "version": "26.3",
+      "license": "Apache-2.0 OR BSD-2-Clause"
+    },
+    {
+      "name": "pip",
+      "version": "25.0.1",
+      "license": "MIT"
+    },
+    {
+      "name": "pluggy",
+      "version": "1.6.0",
+      "license": "MIT"
+    },
+    {
+      "name": "psycopg",
+      "version": "3.2.9",
+      "license": "GNU Lesser General Public License v3 (LGPLv3)"
+    },
+    {
+      "name": "psycopg-binary",
+      "version": "3.2.9",
+      "license": "GNU Lesser General Public License v3 (LGPLv3)"
+    },
+    {
+      "name": "pydantic",
+      "version": "2.13.5",
+      "license": "MIT"
+    },
+    {
+      "name": "pydantic_core",
+      "version": "2.46.5",
+      "license": "MIT"
+    },
+    {
+      "name": "Pygments",
+      "version": "2.21.0",
+      "license": "BSD-2-Clause"
+    },
+    {
+      "name": "pytest",
+      "version": "9.1.1",
+      "license": "MIT"
+    },
+    {
+      "name": "PyYAML",
+      "version": "6.0.2",
+      "license": "MIT"
+    },
+    {
+      "name": "SQLAlchemy",
+      "version": "2.0.43",
+      "license": "MIT"
+    },
+    {
+      "name": "starlette",
+      "version": "1.6.0",
+      "license": "BSD-3-Clause"
+    },
+    {
+      "name": "typing-inspection",
+      "version": "0.4.4",
+      "license": "MIT"
+    },
+    {
+      "name": "typing_extensions",
+      "version": "4.16.0",
+      "license": "PSF-2.0"
+    },
+    {
+      "name": "tzdata",
+      "version": "2026.3",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "uvicorn",
+      "version": "0.35.0",
+      "license": "BSD-3-Clause"
+    }
+  ],
+  "note": "Measured environment inventory; not a vulnerability scan, complete SBOM or redistribution clearance."
+}

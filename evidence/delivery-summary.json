@@ -1,0 +1,66 @@
+{
+  "unit": {
+    "tests": 87,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "passed": 87
+  },
+  "java": {
+    "tests": 9,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "passed": 9
+  },
+  "staging": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "passed": 1
+  },
+  "benchmark_runs": 18,
+  "benchmark_accepted": 6,
+  "acceptance": {
+    "n": 9,
+    "scope": "Three owned synthetic families; same candidate pool across gates; no population-level correctness claim",
+    "gates": {
+      "V0_scanner_only": {
+        "false_accepts": 6,
+        "bad_candidates": 6,
+        "true_accepts": 3,
+        "good_candidates": 3
+      },
+      "V1_build_and_scanner": {
+        "false_accepts": 6,
+        "bad_candidates": 6,
+        "true_accepts": 3,
+        "good_candidates": 3
+      },
+      "V2_full_acceptance": {
+        "false_accepts": 0,
+        "bad_candidates": 6,
+        "true_accepts": 3,
+        "good_candidates": 3
+      }
+    }
+  },
+  "release_smoke": {
+    "passed": true,
+    "first_seconds": 67.244,
+    "replay_seconds": 50.931,
+    "after_revocation": "needs_human"
+  },
+  "dependency_audit": {
+    "queried_packages": 28,
+    "affected_packages": 0
+  },
+  "limitations": [
+    "synthetic families, no independent project holdout",
+    "simulated test reviewers",
+    "native same-user runner",
+    "no live SonarQube or Docker execution",
+    "no customer pilot or sales interviews"
+  ]
+}
