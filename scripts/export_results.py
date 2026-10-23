@@ -5,13 +5,13 @@ import shutil
 import sys
 import xml.etree.ElementTree as ET
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from safepatch.common import ROOT, request
+from safepatch.common import ROOT, evidence, request
 
 token = (ROOT / ".secrets/developer.token").read_text().strip()
 jobs = request("http://127.0.0.1:8100/v1/jobs", token=token)
 summary = []
 for job in jobs:
-    target = ROOT / "evidence" / job["id"]
+    target = evidence(job["id"])
     target.mkdir(exist_ok=True)
     (target / "evidence.json").write_text(json.dumps(job, ensure_ascii=False, indent=2), encoding="utf-8")
     import httpx
@@ -27,5 +27,5 @@ for job in jobs:
         for file in list((workspace / "target/surefire-reports").glob("TEST-*.xml")) + list(workspace.glob("semgrep.json")):
             shutil.copyfile(file, dest / file.name)
     summary.append({"id": job["id"], "case_id": job["case_id"], "mode": job["mode"], "status": job["status"], "reason": job.get("reason"), "attempts": job["attempt_count"], "seconds": job.get("duration_seconds"), "approval": job["approval"], "artifact_sha256": job.get("candidate", {}).get("artifact_sha256")})
-(ROOT / "evidence/real-model-runs.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
+evidence("real-model-runs.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
 print(json.dumps(summary, ensure_ascii=False, indent=2))

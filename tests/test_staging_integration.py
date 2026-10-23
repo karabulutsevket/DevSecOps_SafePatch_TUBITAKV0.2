@@ -7,7 +7,7 @@ import httpx
 import pytest
 
 from safepatch import deployer
-from safepatch.common import POLICY, ROOT, digest, seal
+from safepatch.common import POLICY, ROOT, digest, evidence, seal
 from safepatch.process import terminate
 
 pytestmark = [pytest.mark.integration, pytest.mark.skipif(os.environ.get("RUN_JAVA_INTEGRATION") != "1", reason="Requires reference artifacts from Java integration suite")]
@@ -42,7 +42,7 @@ def test_same_artifact_deploy_and_rollback(tmp_path, monkeypatch):
         with httpx.Client(trust_env=False) as client:
             assert client.get("http://127.0.0.1:18081/lookup", params={"input": "alice"}).json()["result"] == "alice"
         import json
-        (ROOT / "evidence/staging-test.json").write_text(json.dumps({"mode": "mock-test-with-real-java-process", "human_approval": "simulated-only", "port": 18081, "deployments": results, "rollback": rolled, "same_bytes_verified": True}, indent=2), encoding="utf-8")
+        evidence("staging-test.json").write_text(json.dumps({"mode": "mock-test-with-real-java-process", "human_approval": "simulated-only", "port": 18081, "deployments": results, "rollback": rolled, "same_bytes_verified": True}, indent=2), encoding="utf-8")
     finally:
         if deployer.process:
             terminate(deployer.process)

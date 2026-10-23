@@ -38,6 +38,21 @@ def runtime(part=""):
     return path
 
 
+def evidence(part=""):
+    """Writable location for new measurements; V0.1 evidence is a read-only archive.
+
+    EVIDENCE_DIR may be an evidence/v02-* folder or a path outside evidence/
+    (tests, scratch runs). The archive root and its V0.1 folders are refused.
+    """
+    archive = (ROOT / "evidence").resolve()
+    base = Path(setting("EVIDENCE_DIR", "evidence/v02-local"))
+    base = (base if base.is_absolute() else ROOT / base).resolve()
+    if base == archive or (base.is_relative_to(archive) and not base.relative_to(archive).parts[0].startswith("v02-")):
+        raise RuntimeError("V0.1 evidence is read-only; set EVIDENCE_DIR to evidence/v02-<name>")
+    base.mkdir(parents=True, exist_ok=True)
+    return base / part
+
+
 def secret(name):
     value = setting(name)
     file = setting(name + "_FILE")

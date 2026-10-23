@@ -9,6 +9,8 @@ node_modules/
 *.log
 .secrets/
 output/
+# Ad-hoc local runs; publish results by setting EVIDENCE_DIR=evidence/v02-<name>.
+evidence/v02-local/
 .presentation-build/
 .chart-data-*/
 .codex-finalizer/

@@ -16,7 +16,7 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
 from fastapi.testclient import TestClient
 from safepatch import orchestrator
-from safepatch.common import digest
+from safepatch.common import digest, evidence
 from safepatch.engine import Engine
 from safepatch.store import Store
 
@@ -54,5 +54,5 @@ assert revoked['status']=='needs_human' and revoked['approval'] is None
 result={'passed':True,'scope':'real local LLM + HTTP workers + real Java/Semgrep + in-process control API; isolated test DB/users',
         'human_approval':'SIMULATED ONLY','deployment':'not attempted','first':first,'replay':second,'after_revocation':revoked['status'],
         'first_seconds':first['wall_seconds'],'replay_seconds':second['wall_seconds']}
-(ROOT/'evidence/release-smoke.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
+evidence('release-smoke.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
 print(json.dumps({k:v for k,v in result.items() if k not in ('first','replay')}),flush=True)

@@ -8,10 +8,13 @@ import concurrent.futures
 import json
 from pathlib import Path
 import re
+import sys
 import time
 import urllib.request
 
 root=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(root))
+from safepatch.common import evidence
 parser=argparse.ArgumentParser()
 parser.add_argument('--online',action='store_true')
 args=parser.parse_args()
@@ -32,5 +35,5 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
 data={'at':time.time(),'source':'https://api.osv.dev/v1/querybatch','scope':'Declared Python lock only, not Java/images/models or proof of no vulnerabilities',
       'packages':rows,'advisories':details,'affected_packages':sum(bool(r['vulnerabilities']) for r in rows),
       'queried_packages':len(rows),'online_preparation_only':True}
-(root/'evidence/dependency-audit.json').write_text(json.dumps(data,indent=2),encoding='utf-8')
+evidence('dependency-audit.json').write_text(json.dumps(data,indent=2),encoding='utf-8')
 print(json.dumps({'queried_packages':len(rows),'affected_packages':data['affected_packages'],'advisory_ids':ids}))

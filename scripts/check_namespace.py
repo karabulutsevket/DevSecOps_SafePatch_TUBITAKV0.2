@@ -3,9 +3,12 @@ import json
 import argparse
 from pathlib import Path
 import subprocess
+import sys
 import time
 
 root=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(root))
+from safepatch.common import evidence
 # A new unprivileged network namespace has no default route. No remote data is
 # sent: only an empty TCP connect is attempted to reserved TEST-NET address.
 probe="""import json,socket,os
@@ -24,6 +27,5 @@ data={'test':'linux-network-namespace-probe','time':time.time(),'exit_code':resu
       'scope':'Probe process only. Maven, LLM and all-host airgap were NOT verified by this probe.',
       'result':json.loads(result.stdout) if result.returncode==0 else None,
       'passed':result.returncode==0 and not json.loads(result.stdout)['probe']['connected']}
-out=root/'evidence/network-namespace.json';out.parent.mkdir(parents=True,exist_ok=True)
-out.write_text(json.dumps(data,indent=2),encoding='utf-8')
+evidence('network-namespace.json').write_text(json.dumps(data,indent=2),encoding='utf-8')
 print(json.dumps(data))

@@ -85,13 +85,14 @@ Mevcut başka kurulumla yan yana çalışmak için `-PortBase 8200`; başka haz�
 ```powershell
 ./scripts/run-tests.ps1
 ./scripts/run-tests.ps1 -Integration
-.venv/Scripts/python.exe scripts/benchmark.py --port-base 8100 --output evidence/new-benchmark
+$env:EVIDENCE_DIR = 'evidence/v02-benchmark'
+.venv/Scripts/python.exe scripts/benchmark.py --port-base 8100
 .venv/Scripts/python.exe scripts/benchmark_acceptance.py
 ```
 
 Testler, benchmark ve canlı demo aynı runner/model üzerinde **aynı anda** çalıştırılmamalıdır. Benchmark üç hafıza yaklaşımını aynı model ve bütçeyle sınar. Kendi ayrı SQLite veritabanını kullanır. Hafıza hazırlığındaki insan rolü **simüle edilmiştir**; ürün veritabanına veya gerçek dağıtıma onay vermez. Tekrar vakaları ve küçük varyantlar bağımsız holdout veri seti değildir.
 
-JUnit dosyaları ve ham JSON/CSV sonuçları `evidence/` içindedir. Başarısız düzeltmeler korunur; model başarı oranı ile unit test başarı sayısı birbirine karıştırılmaz. Tam sonuçları [ölçüm raporundan](docs/OLCUM_SONUCLARI.md) okuyun.
+V0.1'in JUnit dosyaları ve ham JSON/CSV sonuçları `evidence/` içindedir ve salt okunur arşivdir. Yeni çalıştırmalar `EVIDENCE_DIR` klasörüne yazar: varsayılan `evidence/v02-local/` (Git'e girmez); yayımlanacak sonuçlar için `evidence/v02-<ad>` verilir. V0.1 klasörlerine yazma girişimi reddedilir. Başarısız düzeltmeler korunur; model başarı oranı ile unit test başarı sayısı birbirine karıştırılmaz. Tam sonuçları [ölçüm raporundan](docs/OLCUM_SONUCLARI.md) okuyun.
 
 ## SonarQube, CodeFix ve diğer tarayıcılar
 

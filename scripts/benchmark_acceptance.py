@@ -8,14 +8,14 @@ import uuid
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT), str(ROOT/'tests')]
-from safepatch.common import SOURCE, Patch, VerifyRequest, digest
+from safepatch.common import SOURCE, Patch, VerifyRequest, digest, evidence
 from safepatch.repository import baseline, registry
 from safepatch.runner import execute
 from mock_patches import correct_patch
 
 
 def main():
-    directory = ROOT/'evidence/acceptance'
+    directory = evidence('acceptance')
     directory.mkdir(parents=True, exist_ok=True)
     rows = []
     for kind in ('sql','path','command'):

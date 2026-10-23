@@ -3,10 +3,14 @@ import hashlib
 import json
 from pathlib import Path
 import shutil
+import sys
 
 root=Path(__file__).resolve().parents[1]
-identifiers={p.stem for p in (root/'evidence/benchmark/jobs').glob('*.json')}
-release=root/'evidence/release-smoke.json'
+sys.path.insert(0,str(root))
+from safepatch.common import evidence
+# Collects raw files for the current run's benchmark/release outputs (EVIDENCE_DIR).
+identifiers={p.stem for p in evidence('benchmark/jobs').glob('*.json')}
+release=evidence('release-smoke.json')
 if release.exists():
     r=json.loads(release.read_text(encoding='utf-8'))
     identifiers.update(r[key]['id'] for key in ('first','replay'))
@@ -16,9 +20,9 @@ for workspace in (root/'.runtime/runner-work').iterdir():
     for relative in ('semgrep.json','target/surefire-reports/TEST-demo.BehaviorTest.xml','target/surefire-reports/TEST-demo.SecurityTest.xml'):
         file=workspace/relative
         if not file.is_file():continue
-        target=root/'evidence/raw'/workspace.name/file.name
+        target=evidence('raw')/workspace.name/file.name
         target.parent.mkdir(parents=True,exist_ok=True)
         shutil.copyfile(file,target)
-        copied.append({'path':target.relative_to(root).as_posix(),'sha256':hashlib.sha256(target.read_bytes()).hexdigest()})
-(root/'evidence/raw-manifest.json').write_text(json.dumps(copied,indent=2),encoding='utf-8')
+        copied.append({'path':target.relative_to(root).as_posix() if target.is_relative_to(root) else str(target),'sha256':hashlib.sha256(target.read_bytes()).hexdigest()})
+evidence('raw-manifest.json').write_text(json.dumps(copied,indent=2),encoding='utf-8')
 print(f'Collected {len(copied)} JUnit/scan files; no command logs or credentials.')

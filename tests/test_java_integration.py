@@ -7,7 +7,7 @@ import uuid
 
 import pytest
 
-from safepatch.common import ROOT, SOURCE, Patch, VerifyRequest, digest
+from safepatch.common import ROOT, SOURCE, Patch, VerifyRequest, digest, evidence
 from safepatch.policy import PolicyError
 from safepatch.repository import baseline, registry
 from safepatch.runner import execute
@@ -27,7 +27,7 @@ def record(name, result):
         target = ROOT / ".runtime/test-verified-artifacts"
         target.mkdir(parents=True, exist_ok=True)
         (target / (name + ".jar")).write_bytes(base64.b64decode(artifact))
-    directory = ROOT / "evidence/java-integration"
+    directory = evidence("java-integration")
     directory.mkdir(parents=True, exist_ok=True)
     (directory / (name + ".json")).write_text(json.dumps({"model_mode": "mock-test-reference-patch", "scanner_mode": "real-builtin-demo", "result": result}, indent=2), encoding="utf-8")
 

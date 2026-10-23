@@ -16,7 +16,7 @@ import uuid
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from safepatch.common import POLICY, SOURCE, digest, canonical
+from safepatch.common import POLICY, SOURCE, digest, canonical, evidence
 from safepatch.engine import Engine
 from safepatch.memory import Memory, context_for
 from safepatch.repository import baseline, registry
@@ -62,9 +62,9 @@ def metrics(job):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--port-base", type=int, default=8100)
-    parser.add_argument("--output", default="evidence/benchmark")
+    parser.add_argument("--output", help="Defaults to benchmark/ under EVIDENCE_DIR")
     args = parser.parse_args()
-    output = ROOT / args.output
+    output = ROOT / args.output if args.output else evidence("benchmark")
     if (output / "summary.json").exists():
         raise SystemExit("Use a fresh --output; evidence is never overwritten")
     for service, offset in (("WORKER1", 1), ("WORKER2", 2)):

@@ -1,9 +1,16 @@
-"""Generate the presentation/report numbers from actual evidence, not literals."""
+"""Generate the presentation/report numbers from actual evidence, not literals.
+
+V0.1 archive report: reads the read-only V0.1 evidence and writes its outputs
+under EVIDENCE_DIR, so docs/OLCUM_SONUCLARI.md and the archive stay untouched.
+"""
 import json
 from pathlib import Path
+import sys
 import xml.etree.ElementTree as ET
 
 root=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(root))
+from safepatch.common import evidence
 def read(path):return json.loads((root/path).read_text(encoding='utf-8'))
 def junit(name):
     node=ET.parse(root/'evidence'/name).getroot()
@@ -17,7 +24,7 @@ summary={'unit':junit('unit-tests.xml'),'java':junit('java-integration.xml'),'st
          'acceptance':acceptance,'release_smoke':{k:release[k] for k in ('passed','first_seconds','replay_seconds','after_revocation')},
          'dependency_audit':{k:read('evidence/dependency-audit.json')[k] for k in ('queried_packages','affected_packages')},
          'limitations':['synthetic families, no independent project holdout','simulated test reviewers','native same-user runner','no live SonarQube or Docker execution','no customer pilot or sales interviews']}
-(root/'evidence/delivery-summary.json').write_text(json.dumps(summary,indent=2),encoding='utf-8')
+evidence('delivery-summary.json').write_text(json.dumps(summary,indent=2),encoding='utf-8')
 def num(x):return f'{x:.1f}'.replace('.',',')
 md=['# SafePatch V0.1 — ölçüm sonuçları','', 'Sonuçlar bu makinede gerçekten çalıştırılan komutlardan üretilmiştir. Ham JSON/CSV ve JUnit dosyaları `evidence/` içindedir.','',
     '## Doğrulama testleri','', '| Paket | Geçen | Hata / başarısız | Kapsam |','|---|---:|---:|---|']
@@ -43,5 +50,5 @@ md+=['','Aynı 9 adayın gerçek derleme/test/tarama sonuçları üç kapı içi
      'Linux `unshare -Urn` probunda boş route tablosu ve dış bağlantı denemesinde ENETUNREACH ölçüldü. Bu yalnız probun ağ ad alanını doğrular; Maven, model, bütün host veya airgap sertifikasyonu değildir. Native runner aynı kullanıcıyla çalışır.','',
      '## Yapılmayan ve ayrıca gereken ölçümler','',
      'Canlı SonarQube/CodeFix, Snyk, Trivy/Grype entegrasyonu, Docker kötü niyetli build testi, tüm sistem paket kaydı, yüksek yük/HA, bağımsız holdout corpus, farklı model/GPU kıyası, AppSec uzman doğrulaması, gerçek geliştirici süresi ve müşteri ödeme isteği ölçülmedi. Protokoller `ARGE_VE_TICARILESME.md` içinde.']
-(root/'docs/OLCUM_SONUCLARI.md').write_text('\n'.join(md)+'\n',encoding='utf-8')
+evidence('OLCUM_SONUCLARI_V01.md').write_text('\n'.join(md)+'\n',encoding='utf-8')
 print(json.dumps(summary,indent=2))

@@ -31,7 +31,7 @@ python -m venv .venv
 .venv/Scripts/python.exe -m pip install -r requirements.lock
 .venv/Scripts/python.exe scripts/init_config.py
 .venv/Scripts/python.exe scripts/seed.py
-./scripts/run-tests.ps1                 # birim / sözleşme testleri
+./scripts/run-tests.ps1                 # birim / sözleşme testleri (JUnit: evidence/v02-local/)
 ./scripts/run-tests.ps1 -Integration    # gerçek Maven/JUnit dahil
 ./scripts/start-native.ps1 -Restart     # servisler, arayüz http://127.0.0.1:8100
 ./scripts/stop-native.ps1
@@ -46,7 +46,7 @@ Testler, benchmark ve canlı demo aynı makinede aynı anda çalıştırılmaz (
 3. **İnsan onayı otomatikleşmez.** Kod onayı, hafızaya alma ve dağıtım ayrı rollerin ayrı kararlarıdır. Testlerdeki simüle onay gerçek onay diye raporlanmaz.
 4. **Politika sınırları korunur.** Model yalnız izin verilen kaynak dosyayı değiştirir; test, build, CI, tarayıcı ayarı ve politika dosyaları korunur. Yasak kabiliyet listesi ve satır sınırı `policy.py`'dedir.
 5. **Sayı uydurulmaz.** Her ölçüm, `evidence/` altında ham bir kayda (JSON/CSV/JUnit) bağlanır. Başarısız koşular paydadan çıkarılmaz. Test sayısı onarım sayısı değildir.
-6. **V0.1 kanıtları değiştirilmez.** `evidence/` altındaki mevcut dosyalar V0.1'e aittir ve bayt düzeyinde korunur (`.gitattributes`: `evidence/** -text`). V0.2 sonuçları `evidence/v02-*` klasörlerine yazılır. **Dikkat:** `run-tests.ps1`, Java entegrasyon/staging testleri, `benchmark_acceptance.py`, `audit_dependencies.py` ve `check_*.py` şu an V0.1 kanıt dosyalarının üzerine yazıyor. Bu değişiklikleri commit'leme, `git restore evidence/` ile geri al. Çıktı yollarının taşınması ROADMAP.md Hafta 1 görevidir.
+6. **V0.1 kanıtları değiştirilmez.** `evidence/` altındaki mevcut dosyalar V0.1'e aittir ve bayt düzeyinde korunur (`.gitattributes`: `evidence/** -text`). Yeni çıktılar yalnız `safepatch.common.evidence()` üzerinden yazılır; bu fonksiyon `EVIDENCE_DIR` klasörünü kullanır (varsayılan `evidence/v02-local/`, Git'e girmez) ve V0.1 klasörlerini reddeder. Yayımlanacak sonuçlar için `EVIDENCE_DIR=evidence/v02-<ad>` verilir (ör. `v02-retry`, `v02-benchmark`). Yeni bir betik ya da test `evidence/` yolunu elle kurmaz. `scripts/build_presentation.mjs` ve `scripts/summarize_delivery.py` V0.1 arşiv raporlarıdır.
 7. **Sırlar depoya girmez.** `.secrets/`, `.runtime/`, `.env`, model ağırlıkları ve müşteri kodu Git'e eklenmez.
 8. **Kural ve veri lisansı.** Semgrep kuralları kendimiz yazarız (MIT); Semgrep'in yayımladığı kural koleksiyonlarından kopyalama yapılmaz. OWASP Benchmark ve Vul4J vakaları yalnız değerlendirmede (L3) kullanılır; L2 paketine, `samples/`'a veya ürüne konmaz. Bir zafiyet sınıfı, sınıf paketinin beş parçası (ROADMAP.md Bölüm 5) tamamlanmadan "destekleniyor" sayılmaz.
 9. **Kapsam.** ROADMAP.md Bölüm 3'teki kapsam dışı işler (başka diller, DAST/IAST, SaaS, Kubernetes, model eğitimi) yapılmaz; öneri `docs/BACKLOG.md`'ye yazılır.

@@ -7,6 +7,8 @@ import subprocess
 import sys
 
 root=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(root))
+from safepatch.common import evidence
 names=subprocess.check_output(['git','ls-files','--cached','--others','--exclude-standard'],cwd=root,text=True).splitlines()
 names=sorted(set(names))
 problems=[]
@@ -26,7 +28,9 @@ for name in names:
             if link.startswith(('http:','https:','#','mailto:')):continue
             target=(file.parent/link.split('#')[0]).resolve()
             if not target.exists():problems.append(name+': broken link '+link)
-raw=json.loads((root/'evidence/raw-manifest.json').read_text(encoding='utf-8'))
+# The V0.1 archive manifest plus any published V0.2 run manifests.
+manifests=[root/'evidence/raw-manifest.json',*sorted((root/'evidence').glob('v02-*/raw-manifest.json'))]
+raw=[item for m in manifests if m.is_file() for item in json.loads(m.read_text(encoding='utf-8'))]
 for item in raw:
     if hashlib.sha256((root/item['path']).read_bytes()).hexdigest()!=item['sha256']:
         problems.append(item['path']+': raw evidence hash mismatch')
@@ -36,6 +40,6 @@ for item in raw:
             problems.append(item['path']+': staged evidence hash mismatch')
 result={'passed':not problems,'checked_files':len(names),'checked_raw_files':len(raw),'staged_hashes_checked':'--staged' in sys.argv,'problems':problems,'checks':['excluded directories','actual generated secret bytes','credential patterns','Markdown local links','raw evidence SHA-256'],
         'scope':'Publication hygiene, not a complete secret scanner or application security audit'}
-(root/'evidence/publication-check.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
+evidence('publication-check.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
 print(json.dumps(result))
 if problems:raise SystemExit(1)
