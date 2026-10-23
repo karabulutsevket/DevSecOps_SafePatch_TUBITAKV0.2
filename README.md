@@ -15,7 +15,9 @@ V0.1 yalnız 3 dar Semgrep kuralı ve 3 sentetik vaka ailesiyle çalışır. V0.
 | 4 | XXE | 611 |
 | 5 | Zayıf şifreleme / özet (çekimser kalma ve insana devretme örneği) | 327 / 328 |
 
-Asgari hedef mevcut 3 + 2 yeni sınıftır. Kurallar SafePatch'e aittir (MIT); Semgrep'in yayımladığı kural koleksiyonları ayrı lisans kısıtları nedeniyle kopyalanmaz. Değerlendirme OWASP Benchmark (Java) ve Vul4J vakalarıyla yapılacak; bu vakalar ürünle dağıtılmaz. XSS, trust boundary ve deserialization otomatik düzeltme kapsamı dışındadır. Ayrıntı: [ROADMAP.md](ROADMAP.md) Bölüm 5.
+Asgari hedef mevcut 3 + 2 yeni sınıftır. Kurallar SafePatch'e aittir (MIT); Semgrep'in yayımladığı kural koleksiyonları ayrı lisans kısıtları nedeniyle kopyalanmaz. Değerlendirme OWASP Benchmark (Java) ve Vul4J vakalarıyla yapılacak; bu vakalar ürünle dağıtılmaz. XSS, trust boundary ve deserialization otomatik düzeltme kapsamı dışındadır.
+
+Tespit ve onarım ayrı ölçülecek. Semgrep CE yalnız dosya içi veri akışını izlediği için dosyalar arası takip yapan FindSecBugs adaptörü eklenecek ve iki tarayıcının tespit oranı karşılaştırılacak. Laboratuvarda onarım deneyleri, doğru cevabı bilinen vakalarda bulguyu doğrudan cevap anahtarından alan "bilinen bulgu" moduyla da çalışacak. Hafıza eşleştirmesi Semgrep kural kimliğinden çıkarılıp CWE ailesi ve kodun yapısal imzasına taşınacak; böylece bir tarayıcının bulgusundan öğrenilen düzeltme başka bir tarayıcının bulgusunda da kullanılabilecek. Ayrıntı: [ROADMAP.md](ROADMAP.md) Bölüm 5.
 
 **Yerel Java zafiyet giderme ve doğrulama prototipi.** Sabit yerel LLM, uygunluk kontrollü yama hafızası, gerçek derleme/test/tarama, insan onayı ve aynı artifact ile yerel staging.
 

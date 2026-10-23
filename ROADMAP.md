@@ -42,12 +42,13 @@ Negatif sonuç da raporlanır. Hipotez tutmazsa kapsam doğrulama ve kanıt ür�
 | Konu | V0.1 (hazır) | V0.2 (bu plan) |
 |---|---|---|
 | Doğrulama | Derleme, davranış testi, güvenlik tanığı, yeniden tarama, korunan dosya hash'i | Docker sandbox, gizli değerlendirme testleri |
-| Hafıza | Hash tabanlı uygunluk (uyumlu / uyumsuz / bilinmiyor), insan onayı, karantina, geri çekme | Yapısal uygunluk imzası, kanıt vektörü, başarısızlık hafızası, otomatik geçersizleşme, açıklanabilir sıralama |
+| Hafıza | Semgrep kural kimliği + hash tabanlı uygunluk (uyumlu / uyumsuz / bilinmiyor), insan onayı, karantina, geri çekme | **Tarayıcıdan bağımsız** eşleştirme (CWE ailesi + yapısal imza), kanıt vektörü, başarısızlık hafızası, otomatik geçersizleşme, açıklanabilir sıralama |
 | İnsan düzeltmesi | Yok | Uzman yaması uç noktası → aynı doğrulama → hafıza |
 | Yeniden deneme | En fazla 3 deneme; `temperature: 0` yüzünden 2. denemede aynı yama | Başarısızlık türüne göre geri bildirim ve strateji |
 | Ölçüm | 3 sentetik aile, 18 koşu, tek seed | L3: OWASP Benchmark + Vul4J; sınıf başına değerlendirme ve güvenli (yanlış pozitif) vakalar, ≥3 seed, A/B/C kolları |
 | Zafiyet kapsamı | 3 sınıf (CWE-89/22/78), yalnız sentetik vakalar | Zafiyet sınıfı paketleri: mevcut 3 + asgari 2, en fazla 5 yeni sınıf (Bölüm 5) |
-| Tarayıcı | Semgrep + 3 dar kural; Sonar adaptörü canlı test edilmedi | Sınıf başına kendi Semgrep kurallarımız (MIT); Sonar adaptörünün canlı testi |
+| Tarayıcı | Semgrep + 3 dar kural; Sonar adaptörü canlı test edilmedi | Sınıf başına kendi Semgrep kurallarımız (MIT); FindSecBugs adaptörü (dosyalar arası veri akışı); karşılaştırmalı tespit ölçümü; Sonar adaptörünün canlı testi |
+| Bulgu kaynağı | Yalnız tarayıcı | Tarayıcı **veya** laboratuvarda "bilinen bulgu" modu (doğru cevap anahtarı olan vakalar) |
 | Ortak bilgi | Yok | L2 paket formatı, imza, içeri alma; sınıf paketlerinden gelen ilk doğrulanmış kayıtlar |
 
 **V0.1'in ölçülmüş sonuçları (değiştirilmeden kullanılacak):** 97 sistem testi geçti. 18 model koşusunun 6'sı incelemeye hazır aday üretti; kabul edilenlerin hepsi SQL. Kabul deneyinde 6 hatalı yamayı yalnız tarayıcıya bakan kapı 6/6 kabul etti, tam kapı 0/6. Aynı SQL kaynağında hafızadan tekrar uygulama 56,9 sn'yi 46,7 sn'ye indirdi.
@@ -59,7 +60,7 @@ Negatif sonuç da raporlanır. Hipotez tutmazsa kapsam doğrulama ve kanıt ür�
 ### Kapsam içi
 - Java 17, Maven, JUnit 5
 - Zafiyet sınıfı paketleri (Bölüm 5): mevcut CWE-89 (SQL injection), CWE-22 (path traversal), CWE-78 (command injection) + sırasıyla CWE-330, CWE-614, CWE-643/90, CWE-611, CWE-327/328. Asgari hedef mevcut 3 + 2 yeni sınıf.
-- Semgrep (birincil, kendi kurallarımızla), SonarQube adaptörü (canlı doğrulama)
+- Semgrep (birincil, kendi kurallarımızla), FindSecBugs/SpotBugs (dosyalar arası veri akışı), SonarQube adaptörü (canlı doğrulama). Üründe tespiti müşterinin kendi tarayıcısı da yapabilir; SafePatch'in işi onarım ve doğrulamadır.
 - Yerel model: Qwen2.5-Coder 7B Q4_K_M (Ollama), sabit sürüm ve özet
 - Tek sunucu kurulumu; geliştirmede Windows + WSL, pilot profilinde Linux + Docker
 
@@ -160,8 +161,11 @@ Sorumlular: kurallar ve tanıklar *Yiğithan*, vakalar ve L2 kayıtları *Kadir*
 #### Hafta 4 · 16 – 22 Kasım
 **Hedef:** Hash eşleşmesinden yapısal uygunluk imzasına geçmek.
 
-- [ ] Yapısal imza: JavaParser veya tree-sitter-java ile kaynak (source), hedef (sink) çağrısı, kullanılan API'ler; `pom.xml`'den ilgili bağımlılık sürümleri — *Kadir*
-- [ ] Uygunluk kararı korunur: `uyumlu / uyumsuz / bilinmiyor`. Yalnız `uyumlu` otomatik kullanılır — *Kadir*
+- [ ] **Tarayıcıdan bağımsız eşleştirme:** hafıza bağlamında `rule_id` zorunlu eşleşme alanı olmaktan çıkar; yerine normalize edilmiş **CWE ailesi** gelir. Kural → CWE eşleme tablosu: Semgrep kural metadata'sı, Sonar kuralının CWE'si, FindSecBugs desen adı. Alt CWE'ler (ör. CWE-564 → CWE-89) aileye bağlanır. Eşlemesi bilinmeyen kural `bilinmiyor` sayılır — *Kadir*
+- [ ] **Yapısal imza** (bulgudan değil koddan çıkarılır): JavaParser veya tree-sitter-java ile hedef (sink) çağrısının tam adı, kirli değerin nasıl kurulduğu (birleştirme, `String.format`, `StringBuilder`), kaynak (source) türü, kullanılan kütüphane (JDBC, Spring `JdbcTemplate`, JPA…) ve `pom.xml`'den yalnız bu kütüphanelerin sürümleri — *Kadir*
+- [ ] Hash alanlarının rolü daralır: kaynak, build ve test hash'leri yalnız **birebir tekrar** (aynı kodda kayıtlı yamayı aynen uygulama) için kullanılır; uyarlamalı kullanımda yapısal imza esas alınır — *Kadir*
+- [ ] Uygunluk kararı korunur: `uyumlu / uyumsuz / bilinmiyor`. Yalnız `uyumlu` otomatik kullanılır; `bilinmiyor` kayıt en fazla modele örnek olarak verilir — *Kadir*
+- [ ] V0.1 hafıza kayıtlarını yeni şemaya dönüştüren geçiş betiği ve testi; dönüştürülemeyen kayıt `bilinmiyor` olarak kalır — *Reşat*
 - [ ] Kanıt vektörü: derleme, davranış, güvenlik tanığı, yeniden tarama, insan onayı, yeniden kullanım sonuçları — *Reşat*
 - [ ] Toplam 6 müşteri görüşmesi — *Şevket, Reşat*
 
@@ -181,6 +185,7 @@ Sorumlular: kurallar ve tanıklar *Yiğithan*, vakalar ve L2 kayıtları *Kadir*
 **Hedef:** L3 değerlendirme setini kurmak.
 
 - [ ] Tamamlanan sınıf paketlerinin değerlendirme ve güvenli vakalarını tek bir L3 setinde birleştir; Vul4J'den derlenebilen ve bu sınıflarla ilgili vakaları ekle — *Yiğithan, Kadir*
+- [ ] **"Bilinen bulgu" modu:** bulgu tarayıcı yerine vakanın doğru cevap anahtarından gelir (OWASP Benchmark beklenen sonuçları, Vul4J zafiyet konumu); köken `known-finding` olarak işaretlenir. Bu modda kabulün belirleyicisi güvenlik tanığıdır; tarayıcının hiç bulamadığı bir zafiyette "yeniden tarama temiz" sonucu kanıt sayılmaz. Mod yalnız laboratuvar ve değerlendirme profilinde açılır; müşteri kurulumunda kapalıdır — *Reşat*
 - [ ] Her vaka için: davranış testi, güvenlik tanığı ve doğrulayıcının **görmediği** gizli değerlendirme testleri (yanlış kabulü ölçmek için) — *Yiğithan*
 - [ ] Ayrım: proje ve zafiyet ailesi bazında en az 20 geliştirme + 40 değerlendirme vakası. Aynı proje iki tarafa giremez — *Kadir*
 - [ ] Toplam 8 müşteri görüşmesi — *Şevket*
@@ -192,6 +197,8 @@ Sorumlular: kurallar ve tanıklar *Yiğithan*, vakalar ve L2 kayıtları *Kadir*
 - [ ] Paket formatı: manifest, her kayıt için SHA-256, paket imzası, sürüm; içeri alma komutu çevrimdışı çalışır — *Şevket*
 - [ ] L2 kayıtları L1'den ayrı güven seviyesinde durur: "dış kaynak, bu kurumda doğrulanmadı". Kurumda bir kez doğrulanınca L1'e terfi eder — *Reşat*
 - [ ] Lisans kontrolü: kaynak kodun ve veri setlerinin lisansı `docs/LISANSLAR.md`'de — *Şevket*
+- [ ] **FindSecBugs adaptörü:** SpotBugs + FindSecBugs'ı çevrimdışı kur (sürüm ve özet sabit, lisans teyidi), derlenmiş kod üzerinde çalıştır, SARIF çıktısını ortak bulgu modeline çevir; desen adı → CWE eşlemesi Hafta 4 tablosuna eklenir — *Yiğithan*
+- [ ] **Karşılaştırmalı tespit ölçümü:** L3 setinde Semgrep, FindSecBugs ve ikisi birlikte; sınıf bazında tespit oranı ve yanlış pozitif oranı. Sonuç `evidence/v02-detection/` altında — *Yiğithan, Kadir*
 
 #### Hafta 8 · 14 – 20 Aralık
 **Hedef:** Docker sandbox'ta doğrulama.
@@ -201,7 +208,7 @@ Sorumlular: kurallar ve tanıklar *Yiğithan*, vakalar ve L2 kayıtları *Kadir*
 - [ ] Kötü niyetli build testleri: ağ erişimi, dosya sisteminden kaçış, süreç bombası — *Yiğithan*
 - [ ] Toplam 10 müşteri görüşmesi; 2 pilot adayı belirle — *Şevket, Reşat*
 
-**Faz 2 geçiş koşulu:** L3'te en az 30 vaka çalışır durumda (derleniyor, başlangıçta güvenlik tanığı başarısız). L2 paketi imzalı olarak içeri alınabiliyor. Sandbox'ta uçtan uca bir iş tamamlandı.
+**Faz 2 geçiş koşulu:** L3'te en az 30 vaka çalışır durumda (derleniyor, başlangıçta güvenlik tanığı başarısız). L2 paketi imzalı olarak içeri alınabiliyor. Sandbox'ta uçtan uca bir iş tamamlandı. **Semgrep bulgusundan öğrenilmiş bir hafıza kaydı, aynı zafiyetin FindSecBugs bulgusunda seçildi ve doğrulamadan geçti** (tarayıcıdan bağımsızlığın kanıtı).
 
 ### Faz 3 — Deney ve sertleştirme (Hafta 9–10)
 
@@ -210,6 +217,7 @@ Sorumlular: kurallar ve tanıklar *Yiğithan*, vakalar ve L2 kayıtları *Kadir*
 
 - [ ] Kollar: **A** hafızasız · **B** yalnız benzerlik (yerel embedding modeli ile en benzer kayıt) · **C** SafePatch hafızası (L1) · **C+L2** soğuk başlangıç — *Kadir*
 - [ ] Koşullar: aynı model, aynı bütçe (3 deneme, süre ve token sınırı), en az 3 seed, sıra dengeli — *Kadir*
+- [ ] Onarım deneyi "bilinen bulgu" moduyla çalışır; böylece tarayıcının kaçırdığı vakalar da onarım ölçümüne girer. Tespit sonuçları (Hafta 7) ayrı raporlanır — *Kadir*
 - [ ] Yaklaşık yük: sınıf sayısına göre 40–80 değerlendirme vakası × 4 kol × 3 seed = 480–960 koşu. Koşu başına ~1–1,5 dk ile 8–24 saat GPU; birkaç geceye bölünür — *Kadir*
 - [ ] Sonuçlar hem toplam hem **sınıf bazında** raporlanır (hafızanın hangi sınıfta işe yaradığı ayrı görünür) — *Kadir*
 - [ ] Ham sonuçlar `evidence/v02-benchmark/` altında; başarısız koşular paydadan çıkarılmaz — *Reşat*
@@ -250,7 +258,7 @@ Sorumlular: kurallar ve tanıklar *Yiğithan*, vakalar ve L2 kayıtları *Kadir*
 | **Yanlış kabul oranı** | Doğrulayıcının kabul ettiği ama gizli değerlendirme testlerinde başarısız olan yamalar / kabul edilen yamalar |
 | **Yanlış aktarım oranı** | Hafızadan seçilip uygulandığında doğrulamada başarısız olan kayıtlar / hafızadan seçilen kayıtlar |
 | **Gereksiz değişiklik oranı** | Güvenli (yanlış pozitif) vakalarda kabul edilen yamalar / güvenli vakalar |
-| **Tespit oranı** | Tarayıcının bulduğu gerçek zafiyetler / değerlendirme setindeki gerçek zafiyetler (onarım oranından ayrı raporlanır) |
+| **Tespit oranı** | Tarayıcının bulduğu gerçek zafiyetler / değerlendirme setindeki gerçek zafiyetler. Semgrep, FindSecBugs ve ikisi birlikte için ayrı; onarım oranından ayrı raporlanır |
 | **Çekimserlik oranı** | "Kanıt yetersiz" deyip insana devredilen vakalar / tüm vakalar (hiç yama kabul etmeyen sistem başarılı sayılmaz) |
 | **Süreler** | Model süresi, doğrulama süresi, toplam süre ayrı ayrı |
 | **İnsan inceleme süresi** | Yalnız pilotta, gerçek inceleyenle ölçülür |
@@ -335,6 +343,9 @@ Kısıtlar: kapsam dışına çıkma, politika/doğrulayıcıyı gevşetme, say�
 - [ ] Yapısal uygunluk imzası, kanıt vektörü, başarısızlık hafızası ve geçersizleşme v1 çalışıyor
 - [ ] En az 5 zafiyet sınıfı paketi (mevcut 3 + 2 yeni) eksiksiz; her biri için L2'de doğrulanmış tohum kayıtları var
 - [ ] L2 paketi imzalı üretilip çevrimdışı içeri alınabiliyor
+- [ ] Hafıza tarayıcıdan bağımsız: eşleştirme CWE ailesi + yapısal imza ile yapılıyor; Semgrep'ten öğrenilen kayıt FindSecBugs bulgusunda kullanılabiliyor
+- [ ] FindSecBugs adaptörü çalışıyor; Semgrep ve FindSecBugs'ın tespit oranları sınıf bazında ölçüldü
+- [ ] "Bilinen bulgu" modu yalnız laboratuvar profilinde çalışıyor
 - [ ] Doğrulama Docker sandbox'ta, ağ erişimi olmadan çalışıyor
 - [ ] L3'te en az 40 değerlendirme vakasıyla A/B/C/C+L2 deneyi tamamlandı ve raporlandı
 - [ ] Egress testi ve temiz makinede kurulum ölçümü yapıldı
