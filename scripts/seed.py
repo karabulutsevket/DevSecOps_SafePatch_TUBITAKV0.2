@@ -5,8 +5,13 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
+
+import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from safepatch.project import ProjectSpec, synthetic_descriptor
 SOURCE = "src/main/java/demo/DemoService.java"
 
 
@@ -44,6 +49,14 @@ def seed(destination=None):
             checksums = {p: hashlib.sha256(subprocess.check_output(["git", "show", f"{commit}:{p}"], cwd=repo)).hexdigest() for p in tracked}
             manifest[case] = {"kind": kind, "split": "development" if number == 1 else "evaluation", "commit": commit, "files": checksums, "allowed": [SOURCE]}
     (destination / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    # Project descriptors (safepatch-project/1) reproducing today's behaviour; not yet used by the pipeline.
+    projects = destination.parent / "projects"
+    projects.mkdir(parents=True, exist_ok=True)
+    for case, entry in manifest.items():
+        descriptor = synthetic_descriptor(case, entry, (destination / case).resolve())
+        ProjectSpec.model_validate(descriptor)
+        text = yaml.safe_dump(descriptor, sort_keys=False, allow_unicode=True)
+        (projects / f"{case}.yml").write_text(text, encoding="utf-8", newline="\n")
     return manifest
 
 
