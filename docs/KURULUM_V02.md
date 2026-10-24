@@ -125,6 +125,7 @@ Beklenen sonuç: `"status": "awaiting_review"`. SQL vakası tek denemede, yakla�
 |---|---|
 | Servis yeniden başlatılınca eski kod çalışıyordu | `stop-native.ps1`, UTC dışındaki saat dilimlerinde servisleri durdurmuyordu; 24 Ekim'de düzeltildi |
 | `python` PATH'te yok | `-PythonExecutable` ile başka bir Python 3.12 ortamı verin |
+| `run-tests.ps1 -Integration` bütün Java testlerinde `compilation_failed` veriyor, tanı satırı yok, derleme 2 sn | Maven çevrimdışı çalışır ve `MAVEN_CACHE` verilmezse depo içindeki `.runtime/m2`'yi kullanır. Bölüm 3'te doldurulan önbelleği gösterin: `$env:MAVEN_CACHE = '<maven önbelleği>'` (25 Ekim'de görüldü) |
 | WSL Debian'da Git yok | Ürün için gerekmez; Semgrep yalnız dosya tarar |
 | Testler V0.1 kanıtını değiştirdi | Artık değiştiremez; çıktılar `EVIDENCE_DIR`'a yazılır |
 

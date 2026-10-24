@@ -31,6 +31,35 @@ def read_only_context(files, target, limit=8000):
     return context
 
 
+EXPERT_ATTEMPTS = 3
+
+
+def expert_scope(job):
+    """What a human may patch: the finding's file under the descriptor rules, as for the model."""
+    if job.get("evaluation"):
+        raise PolicyError("evaluation_job_cannot_take_expert_patch")
+    initial = job.get("baseline") or {}
+    if not initial.get("baseline_valid"):
+        raise PolicyError("baseline_not_valid")
+    target = initial["scans"][0]["findings"][0].get("file")
+    case, files = baseline(job["case_id"], job["base_commit"])
+    return files, target, allowed_files(case["spec"], files, target)
+
+
+def check_expert_patch(job, patch):
+    """Submission checks; the engine repeats the policy check before verification."""
+    if job["status"] != "needs_human":
+        raise PolicyError("job_not_waiting_for_a_human")
+    if sum(a.get("proposal", {}).get("mode") == "human-authored" for a in job["attempts"]) >= EXPERT_ATTEMPTS:
+        raise PolicyError("expert_attempt_budget_exhausted")
+    files, target, allowed = expert_scope(job)
+    meta = validate_patch(files, patch, allowed=allowed)
+    # Approved patches can reach later prompts through memory; keep forged notes out.
+    if imitates_note(patch.rationale, *(e.content for e in patch.edits)):
+        raise PolicyError("suspected_prompt_injection")
+    return meta
+
+
 def changed_lines(before, after, limit=1500):
     """Previous attempt as changed lines only (no context, no file headers)."""
     lines = list(difflib.unified_diff(before.splitlines(True), after.splitlines(True), n=0))[2:]
@@ -86,8 +115,45 @@ class Engine:
             # Never leak network URLs, tokens, raw model responses, or arbitrary code logs.
             self.set(job_id, "infrastructure_error", reason="dependency_failure:" + type(exc).__name__)
 
+    def accept(self, job_id, verified, meta, origin, author=None):
+        current = self.active(job_id)
+        self.memory.assert_active(current.get("memory_ids", []))
+        acceptance_manifest = manifest(current, verified, meta["patch_sha256"], origin, author)
+        self.store.mutate(job_id, lambda j: j.update(acceptance_manifest=acceptance_manifest))
+        review = None
+        if current.get("second_review"):
+            try:
+                review = self.worker("worker1", "/advisory", {"diff": meta["diff"], "deadline": current["deadline"]}, current["deadline"])
+            except Exception:
+                review = {"status": "not_executed_or_failed", "authority": "advisory-only"}
+        self.active(job_id)
+        self.set(job_id, "awaiting_review", candidate={"evidence_sha256": digest(canonical(acceptance_manifest)), "commit": verified["candidate_commit"], "artifact_sha256": verified["artifact_sha256"], "patch_sha256": meta["patch_sha256"], "policy_version": POLICY, "diff": meta["diff"], "review_repository": verified["review_repository"], "review_branch": verified["review_branch"], "origin": origin, "author": author}, advisory=review, review_expires_at=time.time() + int(setting("REVIEW_TTL_SECONDS", "86400")), duration_seconds=round(time.time() - current["started_at"], 3))
+
+    def _run_expert(self, job):
+        """A human-authored patch: no model call, the same policy and verifier as a model patch."""
+        job_id, pending = job["id"], job["pending_expert_patch"]
+        files, target, allowed = expert_scope(job)
+        self.memory.assert_active(job.get("memory_ids", []))
+        patch = Patch.model_validate(pending["patch"])
+        meta = validate_patch(files, patch, allowed=allowed)
+        number = max((a["number"] for a in job["attempts"]), default=0) + 1
+        record = {"number": number, "proposal": {"mode": "human-authored", "patch": patch.model_dump(), "author": pending["author"], "submitted_at": pending["submitted_at"]}, **meta}
+        self.set(job_id, "verifying", pending_expert_patch=None)
+        verified = self.worker("worker2", "/verify", {"job_id": job_id, "case_id": job["case_id"], "base_commit": job["base_commit"], "deadline": job["deadline"], "scanner": job["scanner"], "attempt": number, "patch": patch.model_dump(), "target_file": target}, job["deadline"])
+        self.active(job_id)
+        record.update(verification=verified, failure=None if verified.get("passed") else classify(verified))
+        self.store.mutate(job_id, lambda j: j["attempts"].append(record))
+        if verified.get("feedback", {}).get("code") == "security_witness_missing":
+            self.set(job_id, "needs_human", reason="security_witness_missing")
+        elif verified.get("passed"):
+            self.accept(job_id, verified, meta, "human-authored", pending["author"])
+        else:
+            self.set(job_id, "needs_human", reason="expert_patch_failed_verification")
+
     def _run(self, job_id):
         job = self.active(job_id)
+        if job.get("pending_expert_patch"):
+            return self._run_expert(job)
         case, files = baseline(job["case_id"], job["base_commit"])
         verify = {"job_id": job_id, "case_id": job["case_id"], "base_commit": job["base_commit"], "deadline": job["deadline"], "scanner": job["scanner"], "attempt": 0, "patch": None, "target_file": None}
         self.set(job_id, "scanning")
@@ -183,18 +249,7 @@ class Engine:
                 self.set(job_id, "needs_human", reason="security_witness_missing")
                 return
             if verified.get("passed"):
-                current = self.active(job_id)
-                self.memory.assert_active(current.get("memory_ids", []))
-                acceptance_manifest = manifest(current, verified, meta["patch_sha256"])
-                self.store.mutate(job_id, lambda j: j.update(acceptance_manifest=acceptance_manifest))
-                review = None
-                if job.get("second_review"):
-                    try:
-                        review = self.worker("worker1", "/advisory", {"diff": meta["diff"], "deadline": job["deadline"]}, job["deadline"])
-                    except Exception:
-                        review = {"status": "not_executed_or_failed", "authority": "advisory-only"}
-                self.active(job_id)
-                self.set(job_id, "awaiting_review", candidate={"evidence_sha256": digest(canonical(acceptance_manifest)), "commit": verified["candidate_commit"], "artifact_sha256": verified["artifact_sha256"], "patch_sha256": meta["patch_sha256"], "policy_version": POLICY, "diff": meta["diff"], "review_repository": verified["review_repository"], "review_branch": verified["review_branch"]}, advisory=review, review_expires_at=time.time() + int(setting("REVIEW_TTL_SECONDS", "86400")), duration_seconds=round(time.time() - job["started_at"], 3))
+                self.accept(job_id, verified, meta, proposal["mode"])
                 return
             if strategy.startswith("guided"):
                 # Each retry receives deeper guidance, so the attempt budget bounds the loop.

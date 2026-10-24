@@ -177,11 +177,11 @@ Sorumlular: kurallar ve tanıklar *Yiğithan*, vakalar ve L2 kayıtları *Kadir*
 #### Hafta 3 · 9 – 15 Kasım
 **Hedef:** Uzman düzeltmesinin hafızaya girmesi.
 
-- [ ] `needs_human` durumundaki işe uzman yaması gönderen uç nokta. Yama, model yamasıyla **aynı politika ve doğrulayıcıdan** geçer; köken `human-authored` — *Reşat*
+- [x] `needs_human` durumundaki işe uzman yaması gönderen uç nokta. Yama, model yamasıyla **aynı politika ve doğrulayıcıdan** geçer; köken `human-authored` — *Reşat*. **25 Ekim:** `POST /v1/jobs/{id}/expert-patch`; yazar kendi yamasını onaylayamaz ve hafızaya alamaz ([docs/UZMAN_YAMASI.md](docs/UZMAN_YAMASI.md))
 - [ ] Arayüzde uzman yaması gönderme ve diff ekranı — *Reşat*
 - [ ] Başarısızlık hafızası şeması: kural, bağlam imzası, strateji, başarısızlık kodu, kanıt hash'i. Başarısız denemeler artık aramada kullanılabilir — *Reşat, Kadir*
 - [ ] **Path tanığını güçlendir:** sembolik bağlantı ve mutlak yol vakaları ekle; reçetede `toRealPath()` zorunlu olsun. H2 deneyinde `guided` stratejisinin kabul edilen 9 path düzeltmesinden 6'sı yalnız `normalize()` kullanıyordu ve mevcut tanığı geçti. Path vakalarını yeniden ölç ve daha güçlü tanığı geçen kabul sayısını ayrıca raporla — *Yiğithan, Kadir*
-- [ ] Testler: uzman yaması yetki, politika ve doğrulama sınırlarını aşamıyor — *Yiğithan*
+- [x] Testler: uzman yaması yetki, politika ve doğrulama sınırlarını aşamıyor — *Yiğithan*. **25 Ekim:** 28 birim testi (`tests/test_expert_patch.py`) ve gerçek runner'da uzman deneme numarası; birleştirmeden önce Yiğithan gözden geçirir
 
 #### Hafta 4 · 16 – 22 Kasım
 **Hedef:** Hash eşleşmesinden yapısal uygunluk imzasına geçmek.

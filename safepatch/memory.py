@@ -84,10 +84,15 @@ class Memory:
         attempt = next((a for a in reversed(job["attempts"]) if a.get("verification", {}).get("passed")), None)
         if not attempt or attempt["patch_sha256"] != candidate["patch_sha256"]:
             raise PolicyError("verified_patch_required")
+        # Nobody labels their own patch as institutional knowledge.
+        if candidate.get("author") is not None and actor == candidate["author"]:
+            raise PolicyError("author_cannot_promote_own_patch")
+        human = attempt["proposal"].get("mode") == "human-authored"
         record = {"id": uuid.uuid4().hex, "state": "approved", "version": 1,
                   "created_at": time.time(), "context": context, "before": before,
                   "patch": attempt["proposal"]["patch"], "diff": candidate["diff"], "source_job": job["id"],
-                  "model": attempt["proposal"].get("model"), "provenance": "human-approved-local-repair",
+                  "model": attempt["proposal"].get("model"), "author": attempt["proposal"].get("author"),
+                  "provenance": "human-authored" if human else "human-approved-local-repair",
                   "evidence_sha256": candidate["evidence_sha256"],
                   "approval": copy.deepcopy(approved), "uses": [],
                   "events": [{"state": "approved", "actor": actor, "reason": rationale, "at": time.time()}]}

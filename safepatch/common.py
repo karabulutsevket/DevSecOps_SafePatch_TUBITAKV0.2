@@ -125,7 +125,7 @@ class VerifyRequest(Strict):
     job_id: str = Field(pattern=r"^[a-f0-9]{32}$")
     case_id: str = Field(pattern=PROJECT_ID)
     base_commit: str = Field(pattern=r"^[a-f0-9]{40}$")
-    attempt: int = Field(ge=0, le=3)
+    attempt: int = Field(ge=0, le=6)   # 0 baseline; up to 3 model and then 3 expert attempts
     deadline: float
     patch: Patch | None = None
     scanner: str = Field(default="builtin", pattern=r"^(builtin|semgrep|sonarqube\+semgrep)$")

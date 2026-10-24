@@ -16,9 +16,10 @@ from mock_patches import correct_patch
 pytestmark = [pytest.mark.integration, pytest.mark.skipif(os.environ.get("RUN_JAVA_INTEGRATION") != "1", reason="Set RUN_JAVA_INTEGRATION=1 after Java/Maven preparation")]
 
 
-def run_case(case_id, patch=None):
+def run_case(case_id, patch=None, attempt=None):
     spec = registry()[1][case_id]
-    return execute(VerifyRequest(job_id=uuid.uuid4().hex, case_id=case_id, base_commit=spec["commit"], attempt=1 if patch else 0, deadline=time.time() + 180, scanner="builtin", patch=patch, target_file=SOURCE if patch else None))
+    attempt = attempt if attempt is not None else (1 if patch else 0)
+    return execute(VerifyRequest(job_id=uuid.uuid4().hex, case_id=case_id, base_commit=spec["commit"], attempt=attempt, deadline=time.time() + 180, scanner="builtin", patch=patch, target_file=SOURCE if patch else None))
 
 
 def record(name, result):
@@ -42,6 +43,12 @@ def test_real_baseline_then_reference_fix(kind):
     fixed = run_case(case_id, correct_patch(kind, files))
     record(case_id + "-reference-fix", fixed)
     assert fixed["passed"], fixed
+
+
+def test_expert_attempt_numbers_reach_the_real_verifier():
+    # Expert patches are numbered after the model's three attempts (4-6).
+    _, files = baseline("sql-01", registry()[1]["sql-01"]["commit"])
+    assert run_case("sql-01", correct_patch("sql", files), attempt=6)["passed"]
 
 
 @pytest.mark.parametrize("kind", ["sql", "path", "command"])

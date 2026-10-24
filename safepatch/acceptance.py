@@ -3,11 +3,13 @@ from safepatch.common import POLICY, canonical, digest
 from safepatch.policy import PolicyError
 
 
-def manifest(job, verified, patch_sha256):
+def manifest(job, verified, patch_sha256, origin=None, author=None):
+    # origin: the proposal mode, or "human-authored"; author binds the expert to the evidence.
     return {"schema": "safepatch-evidence-v1", "job_id": job["id"],
             "base_commit": job["base_commit"], "policy": POLICY,
             "patch_sha256": patch_sha256, "verification": verified,
-            "memory_ids": job.get("memory_ids", []), "mode": job["mode"]}
+            "memory_ids": job.get("memory_ids", []), "mode": job["mode"],
+            "origin": origin, "author": author}
 
 
 def check_evidence(job):
@@ -22,3 +24,5 @@ def check_evidence(job):
         raise PolicyError("verified_artifact_changed")
     if evidence.get("memory_ids") != job.get("memory_ids", []):
         raise PolicyError("memory_provenance_changed")
+    if evidence.get("origin") != candidate.get("origin") or evidence.get("author") != candidate.get("author"):
+        raise PolicyError("authorship_changed")

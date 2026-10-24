@@ -13,8 +13,8 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import Field
 
 from safepatch.auth import identity, require_role
-from safepatch.common import POLICY, PROJECT_ID, ROOT, Strict, request, seal, secret, setting
-from safepatch.engine import Engine
+from safepatch.common import POLICY, PROJECT_ID, ROOT, Patch, Strict, request, seal, secret, setting
+from safepatch.engine import Engine, check_expert_patch
 from safepatch.memory import Memory, context_for
 from safepatch.acceptance import check_evidence
 from safepatch.policy import PolicyError
@@ -23,6 +23,7 @@ from safepatch.repository import registry
 from safepatch.store import Store
 
 store = None
+# Queued work: new jobs, and needs_human jobs that received an expert patch.
 work = queue.Queue()
 
 
@@ -213,6 +214,34 @@ def cancel(job_id: str, user=Depends(identity)):
     return store.mutate(job_id, change)
 
 
+class ExpertPatch(Patch):
+    # The author comes from the backend identity, never from the request body.
+    rationale: str = Field(min_length=20, max_length=1600)
+
+
+@app.post("/v1/jobs/{job_id}/expert-patch", status_code=202)
+def expert_patch(job_id: str, req: ExpertPatch, user=Depends(identity)):
+    require_role(user, "submit")
+    patch = Patch.model_validate(req.model_dump())
+    with store.lock:
+        job = get_job(job_id, user)
+        try:
+            Memory(store).assert_active(job.get("memory_ids", []))
+            check_expert_patch(job, patch)
+        except PolicyError as exc:
+            # Refusals stay on the job's record; the job itself does not change.
+            store.mutate(job_id, lambda j: j["events"].append({"time": time.time(), "status": "expert_patch_refused", "actor": user["subject"], "reason": str(exc)}))
+            raise HTTPException(409, str(exc)) from exc
+        now = time.time()
+        def submit(j):
+            j.update(status="queued", reason=None, deadline=now + int(setting("JOB_BUDGET_SECONDS", "1200")),
+                     pending_expert_patch={"patch": patch.model_dump(), "author": user["subject"], "submitted_at": now})
+            j["events"].append({"time": now, "status": "queued", "actor": user["subject"], "origin": "human-authored"})
+        job = store.mutate(job_id, submit)
+    work.put(job_id)
+    return job
+
+
 class Decision(Strict):
     candidate_commit: str = Field(pattern=r"^[a-f0-9]{40}$")
     artifact_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
@@ -230,6 +259,8 @@ def approval(job_id: str, req: Decision, user=Depends(identity)):
             raise HTTPException(409, "İş onay beklemiyor veya süresi doldu")
         ensure_memory_and_evidence(j)
         c = j["candidate"]
+        if c.get("author") is not None and c["author"] == user["subject"]:
+            raise HTTPException(409, "Kendi yazdığınız yamayı onaylayamazsınız")
         if req.candidate_commit != c["commit"] or req.artifact_sha256 != c["artifact_sha256"] or req.policy_version != c["policy_version"] or req.policy_version != POLICY:
             raise HTTPException(409, "Onay kapsamı değişmiş")
         j["approval"] = {"job_id": job_id, "evidence_sha256": c["evidence_sha256"], "candidate_commit": req.candidate_commit, "artifact_sha256": req.artifact_sha256, "policy_version": POLICY, "reviewer": user["subject"], "approved_at": time.time(), "expires_at": j["review_expires_at"], "decision": req.decision, "comment": req.comment, "mode": j["mode"]}
