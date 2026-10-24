@@ -117,7 +117,7 @@ Her hafta: hedef, görevler (sorumlu), çıktı, geçiş koşulu. Bir fazın ge�
 - [x] **Sahte rehber notuna karşı koruma:** rehber notu her istekte rastgele bir işaretle ayrılır; kaynakta veya bağlam dosyalarında not başlığı geçerse iş "şüpheli istem enjeksiyonu" gerekçesiyle insana devredilir — *Yiğithan*
 - [x] Ürünün varsayılan yeniden deneme stratejisi: **`guided+context`** (25 Ekim, ekip kararı). Strateji alanı olmayan eski kayıtlar V0.1 döngüsünde kalır — *ekip, Kadir*
 - [x] **V0.2 kurulum belgesi:** bu makinede doğrulanmış adımlar (Windows + WSL), doğrulanmamış adımlar ayrıca işaretli — *Şevket*
-- [ ] Gerçek depo desteği tasarımı: proje tanımı şeması ve kaldırılacak sabitlerin envanteri (aşağıdaki iş akışı) — *Şevket, Reşat*. **Taslak hazır, ekip onayı bekliyor:** [docs/GERCEK_DEPO_TASARIMI.md](docs/GERCEK_DEPO_TASARIMI.md) (16 maddelik envanter, şema, 5 açık karar); şema kodu `safepatch/project.py`, 9 sentetik vakanın tanımları `seed.py` tarafından üretiliyor
+- [x] Gerçek depo desteği tasarımı: proje tanımı şeması ve kaldırılacak sabitlerin envanteri (aşağıdaki iş akışı) — *Şevket, Reşat*. **Onaylandı (25 Ekim):** [docs/GERCEK_DEPO_TASARIMI.md](docs/GERCEK_DEPO_TASARIMI.md) (16 maddelik envanter, şema, 5 karar); şema kodu `safepatch/project.py`, 9 sentetik vakanın tanımları `seed.py` tarafından üretiliyor
 - [ ] Toplam 3 müşteri görüşmesi; görüşmelerde kullanılan Java API'leri, tarayıcılar ve Git platformu (GitLab/GitHub) sorulur — *Şevket, Reşat*
 
 **Faz 0 geçiş koşulu:** Path veya command vakalarından en az biri gerçek modelle kabul edildi **ya da** çözülememe nedeni ham kanıtla belgelendi *(24 Ekim'de sağlandı: path 9/9, command 1/9)*. CI her PR'da yeşil. Proje tanımı şeması ekipçe onaylandı.

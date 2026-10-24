@@ -113,7 +113,7 @@ class SuiteSelection(Strict):
 
 class Suites(Strict):
     behavior: SuiteSelection
-    security: SuiteSelection | None = None   # no witness: see open decision 3 in the design document
+    security: SuiteSelection | None = None   # no witness: never "ready for review"; needs_human / security_witness_missing (decision 3, 25 Oct 2026)
 
 
 class Scan(Strict):

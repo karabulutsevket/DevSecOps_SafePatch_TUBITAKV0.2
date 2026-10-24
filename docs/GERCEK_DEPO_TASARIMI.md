@@ -1,6 +1,6 @@
 # Gerçek depo desteği — envanter ve proje tanımı tasarımı
 
-**Durum:** Taslak, ekip onayı bekliyor (ROADMAP Hafta 2 geçiş koşulu) · **Tarih:** 25 Ekim 2026
+**Durum:** Onaylandı, 25 Ekim 2026 (kararlar Bölüm 6'da) · **Tarih:** 25 Ekim 2026
 
 Bu belge iki şey içerir: (1) V0.2 kodunun bugün yalnız 9 sentetik vakayı işleyebilmesine neden olan sabitlerin envanteri, (2) bunların yerine gelecek **proje tanımı** şeması ve tasarım kararları. Kod tarafında şema `safepatch/project.py` içinde tanımlıdır; henüz iş akışına bağlanmadı (Hafta 3).
 
@@ -117,3 +117,15 @@ Vul4J her vaka için zafiyeti gösteren testleri listeler; bu bilginin şemaya n
 3. **Güvenlik tanığı olmayan proje:** Aday derleme, davranış testleri ve yeniden taramadan geçse bile "incelemeye hazır" olmaz; `needs_human` + `security_witness_missing` gerekçesiyle, kanıtları ve diff'i ekli olarak insana gider — önerilen. Alternatif: "kanıt eksik" etiketiyle incelemeye hazır.
 4. **Davranış testleri uzun sürerse:** İlk sürümde tanımdaki seçicilerle sınırlanır; çok modüllü projede yalnız etkilenen modülü derlemek (`-pl ... -am`) sonraki adım.
 5. **Bir işte birden çok dosya:** İlk sürümde yalnız bulgunun dosyası. Birden çok dosya gerektiren düzeltmeler insana devredilir.
+
+---
+
+## 6. Kararlar (25 Ekim 2026)
+
+| # | Konu | Karar | Nasıl verildi |
+|---|---|---|---|
+| 1 | Tanım biçimi | YAML, `yaml.safe_load` | Önerilen varsayılan; itiraz gelirse değişir |
+| 2 | Tanımların yeri | Sunucuda `DATA_ROOT/projects/*.yml`, yalnız yönetici yazar; müşteri deposunun içinde tanım okunmaz | Proje sahibi seçti |
+| 3 | Güvenlik tanığı olmayan proje | Aday "incelemeye hazır" olmaz; `needs_human` + `security_witness_missing`, diff ve kanıtlar ekli | Proje sahibi seçti |
+| 4 | Uzun davranış testleri | İlk sürümde tanımdaki seçicilerle sınırlı; çok modüllü derleme sonraki adım | Önerilen varsayılan; itiraz gelirse değişir |
+| 5 | Bir işte dosya sayısı | Yalnız bulgunun dosyası (ve o dosya `editable` kurallarına uymalı); çok dosyalı düzeltme insana | Proje sahibi seçti |
