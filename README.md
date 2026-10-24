@@ -1,5 +1,7 @@
 # SafePatch V0.1 → V0.2
 
+[![tests](https://github.com/karabulutsevket/DevSecOps_SafePatch_TUBITAKV0.2/actions/workflows/tests.yml/badge.svg)](https://github.com/karabulutsevket/DevSecOps_SafePatch_TUBITAKV0.2/actions/workflows/tests.yml)
+
 > **V0.2 geliştirme aşamasındadır.** Bu depo, aşağıda anlatılan V0.1 kodunu temel alır. Plan, hipotezler ve haftalık görevler için [ROADMAP.md](ROADMAP.md); kod üzerinde çalışma kuralları için [CLAUDE.md](CLAUDE.md). Aşağıdaki bölümler ve `evidence/` altındaki ölçümler V0.1'e aittir; V0.2 ölçümleri ayrı klasörlerde yayımlanacaktır.
 
 ### V0.2 hedef kapsamı (plan — henüz uygulanmadı)
