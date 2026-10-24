@@ -100,9 +100,10 @@ Her hafta: hedef, görevler (sorumlu), çıktı, geçiş koşulu. Bir fazın ge�
 - [x] V0.1 kodunu Git geçmişiyle V0.2 deposuna taşı; `CLAUDE.md` ekle (Bölüm 9) — *Şevket*
 - [x] Test ve betik çıktılarını V0.1 kanıtlarının üzerine yazmayacak şekilde `evidence/v02-*` altına yönlendir (`run-tests.ps1`, `tests/test_java_integration.py`, `tests/test_staging_integration.py`, `scripts/benchmark_acceptance.py`, `scripts/audit_dependencies.py`, `scripts/check_*.py`) — *Reşat*
 - [ ] Temiz makinede kurulum: `.venv`, `requirements.lock`, `./scripts/run-tests.ps1` geçiyor — *Şevket*
-- [ ] Başarısızlık türüne göre yeniden deneme (H2): 2. ve 3. denemede `temperature` 0,3–0,5; başarısız güvenlik tanığının girdisini (ör. `../secret.txt`) ve derleme hatasını yapılandırılmış geri bildirim olarak ver — *Kadir*
-- [ ] `duplicate_patch` duruşunu koru, ama farklı seed/sıcaklıkla gerçek bir ikinci aday üretildiğini kayda geçir — *Kadir*
-- [ ] V0.1 benchmark'ını yeni döngüyle tekrar çalıştır (aynı 9 vaka, 3 seed) — *Kadir, Reşat*
+- [x] Başarısızlık türüne göre yeniden deneme (H2): işe bağlı `strategy` seçeneği (`v01`, `sampling`, `guided`, `guided+context`); sınıflandırılmış başarısızlık, önceki denemenin değişen satırları, kademeli rehber (teşhis → reçete) — *Kadir*
+- [x] Aynı yama: `v01`/`sampling` durur; rehberli stratejiler yeniden doğrulamadan daha derin rehberle devam eder — *Kadir*
+- [x] V0.1 benchmark vakalarını yeni döngüyle tekrar çalıştır (9 vaka × 4 strateji × 3 seed = 108 iş). Sonuç: `v01` 9/27 → `guided` 19/27; path 0/9 → 9/9; command 0/9 → 1/9. Rapor: [docs/OLCUM_V02_YENIDEN_DENEME.md](docs/OLCUM_V02_YENIDEN_DENEME.md) — *Kadir, Reşat*
+- [ ] Ürünün varsayılan stratejisine karar ver (`v01` → `guided` veya `guided+context`) — *ekip*
 - [ ] 40 hesaplık hedef müşteri listesi; ilk 3 görüşme talebi — *Şevket, Reşat*
 - [ ] KOSGEB Uygulamalı Girişimcilik Eğitimi'ne kayıt (en büyük hisse sahibi olacak kurucu) — *Şevket*
 
@@ -117,7 +118,7 @@ Her hafta: hedef, görevler (sorumlu), çıktı, geçiş koşulu. Bir fazın ge�
 - [ ] Soru-cevap provası: "Copilot Autofix de hafıza tutuyor, farkınız ne?", "Kod MIT lisanslı, avantajınız ne?", "Neden Java?", "Neden önce SaaS değil?" — *tüm ekip*
 - [ ] Toplam 3 müşteri görüşmesi — *Şevket*
 
-**Faz 0 geçiş koşulu:** Path veya command vakalarından en az biri gerçek modelle kabul edildi **ya da** çözülememe nedeni ham kanıtla belgelendi. Jüri sunumu yapıldı.
+**Faz 0 geçiş koşulu:** Path veya command vakalarından en az biri gerçek modelle kabul edildi **ya da** çözülememe nedeni ham kanıtla belgelendi. Jüri sunumu yapıldı. *(İlk koşul 24 Ekim'de sağlandı: path 9/9, command 1/9.)*
 
 ### Paralel iş akışı — Zafiyet sınıfı paketleri (Hafta 3–8)
 
@@ -156,6 +157,7 @@ Sorumlular: kurallar ve tanıklar *Yiğithan*, vakalar ve L2 kayıtları *Kadir*
 - [ ] `needs_human` durumundaki işe uzman yaması gönderen uç nokta. Yama, model yamasıyla **aynı politika ve doğrulayıcıdan** geçer; köken `human-authored` — *Reşat*
 - [ ] Arayüzde uzman yaması gönderme ve diff ekranı — *Reşat*
 - [ ] Başarısızlık hafızası şeması: kural, bağlam imzası, strateji, başarısızlık kodu, kanıt hash'i. Başarısız denemeler artık aramada kullanılabilir — *Reşat, Kadir*
+- [ ] **Path tanığını güçlendir:** sembolik bağlantı ve mutlak yol vakaları ekle; reçetede `toRealPath()` zorunlu olsun. H2 deneyinde `guided` stratejisinin kabul edilen 9 path düzeltmesinden 6'sı yalnız `normalize()` kullanıyordu ve mevcut tanığı geçti. Path vakalarını yeniden ölç ve daha güçlü tanığı geçen kabul sayısını ayrıca raporla — *Yiğithan, Kadir*
 - [ ] Testler: uzman yaması yetki, politika ve doğrulama sınırlarını aşamıyor — *Yiğithan*
 
 #### Hafta 4 · 16 – 22 Kasım

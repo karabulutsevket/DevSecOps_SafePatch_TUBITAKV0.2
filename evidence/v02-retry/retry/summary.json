@@ -1,0 +1,678 @@
+{
+  "scope": "synthetic H2 retry-strategy smoke experiment; not an independent project benchmark",
+  "n": 108,
+  "elapsed_seconds": 59175.909,
+  "groups": [
+    {
+      "strategy": "v01",
+      "split": "all",
+      "kind": "all",
+      "n": 27,
+      "accepted": 9,
+      "median_wall_seconds": 63.043,
+      "statuses": {
+        "awaiting_review": 9,
+        "needs_human": 18
+      },
+      "reasons": {
+        "duplicate_patch": 13,
+        "no_progress": 5
+      }
+    },
+    {
+      "strategy": "v01",
+      "split": "all",
+      "kind": "sql",
+      "n": 9,
+      "accepted": 9,
+      "median_wall_seconds": 55.755,
+      "statuses": {
+        "awaiting_review": 9
+      },
+      "reasons": {}
+    },
+    {
+      "strategy": "v01",
+      "split": "all",
+      "kind": "path",
+      "n": 9,
+      "accepted": 0,
+      "median_wall_seconds": 57.779,
+      "statuses": {
+        "needs_human": 9
+      },
+      "reasons": {
+        "duplicate_patch": 8,
+        "no_progress": 1
+      }
+    },
+    {
+      "strategy": "v01",
+      "split": "all",
+      "kind": "command",
+      "n": 9,
+      "accepted": 0,
+      "median_wall_seconds": 87.28,
+      "statuses": {
+        "needs_human": 9
+      },
+      "reasons": {
+        "duplicate_patch": 5,
+        "no_progress": 4
+      }
+    },
+    {
+      "strategy": "v01",
+      "split": "development",
+      "kind": "all",
+      "n": 9,
+      "accepted": 3,
+      "median_wall_seconds": 63.043,
+      "statuses": {
+        "awaiting_review": 3,
+        "needs_human": 6
+      },
+      "reasons": {
+        "duplicate_patch": 5,
+        "no_progress": 1
+      }
+    },
+    {
+      "strategy": "v01",
+      "split": "development",
+      "kind": "sql",
+      "n": 3,
+      "accepted": 3,
+      "median_wall_seconds": 55.356,
+      "statuses": {
+        "awaiting_review": 3
+      },
+      "reasons": {}
+    },
+    {
+      "strategy": "v01",
+      "split": "development",
+      "kind": "path",
+      "n": 3,
+      "accepted": 0,
+      "median_wall_seconds": 63.043,
+      "statuses": {
+        "needs_human": 3
+      },
+      "reasons": {
+        "duplicate_patch": 3
+      }
+    },
+    {
+      "strategy": "v01",
+      "split": "development",
+      "kind": "command",
+      "n": 3,
+      "accepted": 0,
+      "median_wall_seconds": 87.28,
+      "statuses": {
+        "needs_human": 3
+      },
+      "reasons": {
+        "duplicate_patch": 2,
+        "no_progress": 1
+      }
+    },
+    {
+      "strategy": "v01",
+      "split": "evaluation",
+      "kind": "all",
+      "n": 18,
+      "accepted": 6,
+      "median_wall_seconds": 63.965,
+      "statuses": {
+        "awaiting_review": 6,
+        "needs_human": 12
+      },
+      "reasons": {
+        "duplicate_patch": 8,
+        "no_progress": 4
+      }
+    },
+    {
+      "strategy": "v01",
+      "split": "evaluation",
+      "kind": "sql",
+      "n": 6,
+      "accepted": 6,
+      "median_wall_seconds": 56.463,
+      "statuses": {
+        "awaiting_review": 6
+      },
+      "reasons": {}
+    },
+    {
+      "strategy": "v01",
+      "split": "evaluation",
+      "kind": "path",
+      "n": 6,
+      "accepted": 0,
+      "median_wall_seconds": 57.706,
+      "statuses": {
+        "needs_human": 6
+      },
+      "reasons": {
+        "duplicate_patch": 5,
+        "no_progress": 1
+      }
+    },
+    {
+      "strategy": "v01",
+      "split": "evaluation",
+      "kind": "command",
+      "n": 6,
+      "accepted": 0,
+      "median_wall_seconds": 93.012,
+      "statuses": {
+        "needs_human": 6
+      },
+      "reasons": {
+        "duplicate_patch": 3,
+        "no_progress": 3
+      }
+    },
+    {
+      "strategy": "sampling",
+      "split": "all",
+      "kind": "all",
+      "n": 27,
+      "accepted": 9,
+      "median_wall_seconds": 67.426,
+      "statuses": {
+        "awaiting_review": 9,
+        "needs_human": 18
+      },
+      "reasons": {
+        "duplicate_patch": 9,
+        "no_progress": 9
+      }
+    },
+    {
+      "strategy": "sampling",
+      "split": "all",
+      "kind": "sql",
+      "n": 9,
+      "accepted": 9,
+      "median_wall_seconds": 55.272,
+      "statuses": {
+        "awaiting_review": 9
+      },
+      "reasons": {}
+    },
+    {
+      "strategy": "sampling",
+      "split": "all",
+      "kind": "path",
+      "n": 9,
+      "accepted": 0,
+      "median_wall_seconds": 72.739,
+      "statuses": {
+        "needs_human": 9
+      },
+      "reasons": {
+        "duplicate_patch": 6,
+        "no_progress": 3
+      }
+    },
+    {
+      "strategy": "sampling",
+      "split": "all",
+      "kind": "command",
+      "n": 9,
+      "accepted": 0,
+      "median_wall_seconds": 105.642,
+      "statuses": {
+        "needs_human": 9
+      },
+      "reasons": {
+        "duplicate_patch": 3,
+        "no_progress": 6
+      }
+    },
+    {
+      "strategy": "sampling",
+      "split": "development",
+      "kind": "all",
+      "n": 9,
+      "accepted": 3,
+      "median_wall_seconds": 66.07,
+      "statuses": {
+        "awaiting_review": 3,
+        "needs_human": 6
+      },
+      "reasons": {
+        "duplicate_patch": 3,
+        "no_progress": 3
+      }
+    },
+    {
+      "strategy": "sampling",
+      "split": "development",
+      "kind": "sql",
+      "n": 3,
+      "accepted": 3,
+      "median_wall_seconds": 55.54,
+      "statuses": {
+        "awaiting_review": 3
+      },
+      "reasons": {}
+    },
+    {
+      "strategy": "sampling",
+      "split": "development",
+      "kind": "path",
+      "n": 3,
+      "accepted": 0,
+      "median_wall_seconds": 73.252,
+      "statuses": {
+        "needs_human": 3
+      },
+      "reasons": {
+        "duplicate_patch": 2,
+        "no_progress": 1
+      }
+    },
+    {
+      "strategy": "sampling",
+      "split": "development",
+      "kind": "command",
+      "n": 3,
+      "accepted": 0,
+      "median_wall_seconds": 87.086,
+      "statuses": {
+        "needs_human": 3
+      },
+      "reasons": {
+        "duplicate_patch": 1,
+        "no_progress": 2
+      }
+    },
+    {
+      "strategy": "sampling",
+      "split": "evaluation",
+      "kind": "all",
+      "n": 18,
+      "accepted": 6,
+      "median_wall_seconds": 70.083,
+      "statuses": {
+        "awaiting_review": 6,
+        "needs_human": 12
+      },
+      "reasons": {
+        "duplicate_patch": 6,
+        "no_progress": 6
+      }
+    },
+    {
+      "strategy": "sampling",
+      "split": "evaluation",
+      "kind": "sql",
+      "n": 6,
+      "accepted": 6,
+      "median_wall_seconds": 55.208,
+      "statuses": {
+        "awaiting_review": 6
+      },
+      "reasons": {}
+    },
+    {
+      "strategy": "sampling",
+      "split": "evaluation",
+      "kind": "path",
+      "n": 6,
+      "accepted": 0,
+      "median_wall_seconds": 65.118,
+      "statuses": {
+        "needs_human": 6
+      },
+      "reasons": {
+        "duplicate_patch": 4,
+        "no_progress": 2
+      }
+    },
+    {
+      "strategy": "sampling",
+      "split": "evaluation",
+      "kind": "command",
+      "n": 6,
+      "accepted": 0,
+      "median_wall_seconds": 107.621,
+      "statuses": {
+        "needs_human": 6
+      },
+      "reasons": {
+        "duplicate_patch": 2,
+        "no_progress": 4
+      }
+    },
+    {
+      "strategy": "guided",
+      "split": "all",
+      "kind": "all",
+      "n": 27,
+      "accepted": 19,
+      "median_wall_seconds": 87.646,
+      "statuses": {
+        "awaiting_review": 19,
+        "needs_human": 8
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 8
+      }
+    },
+    {
+      "strategy": "guided",
+      "split": "all",
+      "kind": "sql",
+      "n": 9,
+      "accepted": 9,
+      "median_wall_seconds": 55.116,
+      "statuses": {
+        "awaiting_review": 9
+      },
+      "reasons": {}
+    },
+    {
+      "strategy": "guided",
+      "split": "all",
+      "kind": "path",
+      "n": 9,
+      "accepted": 9,
+      "median_wall_seconds": 92.994,
+      "statuses": {
+        "awaiting_review": 9
+      },
+      "reasons": {}
+    },
+    {
+      "strategy": "guided",
+      "split": "all",
+      "kind": "command",
+      "n": 9,
+      "accepted": 1,
+      "median_wall_seconds": 107.538,
+      "statuses": {
+        "awaiting_review": 1,
+        "needs_human": 8
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 8
+      }
+    },
+    {
+      "strategy": "guided",
+      "split": "development",
+      "kind": "all",
+      "n": 9,
+      "accepted": 6,
+      "median_wall_seconds": 96.177,
+      "statuses": {
+        "awaiting_review": 6,
+        "needs_human": 3
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 3
+      }
+    },
+    {
+      "strategy": "guided",
+      "split": "development",
+      "kind": "sql",
+      "n": 3,
+      "accepted": 3,
+      "median_wall_seconds": 55.116,
+      "statuses": {
+        "awaiting_review": 3
+      },
+      "reasons": {}
+    },
+    {
+      "strategy": "guided",
+      "split": "development",
+      "kind": "path",
+      "n": 3,
+      "accepted": 3,
+      "median_wall_seconds": 178.443,
+      "statuses": {
+        "awaiting_review": 3
+      },
+      "reasons": {}
+    },
+    {
+      "strategy": "guided",
+      "split": "development",
+      "kind": "command",
+      "n": 3,
+      "accepted": 0,
+      "median_wall_seconds": 96.177,
+      "statuses": {
+        "needs_human": 3
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 3
+      }
+    },
+    {
+      "strategy": "guided",
+      "split": "evaluation",
+      "kind": "all",
+      "n": 18,
+      "accepted": 13,
+      "median_wall_seconds": 84.005,
+      "statuses": {
+        "awaiting_review": 13,
+        "needs_human": 5
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 5
+      }
+    },
+    {
+      "strategy": "guided",
+      "split": "evaluation",
+      "kind": "sql",
+      "n": 6,
+      "accepted": 6,
+      "median_wall_seconds": 54.947,
+      "statuses": {
+        "awaiting_review": 6
+      },
+      "reasons": {}
+    },
+    {
+      "strategy": "guided",
+      "split": "evaluation",
+      "kind": "path",
+      "n": 6,
+      "accepted": 6,
+      "median_wall_seconds": 84.005,
+      "statuses": {
+        "awaiting_review": 6
+      },
+      "reasons": {}
+    },
+    {
+      "strategy": "guided",
+      "split": "evaluation",
+      "kind": "command",
+      "n": 6,
+      "accepted": 1,
+      "median_wall_seconds": 111.697,
+      "statuses": {
+        "awaiting_review": 1,
+        "needs_human": 5
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 5
+      }
+    },
+    {
+      "strategy": "guided+context",
+      "split": "all",
+      "kind": "all",
+      "n": 27,
+      "accepted": 19,
+      "median_wall_seconds": 64.766,
+      "statuses": {
+        "awaiting_review": 19,
+        "needs_human": 8
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 8
+      }
+    },
+    {
+      "strategy": "guided+context",
+      "split": "all",
+      "kind": "sql",
+      "n": 9,
+      "accepted": 9,
+      "median_wall_seconds": 55.255,
+      "statuses": {
+        "awaiting_review": 9
+      },
+      "reasons": {}
+    },
+    {
+      "strategy": "guided+context",
+      "split": "all",
+      "kind": "path",
+      "n": 9,
+      "accepted": 9,
+      "median_wall_seconds": 109.044,
+      "statuses": {
+        "awaiting_review": 9
+      },
+      "reasons": {}
+    },
+    {
+      "strategy": "guided+context",
+      "split": "all",
+      "kind": "command",
+      "n": 9,
+      "accepted": 1,
+      "median_wall_seconds": 59.088,
+      "statuses": {
+        "awaiting_review": 1,
+        "needs_human": 8
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 8
+      }
+    },
+    {
+      "strategy": "guided+context",
+      "split": "development",
+      "kind": "all",
+      "n": 9,
+      "accepted": 6,
+      "median_wall_seconds": 58.379,
+      "statuses": {
+        "awaiting_review": 6,
+        "needs_human": 3
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 3
+      }
+    },
+    {
+      "strategy": "guided+context",
+      "split": "development",
+      "kind": "sql",
+      "n": 3,
+      "accepted": 3,
+      "median_wall_seconds": 56.589,
+      "statuses": {
+        "awaiting_review": 3
+      },
+      "reasons": {}
+    },
+    {
+      "strategy": "guided+context",
+      "split": "development",
+      "kind": "path",
+      "n": 3,
+      "accepted": 3,
+      "median_wall_seconds": 141.809,
+      "statuses": {
+        "awaiting_review": 3
+      },
+      "reasons": {}
+    },
+    {
+      "strategy": "guided+context",
+      "split": "development",
+      "kind": "command",
+      "n": 3,
+      "accepted": 0,
+      "median_wall_seconds": 57.192,
+      "statuses": {
+        "needs_human": 3
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 3
+      }
+    },
+    {
+      "strategy": "guided+context",
+      "split": "evaluation",
+      "kind": "all",
+      "n": 18,
+      "accepted": 13,
+      "median_wall_seconds": 72.594,
+      "statuses": {
+        "awaiting_review": 13,
+        "needs_human": 5
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 5
+      }
+    },
+    {
+      "strategy": "guided+context",
+      "split": "evaluation",
+      "kind": "sql",
+      "n": 6,
+      "accepted": 6,
+      "median_wall_seconds": 54.811,
+      "statuses": {
+        "awaiting_review": 6
+      },
+      "reasons": {}
+    },
+    {
+      "strategy": "guided+context",
+      "split": "evaluation",
+      "kind": "path",
+      "n": 6,
+      "accepted": 6,
+      "median_wall_seconds": 97.728,
+      "statuses": {
+        "awaiting_review": 6
+      },
+      "reasons": {}
+    },
+    {
+      "strategy": "guided+context",
+      "split": "evaluation",
+      "kind": "command",
+      "n": 6,
+      "accepted": 1,
+      "median_wall_seconds": 61.927,
+      "statuses": {
+        "awaiting_review": 1,
+        "needs_human": 5
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 5
+      }
+    }
+  ],
+  "human_minutes_saved": null,
+  "customer_validation": "not performed"
+}

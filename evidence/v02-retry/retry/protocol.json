@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "hypothesis": "H2: failure-aware retries solve more cases than the fixed V0.1 retry loop",
+  "started_at": 1792791062.4854617,
+  "git_commit": "3d0f54f63167affc44a719df0d7c6f8b607f95aa",
+  "git_dirty": false,
+  "model": "qwen2.5-coder:7b-instruct-q4_K_M",
+  "system_prompt_sha256": "a578679af058fcc3a984e793e02fc6c1202fdff60d8685668ab892c99cbf5743",
+  "guidance_sha256": "ad5062dde50029f4fc2c92e6e9c5d11aab2a1a425299231c252c17a1ba4e50dc",
+  "retry_temperature": 0.4,
+  "strategies": [
+    "v01",
+    "sampling",
+    "guided",
+    "guided+context"
+  ],
+  "cases": [
+    "command-01",
+    "command-02",
+    "command-03",
+    "path-01",
+    "path-02",
+    "path-03",
+    "sql-01",
+    "sql-02",
+    "sql-03"
+  ],
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "max_attempts": 3,
+  "memory": "off",
+  "order": "seeds outermost; strategy order rotated per case and seed",
+  "jobs": 108,
+  "guidance_origin": "team-written after inspecting V0.1 failures on development cases (*-01)",
+  "guidance_placement": "appended after the JSON data in the user prompt. Pre-experiment probe on path-01 (seeds 43/44, temperature 0.4): the same text in the system prompt was ignored (identical patches); after the data it produced canonicalizing patches.",
+  "duplicate_handling": "v01/sampling stop on a duplicate patch; guided strategies skip re-verification and retry with deeper guidance",
+  "python": "3.12.14",
+  "scanner": "Semgrep 1.136.0 with three owned rules",
+  "runner": "native-same-user; no airgap claim",
+  "human_approval": "none; experiment never approves",
+  "resumes": [
+    {
+      "at": 1792845638.9055686,
+      "git_commit": "216b73219ae9410338f285789985712e8e409016",
+      "completed_before": 50,
+      "note": "previous process stopped while the host was unattended; the interrupted job had no saved result and is rerun"
+    }
+  ]
+}
