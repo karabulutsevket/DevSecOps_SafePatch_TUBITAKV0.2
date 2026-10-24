@@ -18,6 +18,13 @@ def test_compilation_failure_keeps_at_most_four_diagnostics():
     assert failure == {"category": "compilation_failed", "diagnostics": ["0", "1", "2", "3"]}
 
 
+def test_environment_failures_are_infrastructure_not_patch_failures():
+    assert classify({"passed": False, "feedback": {"code": "compilation_failed", "diagnostics": []}}) == {"category": "infrastructure", "reason": "build_without_compiler_diagnostic"}
+    broken = result(behavior=False)
+    broken["feedback"]["behavior"].update(infrastructure_error=True, reason="missing_junit_report")
+    assert classify(broken) == {"category": "infrastructure", "reason": "behavior_missing_junit_report"}
+
+
 def test_behavior_regression_takes_precedence_over_security():
     failure = classify(result(behavior=False, security=False, details=[("behavior", "echoesHello", "BEHAVIOR_REGRESSION"), ("security", "literal", "BEHAVIOR_REGRESSION")]))
     assert failure["category"] == "behavior_regression"

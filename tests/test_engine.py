@@ -153,6 +153,21 @@ def test_guided_duplicate_skips_verification_and_escalates(job_store, patch_fact
     assert bodies[2]["guidance"] == guidance_for("sql", {"category": "security_witness_failed"}, 1)
 
 
+INFRASTRUCTURE = [
+    ({"passed": False, "feedback": {"code": "compilation_failed", "diagnostics": []}}, "build_without_compiler_diagnostic"),
+    ({"passed": False, "feedback": {"code": "validation_failed", "remaining_rules": [], "security": {"passed": True},
+                                    "behavior": {"passed": False, "infrastructure_error": True, "reason": "missing_junit_report"}}}, "behavior_missing_junit_report"),
+]
+
+
+@pytest.mark.parametrize("strategy", [None, "guided+context"])
+@pytest.mark.parametrize("verdict,reason", INFRASTRUCTURE)
+def test_infrastructure_failure_stops_without_retry_or_guidance(job_store, patch_factory, source, monkeypatch, strategy, verdict, reason):
+    job, bodies = run_strategy(job_store, patch_factory, source, monkeypatch, strategy, [verdict, security_failure(), security_failure()])
+    assert job["status"] == "infrastructure_error" and job["reason"] == "verification_infrastructure:" + reason
+    assert len(bodies) == 1 and job["attempts"][0]["failure"]["category"] == "infrastructure"
+
+
 def test_guided_without_context_sends_no_files(job_store, patch_factory, source, monkeypatch):
     _, bodies = run_strategy(job_store, patch_factory, source, monkeypatch, "guided", [security_failure()] * 3)
     assert len(bodies) == 3 and all("context_files" not in b for b in bodies)

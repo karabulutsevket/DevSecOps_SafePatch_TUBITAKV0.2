@@ -6,7 +6,7 @@ Kod: `safepatch/memory.py` (`record_failure`, `failures`, `failure_records`), `s
 
 ## Ne kaydedilir
 
-Her başarısız doğrulamadan sonra kayıt yazılır: model yaması, hafızadan tekrar ya da uzman yaması. Yalnız **yamanın kendisinin** neden olduğu başarısızlıklar girer. Altyapı hatası düzeltme hakkında bir şey öğretmez.
+Her başarısız doğrulamadan sonra kayıt yazılır: model yaması, hafızadan tekrar ya da uzman yaması. Yalnız **yamanın kendisinin** neden olduğu başarısızlıklar girer. Altyapı hatası düzeltme hakkında bir şey öğretmez. Sınıflandırıcı (`feedback.classify`) bu durumları ayrı bir `infrastructure` sınıfına ayırır. Model işi bu sınıfta yeniden denemeden `infrastructure_error` ile durur. Uzman yaması ise uzmana geri döner.
 
 | Kaydedilir | Kaydedilmez |
 |---|---|

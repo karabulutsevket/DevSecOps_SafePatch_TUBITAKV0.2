@@ -6,7 +6,7 @@ by the team; it never contains model output or repository text.
 """
 from safepatch.common import canonical, digest
 
-CATEGORIES = ("compilation_failed", "behavior_regression", "security_witness_failed", "finding_remaining", "unknown")
+CATEGORIES = ("compilation_failed", "behavior_regression", "security_witness_failed", "finding_remaining", "unknown", "infrastructure")
 
 # Guidance has two levels. Level 0 is a diagnosis of the failure category. Level 1 adds
 # the weakness recipe (the standard secure repair), whatever the category: a model that
@@ -55,9 +55,16 @@ def imitates_note(*texts):
 def classify(verified):
     """Reduce a verifier result to a compact, deterministic failure record."""
     feedback = verified.get("feedback") or {}
-    if feedback.get("code") == "compilation_failed":
-        return {"category": "compilation_failed", "diagnostics": list(feedback.get("diagnostics", []))[:4]}
     behavior, security = feedback.get("behavior") or {}, feedback.get("security") or {}
+    # The environment failed, not the patch: a build with no compiler line to point at
+    # (offline Maven cache, timeout) or a test run that left no JUnit report.
+    if feedback.get("code") == "compilation_failed" and not feedback.get("diagnostics"):
+        return {"category": "infrastructure", "reason": "build_without_compiler_diagnostic"}
+    for suite, result in (("behavior", behavior), ("security", security)):
+        if result.get("infrastructure_error"):
+            return {"category": "infrastructure", "reason": suite + "_" + (result.get("reason") or "test_run_failed")}
+    if feedback.get("code") == "compilation_failed":
+        return {"category": "compilation_failed", "diagnostics": list(feedback["diagnostics"])[:4]}
     if behavior and not behavior.get("passed"):
         category = "behavior_regression"
     elif security and not security.get("passed"):
@@ -72,17 +79,12 @@ def classify(verified):
 
 
 def patch_caused(verified, failure):
-    """True when the patch itself failed. Infrastructure trouble and missing evidence teach
-    nothing about the repair: a build without a compiler diagnostic (offline Maven cache,
-    timeout), a test run without a JUnit report, a project without a security witness."""
+    """True when the patch itself failed. Infrastructure failures and missing evidence (a
+    project without a security witness) teach nothing about the repair."""
     feedback = verified.get("feedback") or {}
-    if not failure or failure["category"] == "unknown" or feedback.get("code") == "security_witness_missing":
+    if not failure or failure["category"] in ("unknown", "infrastructure") or feedback.get("code") == "security_witness_missing":
         return False
-    if failure["category"] == "compilation_failed":
-        return bool(failure.get("diagnostics"))
-    behavior, security = feedback.get("behavior") or {}, feedback.get("security") or {}
-    if behavior.get("infrastructure_error") or security.get("infrastructure_error"):
-        return False
+    security = feedback.get("security") or {}
     return not (failure["category"] == "security_witness_failed" and security.get("missing"))
 
 

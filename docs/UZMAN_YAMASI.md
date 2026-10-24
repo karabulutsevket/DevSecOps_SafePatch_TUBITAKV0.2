@@ -43,6 +43,7 @@ Motor politika denetimini yeniden yapar, sonra yamayı **modeli hiç çağırmad
 |---|---|
 | Geçti | `awaiting_review`; adayda `origin: human-authored` ve `author` |
 | Projede güvenlik tanığı yok | `needs_human`, `security_witness_missing` |
+| Ortam hatası (derleyici tanısı olmayan derleme, JUnit raporu olmayan test koşusu) | `needs_human`, `verification_infrastructure:<neden>`; ortam düzelince uzman yeniden gönderebilir (üç deneme hakkından biri sayılır) |
 | Başarısız | `needs_human`, `expert_patch_failed_verification`; başarısızlık sınıfı denemeye yazılır, uzman yeniden gönderebilir. Yama kaynaklı başarısızlık, yazarıyla birlikte [başarısızlık hafızasına](BASARISIZLIK_HAFIZASI.md) girer |
 | Kayıtlı yama gönderimden sonra değişmiş ve politikaya uymuyor | `rejected` |
 

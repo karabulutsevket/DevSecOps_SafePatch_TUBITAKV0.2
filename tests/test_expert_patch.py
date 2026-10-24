@@ -169,6 +169,13 @@ def test_failed_expert_patch_returns_to_the_human(job_store, source):
     check_expert_patch(stored, correct_patch("sql", source))   # the expert may try again
 
 
+def test_infrastructure_failure_returns_the_expert_patch_to_the_human(job_store, source):
+    db, job = job_store
+    stored, _ = run_expert(db, job, source, [{"passed": False, "feedback": {"code": "compilation_failed", "diagnostics": []}}])
+    assert stored["status"] == "needs_human" and stored["reason"] == "verification_infrastructure:build_without_compiler_diagnostic"
+    check_expert_patch(stored, correct_patch("sql", source))   # resend once the environment is fixed
+
+
 def test_expert_patch_without_a_security_witness_is_not_ready(job_store, source):
     db, job = job_store
     stored, _ = run_expert(db, job, source, [{"passed": False, "feedback": {"code": "security_witness_missing"}}])

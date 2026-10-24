@@ -147,7 +147,10 @@ class Engine:
         if lesson:
             record["failure_memory_id"] = lesson
         self.store.mutate(job_id, lambda j: j["attempts"].append(record))
-        if verified.get("feedback", {}).get("code") == "security_witness_missing":
+        if record["failure"] and record["failure"]["category"] == "infrastructure":
+            # Back to the expert, who may resend once the environment is fixed (still one of the three attempts).
+            self.set(job_id, "needs_human", reason="verification_infrastructure:" + record["failure"]["reason"])
+        elif verified.get("feedback", {}).get("code") == "security_witness_missing":
             self.set(job_id, "needs_human", reason="security_witness_missing")
         elif verified.get("passed"):
             self.accept(job_id, verified, meta, "human-authored", pending["author"])
@@ -251,6 +254,10 @@ class Engine:
             if lesson:
                 record["failure_memory_id"] = lesson
             self.store.mutate(job_id, lambda j: j["attempts"].append(record))
+            if failure and failure["category"] == "infrastructure":
+                # The environment failed, not the patch: no retry, no guidance, no lesson.
+                self.set(job_id, "infrastructure_error", reason="verification_infrastructure:" + failure["reason"])
+                return
             if verified.get("feedback", {}).get("code") == "security_witness_missing":
                 # Builds, behaves and scans clean, but nothing proves the weakness is gone (decision 3).
                 self.set(job_id, "needs_human", reason="security_witness_missing")
