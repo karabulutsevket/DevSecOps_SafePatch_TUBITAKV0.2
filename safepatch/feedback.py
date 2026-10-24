@@ -71,6 +71,21 @@ def classify(verified):
     return {"category": category, "failed_tests": failed[:8], "remaining_rules": list(feedback.get("remaining_rules", []))[:4]}
 
 
+def patch_caused(verified, failure):
+    """True when the patch itself failed. Infrastructure trouble and missing evidence teach
+    nothing about the repair: a build without a compiler diagnostic (offline Maven cache,
+    timeout), a test run without a JUnit report, a project without a security witness."""
+    feedback = verified.get("feedback") or {}
+    if not failure or failure["category"] == "unknown" or feedback.get("code") == "security_witness_missing":
+        return False
+    if failure["category"] == "compilation_failed":
+        return bool(failure.get("diagnostics"))
+    behavior, security = feedback.get("behavior") or {}, feedback.get("security") or {}
+    if behavior.get("infrastructure_error") or security.get("infrastructure_error"):
+        return False
+    return not (failure["category"] == "security_witness_failed" and security.get("missing"))
+
+
 def guidance_for(kind, failure, level):
     """Static guidance: level 0 is the diagnosis, level 1 and deeper add the weakness recipe."""
     if not failure:

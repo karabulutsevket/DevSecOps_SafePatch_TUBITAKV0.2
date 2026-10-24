@@ -43,7 +43,7 @@ Motor politika denetimini yeniden yapar, sonra yamayı **modeli hiç çağırmad
 |---|---|
 | Geçti | `awaiting_review`; adayda `origin: human-authored` ve `author` |
 | Projede güvenlik tanığı yok | `needs_human`, `security_witness_missing` |
-| Başarısız | `needs_human`, `expert_patch_failed_verification`; başarısızlık sınıfı denemeye yazılır, uzman yeniden gönderebilir |
+| Başarısız | `needs_human`, `expert_patch_failed_verification`; başarısızlık sınıfı denemeye yazılır, uzman yeniden gönderebilir. Yama kaynaklı başarısızlık, yazarıyla birlikte [başarısızlık hafızasına](BASARISIZLIK_HAFIZASI.md) girer |
 | Kayıtlı yama gönderimden sonra değişmiş ve politikaya uymuyor | `rejected` |
 
 ## Dört göz kuralı
@@ -56,4 +56,3 @@ Motor politika denetimini yeniden yapar, sonra yamayı **modeli hiç çağırmad
 
 - Arayüzde gönderme ve diff ekranı (Hafta 3).
 - İnceleyicinin reddettiği (`rejected`) işe uzman yaması; şimdilik yalnız `needs_human` işler.
-- Başarısızlık hafızası (Hafta 3).

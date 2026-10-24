@@ -90,6 +90,11 @@ def memories(user=Depends(identity)):
     return [r for r in Memory(store).all() if r["context"]["project"] in user["projects"]]
 
 
+@app.get("/v1/memory/failures")
+def failure_memory(user=Depends(identity)):
+    return [r for r in Memory(store).failure_records() if r["context"]["project"] in user["projects"]]
+
+
 class MemoryDecision(Strict):
     state: str = Field(pattern=r"^(quarantined|revoked)$")
     reason: str = Field(min_length=10, max_length=1000)

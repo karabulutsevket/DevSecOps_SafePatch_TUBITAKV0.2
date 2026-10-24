@@ -10,6 +10,7 @@ import uuid
 from sqlalchemy import Column, Float, JSON, MetaData, String, Table, select, update
 
 from safepatch.common import canonical, digest
+from safepatch.feedback import patch_caused
 from safepatch.policy import PolicyError
 
 
@@ -56,6 +57,9 @@ class Memory:
         meta = MetaData()
         self.table = Table("patch_memory", meta, Column("id", String(32), primary_key=True),
                            Column("created", Float), Column("data", JSON, nullable=False))
+        # Negative evidence lives apart from approved repairs and is never offered as an example.
+        self.failure_table = Table("failure_memory", meta, Column("id", String(32), primary_key=True),
+                                   Column("created", Float), Column("data", JSON, nullable=False))
         meta.create_all(store.engine)
 
     def all(self, project=None):
@@ -141,6 +145,52 @@ class Memory:
                 record["uses"].append(job_id)
                 conn.execute(update(self.table).where(self.table.c.id == memory_id).values(data=record))
 
+    def failure_records(self, project=None):
+        with self.store.engine.connect() as conn:
+            records = [r[0] for r in conn.execute(select(self.failure_table.c.data).order_by(self.failure_table.c.created.desc()))]
+        return [r for r in records if project is None or r["context"]["project"] == project]
+
+    def record_failure(self, job, context, attempt, strategy):
+        """A candidate that failed verification in this context: candidate, context, cause, evidence.
+
+        One record per (source, patch); a repeat in another job adds an occurrence. Evaluation
+        jobs never write operational memory.
+        """
+        if job.get("evaluation") or not patch_caused(attempt["verification"], attempt["failure"]):
+            return None
+        proposal = attempt["proposal"]
+        occurrence = {"job_id": job["id"], "attempt": attempt["number"], "category": attempt["failure"]["category"],
+                      "evidence_sha256": digest(canonical(attempt["verification"])), "at": time.time()}
+        key = (context["source_path"], context["source_sha256"], attempt["patch_sha256"])
+        with self.store.lock, self.store.engine.begin() as conn:
+            for old in self.failure_records(context["project"]):
+                if (old["context"]["source_path"], old["context"]["source_sha256"], old["patch_sha256"]) == key:
+                    if not any((o["job_id"], o["attempt"]) == (job["id"], attempt["number"]) for o in old["occurrences"]):
+                        old["occurrences"].append(occurrence)
+                        conn.execute(update(self.failure_table).where(self.failure_table.c.id == old["id"]).values(data=old))
+                    return old["id"]
+            record = {"id": uuid.uuid4().hex, "schema": "safepatch-failure/1", "created_at": time.time(),
+                      "context": context, "context_sha256": digest(canonical({k: context.get(k) for k in REQUIRED})),
+                      "patch_sha256": attempt["patch_sha256"], "diff": attempt["diff"], "changed_lines": attempt["changed_lines"],
+                      "origin": proposal.get("mode"), "author": proposal.get("author"), "model": proposal.get("model"),
+                      "strategy": strategy, "retry": attempt.get("retry"), "failure": attempt["failure"],
+                      "memory_ids": list(job.get("memory_ids", [])), "occurrences": [occurrence]}
+            conn.execute(self.failure_table.insert().values(id=record["id"], created=time.time(), data=record))
+        return record["id"]
+
+    def failures(self, context, limit=20):
+        """Failures for this exact source first, then for the same contract; summaries only.
+        Only `compatible` contexts count, as for approved repairs."""
+        found = []
+        for record in self.failure_records(context["project"]):
+            if applicability(record["context"], context) != "compatible":
+                continue
+            relation = "same_source" if record["context"].get("source_sha256") == context["source_sha256"] else "same_context"
+            found.append({"id": record["id"], "relation": relation, "category": record["failure"]["category"],
+                          "patch_sha256": record["patch_sha256"], "origin": record["origin"], "occurrences": len(record["occurrences"])})
+        found.sort(key=lambda f: f["relation"] != "same_source")
+        return found[:limit]
+
     def search(self, context, mode="guarded"):
         start = time.perf_counter()
         if mode == "off":
@@ -157,5 +207,7 @@ class Memory:
         # Prefer exact source, then newest. No semantic correctness score is made up.
         candidates.sort(key=lambda r: (r["context"].get("source_sha256") == context["source_sha256"], r["created_at"]), reverse=True)
         selected = candidates[0] if candidates else None
+        # Recorded for review and evidence; the model does not see failures yet (roadmap week 5).
+        failures = self.failures(context)
         return {"decision": "match" if selected else "no_match", "selected": selected,
-                "rejected": rejected, "duration_seconds": round(time.perf_counter() - start, 6)}
+                "rejected": rejected, "failures": failures, "duration_seconds": round(time.perf_counter() - start, 6)}

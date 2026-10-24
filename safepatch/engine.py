@@ -41,9 +41,9 @@ def expert_scope(job):
     initial = job.get("baseline") or {}
     if not initial.get("baseline_valid"):
         raise PolicyError("baseline_not_valid")
-    target = initial["scans"][0]["findings"][0].get("file")
+    finding = initial["scans"][0]["findings"][0]
     case, files = baseline(job["case_id"], job["base_commit"])
-    return files, target, allowed_files(case["spec"], files, target)
+    return case, files, finding, allowed_files(case["spec"], files, finding.get("file"))
 
 
 def check_expert_patch(job, patch):
@@ -52,7 +52,7 @@ def check_expert_patch(job, patch):
         raise PolicyError("job_not_waiting_for_a_human")
     if sum(a.get("proposal", {}).get("mode") == "human-authored" for a in job["attempts"]) >= EXPERT_ATTEMPTS:
         raise PolicyError("expert_attempt_budget_exhausted")
-    files, target, allowed = expert_scope(job)
+    _, files, _, allowed = expert_scope(job)
     meta = validate_patch(files, patch, allowed=allowed)
     # Approved patches can reach later prompts through memory; keep forged notes out.
     if imitates_note(patch.rationale, *(e.content for e in patch.edits)):
@@ -132,7 +132,8 @@ class Engine:
     def _run_expert(self, job):
         """A human-authored patch: no model call, the same policy and verifier as a model patch."""
         job_id, pending = job["id"], job["pending_expert_patch"]
-        files, target, allowed = expert_scope(job)
+        case, files, finding, allowed = expert_scope(job)
+        target = finding["file"]
         self.memory.assert_active(job.get("memory_ids", []))
         patch = Patch.model_validate(pending["patch"])
         meta = validate_patch(files, patch, allowed=allowed)
@@ -140,8 +141,11 @@ class Engine:
         record = {"number": number, "proposal": {"mode": "human-authored", "patch": patch.model_dump(), "author": pending["author"], "submitted_at": pending["submitted_at"]}, **meta}
         self.set(job_id, "verifying", pending_expert_patch=None)
         verified = self.worker("worker2", "/verify", {"job_id": job_id, "case_id": job["case_id"], "base_commit": job["base_commit"], "deadline": job["deadline"], "scanner": job["scanner"], "attempt": number, "patch": patch.model_dump(), "target_file": target}, job["deadline"])
-        self.active(job_id)
+        current = self.active(job_id)
         record.update(verification=verified, failure=None if verified.get("passed") else classify(verified))
+        lesson = self.memory.record_failure(current, context_for(case, files, finding), record, "expert") if record["failure"] else None
+        if lesson:
+            record["failure_memory_id"] = lesson
         self.store.mutate(job_id, lambda j: j["attempts"].append(record))
         if verified.get("feedback", {}).get("code") == "security_witness_missing":
             self.set(job_id, "needs_human", reason="security_witness_missing")
@@ -239,10 +243,13 @@ class Engine:
             seen.add(meta["patch_sha256"])
             self.set(job_id, "verifying")
             verified = self.worker("worker2", "/verify", {**verify, "attempt": attempt, "patch": patch.model_dump(), "target_file": target}, job["deadline"])
-            self.active(job_id)
+            current = self.active(job_id)
             record["verification"] = verified
             failure = None if verified.get("passed") else classify(verified)
             record["failure"] = failure
+            lesson = self.memory.record_failure(current, context, record, strategy) if failure else None
+            if lesson:
+                record["failure_memory_id"] = lesson
             self.store.mutate(job_id, lambda j: j["attempts"].append(record))
             if verified.get("feedback", {}).get("code") == "security_witness_missing":
                 # Builds, behaves and scans clean, but nothing proves the weakness is gone (decision 3).
