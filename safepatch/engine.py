@@ -4,7 +4,7 @@ import time
 from safepatch.common import POLICY, SOURCE, Patch, canonical, digest, remaining, request, secret, setting
 from safepatch.memory import Memory, context_for
 from safepatch.acceptance import manifest
-from safepatch.feedback import classify, guidance_for
+from safepatch.feedback import classify, guidance_for, imitates_note
 from safepatch.policy import PolicyError, validate_patch
 from safepatch.repository import baseline
 
@@ -91,6 +91,10 @@ class Engine:
             self.set(job_id, "needs_human", reason="baseline_missing_expected_failing_security_assertion_or_finding")
             return
         finding = initial["scans"][0]["findings"][0]
+        # Everything the model could read is checked before any model call.
+        if imitates_note(files[SOURCE], *read_only_context(files).values(), canonical(finding)):
+            self.set(job_id, "needs_human", reason="suspected_prompt_injection")
+            return
         context = context_for(case, files, finding)
         lookup = self.memory.search(context, job.get("memory_mode", "guarded"))
         selected = lookup.pop("selected")

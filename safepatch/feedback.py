@@ -41,6 +41,16 @@ RECIPES = {
 }
 GUIDANCE_SHA256 = digest(canonical({"diagnosis": DIAGNOSIS, "recipes": RECIPES}))
 
+# Title of the trusted note worker1 appends after the data. Repository text that
+# imitates it is treated as a prompt-injection attempt, never as guidance.
+NOTE_TITLE = "SafePatch verifier note"
+
+
+def imitates_note(*texts):
+    """True when untrusted text contains the trusted note title (case-insensitive)."""
+    title = NOTE_TITLE.casefold()
+    return any(title in (text or "").casefold() for text in texts)
+
 
 def classify(verified):
     """Reduce a verifier result to a compact, deterministic failure record."""

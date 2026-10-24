@@ -22,6 +22,7 @@ V0.1'in yeniden deneme döngüsü, path ve command zafiyet ailelerinde hiç baş
 - **Model ve doğrulama:** Yerel Qwen2.5-Coder 7B Q4_K_M (Ollama 0.34.0, RTX 4070 Laptop 8 GB). Her aday gerçek Maven derlemesi, davranış testi, güvenlik tanığı ve Semgrep 1.136.0 taramasından geçti. İnsan onayı yok; kabul = "incelemeye hazır".
 - **Rehberin kaynağı:** Rehber metinlerini ekip, V0.1'in **geliştirme vakalarındaki** (`-01`) hatalarına bakarak yazdı. Rehberin yeri ve yapısı da deneyden önce `path-01` ve `command-01` üzerindeki ön denemelerle belirlendi. Değerlendirme vakaları ayrıca raporlanıyor.
 - **Ön deneme bulgusu:** Aynı rehber metni sistem talimatına konduğunda model onu yok saydı; sıcaklık 0,4'te iki seed'de birebir aynı yamayı üretti. Metin, kullanıcı mesajında verinin sonuna işaretli bir not olarak konunca model yamayı değiştirdi. Rehber bu yüzden verinin sonunda.
+- **Sonraki değişiklik:** Deneyden sonra (25 Ekim) rehber notuna her istekte rastgele bir işaret eklendi ve notu taklit eden kaynak kodu içeren işler modele gitmeden durduruluyor (istem enjeksiyonu koruması). Bu rapordaki ölçüm, işaretsiz not biçimiyle yapıldı.
 - **Kesinti:** İlk çalıştırma 50. işten sonra bilgisayar gözetimsizken durdu. Kalan 58 iş aynı plan ve sırayla `--resume` ile tamamlandı; yarıda kalan iş yeniden çalıştırıldı.
 
 ## Sonuçlar

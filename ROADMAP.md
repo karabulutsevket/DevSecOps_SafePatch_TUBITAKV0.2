@@ -113,8 +113,8 @@ Her hafta: hedef, görevler (sorumlu), çıktı, geçiş koşulu. Bir fazın ge�
 #### Hafta 2 · 2 – 8 Kasım
 **Hedef:** Hızlı kazanımlar ve gerçek depo desteğinin tasarımı. *(Jüri sunumu Ocak'a kaydı; hazırlığı Hafta 11–12'de.)*
 
-- [ ] **Projenin kendi CI'ı:** GitHub Actions her push ve PR'da birim testlerini çalıştırır; eylemler commit özetine sabitlenir, yetkiler salt okunur — *Şevket*
-- [ ] **Sahte rehber notuna karşı koruma:** rehber notu her istekte rastgele bir işaretle ayrılır; kaynakta veya bağlam dosyalarında not başlığı geçerse iş "şüpheli istem enjeksiyonu" gerekçesiyle insana devredilir — *Yiğithan*
+- [x] **Projenin kendi CI'ı:** GitHub Actions her push ve PR'da birim testlerini çalıştırır; eylemler commit özetine sabitlenir, yetkiler salt okunur — *Şevket*
+- [x] **Sahte rehber notuna karşı koruma:** rehber notu her istekte rastgele bir işaretle ayrılır; kaynakta veya bağlam dosyalarında not başlığı geçerse iş "şüpheli istem enjeksiyonu" gerekçesiyle insana devredilir — *Yiğithan*
 - [ ] Ürünün varsayılan yeniden deneme stratejisine karar ver ve uygula (`v01` → `guided` veya `guided+context`) — *ekip, Kadir*
 - [ ] **V0.2 kurulum belgesi:** bu makinede doğrulanmış adımlar (Windows + WSL), doğrulanmamış adımlar ayrıca işaretli — *Şevket*
 - [ ] Gerçek depo desteği tasarımı: proje tanımı şeması ve kaldırılacak sabitlerin envanteri (aşağıdaki iş akışı) — *Şevket, Reşat*
