@@ -146,7 +146,9 @@ class NewJob(Strict):
     max_attempts: int = Field(default=3, ge=1, le=3)
     second_review: bool = False
     memory_mode: str = Field(default="guarded", pattern=r"^(off|guarded)$")
-    strategy: str = Field(default="v01", pattern=r"^(v01|sampling|guided|guided\+context)$")
+    # Default chosen from the H2 measurement (docs/OLCUM_V02_YENIDEN_DENEME.md). Stored jobs
+    # without this field keep the V0.1 loop in the engine.
+    strategy: str = Field(default="guided+context", pattern=r"^(v01|sampling|guided|guided\+context)$")
 
 
 @app.post("/v1/jobs", status_code=201)

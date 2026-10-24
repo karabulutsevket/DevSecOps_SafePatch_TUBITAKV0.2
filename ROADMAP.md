@@ -115,7 +115,7 @@ Her hafta: hedef, görevler (sorumlu), çıktı, geçiş koşulu. Bir fazın ge�
 
 - [x] **Projenin kendi CI'ı:** GitHub Actions her push ve PR'da birim testlerini çalıştırır; eylemler commit özetine sabitlenir, yetkiler salt okunur — *Şevket*
 - [x] **Sahte rehber notuna karşı koruma:** rehber notu her istekte rastgele bir işaretle ayrılır; kaynakta veya bağlam dosyalarında not başlığı geçerse iş "şüpheli istem enjeksiyonu" gerekçesiyle insana devredilir — *Yiğithan*
-- [ ] Ürünün varsayılan yeniden deneme stratejisine karar ver ve uygula (`v01` → `guided` veya `guided+context`) — *ekip, Kadir*
+- [x] Ürünün varsayılan yeniden deneme stratejisi: **`guided+context`** (25 Ekim, ekip kararı). Strateji alanı olmayan eski kayıtlar V0.1 döngüsünde kalır — *ekip, Kadir*
 - [x] **V0.2 kurulum belgesi:** bu makinede doğrulanmış adımlar (Windows + WSL), doğrulanmamış adımlar ayrıca işaretli — *Şevket*
 - [ ] Gerçek depo desteği tasarımı: proje tanımı şeması ve kaldırılacak sabitlerin envanteri (aşağıdaki iş akışı) — *Şevket, Reşat*
 - [ ] Toplam 3 müşteri görüşmesi; görüşmelerde kullanılan Java API'leri, tarayıcılar ve Git platformu (GitLab/GitHub) sorulur — *Şevket, Reşat*
@@ -373,7 +373,7 @@ Kısıtlar: kapsam dışına çıkma, politika/doğrulayıcıyı gevşetme, say�
 - [x] Path ve command vakalarının durumu ölçüldü ve raporlandı
 - [ ] SafePatch, kayıtlı sentetik vakaların dışında en az bir gerçek açık kaynak Java projesinde, proje tanımıyla ve bulgu başına işle uçtan uca çalışıyor
 - [ ] Deponun kendi CI'ı her PR'da testleri çalıştırıyor
-- [ ] Sahte rehber notu koruması ve varsayılan yeniden deneme stratejisi uygulandı
+- [x] Sahte rehber notu koruması ve varsayılan yeniden deneme stratejisi uygulandı
 - [ ] Uzman yaması → doğrulama → hafıza → sonraki işte kullanım akışı çalışıyor
 - [ ] Yapısal uygunluk imzası, kanıt vektörü, başarısızlık hafızası ve geçersizleşme v1 çalışıyor
 - [ ] En az 5 zafiyet sınıfı paketi (mevcut 3 + 2 yeni) eksiksiz; her biri için L2'de doğrulanmış tohum kayıtları var

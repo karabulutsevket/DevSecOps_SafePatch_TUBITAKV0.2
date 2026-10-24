@@ -32,6 +32,15 @@ def test_job_is_durable_after_store_reopen(job_store):
     assert other.get(job['id'])['reason']=='test-persisted'
 
 
+def test_new_jobs_default_to_measured_retry_strategy(api):
+    client,db,job=api
+    create=lambda **extra: client.post('/v1/jobs',headers=headers('developer'),json={'case_id':'sql-01','idempotency_key':uuid.uuid4().hex,**extra})
+    default=create()
+    assert default.status_code==201 and default.json()['strategy']=='guided+context'
+    assert create(strategy='v01').json()['strategy']=='v01'
+    assert create(strategy='bogus').status_code==422
+
+
 def test_naive_retrieval_is_not_public_job_option(api):
     client,db,job=api
     response=client.post('/v1/jobs',headers=headers('developer'),json={'case_id':'sql-01','idempotency_key':uuid.uuid4().hex,'memory_mode':'naive'})

@@ -112,7 +112,7 @@ Bu bulgu, "doğrulanmış düzeltme" ifadesinin tanık testinin gücü kadar anl
 ## Sonraki adımlar
 
 1. **Path sınıf paketi (Hafta 3):** sembolik bağlantı ve mutlak yol tanıkları; reçetede `toRealPath()` zorunlu. Path vakaları yeniden ölçülür. Kaç kabulün daha güçlü tanığı geçtiği ayrıca raporlanır.
-2. **Varsayılan strateji kararı:** ölçüm `guided` ailesini destekliyor. Ürünün varsayılanının `v01`'den `guided` ya da `guided+context`'e çekilmesi ekip kararı.
+2. **Varsayılan strateji (karar verildi, 25 Ekim):** yeni işler `guided+context` ile açılıyor; diğer stratejiler iş başına seçilebilir. Strateji alanı olmayan eski iş kayıtları V0.1 döngüsünde kalır.
 3. **Command ailesi:** reçete ve bağlam yetmiyor. Seçenekler: yardımcı sınıfın bulunmasına yönelik daha somut bağlam, daha büyük model (8 GB GPU sınırı), ya da iyi kanıtla insana devretme.
 4. **Genelleme:** asıl ölçüm L3 setinde (OWASP Benchmark, Vul4J), Hafta 9.
 

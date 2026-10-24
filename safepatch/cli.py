@@ -7,7 +7,7 @@ import time
 import uuid
 
 import httpx
-from safepatch.common import local_url
+from safepatch.common import evidence, local_url
 
 
 def main():
@@ -22,13 +22,14 @@ def main():
     create.add_argument("--key", default=None)
     create.add_argument("--attempts", type=int, default=3, choices=[1, 2, 3])
     create.add_argument("--second-review", action="store_true")
+    create.add_argument("--strategy", choices=["v01", "sampling", "guided", "guided+context"], default=None, help="Defaults to the server default (guided+context)")
     for action in ("show", "wait", "cancel", "approve", "reject", "deploy", "evidence"):
         child = sub.add_parser(action)
         child.add_argument("job_id")
         if action == "wait":
             child.add_argument("--timeout", type=int, default=1300)
         if action == "evidence":
-            child.add_argument("--out", default="evidence")
+            child.add_argument("--out", default=None, help="Defaults to jobs/ under EVIDENCE_DIR; the V0.1 archive is read-only")
     sub.add_parser("rollback")
     args = parser.parse_args()
     token = Path(args.token_file).read_text().strip() if args.token_file else os.environ.get("SAFEPATCH_TOKEN")
@@ -46,7 +47,10 @@ def main():
         if action == "cases":
             result = call("GET", "/v1/cases")
         elif action == "start":
-            result = call("POST", "/v1/jobs", {"case_id": args.case_id, "scanner": args.scanner, "idempotency_key": args.key or uuid.uuid4().hex, "max_attempts": args.attempts, "second_review": args.second_review})
+            body = {"case_id": args.case_id, "scanner": args.scanner, "idempotency_key": args.key or uuid.uuid4().hex, "max_attempts": args.attempts, "second_review": args.second_review}
+            if args.strategy:
+                body["strategy"] = args.strategy
+            result = call("POST", "/v1/jobs", body)
         elif action == "rollback":
             result = call("POST", "/v1/staging/rollback")
         else:
@@ -69,7 +73,7 @@ def main():
                     raise SystemExit("İncelenebilir aday yok")
                 result = call("POST", path + "/approval", {"candidate_commit": c["commit"], "artifact_sha256": c["artifact_sha256"], "policy_version": c["policy_version"], "decision": "approve" if action == "approve" else "reject", "comment": "Explicit human CLI decision"})
             elif action == "evidence":
-                output = Path(args.out) / args.job_id
+                output = (Path(args.out) if args.out else evidence("jobs")) / args.job_id
                 output.mkdir(parents=True, exist_ok=True)
                 result = call("GET", path + "/evidence.json")
                 (output / "evidence.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
