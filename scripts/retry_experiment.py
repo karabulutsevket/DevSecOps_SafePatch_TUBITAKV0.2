@@ -84,39 +84,58 @@ def main():
     parser.add_argument("--strategies", default=",".join(STRATEGIES))
     parser.add_argument("--seeds", default="42,43,44")
     parser.add_argument("--attempts", type=int, default=3)
+    parser.add_argument("--resume", action="store_true", help="Continue an interrupted run in the same EVIDENCE_DIR with its recorded plan")
     args = parser.parse_args()
-    selected = args.cases.split(",")
-    strategies = args.strategies.split(",")
-    seeds = [int(s) for s in args.seeds.split(",")]
-    if set(strategies) - set(STRATEGIES) or set(selected) - set(cases):
-        raise SystemExit("Unknown strategy or case")
     output = evidence("retry")
     if (output / "summary.json").exists():
         raise SystemExit("Use a fresh EVIDENCE_DIR; evidence is never overwritten")
+    git = lambda *a: subprocess.run(["git", *a], cwd=ROOT, capture_output=True, text=True)
+    rows, protocol = [], None
+    if args.resume:
+        protocol = json.loads((output / "protocol.json").read_text(encoding="utf-8"))
+        rows = json.loads((output / "runs.json").read_text(encoding="utf-8")) if (output / "runs.json").exists() else []
+        # Both halves must be measured with the same product code.
+        if git("diff", "--quiet", protocol["git_commit"], "HEAD", "--", "safepatch").returncode or git("status", "--porcelain", "--", "safepatch").stdout.strip():
+            raise SystemExit("safepatch/ differs from the recorded commit; start a new run instead of resuming")
+        selected, strategies, seeds, attempts = protocol["cases"], protocol["strategies"], protocol["seeds"], protocol["max_attempts"]
+    else:
+        if (output / "runs.json").exists():
+            raise SystemExit("Interrupted run found in EVIDENCE_DIR; use --resume or a fresh EVIDENCE_DIR")
+        selected, strategies = args.cases.split(","), args.strategies.split(",")
+        seeds, attempts = [int(s) for s in args.seeds.split(",")], args.attempts
+    if set(strategies) - set(STRATEGIES) or set(selected) - set(cases):
+        raise SystemExit("Unknown strategy or case")
     for service, offset in (("WORKER1", 1), ("WORKER2", 2)):
         os.environ[service + "_URL"] = f"http://127.0.0.1:{args.port_base + offset}"
         os.environ[service + "_TOKEN_FILE"] = str(ROOT / ".secrets" / (service.lower() + "_token"))
     store = Store("sqlite:///" + str(ROOT / ".runtime" / ("retry-" + uuid.uuid4().hex + ".db")))
-    git = lambda *a: subprocess.run(["git", *a], cwd=ROOT, capture_output=True, text=True).stdout.strip()
-    started = time.time()
     # Seeds outermost so a full seed finishes first; arm order rotates per case and seed.
     order = [(seed, case, strategy) for s_index, seed in enumerate(seeds) for c_index, case in enumerate(selected)
              for strategy in (strategies[(c_index + s_index) % len(strategies):] + strategies[:(c_index + s_index) % len(strategies)])]
-    write(output / "protocol.json", {
+    if protocol:
+        started = protocol["started_at"]
+        protocol.setdefault("resumes", []).append({"at": time.time(), "git_commit": git("rev-parse", "HEAD").stdout.strip(), "completed_before": len(rows),
+            "note": "previous process stopped while the host was unattended; the interrupted job had no saved result and is rerun"})
+        write(output / "protocol.json", protocol)
+    else:
+        started = time.time()
+        write(output / "protocol.json", {
         "schema": 1, "hypothesis": "H2: failure-aware retries solve more cases than the fixed V0.1 retry loop",
-        "started_at": started, "git_commit": git("rev-parse", "HEAD"), "git_dirty": bool(git("status", "--porcelain", "--", "safepatch")),
+        "started_at": started, "git_commit": git("rev-parse", "HEAD").stdout.strip(), "git_dirty": bool(git("status", "--porcelain", "--", "safepatch").stdout.strip()),
         "model": setting("OLLAMA_MODEL", "qwen2.5-coder:7b-instruct-q4_K_M"), "system_prompt_sha256": digest(SYSTEM),
         "guidance_sha256": GUIDANCE_SHA256, "retry_temperature": float(setting("RETRY_TEMPERATURE", "0.4")),
-        "strategies": strategies, "cases": selected, "seeds": seeds, "max_attempts": args.attempts, "memory": "off",
+        "strategies": strategies, "cases": selected, "seeds": seeds, "max_attempts": attempts, "memory": "off",
         "order": "seeds outermost; strategy order rotated per case and seed", "jobs": len(order),
         "guidance_origin": "team-written after inspecting V0.1 failures on development cases (*-01)",
         "guidance_placement": "appended after the JSON data in the user prompt. Pre-experiment probe on path-01 (seeds 43/44, temperature 0.4): the same text in the system prompt was ignored (identical patches); after the data it produced canonicalizing patches.",
         "duplicate_handling": "v01/sampling stop on a duplicate patch; guided strategies skip re-verification and retry with deeper guidance",
         "python": platform.python_version(), "scanner": "Semgrep 1.136.0 with three owned rules",
         "runner": "native-same-user; no airgap claim", "human_approval": "none; experiment never approves"})
-    rows = []
+    done = {(r["seed"], r["case_id"], r["strategy"]) for r in rows}
     for index, (seed, case_id, strategy) in enumerate(order, 1):
-        job = run(store, case_id, strategy, seed, args.attempts)
+        if (seed, case_id, strategy) in done:
+            continue
+        job = run(store, case_id, strategy, seed, attempts)
         write(output / "jobs" / (job["id"] + ".json"), job)
         rows.append(row(job, cases[case_id]))
         write(output / "runs.json", rows)
