@@ -1,0 +1,135 @@
+# SafePatch V0.2 — Kurulum ve çalıştırma
+
+Bu belgedeki adımlar 24–25 Ekim 2026'da bir geliştirici makinesinde çalıştırılarak doğrulandı. Doğrulanmamış adımlar ayrıca işaretlidir.
+
+## 1. Doğrulanmış ortam
+
+| Bileşen | Sürüm | Not |
+|---|---|---|
+| İşletim sistemi | Windows 11 + WSL 2 (Debian) | Linux sunucuya kurulum henüz doğrulanmadı |
+| Python | 3.12 | `requirements.lock` ile sabit paketler |
+| Git | Windows için Git | Sentetik depolar ve CI için gerekli |
+| Java | Amazon Corretto 17 | `java` PATH'te olmalı |
+| Maven | 3.9.16 | `mvn` PATH'te olmalı; çevrimdışı (`-o`) çalışır |
+| Semgrep | 1.136.0, WSL Debian içinde ayrı bir sanal ortamda | Sürüm farklıysa iş durur |
+| Ollama | 0.34.0, yalnız `127.0.0.1` | Bulut özellikleri kapalı (`OLLAMA_NO_CLOUD=1`) |
+| Model | `qwen2.5-coder:7b-instruct-q4_K_M`, özet `dae161e2…f4364` | Özet kodda sabit; farklıysa iş durur |
+| GPU | NVIDIA RTX 4070 Laptop, 8 GB | Daha büyük model bu GPU'ya sığmaz |
+
+## 2. İlk kurulum
+
+```powershell
+git clone https://github.com/karabulutsevket/DevSecOps_SafePatch_TUBITAKV0.2.git
+cd DevSecOps_SafePatch_TUBITAKV0.2
+python -m venv .venv
+.venv/Scripts/python.exe -m pip install -r requirements.lock
+.venv/Scripts/python.exe scripts/init_config.py      # .secrets/ altında anahtarlar; Git'e girmez
+.venv/Scripts/python.exe scripts/seed.py             # 9 sentetik Java deposu: .runtime/repos-v3
+./scripts/run-tests.ps1                              # birim testleri; JUnit: evidence/v02-local/
+```
+
+`python` PATH'te değilse başka bir Python 3.12 sanal ortamı kullanılabilir. Betikler `-PythonExecutable <tam-yol>` parametresi alır:
+
+```powershell
+./scripts/run-tests.ps1 -PythonExecutable C:\yol\python.exe
+```
+
+## 3. Model, Maven ve Semgrep hazırlığı (internetli hazırlık aşaması)
+
+**Ollama ve model:**
+
+```powershell
+./scripts/prepare-ollama.ps1                         # sabit özetli Ollama arşivini indirir, servisi başlatır
+.runtime/ollama/ollama.exe pull qwen2.5-coder:7b-instruct-q4_K_M
+```
+
+Model başka bir klasörde zaten indirilmişse, Ollama'yı o klasörle başlatın (doğrulanmış yöntem):
+
+```powershell
+$env:OLLAMA_MODELS = 'C:\model\klasoru\models'
+$env:OLLAMA_HOST = '127.0.0.1:11434'; $env:OLLAMA_NO_CLOUD = '1'
+$env:OLLAMA_CONTEXT_LENGTH = '8192'; $env:OLLAMA_NUM_PARALLEL = '1'; $env:OLLAMA_MAX_LOADED_MODELS = '1'
+$p = Start-Process -FilePath 'C:\ollama\klasoru\ollama.exe' -ArgumentList 'serve' -WindowStyle Hidden -PassThru `
+     -RedirectStandardOutput .runtime/ollama.out.log -RedirectStandardError .runtime/ollama.err.log
+$p.Id | Set-Content .runtime/ollama.pid
+(Invoke-RestMethod http://127.0.0.1:11434/api/tags).models | Select-Object name, digest   # özeti kontrol edin
+```
+
+**Maven önbelleği** (bir kez, internetliyken). Çalışma sırasında Maven çevrimdışıdır:
+
+```powershell
+$env:MAVEN_CACHE = Join-Path (Get-Location) '.runtime/m2'
+mvn -B -ntp "-Dmaven.repo.local=$env:MAVEN_CACHE" -f .runtime/repos-v3/sql-01/pom.xml -DskipTests package
+mvn -B -ntp "-Dmaven.repo.local=$env:MAVEN_CACHE" -f .runtime/repos-v3/sql-01/pom.xml -Dtest=BehaviorTest test
+```
+
+**Semgrep (WSL içinde):**
+
+```sh
+python3 -m venv /mutlak/yol/semgrep-venv
+/mutlak/yol/semgrep-venv/bin/pip install semgrep==1.136.0 setuptools==80.9.0
+```
+
+```powershell
+wsl -d Debian -- /mutlak/yol/semgrep-venv/bin/semgrep --version    # 1.136.0 görünmeli
+```
+
+## 4. Servisleri başlatma ve durdurma
+
+```powershell
+$env:MAVEN_CACHE = '<maven önbelleği>'                       # ör. C:\...\.runtime\m2
+$env:SEMGREP_WSL = '/mnt/c/.../semgrep-venv/bin/semgrep'      # WSL içindeki yol
+./scripts/start-native.ps1 -Restart
+foreach ($port in 8100..8104) { Invoke-RestMethod "http://127.0.0.1:$port/health" }
+```
+
+| Port | Servis |
+|---|---|
+| 8100 | Orkestratör ve arayüz (`http://127.0.0.1:8100`) |
+| 8101 | Worker1 — yerel model |
+| 8102 | Worker2 — doğrulayıcı |
+| 8103 | Runner — derleme, test, tarama |
+| 8104 | Deployer — yerel staging |
+
+Ortam değişkenleri yalnız o PowerShell oturumunda geçerlidir. Servisleri yeni bir oturumda başlatırken yeniden verin.
+
+Durdurma:
+
+```powershell
+./scripts/stop-native.ps1                                    # SafePatch servisleri
+taskkill /PID (Get-Content .runtime/ollama.pid) /T /F         # Ollama (yukarıdaki gibi başlatıldıysa)
+```
+
+## 5. Çalıştığını doğrulama
+
+**Arayüz:** `http://127.0.0.1:8100` adresini açın, `.secrets/developer.token` dosyasındaki anahtarla girin, `sql-01` vakasını başlatın.
+
+**Komut satırından tek iş** (sonuç Git dışındaki bir klasöre yazılır):
+
+```powershell
+$env:EVIDENCE_DIR = "$env:TEMP\safepatch-duman"
+.venv/Scripts/python.exe scripts/retry_experiment.py --cases sql-01 --strategies guided --seeds 42
+```
+
+Beklenen sonuç: `"status": "awaiting_review"`. SQL vakası tek denemede, yaklaşık 1 dakikada incelemeye hazır olur.
+
+## 6. Uzun ölçümler
+
+- Tam yeniden deneme deneyi (108 iş) yaklaşık 2,5–3 saat sürer. Bilgisayar uykuya geçerse iş durur; şarjda ve kapağı açık tutun.
+- Yarıda kalan bir ölçüm aynı `EVIDENCE_DIR` ile `--resume` parametresiyle kaldığı yerden devam eder. Ürün kodu (`safepatch/`) değiştiyse devam reddedilir.
+- Yayımlanacak sonuçlar için `EVIDENCE_DIR=evidence/v02-<ad>` verin; V0.1 kanıt klasörlerine yazma reddedilir.
+
+## 7. Bilinen durumlar
+
+| Durum | Açıklama |
+|---|---|
+| Servis yeniden başlatılınca eski kod çalışıyordu | `stop-native.ps1`, UTC dışındaki saat dilimlerinde servisleri durdurmuyordu; 24 Ekim'de düzeltildi |
+| `python` PATH'te yok | `-PythonExecutable` ile başka bir Python 3.12 ortamı verin |
+| WSL Debian'da Git yok | Ürün için gerekmez; Semgrep yalnız dosya tarar |
+| Testler V0.1 kanıtını değiştirdi | Artık değiştiremez; çıktılar `EVIDENCE_DIR`'a yazılır |
+
+## 8. Henüz doğrulanmayanlar
+
+- Linux sunucuya doğrudan kurulum (CI'da yalnız birim testleri Ubuntu'da çalışıyor).
+- Docker / Compose kurulumu (dosyalar taslak; yol haritasında Hafta 5–6).
+- Tamamen internetsiz bir makinede sıfırdan kurulum ve ağ çıkışı testi (Hafta 10).

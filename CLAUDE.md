@@ -26,6 +26,8 @@ Diğerleri: hafıza `safepatch/memory.py`, politika `safepatch/policy.py`, iş d
 
 ## Komutlar (PowerShell)
 
+Ayrıntılı ve doğrulanmış kurulum: [docs/KURULUM_V02.md](docs/KURULUM_V02.md).
+
 ```powershell
 python -m venv .venv
 .venv/Scripts/python.exe -m pip install -r requirements.lock

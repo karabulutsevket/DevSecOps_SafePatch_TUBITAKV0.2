@@ -116,7 +116,7 @@ Her hafta: hedef, görevler (sorumlu), çıktı, geçiş koşulu. Bir fazın ge�
 - [x] **Projenin kendi CI'ı:** GitHub Actions her push ve PR'da birim testlerini çalıştırır; eylemler commit özetine sabitlenir, yetkiler salt okunur — *Şevket*
 - [x] **Sahte rehber notuna karşı koruma:** rehber notu her istekte rastgele bir işaretle ayrılır; kaynakta veya bağlam dosyalarında not başlığı geçerse iş "şüpheli istem enjeksiyonu" gerekçesiyle insana devredilir — *Yiğithan*
 - [ ] Ürünün varsayılan yeniden deneme stratejisine karar ver ve uygula (`v01` → `guided` veya `guided+context`) — *ekip, Kadir*
-- [ ] **V0.2 kurulum belgesi:** bu makinede doğrulanmış adımlar (Windows + WSL), doğrulanmamış adımlar ayrıca işaretli — *Şevket*
+- [x] **V0.2 kurulum belgesi:** bu makinede doğrulanmış adımlar (Windows + WSL), doğrulanmamış adımlar ayrıca işaretli — *Şevket*
 - [ ] Gerçek depo desteği tasarımı: proje tanımı şeması ve kaldırılacak sabitlerin envanteri (aşağıdaki iş akışı) — *Şevket, Reşat*
 - [ ] Toplam 3 müşteri görüşmesi; görüşmelerde kullanılan Java API'leri, tarayıcılar ve Git platformu (GitLab/GitHub) sorulur — *Şevket, Reşat*
 
