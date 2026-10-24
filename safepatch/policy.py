@@ -1,24 +1,25 @@
 """Policy is trusted code; repository/model prose has no authority here."""
 import difflib
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 import re
 
-from safepatch.common import SOURCE, digest
+from safepatch.common import digest, safe_path
 
 
 class PolicyError(ValueError):
     pass
 
 
-def validate_patch(base: dict[str, str], patch, workspace: Path | None = None):
+def validate_patch(base, patch, workspace: Path | None = None, allowed=()):
+    """`allowed`: files this patch may change (the finding's file, already checked against
+    the project descriptor by the caller). Nothing is editable by default."""
     seen = set()
     diffs = []
     changed = 0
     if not 1 <= len(patch.edits) <= 3:
         raise PolicyError("file_budget")
     for edit in patch.edits:
-        path = PurePosixPath(edit.path)
-        if edit.path != SOURCE or path.is_absolute() or ".." in path.parts or "\\" in edit.path or ":" in edit.path or edit.path in seen:
+        if edit.path not in allowed or not safe_path(edit.path) or edit.path in seen:
             raise PolicyError("protected_or_unauthorized_path")
         if workspace:
             dest = workspace / edit.path

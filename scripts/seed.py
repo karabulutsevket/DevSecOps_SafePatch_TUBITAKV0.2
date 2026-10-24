@@ -16,7 +16,7 @@ SOURCE = "src/main/java/demo/DemoService.java"
 
 
 def seed(destination=None):
-    destination = Path(destination or ROOT / ".runtime/repos-v3")
+    destination = Path(destination or os.environ.get("REPO_ROOT") or ROOT / ".runtime/repos-v3")
     destination.mkdir(parents=True, exist_ok=True)
     manifest = {}
     env = {**os.environ, "GIT_AUTHOR_DATE": "2026-09-11T00:00:00Z", "GIT_COMMITTER_DATE": "2026-09-11T00:00:00Z"}
@@ -49,8 +49,8 @@ def seed(destination=None):
             checksums = {p: hashlib.sha256(subprocess.check_output(["git", "show", f"{commit}:{p}"], cwd=repo)).hexdigest() for p in tracked}
             manifest[case] = {"kind": kind, "split": "development" if number == 1 else "evaluation", "commit": commit, "files": checksums, "allowed": [SOURCE]}
     (destination / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
-    # Project descriptors (safepatch-project/1) reproducing today's behaviour; not yet used by the pipeline.
-    projects = destination.parent / "projects"
+    # Project descriptors (safepatch-project/1) used by the pipeline (safepatch/repository.py).
+    projects = Path(os.environ.get("PROJECTS_DIR") or destination.parent / "projects")
     projects.mkdir(parents=True, exist_ok=True)
     for case, entry in manifest.items():
         descriptor = synthetic_descriptor(case, entry, (destination / case).resolve())

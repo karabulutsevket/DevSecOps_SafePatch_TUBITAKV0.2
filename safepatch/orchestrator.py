@@ -13,13 +13,12 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import Field
 
 from safepatch.auth import identity, require_role
-from safepatch.common import POLICY, ROOT, Strict, request, seal, secret, setting
+from safepatch.common import POLICY, PROJECT_ID, ROOT, Strict, request, seal, secret, setting
 from safepatch.engine import Engine
 from safepatch.memory import Memory, context_for
 from safepatch.acceptance import check_evidence
 from safepatch.policy import PolicyError
 from safepatch.repository import baseline
-from safepatch.common import SOURCE
 from safepatch.repository import registry
 from safepatch.store import Store
 
@@ -77,9 +76,10 @@ def promote(req: Promote, user=Depends(identity)):
         job = get_job(req.job_id, user)
         ensure_memory_and_evidence(job)
         case, files = baseline(job["case_id"], job["base_commit"])
-        context = context_for(case, files, job["baseline"]["scans"][0]["findings"][0])
+        finding = job["baseline"]["scans"][0]["findings"][0]
+        context = context_for(case, files, finding)
         try:
-            return Memory(store).promote(job, context, files[SOURCE], user["subject"], req.reason)
+            return Memory(store).promote(job, context, files[finding["file"]], user["subject"], req.reason)
         except PolicyError as exc:
             raise HTTPException(409, str(exc)) from exc
 
@@ -140,7 +140,7 @@ def cases(user=Depends(identity)):
 
 
 class NewJob(Strict):
-    case_id: str = Field(pattern=r"^(sql|path|command)-0[123]$")
+    case_id: str = Field(pattern=PROJECT_ID)   # registered project id (descriptor)
     idempotency_key: str = Field(min_length=8, max_length=100, pattern=r"^[A-Za-z0-9_-]+$")
     scanner: str = Field(default="semgrep", pattern=r"^(builtin|semgrep|sonarqube\+semgrep)$")
     max_attempts: int = Field(default=3, ge=1, le=3)

@@ -2,16 +2,16 @@
 
 A descriptor is administrator configuration, never repository content: nothing inside
 a customer repository can widen what is editable or change how it is built and tested.
-Not yet wired into the pipeline (roadmap week 3).
+Used by safepatch/repository.py since roadmap week 3.
 """
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 import re
 from typing import Literal
 
 from pydantic import ConfigDict, Field, field_validator
 import yaml
 
-from safepatch.common import SOURCE, Strict
+from safepatch.common import PROJECT_ID, SOURCE, Strict, safe_path
 
 # Always protected, whatever the descriptor says: tests, build and CI configuration.
 PROTECTED = ("pom.xml", "**/pom.xml", "*.gradle", "**/*.gradle", "*.gradle.kts", "**/*.gradle.kts",
@@ -25,12 +25,6 @@ PROPERTY = re.compile(r"^-D([A-Za-z0-9_.-]+)(=[A-Za-z0-9_.,-]*)?$")
 # Properties SafePatch itself controls (offline cache, JVM arguments, test selection).
 RESERVED_PROPERTIES = {"maven.repo.local", "argLine", "test", "surefire.failIfNoSpecifiedTests", "skip", "maven.test.skip"}
 SYNTHETIC_MARKERS = {"sql": "SQL_INJECTION_REGRESSION", "path": "PATH_TRAVERSAL_REGRESSION", "command": "COMMAND_INJECTION_REGRESSION"}
-
-
-def safe_path(path):
-    """Relative POSIX path inside the repository; no traversal, drive or backslash."""
-    pure = PurePosixPath(path)
-    return bool(path) and not pure.is_absolute() and ".." not in pure.parts and "\\" not in path and ":" not in path
 
 
 def glob_regex(pattern):
@@ -133,7 +127,7 @@ class Limits(Strict):
 class ProjectSpec(Strict):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
     schema_version: Literal["safepatch-project/1"] = Field(alias="schema")
-    id: str = Field(pattern=r"^[a-z0-9][a-z0-9._-]{0,62}$")
+    id: str = Field(pattern=PROJECT_ID)
     scope: str = Field(pattern=r"^[A-Za-z0-9._-]{1,64}$")
     repository: Repository
     java: Literal["8", "11", "17", "21"]

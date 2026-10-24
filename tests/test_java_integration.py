@@ -18,7 +18,7 @@ pytestmark = [pytest.mark.integration, pytest.mark.skipif(os.environ.get("RUN_JA
 
 def run_case(case_id, patch=None):
     spec = registry()[1][case_id]
-    return execute(VerifyRequest(job_id=uuid.uuid4().hex, case_id=case_id, base_commit=spec["commit"], attempt=1 if patch else 0, deadline=time.time() + 180, scanner="builtin", patch=patch))
+    return execute(VerifyRequest(job_id=uuid.uuid4().hex, case_id=case_id, base_commit=spec["commit"], attempt=1 if patch else 0, deadline=time.time() + 180, scanner="builtin", patch=patch, target_file=SOURCE if patch else None))
 
 
 def record(name, result):

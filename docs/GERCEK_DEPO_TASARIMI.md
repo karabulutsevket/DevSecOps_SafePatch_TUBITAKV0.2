@@ -2,7 +2,7 @@
 
 **Durum:** Onaylandı, 25 Ekim 2026 (kararlar Bölüm 6'da) · **Tarih:** 25 Ekim 2026
 
-Bu belge iki şey içerir: (1) V0.2 kodunun bugün yalnız 9 sentetik vakayı işleyebilmesine neden olan sabitlerin envanteri, (2) bunların yerine gelecek **proje tanımı** şeması ve tasarım kararları. Kod tarafında şema `safepatch/project.py` içinde tanımlıdır; henüz iş akışına bağlanmadı (Hafta 3).
+Bu belge iki şey içerir: (1) V0.2 kodunun bugün yalnız 9 sentetik vakayı işleyebilmesine neden olan sabitlerin envanteri, (2) bunların yerine gelecek **proje tanımı** şeması ve tasarım kararları. Kod tarafında şema `safepatch/project.py` içinde tanımlıdır; Hafta 3'te iş akışına bağlandı (Bölüm 7).
 
 ---
 
@@ -103,7 +103,7 @@ Vul4J her vaka için zafiyeti gösteren testleri listeler; bu bilginin şemaya n
 | Hafta | Adım | Kabul ölçütü |
 |---|---|---|
 | 2 | Şema (`safepatch/project.py`), doğrulama kuralları, 9 sentetik vakanın tanımları, testler | Ekip onayı; tanımlar şemadan geçiyor |
-| 3 | Kayıt ve çalışma alanı: `git` ile çıkarma, ikili dosya desteği, gerçek taban commit'in çocuğu olarak aday commit; politika `editable` + koruma listesiyle | 9 sentetik vaka yeni yoldan aynı sonucu veriyor; mevcut testler ve kısa H2 tekrarı |
+| 3 | Kayıt ve çalışma alanı: `git` ile çıkarma, ikili dosya desteği, gerçek taban commit'in çocuğu olarak aday commit; politika `editable` + koruma listesiyle | 9 sentetik vaka yeni yoldan aynı sonucu veriyor; mevcut testler ve kısa H2 tekrarı **(25 Ekim: tamamlandı; 194 birim + 10 gerçek Maven/JUnit entegrasyon testi)** |
 | 4 | Bulgu başına iş; bulgu gerçek dosya yolunu taşır; Surefire raporlarının seçicilerle okunması; tanık yoksa davranış (açık karar 3) | Tek depoda birden çok bulgu ayrı işler olarak ilerliyor |
 | 5 | İlk gerçek açık kaynak proje (Vul4J) uçtan uca | Derleme, test, bulgu, yama, doğrulama kayıtları |
 | 5–6 | Docker sandbox | Gerçek proje sandbox içinde |
@@ -129,3 +129,24 @@ Vul4J her vaka için zafiyeti gösteren testleri listeler; bu bilginin şemaya n
 | 3 | Güvenlik tanığı olmayan proje | Aday "incelemeye hazır" olmaz; `needs_human` + `security_witness_missing`, diff ve kanıtlar ekli | Proje sahibi seçti |
 | 4 | Uzun davranış testleri | İlk sürümde tanımdaki seçicilerle sınırlı; çok modüllü derleme sonraki adım | Önerilen varsayılan; itiraz gelirse değişir |
 | 5 | Bir işte dosya sayısı | Yalnız bulgunun dosyası (ve o dosya `editable` kurallarına uymalı); çok dosyalı düzeltme insana | Proje sahibi seçti |
+
+---
+
+## 7. Hafta 3 uygulaması (25 Ekim 2026)
+
+| Envanter # | Ne yapıldı |
+|---|---|
+| 1 | Vaka kimliği şemada genel proje kimliği deseni; kayıt kontrolü proje tanımlarından |
+| 2, 13 | Değiştirilebilir dosya artık sabit değil: yalnız bulgunun dosyası ve o dosya tanımın `editable` kurallarına uymalı (`repository.allowed_files`); politika izinli dosyayı açıkça ister |
+| 3 | `baseline()` dosyaları sabit commit'ten ihtiyaç duyuldukça okur; ikili dosya yalnız metin olarak okunmaya çalışılırsa reddedilir, ham baytı ayrıca okunabilir |
+| 4 | Çalışma alanı `git clone` + sabit commit; ikili dosyalar ve kipler korunur, uzak depo bağlantısı silinir |
+| 5 | Aday commit gerçek taban commit'in çocuğu; runner ve bağımsız doğrulayıcı aynı yamadan aynı commit'i üretir |
+| 6, 7 | Testler tanımdaki seçicilerle çalışır; bütün Surefire raporları okunur; işaretler tanımdan gelir |
+| 8 | Çıktı yolu tanımdan; tanımda yoksa aday kabul edilmez (gerçek projeler için Hafta 5) |
+| 9 | Tarama yolları tanımdan; bulgu gerçek göreli yolunu taşır, çalışma alanı dışı yol reddedilir |
+| — | Korunan dosyaların değişmediği `git status` ile denetlenir (bütün dosyaları belleğe almadan) |
+| — | Güvenlik tanığı olmayan projede aday asla kabul edilmez; iş `security_witness_missing` ile insana gider (karar 3) |
+
+Kalan envanter maddeleri: 10 ve 12 (CWE eşlemesi, Hafta 4), 11 (bulgu başına iş, Hafta 4), 14 (genel sistem talimatı, Hafta 4), 15 (staging yalnız sentetik demoda).
+
+**Doğrulama:** 194 birim testi; gerçek Maven/JUnit ile 10 entegrasyon testi (9 sentetik vaka: başlangıçta zafiyet, referans düzeltme kabul, işlevi bozan yama ret, test dosyasına dokunan yama çalıştırılmadan ret; 1 staging/geri alma). Gerçek projeye benzeyen geçici bir depoyla (birden çok paket, ikili dosya, commit geçmişi) okuma, klon, aday commit ve izin testleri.

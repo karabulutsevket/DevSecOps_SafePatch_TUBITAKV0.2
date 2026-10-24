@@ -182,3 +182,41 @@ def test_success_waits_for_human(job_store, patch_factory, source):
     job, _ = scenario(job_store, patch_factory, source, [success])
     assert job["status"] == "awaiting_review"
     assert job["approval"] is None
+
+
+def test_finding_outside_editable_scope_never_reaches_the_model(job_store, patch_factory, source, monkeypatch):
+    db, job = job_store
+    bodies = []
+    def call(url, method="GET", **kwargs):
+        if url.endswith("/propose"):
+            bodies.append(kwargs.get("body"))
+        return {"baseline_valid": True, "scans": [{"findings": [{"rule_id": "test.rule", "file": "src/test/java/demo/SecurityTest.java"}]}]}
+    Engine(db, call).run(job["id"])
+    assert db.get(job["id"])["reason"] == "finding_file_not_editable" and bodies == []
+
+
+def test_missing_security_witness_goes_to_a_human(job_store, patch_factory, source, monkeypatch):
+    job, bodies = run_strategy(job_store, patch_factory, source, monkeypatch, "guided", [{"passed": False, "feedback": {"code": "security_witness_missing"}}])
+    assert job["status"] == "needs_human" and job["reason"] == "security_witness_missing"
+    assert len(bodies) == 1 and job["attempts"][0]["verification"]["feedback"]["code"] == "security_witness_missing"
+
+
+def test_read_only_context_is_the_findings_package():
+    from safepatch.engine import read_only_context
+    files = {"src/main/java/a/A.java": "a", "src/main/java/a/B.java": "b", "src/main/java/a/sub/C.java": "c",
+             "src/main/java/b/D.java": "d", "src/test/java/a/ATest.java": "t", "src/main/java/a/notes.txt": "n"}
+    assert read_only_context(files, "src/main/java/a/A.java") == {"src/main/java/a/B.java": "b"}
+
+
+def test_verify_requests_carry_the_finding_file(job_store, patch_factory, source, monkeypatch):
+    db, job = job_store
+    verified = []
+    def call(url, method="GET", **kwargs):
+        body = kwargs.get("body", {})
+        if url.endswith("/propose"):
+            return {"mode": "mock-test", "patch": patch_factory(source[SOURCE] + "// v\n").model_dump()}
+        verified.append(body)
+        return fake_initial() if body.get("attempt") == 0 else {"passed": False, "feedback": {"code": "compile"}}
+    db.mutate(job["id"], lambda j: j.update(max_attempts=1))
+    Engine(db, call).run(job["id"])
+    assert verified[0]["target_file"] is None and verified[1]["target_file"] == SOURCE

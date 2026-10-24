@@ -3,18 +3,26 @@ import hmac
 import ipaddress
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import socket
 import time
 from urllib.parse import urlsplit
 
 import httpx
 from fastapi import Header, HTTPException
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 ROOT = Path(__file__).resolve().parents[1]
 POLICY = "java-synthetic-v1"
+# Editable file of the nine synthetic cases; real projects declare theirs in a descriptor.
 SOURCE = "src/main/java/demo/DemoService.java"
+PROJECT_ID = r"^[a-z0-9][a-z0-9._-]{0,62}$"
+
+
+def safe_path(path):
+    """Relative POSIX path inside a repository; no traversal, drive letter or backslash."""
+    pure = PurePosixPath(path or "")
+    return bool(path) and not pure.is_absolute() and ".." not in pure.parts and "\\" not in path and ":" not in path
 
 
 def canonical(value):
@@ -115,12 +123,21 @@ class Patch(Strict):
 
 class VerifyRequest(Strict):
     job_id: str = Field(pattern=r"^[a-f0-9]{32}$")
-    case_id: str = Field(pattern=r"^(sql|path|command)-0[123]$")
+    case_id: str = Field(pattern=PROJECT_ID)
     base_commit: str = Field(pattern=r"^[a-f0-9]{40}$")
     attempt: int = Field(ge=0, le=3)
     deadline: float
     patch: Patch | None = None
     scanner: str = Field(default="builtin", pattern=r"^(builtin|semgrep|sonarqube\+semgrep)$")
+    # The finding's file: the only file a patch may change (decision 5, 25 Oct 2026).
+    target_file: str | None = Field(default=None, max_length=300)
+
+    @field_validator("target_file")
+    @classmethod
+    def target_path(cls, value):
+        if value is not None and not safe_path(value):
+            raise ValueError("unsafe target file")
+        return value
 
 
 def remaining(deadline, cap=240):

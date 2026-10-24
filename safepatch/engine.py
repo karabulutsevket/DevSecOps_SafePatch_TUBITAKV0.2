@@ -1,12 +1,13 @@
 import difflib
 import time
 
-from safepatch.common import POLICY, SOURCE, Patch, canonical, digest, remaining, request, secret, setting
+from safepatch.common import POLICY, Patch, canonical, digest, remaining, request, secret, setting
 from safepatch.memory import Memory, context_for
 from safepatch.acceptance import manifest
 from safepatch.feedback import classify, guidance_for, imitates_note
 from safepatch.policy import PolicyError, validate_patch
-from safepatch.repository import baseline
+from safepatch.project import is_protected
+from safepatch.repository import allowed_files, baseline
 
 TERMINAL = {"awaiting_review", "rejected", "needs_human", "infrastructure_error", "cancelled", "expired", "approved", "deployed"}
 # v01: original loop. sampling: retries at higher temperature. guided: plus classified
@@ -14,13 +15,19 @@ TERMINAL = {"awaiting_review", "rejected", "needs_human", "infrastructure_error"
 STRATEGIES = ("v01", "sampling", "guided", "guided+context")
 
 
-def read_only_context(files, limit=8000):
-    """Other main sources of the trusted baseline; the model may read them, never edit."""
+def read_only_context(files, target, limit=8000):
+    """Sibling sources in the finding's package; the model may read them, never edit."""
+    folder = target.rpartition("/")[0]
     context, size = {}, 0
-    for path, content in sorted(files.items()):
-        if path.startswith("src/main/java/") and path.endswith(".java") and path != SOURCE and size + len(content) <= limit:
-            context[path] = content
-            size += len(content)
+    for path in sorted(files):
+        if path != target and path.endswith(".java") and path.rpartition("/")[0] == folder and not is_protected(path):
+            try:
+                content = files[path]
+            except PolicyError:
+                continue
+            if size + len(content) <= limit:
+                context[path] = content
+                size += len(content)
     return context
 
 
@@ -82,7 +89,7 @@ class Engine:
     def _run(self, job_id):
         job = self.active(job_id)
         case, files = baseline(job["case_id"], job["base_commit"])
-        verify = {"job_id": job_id, "case_id": job["case_id"], "base_commit": job["base_commit"], "deadline": job["deadline"], "scanner": job["scanner"], "attempt": 0, "patch": None}
+        verify = {"job_id": job_id, "case_id": job["case_id"], "base_commit": job["base_commit"], "deadline": job["deadline"], "scanner": job["scanner"], "attempt": 0, "patch": None, "target_file": None}
         self.set(job_id, "scanning")
         initial = self.worker("worker2", "/verify", verify, job["deadline"])
         self.active(job_id)
@@ -91,8 +98,16 @@ class Engine:
             self.set(job_id, "needs_human", reason="baseline_missing_expected_failing_security_assertion_or_finding")
             return
         finding = initial["scans"][0]["findings"][0]
+        # Only the finding's file may change, and only if the descriptor makes it editable.
+        target = finding.get("file")
+        allowed = allowed_files(case["spec"], files, target)
+        if not allowed:
+            self.set(job_id, "needs_human", reason="finding_file_not_editable")
+            return
+        source = files[target]
+        siblings = read_only_context(files, target)
         # Everything the model could read is checked before any model call.
-        if imitates_note(files[SOURCE], *read_only_context(files).values(), canonical(finding)):
+        if imitates_note(source, *siblings.values(), canonical(finding)):
             self.set(job_id, "needs_human", reason="suspected_prompt_injection")
             return
         context = context_for(case, files, finding)
@@ -107,13 +122,13 @@ class Engine:
                 self.memory.use(selected["id"], job_id)
                 self.store.mutate(job_id, lambda j: j.update(memory_ids=[selected["id"]]))
             memory_data = {"patch_diff": selected["diff"], "context": selected["context"]}
-            if job.get("memory_mode", "guarded") == "guarded" and selected["context"].get("source_sha256") == digest(files[SOURCE]):
+            if job.get("memory_mode", "guarded") == "guarded" and selected["context"].get("source_sha256") == digest(source):
                 replay = {"mode": "approved-memory-replay", "patch": selected["patch"], "memory_id": selected["id"],
                           "metrics": {"duration_seconds": lookup["duration_seconds"], "prompt_tokens_measured": 0, "output_tokens_measured": 0}}
         strategy = job.get("strategy", "v01")
         if strategy not in STRATEGIES:
             raise PolicyError("unknown_retry_strategy")
-        context_files = read_only_context(files) if strategy == "guided+context" else {}
+        context_files = siblings if strategy == "guided+context" else {}
         seen, previous_feedback, feedback, failure = set(), None, None, None
         for attempt in range(1, job["max_attempts"] + 1):
             self.active(job_id)
@@ -131,8 +146,8 @@ class Engine:
                 proposal = replay
             else:
                 self.store.mutate(job_id, lambda j: j.update(tokens_reserved=used + reservation))
-                options = retry_options(strategy, case["kind"], attempt, failure, context_files)
-                proposal = self.worker("worker1", "/propose", {"job_id": job_id, "attempt": attempt, "deadline": job["deadline"], "source": {SOURCE: files[SOURCE]}, "finding": finding, "feedback": feedback, "memory_data": memory_data, "seed": job.get("seed", 42) + attempt, **options}, job["deadline"])
+                options = retry_options(strategy, case.get("kind"), attempt, failure, context_files)
+                proposal = self.worker("worker1", "/propose", {"job_id": job_id, "attempt": attempt, "deadline": job["deadline"], "source": {target: source}, "finding": finding, "feedback": feedback, "memory_data": memory_data, "seed": job.get("seed", 42) + attempt, **options}, job["deadline"])
             retry = {"strategy": strategy, "temperature": options.get("temperature", 0.0), "guidance_level": attempt - 2 if "guidance" in options else None, "context_paths": sorted(options.get("context_files", {}))}
             self.active(job_id)
             if proposal.get("mode") not in ("real-local-model", "mock-test", "approved-memory-replay"):
@@ -143,7 +158,7 @@ class Engine:
                 raise PolicyError("mock_result_on_real_job")
             patch = Patch.model_validate(proposal["patch"])
             try:
-                meta = validate_patch(files, patch)
+                meta = validate_patch(files, patch, allowed=allowed)
             except PolicyError as exc:
                 self.store.mutate(job_id, lambda j: j["attempts"].append({"number": attempt, "proposal": proposal, "policy_error": str(exc)}))
                 raise
@@ -157,12 +172,16 @@ class Engine:
                 return
             seen.add(meta["patch_sha256"])
             self.set(job_id, "verifying")
-            verified = self.worker("worker2", "/verify", {**verify, "attempt": attempt, "patch": patch.model_dump()}, job["deadline"])
+            verified = self.worker("worker2", "/verify", {**verify, "attempt": attempt, "patch": patch.model_dump(), "target_file": target}, job["deadline"])
             self.active(job_id)
             record["verification"] = verified
             failure = None if verified.get("passed") else classify(verified)
             record["failure"] = failure
             self.store.mutate(job_id, lambda j: j["attempts"].append(record))
+            if verified.get("feedback", {}).get("code") == "security_witness_missing":
+                # Builds, behaves and scans clean, but nothing proves the weakness is gone (decision 3).
+                self.set(job_id, "needs_human", reason="security_witness_missing")
+                return
             if verified.get("passed"):
                 current = self.active(job_id)
                 self.memory.assert_active(current.get("memory_ids", []))
@@ -179,8 +198,8 @@ class Engine:
                 return
             if strategy.startswith("guided"):
                 # Each retry receives deeper guidance, so the attempt budget bounds the loop.
-                edited = next(e.content for e in patch.edits if e.path == SOURCE)
-                feedback = {**failure, "previous_patch_diff": changed_lines(files[SOURCE], edited)}
+                edited = next(e.content for e in patch.edits if e.path == target)
+                feedback = {**failure, "previous_patch_diff": changed_lines(source, edited)}
                 continue
             feedback = verified.get("feedback", {"code": "unknown_verification_failure"})
             # Only deterministic failure categories enter no-progress comparison.

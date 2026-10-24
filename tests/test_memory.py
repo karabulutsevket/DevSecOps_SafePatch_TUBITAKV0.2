@@ -16,7 +16,7 @@ from mock_patches import correct_patch
 def approved_record(db, job, actor="SIMULATED-UNIT-REVIEWER"):
     case, files = baseline(job["case_id"], job["base_commit"])
     patch = correct_patch(case["kind"], files)
-    meta = validate_patch(files, patch)
+    meta = validate_patch(files, patch, allowed={SOURCE})
     ready(db, job)
     j = db.get(job["id"])
     j["candidate"].update(patch_sha256=meta["patch_sha256"], diff=meta["diff"])
@@ -24,7 +24,7 @@ def approved_record(db, job, actor="SIMULATED-UNIT-REVIEWER"):
     j["candidate"]["evidence_sha256"] = digest(canonical(j["acceptance_manifest"]))
     j.update(status="approved", attempts=[{"proposal": {"mode": "mock-test", "patch": patch.model_dump()}, "patch_sha256": meta["patch_sha256"], "verification": {"passed": True}}])
     j["approval"] = {"decision": "approve", "candidate_commit": j["candidate"]["commit"], "artifact_sha256": j["candidate"]["artifact_sha256"], "policy_version": j["candidate"]["policy_version"], "expires_at": time.time()+300, "reviewer": actor}
-    j["baseline"] = {"scans": [{"findings": [{"rule_id": "bigg.java.sql-concatenation"}]}]}
+    j["baseline"] = {"scans": [{"findings": [{"rule_id": "bigg.java.sql-concatenation", "file": SOURCE}]}]}
     db.mutate(j["id"], lambda x: x.update(j))
     context = context_for(case, files, j["baseline"]["scans"][0]["findings"][0])
     return Memory(db).promote(j, context, files[SOURCE], actor, "Simulated unit fixture approval")
@@ -129,7 +129,7 @@ def test_replay_runs_verifier_but_not_llm(job_store):
         calls.append(url)
         assert not url.endswith('/propose'), "exact replay must not invoke LLM"
         if kwargs['body']['attempt'] == 0:
-            return {"baseline_valid": True, "scans": [{"findings": [{"rule_id": record["context"]["rule_id"]}]}]}
+            return {"baseline_valid": True, "scans": [{"findings": [{"rule_id": record["context"]["rule_id"], "file": record["context"]["source_path"]}]}]}
         return {"passed": False, "feedback": {"code": "security_regression"}}
     db.mutate(job["id"], lambda j: j.update(max_attempts=1))
     Engine(db, call).run(job["id"])
@@ -144,7 +144,7 @@ def test_revocation_during_verification_blocks_candidate(job_store):
     db.mutate(job["id"], lambda j: j.update(status="queued", approval=None, attempts=[]))
     def call(url, *args, **kwargs):
         if kwargs['body']['attempt'] == 0:
-            return {"baseline_valid": True, "scans": [{"findings": [{"rule_id": record["context"]["rule_id"]}]}]}
+            return {"baseline_valid": True, "scans": [{"findings": [{"rule_id": record["context"]["rule_id"], "file": record["context"]["source_path"]}]}]}
         Memory(db).change(record['id'], 'revoked', 'reviewer', 'Concurrent revocation')
         return {"passed": True}
     Engine(db, call).run(job["id"])

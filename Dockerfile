@@ -19,8 +19,8 @@ FROM base AS seeded
 USER root
 COPY samples ./samples
 COPY scripts/seed.py ./scripts/seed.py
-RUN python scripts/seed.py > /dev/null && mv /app/.runtime/repos-v3 /repos && chmod -R a-w /repos
-ENV REPO_ROOT=/repos
+RUN REPO_ROOT=/repos PROJECTS_DIR=/projects python scripts/seed.py > /dev/null && chmod -R a-w /repos /projects
+ENV REPO_ROOT=/repos PROJECTS_DIR=/projects
 USER app
 
 FROM seeded AS verifier

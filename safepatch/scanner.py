@@ -5,7 +5,7 @@ import re
 import time
 import uuid
 
-from safepatch.common import SOURCE, digest, request, remaining
+from safepatch.common import digest, request, remaining, safe_path
 
 RULES = {
     "sql": ("bigg.java.sql-concatenation", "CWE-89", r'(?:String\s+\w+\s*=\s*"SELECT[^;]+\+\s*input|executeQuery\([^;]+\+\s*input)'),
@@ -14,26 +14,46 @@ RULES = {
 }
 
 
-def builtin_scan(files, kind, commit):
-    """Pattern-limited fallback, NOT SonarQube/Semgrep and not a general Java analyzer."""
-    code = files[SOURCE]
-    rule, cwe, pattern = RULES[kind]
-    match = re.search(pattern, code)
-    if kind == "path" and all(s in code for s in ("toRealPath()", ".startsWith(", "throw ")):
-        match = None
+def in_scope(path, paths):
+    return any(path == p or path.startswith(p.rstrip("/") + "/") for p in paths)
+
+
+def builtin_scan(files, paths, kind, commit):
+    """Pattern-limited fallback for the synthetic cases, NOT SonarQube/Semgrep and not a general
+    Java analyzer. `kind` is the synthetic lab label; without it no rule applies."""
     findings = []
-    if match:
-        findings = [{"tool": "builtin-demo", "rule_id": rule, "cwe": cwe, "type": "VULNERABILITY", "file": SOURCE, "line": code[:match.start()].count("\n") + 1, "fingerprint": digest(rule + SOURCE), "severity": "HIGH"}]
-    return {"tool": "builtin-demo", "version": "1.0.0", "coverage": "three owned synthetic patterns only", "status": "ok", "analysis_id": uuid.uuid4().hex, "commit": commit, "source_sha256": digest(code), "findings": findings}
+    if kind in RULES:
+        rule, cwe, pattern = RULES[kind]
+        for path in sorted(p for p in files if p.endswith(".java") and in_scope(p, paths)):
+            code = files[path]
+            match = re.search(pattern, code)
+            if kind == "path" and all(s in code for s in ("toRealPath()", ".startsWith(", "throw ")):
+                match = None
+            if match:
+                findings.append({"tool": "builtin-demo", "rule_id": rule, "cwe": cwe, "type": "VULNERABILITY", "file": path, "line": code[:match.start()].count("\n") + 1, "fingerprint": digest(rule + path), "severity": "HIGH"})
+    return {"tool": "builtin-demo", "version": "1.0.0", "coverage": "three owned synthetic patterns only", "status": "ok", "analysis_id": uuid.uuid4().hex, "commit": commit, "findings": findings}
 
 
-def parse_semgrep(data, commit, version, source_sha):
+def relative_path(raw, prefixes):
+    """Map a scanner-reported path back to a repository-relative path."""
+    path = raw.replace("\\", "/")
+    for prefix in prefixes:
+        prefix = prefix.replace("\\", "/").rstrip("/") + "/"
+        if path.startswith(prefix):
+            path = path[len(prefix):]
+            break
+    if not safe_path(path):
+        raise RuntimeError("scanner_path_outside_workspace")
+    return path
+
+
+def parse_semgrep(data, commit, version, prefixes):
     if data.get("errors") or "results" not in data or not data.get("paths", {}).get("scanned"):
         raise RuntimeError("semgrep_incomplete_scan")
-    findings = [{"tool": "semgrep", "rule_id": r["check_id"][r["check_id"].find("bigg.java."):] if "bigg.java." in r["check_id"] else r["check_id"], "raw_rule_id": r["check_id"], "type": "VULNERABILITY", "file": SOURCE, "line": r["start"]["line"], "severity": r["extra"]["severity"], "message": r["extra"].get("message", "")[:300], "cwe": r["extra"].get("metadata", {}).get("cwe")} for r in data["results"]]
+    findings = [{"tool": "semgrep", "rule_id": r["check_id"][r["check_id"].find("bigg.java."):] if "bigg.java." in r["check_id"] else r["check_id"], "raw_rule_id": r["check_id"], "type": "VULNERABILITY", "file": relative_path(r["path"], prefixes), "line": r["start"]["line"], "severity": r["extra"]["severity"], "message": r["extra"].get("message", "")[:300], "cwe": r["extra"].get("metadata", {}).get("cwe")} for r in data["results"]]
     for finding in findings:
-        finding["fingerprint"] = digest(finding["rule_id"] + SOURCE)
-    return {"tool": "semgrep", "version": version, "status": "ok", "analysis_id": uuid.uuid4().hex, "commit": commit, "source_sha256": source_sha, "findings": findings}
+        finding["fingerprint"] = digest(finding["rule_id"] + finding["file"])
+    return {"tool": "semgrep", "version": version, "status": "ok", "analysis_id": uuid.uuid4().hex, "commit": commit, "findings": findings}
 
 
 class SonarAdapter:

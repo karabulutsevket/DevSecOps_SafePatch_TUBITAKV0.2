@@ -12,7 +12,7 @@ $env:DEPLOYER_URL = 'http://127.0.0.1:' + ($PortBase+4)
 if (!(Test-Path -LiteralPath $taskPython)) { throw 'Python environment missing; follow the README installation steps.' }
 & $taskPython scripts/init_config.py
 if ($LASTEXITCODE -ne 0) { throw 'Configuration initialization failed; services were not started.' }
-if (!(Test-Path -LiteralPath '.runtime/repos-v3/manifest.json')) {
+if (!(Test-Path -LiteralPath '.runtime/repos-v3/manifest.json') -or !(Test-Path -LiteralPath '.runtime/projects')) {
     & $taskPython scripts/seed.py | Out-Null
     if ($LASTEXITCODE -ne 0) { throw 'Synthetic repository initialization failed; services were not started.' }
 }

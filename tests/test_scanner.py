@@ -9,7 +9,7 @@ from safepatch.scanner import SonarAdapter, parse_semgrep
 @pytest.mark.parametrize("response", [{}, {"results": [], "errors": [{"type": "parse"}]}, {"results": [], "paths": {"scanned": []}}])
 def test_incomplete_semgrep_rejected(response):
     with pytest.raises(RuntimeError):
-        parse_semgrep(response, "a" * 40, "1.136.0", "b" * 64)
+        parse_semgrep(response, "a" * 40, "1.136.0", ["/workspace"])
 
 
 def sonar_mock(tmp_path, override):
@@ -60,3 +60,38 @@ def test_sonar_wrong_project_rejected(tmp_path):
     adapter, report = sonar_mock(tmp_path, lambda u, r: r)
     with pytest.raises(RuntimeError, match="identity_mismatch"):
         adapter.collect(report, "different-job", "r1", time.time() + 10)
+
+
+@pytest.mark.parametrize("raw,prefixes,expected", [
+    ("/mnt/c/run/ws/src/main/java/org/x/A.java", ["/mnt/c/run/ws"], "src/main/java/org/x/A.java"),
+    (r"C:\run\ws\src\main\java\A.java", [r"C:\run\ws"], "src/main/java/A.java"),
+    ("src/main/java/A.java", ["/elsewhere"], "src/main/java/A.java"),
+])
+def test_scanner_paths_become_repository_relative(raw, prefixes, expected):
+    from safepatch.scanner import relative_path
+    assert relative_path(raw, prefixes) == expected
+
+
+@pytest.mark.parametrize("raw", ["/etc/passwd", "/mnt/c/run/other/A.java", "../A.java"])
+def test_scanner_paths_outside_the_workspace_are_rejected(raw):
+    from safepatch.scanner import relative_path
+    with pytest.raises(RuntimeError, match="outside_workspace"):
+        relative_path(raw, ["/mnt/c/run/ws"])
+
+
+def test_semgrep_findings_keep_their_real_file():
+    data = {"version": "1.136.0", "errors": [], "paths": {"scanned": ["x"]}, "results": [
+        {"check_id": "rules.bigg.java.sql-concatenation", "path": "/mnt/c/ws/src/main/java/org/x/Dao.java", "start": {"line": 7}, "extra": {"severity": "ERROR", "message": "m", "metadata": {"cwe": ["CWE-89"]}}}]}
+    finding = parse_semgrep(data, "a" * 40, "1.136.0", ["/mnt/c/ws"])["findings"][0]
+    assert finding["file"] == "src/main/java/org/x/Dao.java" and finding["rule_id"] == "bigg.java.sql-concatenation"
+    from safepatch.common import digest
+    assert finding["fingerprint"] == digest("bigg.java.sql-concatenation" + "src/main/java/org/x/Dao.java")
+
+
+def test_builtin_scanner_uses_descriptor_paths_and_lab_kind():
+    from safepatch.scanner import builtin_scan
+    vulnerable = 'String sql = "SELECT name FROM t WHERE n = \'" + input + "\'"; executeQuery(sql);'
+    files = {"src/main/java/a/A.java": vulnerable, "src/main/java/b/B.java": vulnerable, "src/test/java/a/T.java": vulnerable}
+    found = builtin_scan(files, ["src/main/java/a"], "sql", "a" * 40)["findings"]
+    assert [f["file"] for f in found] == ["src/main/java/a/A.java"]
+    assert builtin_scan(files, ["src/main/java"], None, "a" * 40)["findings"] == []

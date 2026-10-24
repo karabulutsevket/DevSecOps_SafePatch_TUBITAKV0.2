@@ -45,3 +45,10 @@ def test_naive_retrieval_is_not_public_job_option(api):
     client,db,job=api
     response=client.post('/v1/jobs',headers=headers('developer'),json={'case_id':'sql-01','idempotency_key':uuid.uuid4().hex,'memory_mode':'naive'})
     assert response.status_code==422
+
+
+def test_jobs_need_a_registered_project_id(api):
+    client,db,job=api
+    create=lambda case: client.post('/v1/jobs',headers=headers('developer'),json={'case_id':case,'idempotency_key':uuid.uuid4().hex})
+    assert create('not-registered').status_code==404
+    assert create('Has Space').status_code==422

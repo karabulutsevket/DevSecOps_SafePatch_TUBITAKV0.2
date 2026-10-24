@@ -9,23 +9,33 @@ import uuid
 
 from sqlalchemy import Column, Float, JSON, MetaData, String, Table, select, update
 
-from safepatch.common import SOURCE, canonical, digest
+from safepatch.common import canonical, digest
 from safepatch.policy import PolicyError
+
+
+def _bytes(files, path):
+    # Git-backed baselines expose raw bytes (binary test resources included); plain dicts hold text.
+    return files.raw(path) if hasattr(files, "raw") else files[path]
 
 
 def context_for(case, files, finding):
     """Only facts from the trusted registry and baseline enter applicability checks.
 
     V0.1 intentionally requires identical build/test contracts. This is narrower
-    than AST/dataflow applicability and may miss reusable examples.
+    than AST/dataflow applicability and may miss reusable examples. Projects without
+    a lab `kind` label get kind None, so their records stay `unknown` until the CWE
+    mapping (roadmap week 4) replaces it.
     """
+    source = finding["file"]
+    spec = case.get("spec")
+    tests = {p: digest(_bytes(files, p)) for p in files if p.startswith("src/test/") or "/src/test/" in p}
     return {
         "project": case.get("project", "owned-java-demo"),
-        "kind": case["kind"], "rule_id": finding["rule_id"],
-        "jdk": "17", "source_path": SOURCE,
-        "build_sha256": digest(files["pom.xml"]),
-        "contract_sha256": digest(canonical({p: digest(v) for p, v in files.items() if p.startswith("src/test/")})),
-        "source_sha256": digest(files[SOURCE]),
+        "kind": case.get("kind"), "rule_id": finding["rule_id"],
+        "jdk": spec.java if spec else "17", "source_path": source,
+        "build_sha256": digest(_bytes(files, "pom.xml")) if "pom.xml" in files else None,
+        "contract_sha256": digest(canonical(tests)),
+        "source_sha256": digest(files[source]),
     }
 
 
