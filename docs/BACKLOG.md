@@ -9,4 +9,7 @@ ROADMAP.md'deki 12 haftalık kapsama girmeyen ama ileride değerlendirilecek iş
 | DAST / IAST | Çalışan uygulama ve çalışma zamanı verisi gerektirir | Uzun vadeli Ar-Ge |
 | SaaS sürümü | Hedef müşteri kapalı ağ istiyor; kod dışarı çıkma riski | Kurum içi ürün ve referans müşteriler sonrası |
 | Daha büyük yerel model (14B+) | 8 GB GPU sınırı | Pilot donanımı netleşince |
+| GitLab/GitHub birleştirme isteği (MR/PR) entegrasyonu | Onaylanan düzeltme şu an yalnız SafePatch arayüzünde; önce gerçek depo desteği gerekli | Müşteri görüşmelerinde hangi Git platformu kullanıldığı netleşince; pilot öncesi |
+| Kurumsal kimlik doğrulama (Active Directory / LDAP / SSO) | Pilot öncesi dosya tabanlı anahtarlar yeterli | Pilot kurumun şartına göre |
+| Çoklu süreç ve PostgreSQL | Tek süreç, bellek içi kuyruk ve SQLite pilot için yeterli; aynı anda tek doğrulama | Birden çok geliştiricili pilot |
 | Müşteriden isteğe bağlı L2 geri bildirimi | Hava boşluklu ağdan veri çıkarma onayı belirsiz | Müşteri görüşmelerinde sorulacak |

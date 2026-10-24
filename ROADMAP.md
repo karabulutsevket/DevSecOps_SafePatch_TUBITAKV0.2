@@ -2,8 +2,9 @@
 
 | Alan | Değer |
 |---|---|
-| Sürüm | Yol haritası 2.0 (23 Ekim 2026) |
+| Sürüm | Yol haritası 2.1 (25 Ekim 2026) |
 | Dönem | Hafta 1 = 26 Ekim 2026 → Hafta 12 = 17 Ocak 2027 |
+| Jüri sunumu | Ocak 2027 (kesin tarih programdan); hazırlık Hafta 11–12 |
 | Temel | [SafePatch V0.1](https://github.com/karabulutsevket/DevSecOps_SafePatch_TUBITAKV0.1) (Java 17, Maven, JUnit, Semgrep, yerel Qwen2.5-Coder 7B) |
 | Hedef | TÜBİTAK BiGG Aşama 2 sunumuna ve ilk pilot görüşmelerine hazır, ölçülmüş Ar-Ge sonucu olan V0.2 |
 | Ekip | Şevket Karabulut, Yiğithan Koçer, Reşat Eray Öztürk, Kadir Yıldız (4 kişi) + Claude (kod yardımcısı) |
@@ -46,6 +47,7 @@ Negatif sonuç da raporlanır. Hipotez tutmazsa kapsam doğrulama ve kanıt ür�
 | İnsan düzeltmesi | Yok | Uzman yaması uç noktası → aynı doğrulama → hafıza |
 | Yeniden deneme | En fazla 3 deneme; `temperature: 0` yüzünden 2. denemede aynı yama | Başarısızlık türüne göre geri bildirim ve strateji |
 | Ölçüm | 3 sentetik aile, 18 koşu, tek seed | L3: OWASP Benchmark + Vul4J; sınıf başına değerlendirme ve güvenli (yanlış pozitif) vakalar, ≥3 seed, A/B/C kolları |
+| Proje desteği | Yalnız 9 kayıtlı sentetik vaka; tek düzenlenebilir dosya, sabit test sınıfları, iş başına tek bulgu | Proje tanımı ile gerçek Maven projeleri; bulgu başına iş; Docker sandbox'ta doğrulama |
 | Zafiyet kapsamı | 3 sınıf (CWE-89/22/78), yalnız sentetik vakalar | Zafiyet sınıfı paketleri: mevcut 3 + asgari 2, en fazla 5 yeni sınıf (Bölüm 5) |
 | Tarayıcı | Semgrep + 3 dar kural; Sonar adaptörü canlı test edilmedi | Sınıf başına kendi Semgrep kurallarımız (MIT); FindSecBugs adaptörü (dosyalar arası veri akışı); karşılaştırmalı tespit ölçümü; Sonar adaptörünün canlı testi |
 | Bulgu kaynağı | Yalnız tarayıcı | Tarayıcı **veya** laboratuvarda "bilinen bulgu" modu (doğru cevap anahtarı olan vakalar) |
@@ -92,7 +94,7 @@ Her iş bir sahibi ve bir **gözden geçireni** olan küçük bir dal (branch) i
 
 Her hafta: hedef, görevler (sorumlu), çıktı, geçiş koşulu. Bir fazın geçiş koşulu sağlanmazsa sonraki faza geçilmez; kapsam daraltılır.
 
-### Faz 0 — Jüri hazırlığı ve hızlı kazanımlar (Hafta 1–2)
+### Faz 0 — Temel ve hızlı kazanımlar (Hafta 1–2)
 
 #### Hafta 1 · 26 Ekim – 1 Kasım
 **Hedef:** V0.2 deposunu kurmak ve modelin path/command vakalarını çözememe nedenini gidermek.
@@ -103,22 +105,43 @@ Her hafta: hedef, görevler (sorumlu), çıktı, geçiş koşulu. Bir fazın ge�
 - [x] Başarısızlık türüne göre yeniden deneme (H2): işe bağlı `strategy` seçeneği (`v01`, `sampling`, `guided`, `guided+context`); sınıflandırılmış başarısızlık, önceki denemenin değişen satırları, kademeli rehber (teşhis → reçete) — *Kadir*
 - [x] Aynı yama: `v01`/`sampling` durur; rehberli stratejiler yeniden doğrulamadan daha derin rehberle devam eder — *Kadir*
 - [x] V0.1 benchmark vakalarını yeni döngüyle tekrar çalıştır (9 vaka × 4 strateji × 3 seed = 108 iş). Sonuç: `v01` 9/27 → `guided` 19/27; path 0/9 → 9/9; command 0/9 → 1/9. Rapor: [docs/OLCUM_V02_YENIDEN_DENEME.md](docs/OLCUM_V02_YENIDEN_DENEME.md) — *Kadir, Reşat*
-- [ ] Ürünün varsayılan stratejisine karar ver (`v01` → `guided` veya `guided+context`) — *ekip*
 - [ ] 40 hesaplık hedef müşteri listesi; ilk 3 görüşme talebi — *Şevket, Reşat*
 - [ ] KOSGEB Uygulamalı Girişimcilik Eğitimi'ne kayıt (en büyük hisse sahibi olacak kurucu) — *Şevket*
 
 **Çıktı:** `evidence/v02-retry/` altında ham sonuçlar; path ve command vakalarının sonuç tablosu.
 
 #### Hafta 2 · 2 – 8 Kasım
-**Hedef:** Jüri sunumu (Aselsan, TOBB, KTO Karatay) — tahmini bu hafta; kesin tarih programdan.
+**Hedef:** Hızlı kazanımlar ve gerçek depo desteğinin tasarımı. *(Jüri sunumu Ocak'a kaydı; hazırlığı Hafta 11–12'de.)*
 
-- [ ] Sunumu yatırımcı yapısına çevir: Problem → Çözüm → Canlı demo → Kanıt → Pazar → İş modeli → Rakipler → Ekip → Yol haritası → İstek — *Şevket, Reşat*
-- [ ] Rakamlar yalnız V0.1 ve Hafta 1 ölçümlerinden; başvuru formuyla birebir tutarlılık kontrolü — *Reşat*
-- [ ] Demo videosu (yedek) ve canlı demo provası — *Yiğithan*
-- [ ] Soru-cevap provası: "Copilot Autofix de hafıza tutuyor, farkınız ne?", "Kod MIT lisanslı, avantajınız ne?", "Neden Java?", "Neden önce SaaS değil?" — *tüm ekip*
-- [ ] Toplam 3 müşteri görüşmesi — *Şevket*
+- [ ] **Projenin kendi CI'ı:** GitHub Actions her push ve PR'da birim testlerini çalıştırır; eylemler commit özetine sabitlenir, yetkiler salt okunur — *Şevket*
+- [ ] **Sahte rehber notuna karşı koruma:** rehber notu her istekte rastgele bir işaretle ayrılır; kaynakta veya bağlam dosyalarında not başlığı geçerse iş "şüpheli istem enjeksiyonu" gerekçesiyle insana devredilir — *Yiğithan*
+- [ ] Ürünün varsayılan yeniden deneme stratejisine karar ver ve uygula (`v01` → `guided` veya `guided+context`) — *ekip, Kadir*
+- [ ] **V0.2 kurulum belgesi:** bu makinede doğrulanmış adımlar (Windows + WSL), doğrulanmamış adımlar ayrıca işaretli — *Şevket*
+- [ ] Gerçek depo desteği tasarımı: proje tanımı şeması ve kaldırılacak sabitlerin envanteri (aşağıdaki iş akışı) — *Şevket, Reşat*
+- [ ] Toplam 3 müşteri görüşmesi; görüşmelerde kullanılan Java API'leri, tarayıcılar ve Git platformu (GitLab/GitHub) sorulur — *Şevket, Reşat*
 
-**Faz 0 geçiş koşulu:** Path veya command vakalarından en az biri gerçek modelle kabul edildi **ya da** çözülememe nedeni ham kanıtla belgelendi. Jüri sunumu yapıldı. *(İlk koşul 24 Ekim'de sağlandı: path 9/9, command 1/9.)*
+**Faz 0 geçiş koşulu:** Path veya command vakalarından en az biri gerçek modelle kabul edildi **ya da** çözülememe nedeni ham kanıtla belgelendi *(24 Ekim'de sağlandı: path 9/9, command 1/9)*. CI her PR'da yeşil. Proje tanımı şeması ekipçe onaylandı.
+
+### Paralel iş akışı — Gerçek depo desteği (Hafta 2–6)
+
+**Neden:** V0.2 kodu yalnız 9 kayıtlı sentetik vakayı işleyebiliyor:
+- vaka kimliği şemaya gömülü (`^(sql|path|command)-0[123]$`);
+- modelin değiştirebileceği tek dosya sabit (`SOURCE`, kodda 29 kullanım);
+- test sınıfları (`demo.BehaviorTest`, `demo.SecurityTest`), güvenlik işaretleri ve çıktı dosyası (`target/demo.jar`) sabit;
+- bir iş, yalnız ilk taramanın ilk bulgusunu ele alıyor.
+
+L3 setindeki Vul4J ve OWASP Benchmark vakaları gerçek, çok dosyalı Maven projeleri olduğu için bu iş **Hafta 6'dan önce** bitmeli.
+
+| Hafta | Görev | Sorumlu |
+|---|---|---|
+| 2 | **Proje tanımı şeması:** depo ve commit, derleme komutu, test komutu, davranış ve güvenlik testi seçicileri, değiştirilebilir dosya kuralları, korunan dosyalar, çıktı (artifact) yolu, Java sürümü. Kaldırılacak sabitlerin envanteri | Şevket, Reşat |
+| 3 | 9 sentetik vakayı yeni proje tanımıyla çalıştır; sabitler kaldırılır, davranış aynı kalır (mevcut testler + kısa H2 tekrarıyla kanıt) | Reşat |
+| 4 | **Çoklu bulgu:** bir tarama → bulgu başına iş; aynı dosyadaki bulguların çakışması; ilk sürümde model yalnız bulgunun dosyasını değiştirebilir | Reşat, Şevket |
+| 4 | Test sonuçlarını sınıf adından bağımsız okuma (Surefire raporları); güvenlik tanığının proje içindeki yeri; tanığı olmayan projede sonuç "kanıt yetersiz" | Yiğithan |
+| 5 | **İlk gerçek açık kaynak proje:** bir Vul4J vakası uçtan uca (derleme, test, bulgu, yama, doğrulama) | Şevket, Yiğithan |
+| 5–6 | **Docker sandbox** (Hafta 8'den öne alındı; gerçek kod derlenmeden önce yalıtım gerekir) | Şevket |
+
+**Geçiş koşulu (Faz 2'den önce):** En az bir gerçek açık kaynak Java projesi, proje tanımıyla ve Docker sandbox içinde uçtan uca çalıştı.
 
 ### Paralel iş akışı — Zafiyet sınıfı paketleri (Hafta 3–8)
 
@@ -203,11 +226,12 @@ Sorumlular: kurallar ve tanıklar *Yiğithan*, vakalar ve L2 kayıtları *Kadir*
 - [ ] **Karşılaştırmalı tespit ölçümü:** L3 setinde Semgrep, FindSecBugs ve ikisi birlikte; sınıf bazında tespit oranı ve yanlış pozitif oranı. Sonuç `evidence/v02-detection/` altında — *Yiğithan, Kadir*
 
 #### Hafta 8 · 14 – 20 Aralık
-**Hedef:** Docker sandbox'ta doğrulama.
+**Hedef:** Sandbox sertleştirme ve L3 tamponu. *(Docker sandbox'ın kurulumu Hafta 5–6'ya alındı.)*
 
-- [ ] Runner'ı Docker'a taşı: `--network=none`, salt okunur kök dosya sistemi, `--cap-drop=ALL`, ayrı kullanıcı, CPU/bellek/süre sınırı, çevrimdışı Maven önbelleği — *Şevket*
+- [ ] Sandbox ayarlarının doğrulanması: `--network=none`, salt okunur kök dosya sistemi, `--cap-drop=ALL`, ayrı kullanıcı, CPU/bellek/süre sınırı, çevrimdışı Maven önbelleği — *Şevket*
 - [ ] Native runner yalnız geliştirme profilinde kalır — *Şevket*
 - [ ] Kötü niyetli build testleri: ağ erişimi, dosya sisteminden kaçış, süreç bombası — *Yiğithan*
+- [ ] Gecikmiş L3 vakalarını ve sınıf paketlerini tamamlama tamponu — *Yiğithan, Kadir*
 - [ ] Toplam 10 müşteri görüşmesi; 2 pilot adayı belirle — *Şevket, Reşat*
 
 **Faz 2 geçiş koşulu:** L3'te en az 30 vaka çalışır durumda (derleniyor, başlangıçta güvenlik tanığı başarısız). L2 paketi imzalı olarak içeri alınabiliyor. Sandbox'ta uçtan uca bir iş tamamlandı. **Semgrep bulgusundan öğrenilmiş bir hafıza kaydı, aynı zafiyetin FindSecBugs bulgusunda seçildi ve doğrulamadan geçti** (tarayıcıdan bağımsızlığın kanıtı).
@@ -235,17 +259,21 @@ Sorumlular: kurallar ve tanıklar *Yiğithan*, vakalar ve L2 kayıtları *Kadir*
 
 **Faz 3 geçiş koşulu:** Benchmark tamamlandı, rapor yayımlandı, bütün sayılar ham kanıta bağlı.
 
-### Faz 4 — Pilot paketi ve Aşama 2 hazırlığı (Hafta 11–12)
+### Faz 4 — Pilot paketi, jüri sunumu ve Aşama 2 hazırlığı (Hafta 11–12)
 
 #### Hafta 11 · 4 – 10 Ocak
+- [ ] **Jüri sunumu:** yatırımcı yapısı (Problem → Çözüm → Canlı demo → Kanıt → Pazar → İş modeli → Rakipler → Ekip → Yol haritası → İstek); "şu an kanıtladığımız / 12 haftada ölçtüğümüz" ayrımı — *Şevket, Reşat*
+- [ ] Rakamlar yalnız ölçüm raporlarından; başvuru formuyla tutarlılık kontrolü — *Reşat*
+- [ ] Demo videosu (yedek) ve canlı demo provası — *Yiğithan*
+- [ ] Soru-cevap provası: "Copilot Autofix de hafıza tutuyor, farkınız ne?", "Kod MIT lisanslı, avantajınız ne?", "Neden Java?", "Neden önce SaaS değil?", "Ekipte kim neyi yaptı?" — *tüm ekip*
 - [ ] Pilot protokolü: kapsam (1–2 Java deposu, 4–6 hafta), kurumdan istenecek ve istenmeyecek veriler, başarı ölçütleri (pilot öncesi müşteriyle sabitlenir) — *Şevket, Reşat*
 - [ ] Pilot teklifi (başvuru formundaki fiyat hipotezleriyle tutarlı; müşteri görüşmelerine göre güncellenir) — *Reşat*
 - [ ] Demo senaryosu: sentetik depo + L3'ten bir Vul4J vakası; uzman yaması → hafıza → sonraki işte kullanım; geri çekme — *Yiğithan*
 - [ ] Aşama 2 iş planı güncellemesi: yeni ölçümler, görüşme notları, pilot adayları — *Şevket*
 
 #### Hafta 12 · 11 – 17 Ocak
+- [ ] **Jüri sunumu** (Ocak; kesin tarih programdan) — *tüm ekip*
 - [ ] Pilot adaylarıyla görüşmeler; hedef en az 1 niyet mektubu — *Şevket, Reşat*
-- [ ] TÜBİTAK sunumu provası — *tüm ekip*
 - [ ] `v0.2.0` sürüm etiketi, sürüm notları, kurulum kılavuzu — *Şevket*
 
 **Faz 4 geçiş koşulu:** Pilot paketi hazır; en az 2 pilot adayıyla yazılı kapsam görüşmesi yapıldı.
@@ -290,6 +318,8 @@ Sunumda, başvuruda ve depoda yalnız ölçülmüş sonuçlar kullanılır.
 | H1 tutmaz (C, B'den iyi değil) | Orta | Negatif sonuç raporlanır; ürün doğrulama ve kanıt katmanına daraltılır |
 | Müşteri görüşmesi bulunamaz | Yüksek | Hızlandırma mentorları ve jüri üyeleri üzerinden tanıştırma; haftalık hedef takibi |
 | 8 GB GPU yetersiz kalır | Orta | 7B modelde kal; benchmark'ı gece çalıştır; büyük model karşılaştırması 2027'ye |
+| Gerçek depo desteği beklenenden uzun sürer | Yüksek | Hafta 5'te tek bir Vul4J projesiyle sınırlı başla; gerekirse L3'ü OWASP Benchmark'ın tek modüllü vakalarıyla küçült |
+| Sahte rehber notu (istem enjeksiyonu): kaynak koda "SafePatch notu" taklidi yazılması | Orta | Her istekte rastgele işaret; kaynakta not başlığı tespiti; hafızadan gelen dahil her aday tam doğrulamadan geçer |
 | Sınıf paketleri yetişmez | Orta | Asgari hedef mevcut 3 + 2; eksik paket "destekleniyor" sayılmaz |
 | Semgrep CE yalnız dosya içi veri akışı analizi yapar; bazı OWASP Benchmark vakalarını kaçırır | Orta | Kaçırılan vakalar ayrı raporlanır; tespit oranı onarım oranından ayrı ölçülür. Müşteri kendi tarayıcısını (Sonar vb.) kullanabilir |
 | Lisans: Semgrep kural koleksiyonları ve OWASP Benchmark kodu ürünle dağıtılamayabilir | Yüksek | Kurallar ve geliştirme vakaları bizim (MIT); OWASP Benchmark yalnız değerlendirmede kullanılır |
@@ -327,12 +357,12 @@ Kısıtlar: kapsam dışına çıkma, politika/doğrulayıcıyı gevşetme, say�
 
 | Hafta | Kümülatif görüşme | Diğer |
 |---|---|---|
-| 2 | 3 | Jüri sunumu |
+| 2 | 3 | Hızlı kazanımlar; proje tanımı şeması |
 | 4 | 6 | KOSGEB girişimcilik eğitimi tamamlandı |
 | 6 | 8 | — |
 | 8 | 10 | 2 pilot adayı |
 | 10 | 12 | — |
-| 12 | 12+ | En az 1 niyet mektubu; Aşama 2 dosyası |
+| 12 | 12+ | Jüri sunumu (Ocak); en az 1 niyet mektubu; Aşama 2 dosyası |
 
 > **Şirket kuruluşu:** BiGG Aşama 2 başvurusu sonuçlanmadan şirket kurulmaz ve kurucular başka bir şirkette ortak olmaz; çağrı başvuru tarihinde ortaklık bulunmamasını şart koşabilir. Hisse dağılımı, KOSGEB'in "girişimcinin en az %50 payı ve tek başına temsil yetkisi" şartı göz önünde tutularak planlanır. Kesin koşullar hızlandırma programı yürütücüsünden ve KOSGEB il müdürlüğünden teyit edilir.
 
@@ -340,7 +370,10 @@ Kısıtlar: kapsam dışına çıkma, politika/doğrulayıcıyı gevşetme, say�
 
 ## 11. Projenin bitiş tanımı (Hafta 12)
 
-- [ ] Path ve command vakalarının durumu ölçüldü ve raporlandı
+- [x] Path ve command vakalarının durumu ölçüldü ve raporlandı
+- [ ] SafePatch, kayıtlı sentetik vakaların dışında en az bir gerçek açık kaynak Java projesinde, proje tanımıyla ve bulgu başına işle uçtan uca çalışıyor
+- [ ] Deponun kendi CI'ı her PR'da testleri çalıştırıyor
+- [ ] Sahte rehber notu koruması ve varsayılan yeniden deneme stratejisi uygulandı
 - [ ] Uzman yaması → doğrulama → hafıza → sonraki işte kullanım akışı çalışıyor
 - [ ] Yapısal uygunluk imzası, kanıt vektörü, başarısızlık hafızası ve geçersizleşme v1 çalışıyor
 - [ ] En az 5 zafiyet sınıfı paketi (mevcut 3 + 2 yeni) eksiksiz; her biri için L2'de doğrulanmış tohum kayıtları var
