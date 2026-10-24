@@ -150,3 +150,18 @@ Vul4J her vaka için zafiyeti gösteren testleri listeler; bu bilginin şemaya n
 Kalan envanter maddeleri: 10 ve 12 (CWE eşlemesi, Hafta 4), 11 (bulgu başına iş, Hafta 4), 14 (genel sistem talimatı, Hafta 4), 15 (staging yalnız sentetik demoda).
 
 **Doğrulama:** 194 birim testi; gerçek Maven/JUnit ile 10 entegrasyon testi (9 sentetik vaka: başlangıçta zafiyet, referans düzeltme kabul, işlevi bozan yama ret, test dosyasına dokunan yama çalıştırılmadan ret; 1 staging/geri alma). Gerçek projeye benzeyen geçici bir depoyla (birden çok paket, ikili dosya, commit geçmişi) okuma, klon, aday commit ve izin testleri.
+
+**Model tekrarı (commit `592d03d`):** H2 deneyinin seed 42 dilimi yeni iş akışıyla yeniden koşuldu: 9 vaka × `v01` ve `guided+context` = 18 iş ([kanıt](../evidence/v02-w3-dogrulama/retry/)). Amaç yeni bir ölçüm değil, davranışın değişmediğini göstermek.
+
+| | H2 (`3d0f54f`, seed 42) | Hafta 3 (`592d03d`) |
+|---|---|---|
+| `v01` kabul | 3/9 (yalnız SQL) | 3/9 (yalnız SQL) |
+| `guided+context` kabul | 7/9 | 8/9 |
+
+- Sistem talimatı ve rehber özetleri H2 protokolüyle aynı. İlk deneme istemi 18 işin 18'inde H2 ile bayt bayt aynı: yeniden yazım modelin girdisini değiştirmedi.
+- 18 işin 17'si aynı sonucu verdi. Tek fark `command-03` / `guided+context`: H2'de üç denemede reddedildi, bu koşuda üçüncü denemede kabul edildi. Bu iş, ilk deneme istemi aynı olduğu hâlde model farklı yama ürettiği için ayrıştı. 8/9 bu yüzden bir iyileşme olarak raporlanmaz.
+- Aynı istem, aynı seed ve sıcaklık 0 ile iki ilk denemede (`command-03` / `guided+context`, `path-03` / `v01`) model H2'dekinden farklı yama üretti. Yerel model çalışma zamanı bayt düzeyinde tekrarlanabilir değil; tek koşuluk vaka sonuçları gürültülüdür.
+- İki `v01` işinin ret gerekçesi `no_progress` yerine `duplicate_patch`: model ikinci denemede ilk yamayı aynen tekrarladı. İkisi de H2'deki gibi reddedildi.
+- Kabul edilen 11 işin hepsinde inceleme deposunun HEAD'i adayın commit'i, onun ebeveyni de gerçek taban commit.
+
+Sonuç: Hafta 3 kabul ölçütü ("sabitler kaldırılır, davranış aynı kalır") karşılandı.

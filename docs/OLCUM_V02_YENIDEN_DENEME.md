@@ -108,6 +108,7 @@ Bu bulgu, "doğrulanmış düzeltme" ifadesinin tanık testinin gücü kadar anl
 - Güvenlik tanığı zayıf (yukarıdaki kalite incelemesi). Kabul, "insan incelemesine hazır" demek; güvenlik garantisi değil.
 - Tek model, tek donanım; native runner aynı kullanıcıyla çalışıyor.
 - Sıcaklık 0'da bile ilk deneme yaması 3 seed'de her zaman aynı değil (`v01`'de 7/9 vakada aynı).
+- Aynı istem ve aynı seed yeniden koşulduğunda da yama değişebiliyor: Hafta 3 tekrarında 18 ilk denemenin istemi bu deneyle bayt bayt aynıydı, 2'sinde yama farklıydı ([kanıt](../evidence/v02-w3-dogrulama/retry/), [ayrıntı](GERCEK_DEPO_TASARIMI.md#7-hafta-3-uygulaması-25-ekim-2026)). Tek bir vakanın sonucu gürültülü; oranlar seed'ler üzerinden okunmalı.
 
 ## Sonraki adımlar
 
