@@ -63,6 +63,33 @@ Yapısal imza: hedef çağrı `java.io.File.<init>`, kaynak metot parametresi.
 
 Dağıtım (staging) bu akışa dahil edilmedi. zt-zip bir kütüphanedir; staging'in çalıştırdığı bir uygulama değildir.
 
+## Model, bölge kipinde (25 Ekim, Hafta 5)
+
+**Ham kayıt:** [evidence/v02-vul4j/model/](../evidence/v02-vul4j/model/summary.json). Betik: `scripts/vul4j_model.py`. Kayıt temiz bir commit'ten (`9c89d47`) alındı. Tasarım: [GERCEK_DEPO_TASARIMI.md §9](GERCEK_DEPO_TASARIMI.md#9-bölge-tabanlı-düzenleme-25-ekim-2026-hafta-5).
+
+`ZipUtil.java` bütünüyle modele sığmadığı için model, dört bulguyu içeren **üç metodu** (3 128 karakter) ve dosyanın import satırlarını gördü. Ayarlar:
+- `guided+context` stratejisi, hafıza kapalı, 3 deneme, seed 42, 43 ve 44.
+- Deney işleri: onaya ve hafızaya girmez.
+- Sistem talimatı ve CWE-22 notu bu vakaya göre **ayarlanmadı**.
+
+| Ölçü | Sonuç |
+|---|---|
+| Doğrulanan iş | **0 / 3** |
+| Bölge kipi mekaniği | 9 denemenin 9'unda çalıştı: model 3 bölgeyi döndürdü, SafePatch dosyaya yerleştirdi, sandbox'ta derlendi |
+| İstem / cevap | Ölçülen istem 2 472–2 623 token (sınır 5 632), cevap 903–1 142 token (sınır 2 048), model süresi 19–24 sn |
+| Başarısızlık | 6 denemenin 6'sı `compilation_failed`: "cannot find symbol". Kalan 3 deneme önceki yamanın tekrarı (`duplicate_patch`), doğrulamaya girmedi |
+
+Gözlemler:
+1. **Model import eklemedi.** `Path`, `Paths` ve `Files` kullandı ama cevabın `imports` alanını 9 denemede de boş bıraktı. Bu tipler dosyada import edilmemiş.
+2. **Modele giden derleme hatası eksik sembolün adını içermiyor.**
+   - javac adı "cannot find symbol" satırının altındaki `symbol:` satırında verir.
+   - Projenin eski derleyici eklentisi (maven-compiler-plugin 2.3.2) bu satırı Maven çıktısına hiç yazmıyor (elle yeniden derlenerek görüldü).
+   - SafePatch da yalnız ilk satırı alıyor. Model neyin eksik olduğunu bilemedi.
+3. **CWE-22 notu bu durumda yanlış yöne itiyor.** Not "gerçek yolu `toRealPath()` ile çöz" diyor. Bir model cevabı bunu uyguladı, ama arşiv açarken hedef dosya henüz yok ve bu çağrı hata verir.
+4. **Belirlenimlilik.** Sıcaklık 0'daki ilk deneme üç seed'de de aynı yamayı verdi. İkinci deneme (sıcaklık 0,4) üçünde de ilkini tekrarladı.
+
+Bu sonuçlar sistem talimatı, CWE-22 notu ya da derleme geri bildirimi değiştirilmeden alındı. VUL4J-79 bir **değerlendirme** vakası olduğu için bu sorunlar bu vakaya bakarak ayarlanırsa ölçüm kirlenir. Düzeltmeler önce geliştirme vakalarında (ör. sahibi olduğumuz büyük dosyalı sentetik vakalar) geliştirilip ölçülmeli; VUL4J-79 sonra bir kez yeniden koşulmalı.
+
 ## Vakayı çalıştırırken bulunan ve düzeltilen sorunlar
 
 1. **Yasak ifade kontrolü bütün dosyaya bakıyordu.** `ZipUtil.java` dosyasında projenin kendi koyduğu üç `// NOSONAR` var. Bu yüzden bu dosyaya gelen her yama, insan düzeltmesi dahil, reddediliyordu.
@@ -88,5 +115,5 @@ Dağıtım (staging) bu akışa dahil edilmedi. zt-zip bir kütüphanedir; stagi
 - **Tanık 4 konumun 2'sini sınıyor** (`unpack` ve `BackslashUnpacker`). Bu iki yolu koruyan ama `unwrap` ve üst düzey `BackslashUnpacker` dalını korumayan bir yama da kabul edilir. Bu Vul4J'nin saldırı testinin sınırıdır; raporlarda belirtilmelidir.
 - **Bulgu konumları düzeltmeden alındı.** Bilinen bulgu kipi, tarayıcının bulmadığı açıkları onarım ölçümüne sokmak içindir. Tespit başarısı ayrıca ölçülecek (Hafta 7).
 - **Tek vaka.** Genelleme yapılmaz. Davranış testleri projenin kendi testleridir; gizli değerlendirme testi yoktur.
-- **Model bu dosyayı göremiyor.** `ZipUtil.java` 97 694 karakter. worker1 en çok 24 000 karakterlik kaynak alıyor, model bağlamı 8K token. Model bütün dosyayı yeniden yazdığı için çıktı da sığmaz. Karar (25 Ekim): önce uzman yolu (yukarıda), sonra modelin yalnız bulgunun metotlarını görüp değiştirdiği bölge tabanlı düzenleme.
+- **Model bu dosyayı bütünüyle göremez.** `ZipUtil.java` 97 694 karakter; model bağlamı 8K token. Bölge kipiyle yalnız bulguları içeren metotları görüyor (yukarıda). Henüz doğrulanan bir model yaması yok (0/3).
 - **Arayüz tarayıcıda denenmedi.** Yeni seçenek ("Bilinen bulgu · değerlendirme vakası", cevap anahtarı olan vakada kendiliğinden seçilir) ve yeni açıklama metinleri tarayıcıda görülmedi. Uçtan uca akış API üzerinden koştu.
