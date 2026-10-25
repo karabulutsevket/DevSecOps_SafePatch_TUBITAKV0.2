@@ -1,0 +1,84 @@
+{
+  "case_id": "path-01",
+  "patch_sha256": "7033babc4c791ab685c557c32f95acc352076deb061112bb3abc3dfe9c26777b",
+  "result": {
+    "passed": true,
+    "baseline_valid": false,
+    "base_commit": "7a3ce43adc8e1845c8a42903218bac47e1939429",
+    "source_revision": "84f2c1900a8816b23561fd2b0f8c6a53fbe4941e",
+    "build": {
+      "passed": true,
+      "duration_seconds": 7.156
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "exit_code": 0,
+      "duration_seconds": 4.469,
+      "junit_sha256": "49049cd51be91572da6c74442c727ae2ce28fb16d0d429100906f6af4e1bb849"
+    },
+    "security": {
+      "passed": true,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "exit_code": 0,
+      "duration_seconds": 4.234,
+      "junit_sha256": "2371cce2fcb50a0750977b62f1d75ee538c3d7f058197fefe8d98ebd54e6f749"
+    },
+    "scans": [
+      {
+        "tool": "semgrep",
+        "version": "1.136.0",
+        "status": "ok",
+        "analysis_id": "0748d64f1cfd43628f03c87173c30f11",
+        "commit": "84f2c1900a8816b23561fd2b0f8c6a53fbe4941e",
+        "findings": []
+      }
+    ],
+    "patch": {
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -6,8 +6,11 @@\n // Deliberately vulnerable synthetic example. Root is supplied by trusted runner.\n public class DemoService {\n     public String lookup(String input) throws Exception {\n-        Path root = Path.of(System.getProperty(\"demo.root\"));\n-        Path target = root.resolve(input);\n+        Path root = Path.of(System.getProperty(\"demo.root\")).toRealPath();\n+        Path target = root.resolve(input).toRealPath();\n+        if (!target.startsWith(root)) {\n+            throw new SecurityException(\"Path traversal detected\");\n+        }\n         return Files.readString(target);\n     }\n }\n",
+      "patch_sha256": "7033babc4c791ab685c557c32f95acc352076deb061112bb3abc3dfe9c26777b",
+      "changed_lines": 7
+    },
+    "feedback": {
+      "code": "verified",
+      "behavior": {
+        "passed": true,
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 4.469,
+        "junit_sha256": "49049cd51be91572da6c74442c727ae2ce28fb16d0d429100906f6af4e1bb849"
+      },
+      "security": {
+        "passed": true,
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 4.234,
+        "junit_sha256": "2371cce2fcb50a0750977b62f1d75ee538c3d7f058197fefe8d98ebd54e6f749"
+      },
+      "remaining_rules": []
+    },
+    "duration_seconds": 45.016,
+    "runner_profile": "native-same-user",
+    "versions": {
+      "java": "17; inspect preparation evidence",
+      "maven": "3.9.16"
+    },
+    "artifact_sha256": "ca817d2b8c21cfa7744b09a77a896bf0a7806bbbccea6a36d4673630e866a189"
+  }
+}
