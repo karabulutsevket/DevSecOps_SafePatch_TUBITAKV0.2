@@ -110,8 +110,9 @@ def tests(workspace, selection, deadline, limit=240, sandbox="native", java="17"
     descriptor's module only, when it names one)."""
     reports_dir = workspace / ((build.module + "/") if build and build.module else "") / "target/surefire-reports"
     shutil.rmtree(reports_dir, ignore_errors=True)
-    reactor = build.reactor() if build else []
-    result = maven(workspace, [*reactor, "-Dtest=" + ",".join(selection.selectors), "test"], deadline, limit=limit, sandbox=sandbox, java=java)
+    # A plugin the build skips (animal-sniffer, enforcer...) is skipped in the test run too.
+    options = [*build.reactor(), *build.properties()] if build else []
+    result = maven(workspace, [*options, "-Dtest=" + ",".join(selection.selectors), "test"], deadline, limit=limit, sandbox=sandbox, java=java)
     reports = sorted(reports_dir.glob("TEST-*.xml")) if reports_dir.exists() else []
     if not reports:
         return {"passed": False, "infrastructure_error": True, "reason": "missing_junit_report", "exit_code": result["exit_code"], "duration_seconds": result["duration_seconds"]}

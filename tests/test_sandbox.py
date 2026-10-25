@@ -196,3 +196,13 @@ def test_tests_of_a_module_select_it_and_read_its_reports(monkeypatch, tmp_path)
     monkeypatch.setattr(runner, "maven", fake)
     result = runner.tests(tmp_path, SuiteSelection(selectors=["x.YTest"]), time.time() + 60, build=Build(module="util"))
     assert seen["args"] == ["-pl", "util", "-Dtest=x.YTest", "test"] and result["passed"] and result["tests"] == 2
+
+
+def test_the_builds_plugin_skips_apply_to_the_test_runs(monkeypatch, tmp_path):
+    # rdf4j: animal-sniffer is skipped in the package step and must be in the test step too.
+    from safepatch.project import Build, SuiteSelection
+    seen = {}
+    monkeypatch.setattr(runner, "maven", lambda workspace, args, deadline, **kwargs: seen.update(args=args) or {"exit_code": 1, "duration_seconds": 1, "output": ""})
+    build = Build(package_goals=["-DskipTests", "-Danimal.sniffer.skip=true", "package"], module="util")
+    runner.tests(tmp_path, SuiteSelection(selectors=["x.YTest"]), time.time() + 60, build=build)
+    assert seen["args"] == ["-pl", "util", "-Danimal.sniffer.skip=true", "-Dtest=x.YTest", "test"]

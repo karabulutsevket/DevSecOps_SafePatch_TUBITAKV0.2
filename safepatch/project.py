@@ -75,6 +75,10 @@ class Build(Strict):
     module: str | None = Field(default=None, pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]*(/[A-Za-z0-9][A-Za-z0-9._-]*)*$", max_length=200)
     also_make: bool = False
 
+    def properties(self):
+        """The build's -D settings (plugin skips), applied to the test runs too; -DskipTests is the package step's own."""
+        return [g for g in self.package_goals if g.startswith("-D") and g != "-DskipTests"]
+
     def reactor(self):
         """Maven arguments that select the module, if any."""
         return [] if not self.module else ["-pl", self.module, *(["-am", "-Dsurefire.failIfNoSpecifiedTests=false"] if self.also_make else [])]

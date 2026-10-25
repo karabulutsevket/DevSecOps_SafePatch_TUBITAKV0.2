@@ -47,9 +47,12 @@ CASES = {
         "target": "util/src/main/java/org/eclipse/rdf4j/common/io/ZipUtil.java",
         "sinks": ["File outFile = new File(destDir, entry.getName());"], "cwe": "CWE-22", "kind": "path",
         "java": "8", "artifact": "util/target/rdf4j-util-2.5-SNAPSHOT.jar", "cve": "CVE-2018-20227", "license": "BSD-3-Clause",
-        "scope": "l3-rdf4j", "skips": ["-Djapicmp.skip=true", "-Dformatter.skip=true"], "derived": "c12fff9f483522ada16282ac2c5b84c52b92730a",
+        "scope": "l3-rdf4j", "skips": ["-Djapicmp.skip=true", "-Dformatter.skip=true"], "derived": "7bff111bc5256f8d290597476e89cb9b610c8089",
     },
 }
+# Surefire's default test class names. An exclusion alone ("!X") makes Surefire load every class
+# in the test output, fixtures included (plexus-archiver ships compiled test classes as data).
+DEFAULT_TESTS = ["Test*", "*Test", "*Tests", "*TestCase"]
 # Build checks that are release or style steps, not compilation (Vul4J's command options).
 SKIPS = ["-Denforcer.skip=true", "-Drat.skip=true", "-Danimal.sniffer.skip=true", "-Dcheckstyle.skip=true",
          "-Dmaven.javadoc.skip=true", "-Dmaven.source.skip=true", "-Dgpg.skip=true"]
@@ -103,7 +106,7 @@ def descriptor(case, spec, repo, commit):
              **({"module": module} if module else {})}
     data = {"schema": "safepatch-project/1", "id": case, "scope": spec["scope"], "repository": {"path": str(repo), "commit": commit},
             "java": spec["java"], "build": build,
-            "tests": {"behavior": {"selectors": ["!" + spec["witness"]]}, "security": {"selectors": [spec["witness"]], "markers": ["PATH_TRAVERSAL_REGRESSION"]}},
+            "tests": {"behavior": {"selectors": [*DEFAULT_TESTS, "!" + spec["witness"]]}, "security": {"selectors": [spec["witness"]], "markers": ["PATH_TRAVERSAL_REGRESSION"]}},
             "editable": [prefix + "src/main/java/**/*.java"], "scan": {"paths": [prefix + "src/main/java"], "known": known},
             "limits": {"build_seconds": 900, "test_seconds": 900},
             "labels": {"kind": spec["kind"], "split": "evaluation", "source": "vul4j", "case": case.upper(), "cve": spec["cve"], "license": spec["license"]}}
