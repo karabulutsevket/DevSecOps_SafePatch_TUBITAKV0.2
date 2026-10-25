@@ -9,6 +9,7 @@ import uuid
 
 from sqlalchemy import Column, Float, JSON, MetaData, String, Table, select, update
 
+from safepatch.acceptance import untolerated
 from safepatch.common import canonical, digest
 from safepatch.feedback import patch_caused
 from safepatch.policy import PolicyError
@@ -89,6 +90,35 @@ def use_of(saved, current):
     return {"compatible": "example", "unknown": "example_unknown"}.get(adaptability(saved, current))
 
 
+def evidence_vector(job, attempt):
+    """What the record's own acceptance proved (roadmap week 4). None means not recorded, never 'failed'."""
+    verified = attempt.get("verification") or {}
+    suite = lambda result: {"passed": result.get("passed"), "tests": result.get("tests")} if result else None
+    findings = [f for scan in verified.get("scans", []) for f in scan.get("findings", [])]
+    approval = job.get("approval") or {}
+    return {"build": (verified.get("build") or {}).get("passed"),
+            "behavior": suite(verified.get("behavior")), "security": suite(verified.get("security")),
+            "rescan": {"tools": sorted({s.get("tool") for s in verified.get("scans", []) if s.get("tool")}),
+                       "remaining": len(untolerated(findings, verified.get("tolerated", []))),
+                       "tolerated": len(verified.get("tolerated", []))} if "scans" in verified else None,
+            "approval": {"reviewer": approval.get("reviewer"), "at": approval.get("approved_at")},
+            "reuse": {"verified": 0, "failed": 0, "inconclusive": 0, "approved_by_reviewer": 0, "rejected_by_reviewer": 0}}
+
+
+# How a job that used a record ended, as evidence about that record. Infrastructure trouble,
+# deadlines, a missing witness or a cancellation say nothing about the record itself.
+INCONCLUSIVE = ("job_deadline_exceeded", "token_budget_exhausted", "security_witness_missing", "memory_no_longer_approved")
+
+
+def reuse_result(job):
+    if job["status"] in ("awaiting_review", "approved", "deployed"):
+        return "verified"
+    reason = job.get("reason") or ""
+    if job["status"] in ("infrastructure_error", "cancelled", "expired") or reason in INCONCLUSIVE or reason.startswith("verification_infrastructure"):
+        return "inconclusive"
+    return "failed"
+
+
 class Memory:
     def __init__(self, store):
         self.store = store
@@ -135,8 +165,8 @@ class Memory:
                   "patch": attempt["proposal"]["patch"], "diff": candidate["diff"], "source_job": job["id"],
                   "model": attempt["proposal"].get("model"), "author": attempt["proposal"].get("author"),
                   "provenance": "human-authored" if human else "human-approved-local-repair",
-                  "evidence_sha256": candidate["evidence_sha256"],
-                  "approval": copy.deepcopy(approved), "uses": [],
+                  "evidence_sha256": candidate["evidence_sha256"], "evidence": evidence_vector(job, attempt),
+                  "approval": copy.deepcopy(approved), "uses": [], "reuse": [],
                   "events": [{"state": "approved", "actor": actor, "reason": rationale, "at": time.time()}]}
         with self.store.lock, self.store.engine.begin() as conn:
             for old in self.all(context["project"]):
@@ -174,14 +204,41 @@ class Memory:
             if self.get(memory_id)["state"] != "approved":
                 raise PolicyError("memory_no_longer_approved")
 
-    def use(self, memory_id, job_id):
+    def use(self, memory_id, job_id, how=None):
         with self.store.lock, self.store.engine.begin() as conn:
             record = self.get(memory_id)
             if record["state"] != "approved":
                 raise PolicyError("memory_no_longer_approved")
             if job_id not in record["uses"]:
                 record["uses"].append(job_id)
+                record.setdefault("reuse", []).append({"job_id": job_id, "use": how, "result": "pending", "review": None, "at": time.time()})
                 conn.execute(update(self.table).where(self.table.c.id == memory_id).values(data=record))
+
+    def settle(self, memory_id, job_id, result=None, review=None):
+        """Record how a job that used this record ended (and the reviewer's later decision).
+        Runs after the job finished, so a missing record or entry is skipped, never raised."""
+        with self.store.lock, self.store.engine.begin() as conn:
+            try:
+                record = self.get(memory_id)
+            except KeyError:
+                return None
+            entry = next((e for e in record.get("reuse", []) if e["job_id"] == job_id), None)
+            if entry is None:
+                return record
+            if result:
+                entry["result"] = result
+            if review:
+                entry["review"] = review
+            entry["at"] = time.time()
+            if record.get("evidence"):
+                counts = {k: 0 for k in ("verified", "failed", "inconclusive")}
+                for e in record["reuse"]:
+                    if e["result"] in counts:
+                        counts[e["result"]] += 1
+                record["evidence"]["reuse"] = {**counts, "approved_by_reviewer": sum(e.get("review") == "approve" for e in record["reuse"]),
+                                               "rejected_by_reviewer": sum(e.get("review") == "reject" for e in record["reuse"])}
+            conn.execute(update(self.table).where(self.table.c.id == memory_id).values(data=record))
+            return record
 
     def failure_records(self, project=None):
         with self.store.engine.connect() as conn:

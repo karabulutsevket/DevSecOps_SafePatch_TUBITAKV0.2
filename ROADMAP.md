@@ -191,7 +191,7 @@ Sorumlular: kurallar ve tanıklar *Yiğithan*, vakalar ve L2 kayıtları *Kadir*
 - [x] Hash alanlarının rolü daralır: kaynak, build ve test hash'leri yalnız **birebir tekrar** (aynı kodda kayıtlı yamayı aynen uygulama) için kullanılır; uyarlamalı kullanımda yapısal imza esas alınır — *Kadir*. **25 Ekim:** iki karar (birebir / uyarlamalı) ve kullanım (`replay` / `example` / `example_unknown`); başka dosyadaki aynı kalıp artık örnek olarak kullanılabiliyor ([docs/HAFIZA_UYGUNLUK.md](docs/HAFIZA_UYGUNLUK.md))
 - [x] Uygunluk kararı korunur: `uyumlu / uyumsuz / bilinmiyor`. Yalnız `uyumlu` otomatik kullanılır; `bilinmiyor` kayıt en fazla modele örnek olarak verilir — *Kadir*. **25 Ekim:** politika Şevket'in onayıyla uygulandı; her adayın iki kararı işin kanıtında
 - [ ] V0.1 hafıza kayıtlarını yeni şemaya dönüştüren geçiş betiği ve testi; dönüştürülemeyen kayıt `bilinmiyor` olarak kalır — *Reşat*
-- [ ] Kanıt vektörü: derleme, davranış, güvenlik tanığı, yeniden tarama, insan onayı, yeniden kullanım sonuçları — *Reşat*
+- [x] Kanıt vektörü: derleme, davranış, güvenlik tanığı, yeniden tarama, insan onayı, yeniden kullanım sonuçları — *Reşat*. **25 Ekim:** her kayıtta `evidence`; yeniden kullanımlar kullanım türü, sonuç (`verified` / `failed` / `inconclusive`) ve inceleyici kararıyla tutuluyor ([docs/HAFIZA_UYGUNLUK.md](docs/HAFIZA_UYGUNLUK.md#kanıt-vektörü-25-ekim-hafta-4))
 - [ ] Toplam 6 müşteri görüşmesi — *Şevket, Reşat*
 
 #### Hafta 5 · 23 – 29 Kasım

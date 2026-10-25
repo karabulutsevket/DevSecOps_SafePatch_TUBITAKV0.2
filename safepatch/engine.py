@@ -3,7 +3,7 @@ import time
 import uuid
 
 from safepatch.common import POLICY, Patch, canonical, digest, remaining, request, secret, setting
-from safepatch.memory import Memory, context_for
+from safepatch.memory import Memory, context_for, reuse_result
 from safepatch.acceptance import manifest
 from safepatch.feedback import GUIDANCE_KEY, classify, guidance_for, imitates_note
 from safepatch.policy import PolicyError, validate_patch
@@ -145,6 +145,10 @@ class Engine:
         except Exception as exc:
             # Never leak network URLs, tokens, raw model responses, or arbitrary code logs.
             self.set(job_id, "infrastructure_error", reason="dependency_failure:" + type(exc).__name__)
+        # Each memory record learns how the job that used it ended (its evidence vector).
+        job = self.store.get(job_id)
+        for memory_id in job.get("memory_ids", []):
+            self.memory.settle(memory_id, job_id, reuse_result(job))
 
     def split(self, job, initial, path, found):
         """A queued job for one more file of the same scan; it reuses the scan instead of rescanning."""
@@ -241,7 +245,7 @@ class Engine:
         replay = None
         if selected:
             with self.store.lock:
-                self.memory.use(selected["id"], job_id)
+                self.memory.use(selected["id"], job_id, lookup["use"])
                 self.store.mutate(job_id, lambda j: j.update(memory_ids=[selected["id"]]))
             memory_data = {"patch_diff": selected["diff"], "context": selected["context"]}
             # Only an exact-compatible record on identical source is replayed; any other use is an example.

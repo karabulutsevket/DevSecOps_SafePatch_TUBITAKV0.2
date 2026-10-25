@@ -72,6 +72,24 @@ Dokuz sentetik vakanın hepsinde imza, tarayıcının bildirdiği satırdan bağ
 
 **Bilinen sınırlar:** dosyalar arası veri akışı izlenmez (değer başka bir sınıftan geliyorsa kaynak `unknown`); alan (field) ve kalıtım üzerinden gelen türler yalnız bildirimden okunur; hedef tablosu şu an CWE-89, 22, 78 ve 330 içindir, yeni sınıf paketleri kendi hedeflerini ekler.
 
+## Kanıt vektörü (25 Ekim, Hafta 4)
+
+Her onaylı kayıt, kendi kabulünün ne kanıtladığını ve her yeniden kullanımın nasıl bittiğini taşır (`evidence`). Hafta 5'te sıralama ve geçersizleşme bunu kullanacak.
+
+| Alan | İçerik |
+|---|---|
+| `build`, `behavior`, `security` | Kaydı doğuran işin doğrulamasında geçti mi, kaç test koştu |
+| `rescan` | Taranan araçlar, kalan bulgu sayısı (kabulde 0), tolere edilen başka dosya bulgusu sayısı |
+| `approval` | Onaylayan inceleyici ve zaman |
+| `reuse` | Kaydı kullanan işlerin sonuçları: `verified` / `failed` / `inconclusive` sayıları ve inceleyicinin bu işlerdeki onay/ret kararları |
+
+- **Kullanım ayrıntısı:** kaydın `reuse` listesinde her kullanım iş kimliği, kullanım türü (`replay` / `example` / `example_unknown`), sonuç ve inceleyici kararıyla tutulur. Böylece Hafta 5, birebir tekrarın başarısızlığını örnek kullanımın başarısızlığından ayırabilir.
+- **`verified`:** aday incelemeye hazır oldu.
+- **`failed`:** aday doğrulamadan ya da politikadan geçemedi.
+- **`inconclusive`:** altyapı hatası, süre ya da bütçe aşımı, güvenlik tanığı eksikliği, iptal ya da kaydın iş sırasında geri çekilmesi. Bunlar kaydın kendisi hakkında bir şey söylemez.
+- **Bilinmeyen değer:** doğrulama kaydında bulunmayan bir bilgi `None` olarak kalır, "geçmedi" sayılmaz.
+- **Arayüz:** hafıza panelinde her kaydın kanıt vektörü okunur biçimde görünür.
+
 ## Sıradaki adımlar (Hafta 4)
 
 - **Geçiş betiği:** eski kayıtlara aileyi yeni sürüm olarak yazan betik.

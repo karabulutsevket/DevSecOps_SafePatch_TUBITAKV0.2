@@ -306,7 +306,11 @@ def approval(job_id: str, req: Decision, user=Depends(identity)):
         j["approval"] = {"job_id": job_id, "evidence_sha256": c["evidence_sha256"], "candidate_commit": req.candidate_commit, "artifact_sha256": req.artifact_sha256, "policy_version": POLICY, "reviewer": user["subject"], "approved_at": time.time(), "expires_at": j["review_expires_at"], "decision": req.decision, "comment": req.comment, "mode": j["mode"]}
         j["status"] = "approved" if req.decision == "approve" else "rejected"
         j["events"].append({"time": time.time(), "status": j["status"], "actor": user["subject"]})
-    return store.mutate(job_id, change)
+    job = store.mutate(job_id, change)
+    # A reviewer's decision on a candidate built from memory is evidence about that record.
+    for memory_id in job.get("memory_ids", []):
+        Memory(store).settle(memory_id, job_id, review=req.decision)
+    return job
 
 
 @app.post("/v1/jobs/{job_id}/deploy")

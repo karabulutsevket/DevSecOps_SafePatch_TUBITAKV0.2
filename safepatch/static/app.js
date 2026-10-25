@@ -37,12 +37,15 @@ function expertPanel(j){const box=el('section',undefined,'expert');box.append(el
   return box}
 setInterval(()=>{if(me)guard(refresh)},5000);
 
+// Evidence vector of a memory record (week 4): what its own acceptance proved and how its reuses ended.
+function evidenceText(e){if(!e)return 'Kanıt vektörü yok (Hafta 4 öncesi kayıt)';const yes=v=>v==null?'bilinmiyor':v?'geçti':'geçmedi';const suite=s=>s?yes(s.passed)+(s.tests!=null?' ('+s.tests+' test)':''):'bilinmiyor';const r=e.reuse||{};return 'Kanıt · derleme: '+yes(e.build)+' · davranış: '+suite(e.behavior)+' · tanık: '+suite(e.security)+' · tarama: '+(e.rescan?(e.rescan.remaining===0?'temiz':e.rescan.remaining+' bulgu kaldı')+(e.rescan.tools.length?' ('+e.rescan.tools.join(', ')+')':''):'bilinmiyor')+' · yeniden kullanım: '+(r.verified||0)+' doğrulandı, '+(r.failed||0)+' başarısız, '+(r.inconclusive||0)+' belirsiz; inceleyici '+(r.approved_by_reviewer||0)+' onay, '+(r.rejected_by_reviewer||0)+' ret'}
+
 async function refreshMemory(){
   $('memory-panel').hidden=false;$('measurements-panel').hidden=false;
   const records=await api('/v1/memory');
   $('memories').replaceChildren(...records.map(r=>{
     const row=el('div',undefined,'memory-row');
-    row.append(el('b',r.context.rule_id+' · '+r.state),el('p',r.context.project+' · v'+r.version+' · '+r.uses.length+' kullanım'),el('p',r.id,'hash'));
+    row.append(el('b',(r.context.cwe_family||r.context.rule_id)+' · '+r.state),el('p',r.context.project+' · v'+r.version+' · '+r.uses.length+' kullanım'),el('p',evidenceText(r.evidence)),el('p',r.id,'hash'));
     if(me.roles.includes('review')&&r.state!=='revoked'){
       const reason=el('input');reason.placeholder='Karantina / geri çekme gerekçesi';reason.maxLength=1000;
       row.append(reason);
