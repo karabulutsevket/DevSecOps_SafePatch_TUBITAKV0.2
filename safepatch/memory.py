@@ -45,7 +45,12 @@ def context_for(case, files, finding):
     }
 
 
+# Exact reuse (replay without the model) needs the same file, build and test contract; the
+# hashes serve only this. Adaptive reuse (an example for the model on other code) needs the
+# same weakness shape instead: the structural signature, wherever the file is.
 REQUIRED = ("project", "cwe_family", "jdk", "source_path", "build_sha256", "contract_sha256")
+ADAPTIVE = ("project", "cwe_family", "jdk")
+SHAPE = ("sink", "construction", "library", "library_version")
 
 
 def normalized(context):
@@ -53,13 +58,35 @@ def normalized(context):
     return context if "cwe_family" in context else {**context, "cwe_family": family({"rule_id": context.get("rule_id")})}
 
 
-def applicability(saved, current):
-    saved, current = normalized(saved), normalized(current)
-    if any(not saved.get(k) or not current.get(k) for k in REQUIRED):
+def decide(saved, current, fields):
+    if any(not saved.get(k) or not current.get(k) for k in fields):
         return "unknown"
-    if any(saved[k] != current[k] for k in REQUIRED):
+    if any(saved[k] != current[k] for k in fields):
         return "incompatible"
     return "compatible"
+
+
+def applicability(saved, current):
+    """Exact-reuse decision: same file, build and test contract (the source may still differ)."""
+    return decide(normalized(saved), normalized(current), REQUIRED)
+
+
+def adaptability(saved, current):
+    """Adaptive-reuse decision: same project, weakness and JDK, and the same signature shape."""
+    decision = decide(normalized(saved), normalized(current), ADAPTIVE)
+    if decision != "compatible":
+        return decision
+    shapes = [{k: c["signature"].get(k) for k in SHAPE} if c.get("signature") else None for c in (saved, current)]
+    if None in shapes:
+        return "unknown"
+    return "compatible" if shapes[0] == shapes[1] else "incompatible"
+
+
+def use_of(saved, current):
+    """How a guarded job may use an approved record: replay, example, example_unknown, or None."""
+    if applicability(saved, current) == "compatible" and saved.get("source_sha256") == current.get("source_sha256"):
+        return "replay"
+    return {"compatible": "example", "unknown": "example_unknown"}.get(adaptability(saved, current))
 
 
 class Memory:
@@ -190,35 +217,43 @@ class Memory:
         return record["id"]
 
     def failures(self, context, limit=20):
-        """Failures for this exact source first, then for the same contract; summaries only.
-        Only `compatible` contexts count, as for approved repairs."""
-        found = []
+        """Failures for this exact source, then the same contract, then the same signature shape
+        elsewhere; summaries only. `unknown` contexts never count as a lesson."""
+        found, order = [], ("same_source", "same_context", "same_shape")
         for record in self.failure_records(context["project"]):
-            if applicability(record["context"], context) != "compatible":
+            if applicability(record["context"], context) == "compatible":
+                relation = "same_source" if record["context"].get("source_sha256") == context["source_sha256"] else "same_context"
+            elif adaptability(record["context"], context) == "compatible":
+                relation = "same_shape"
+            else:
                 continue
-            relation = "same_source" if record["context"].get("source_sha256") == context["source_sha256"] else "same_context"
             found.append({"id": record["id"], "relation": relation, "category": record["failure"]["category"],
                           "patch_sha256": record["patch_sha256"], "origin": record["origin"], "occurrences": len(record["occurrences"])})
-        found.sort(key=lambda f: f["relation"] != "same_source")
+        found.sort(key=lambda f: order.index(f["relation"]))
         return found[:limit]
 
     def search(self, context, mode="guarded"):
         start = time.perf_counter()
         if mode == "off":
             return {"decision": "disabled", "selected": None, "duration_seconds": 0, "rejected": []}
-        rejected, candidates = [], []
+        rejected, candidates, considered = [], [], []
         for record in self.all(context["project"]):
             if record["state"] != "approved" or normalized(record["context"]).get("cwe_family") != normalized(context).get("cwe_family"):
                 continue
-            decision = applicability(record["context"], context)
-            if mode == "guarded" and decision != "compatible":
-                rejected.append({"id": record["id"], "decision": decision})
+            decisions = {"id": record["id"], "exact": applicability(record["context"], context), "adaptive": adaptability(record["context"], context)}
+            # naive (arm B): any record of the family is an example; guarded (arm C): the rules above.
+            use = "example" if mode != "guarded" else use_of(record["context"], context)
+            considered.append({**decisions, "use": use})
+            if use is None:
+                rejected.append(decisions)
                 continue
-            candidates.append(record)
-        # Prefer exact source, then newest. No semantic correctness score is made up.
-        candidates.sort(key=lambda r: (r["context"].get("source_sha256") == context["source_sha256"], r["created_at"]), reverse=True)
-        selected = candidates[0] if candidates else None
+            candidates.append((use, record))
+        # Replay first, then a compatible example, then an unknown one; newest within each.
+        # No semantic correctness score is made up.
+        rank = ("replay", "example", "example_unknown")
+        candidates.sort(key=lambda c: (rank.index(c[0]), -c[1]["created_at"]))
+        use, selected = candidates[0] if candidates else (None, None)
         # Recorded for review and evidence; the model does not see failures yet (roadmap week 5).
         failures = self.failures(context)
-        return {"decision": "match" if selected else "no_match", "selected": selected,
+        return {"decision": "match" if selected else "no_match", "use": use, "selected": selected, "considered": considered,
                 "rejected": rejected, "failures": failures, "duration_seconds": round(time.perf_counter() - start, 6)}

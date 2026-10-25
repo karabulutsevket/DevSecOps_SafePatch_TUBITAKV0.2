@@ -115,6 +115,18 @@ def test_failure_search_needs_a_compatible_context(job_store, change, relation):
     assert found == ([] if relation is None else [{**found[0], "id": record_id, "relation": relation}])
 
 
+def test_same_signature_shape_in_another_file_is_a_lesson_too(job_store):
+    db, _ = job_store
+    shape = {"schema": "safepatch-signature/1", "sink": "java.sql.Statement.executeQuery", "construction": "concatenation",
+             "source": "method_parameter", "library": "jdbc", "library_version": None}
+    record_id = record_direct(db, {**CONTEXT, "signature": shape})
+    elsewhere = {**CONTEXT, "source_path": "src/main/java/demo/Other.java", "source_sha256": "y" * 64, "build_sha256": "z" * 64,
+                 "signature": {**shape, "source": "http_request"}}
+    assert [(f["id"], f["relation"]) for f in Memory(db).failures(elsewhere)] == [(record_id, "same_shape")]
+    assert Memory(db).failures({**elsewhere, "signature": {**shape, "sink": "java.sql.Statement.execute"}}) == []
+    assert Memory(db).failures({**elsewhere, "signature": None}) == []   # unknown is never a lesson
+
+
 def test_failure_record_keeps_the_schema_fields(job_store):
     db, _ = job_store
     record_direct(db)

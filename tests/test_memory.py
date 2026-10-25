@@ -7,7 +7,7 @@ from conftest import headers
 from test_approval import ready
 from safepatch.acceptance import check_evidence
 from safepatch.common import SOURCE, canonical, digest
-from safepatch.memory import Memory, applicability, context_for
+from safepatch.memory import Memory, adaptability, applicability, context_for
 from safepatch.policy import PolicyError, validate_patch
 from safepatch.repository import baseline, registry
 from mock_patches import correct_patch
@@ -30,13 +30,54 @@ def approved_record(db, job, actor="SIMULATED-UNIT-REVIEWER"):
     return Memory(db).promote(j, context, files[SOURCE], actor, "Simulated unit fixture approval")
 
 
-@pytest.mark.parametrize("field", ["project", "cwe_family", "jdk", "source_path", "build_sha256", "contract_sha256"])
-def test_wrong_precondition_never_replayed(job_store, field):
+@pytest.mark.parametrize("field", ["project", "cwe_family", "jdk"])
+def test_other_project_weakness_or_runtime_is_never_used(job_store, field):
     db, job = job_store
     record = approved_record(db, job)
     changed = {**record["context"], field: "different"}
     assert applicability(record["context"], changed) == "incompatible"
     assert Memory(db).search(changed)["selected"] is None
+
+
+@pytest.mark.parametrize("field", ["source_path", "build_sha256", "contract_sha256"])
+def test_other_file_or_contract_is_an_example_never_a_replay(job_store, field):
+    # The hashes decide only exact replay; adaptive use follows the structural signature.
+    db, job = job_store
+    record = approved_record(db, job)
+    changed = {**record["context"], field: "different"}
+    assert (applicability(record["context"], changed), adaptability(record["context"], changed)) == ("incompatible", "compatible")
+    lookup = Memory(db).search(changed)
+    assert lookup["use"] == "example" and lookup["selected"]["id"] == record["id"]
+
+
+def test_other_signature_shape_is_never_used(job_store):
+    db, job = job_store
+    record = approved_record(db, job)
+    assert record["context"]["signature"]["sink"] == "java.sql.Statement.executeQuery"
+    changed = {**record["context"], "source_sha256": "x" * 64, "signature": {**record["context"]["signature"], "construction": "format"}}
+    lookup = Memory(db).search(changed)
+    assert lookup["selected"] is None and lookup["rejected"] == [{"id": record["id"], "exact": "compatible", "adaptive": "incompatible"}]
+
+
+def test_replay_is_preferred_to_a_newer_example(job_store):
+    db, job = job_store
+    record = approved_record(db, job)
+    newer = copy.deepcopy(record)
+    newer.update(id="e" * 32, created_at=record["created_at"] + 60, context={**record["context"], "source_path": "src/main/java/demo/Other.java"})
+    with db.engine.begin() as conn:
+        conn.execute(Memory(db).table.insert().values(id=newer["id"], created=time.time(), data=newer))
+    lookup = Memory(db).search(record["context"])
+    assert lookup["use"] == "replay" and lookup["selected"]["id"] == record["id"]
+    assert {c["id"]: c["use"] for c in lookup["considered"]} == {record["id"]: "replay", newer["id"]: "example"}
+
+
+def test_naive_arm_ignores_preconditions_and_never_replays(job_store):
+    db, job = job_store
+    record = approved_record(db, job)
+    changed = {**record["context"], "jdk": "21", "signature": None}
+    lookup = Memory(db).search(changed, "naive")
+    assert lookup["use"] == "example" and lookup["selected"]["id"] == record["id"]
+    assert Memory(db).search(record["context"], "naive")["use"] == "example"
 
 
 def test_same_weakness_from_another_scanner_uses_the_record(job_store):
@@ -57,19 +98,50 @@ def test_records_from_before_week_4_get_their_family_from_the_rule():
     assert applicability({**old, "rule_id": "legacy.unmapped.rule"}, new) == "unknown"
 
 
-@pytest.mark.parametrize("field", ["cwe_family", "jdk", "build_sha256", "contract_sha256"])
-def test_unknown_precondition_abstains(job_store, field):
+@pytest.mark.parametrize("field,use", [("cwe_family", None), ("jdk", "example_unknown"), ("signature", "example_unknown"),
+                                       ("build_sha256", "example"), ("contract_sha256", "example")])
+def test_unknown_precondition_is_at_most_an_example(job_store, field, use):
+    # Roadmap week 4: only `compatible` is used automatically; `unknown` may at most be a model example.
+    # Different source code throughout: identical code would be an exact replay whatever the signature says.
     db, job = job_store
     record = approved_record(db, job)
-    changed = {**record["context"], field: None}
-    assert applicability(record["context"], changed) == "unknown"
-    assert Memory(db).search(changed)["selected"] is None
+    changed = {**record["context"], "source_sha256": "x" * 64, field: None}
+    lookup = Memory(db).search(changed)
+    assert lookup["use"] == use and (lookup["selected"] is None) == (use is None)
+
+
+def test_an_example_reaches_the_model_and_is_still_verified(job_store):
+    from safepatch.engine import Engine
+    db, job = job_store
+    record = approved_record(db, job)
+    # Same weakness shape in another build: an example for the model, not a replay.
+    from sqlalchemy import update
+    table = Memory(db).table
+    with db.engine.begin() as conn:
+        changed = {**record, "context": {**record["context"], "build_sha256": "x" * 64}}
+        conn.execute(update(table).where(table.c.id == record["id"]).values(data=changed))
+    db.mutate(job["id"], lambda j: j.update(status="queued", approval=None, attempts=[], max_attempts=1))
+    proposals = []
+    def call(url, *args, **kwargs):
+        body = kwargs["body"]
+        if url.endswith("/propose"):
+            proposals.append(body)
+            return {"mode": "mock-test", "patch": record["patch"]}
+        if body["attempt"] == 0:
+            return {"baseline_valid": True, "scans": [{"findings": [{"rule_id": "bigg.java.sql-concatenation", "file": SOURCE, "line": 16}]}]}
+        return {"passed": False, "feedback": {"code": "security_regression"}}
+    Engine(db, call).run(job["id"])
+    stored = db.get(job["id"])
+    assert stored["memory_lookup"]["use"] == "example" and stored["memory_ids"] == [record["id"]]
+    assert len(proposals) == 1 and proposals[0]["memory_data"]["patch_diff"] == record["diff"]
+    assert stored["attempts"][0]["proposal"]["mode"] == "mock-test"
 
 
 def test_exact_match_and_disable(job_store):
     db, job = job_store
     record = approved_record(db, job)
-    assert Memory(db).search(record["context"])["selected"]["id"] == record["id"]
+    lookup = Memory(db).search(record["context"])
+    assert lookup["selected"]["id"] == record["id"] and lookup["use"] == "replay"
     assert Memory(db).search(record["context"], "off")["selected"] is None
 
 

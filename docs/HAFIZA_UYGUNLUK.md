@@ -1,18 +1,33 @@
 # Hafıza uygunluk kararı
 
-Bu belge, bir hafıza kaydının yeni bir bulguya **ne zaman** uygulanabileceğinin nasıl kararlaştırıldığını anlatır (ROADMAP.md Hafta 4). Onaylı kayıtlar ve [başarısızlık kayıtları](BASARISIZLIK_HAFIZASI.md) aynı kararı kullanır. Kod: `safepatch/weakness.py`, `safepatch/memory.py` (`context_for`, `applicability`).
+Bu belge, bir hafıza kaydının yeni bir bulguya **ne zaman** ve **nasıl** uygulanabileceğinin nasıl kararlaştırıldığını anlatır (ROADMAP.md Hafta 4). Onaylı kayıtlar ve [başarısızlık kayıtları](BASARISIZLIK_HAFIZASI.md) aynı kararı kullanır. Kod: `safepatch/weakness.py`, `safepatch/signature.py`, `safepatch/memory.py` (`context_for`, `applicability`, `adaptability`, `use_of`).
 
-## Karar
+## Karar (25 Ekim, Hafta 4)
 
-Her kayıt ve her yeni iş bir **bağlam** taşır. Uygunluk üç değerden biridir:
+Her kayıt ve her yeni iş bir **bağlam** taşır. Bir kaydın kullanımı için iki ayrı karar verilir. Her biri `compatible`, `incompatible` ya da `unknown` olur; bir alan bir tarafta yoksa sonuç `unknown`.
 
-| Karar | Ne zaman | Ne olur |
+| Karar | Zorunlu alanlar | Neye izin verir |
 |---|---|---|
-| `compatible` | Zorunlu alanların hepsi iki tarafta da var ve eşit | Kayıt kullanılabilir; aynı kaynak kodda birebir tekrar edilir, aday yine tam doğrulamadan geçer |
-| `incompatible` | Zorunlu alanlardan biri farklı | Kayıt elenir, gerekçesi işin kanıtında |
-| `unknown` | Zorunlu alanlardan biri bir tarafta yok | Kayıt otomatik kullanılmaz (çekimser) |
+| **Birebir** (`applicability`) | Proje, CWE ailesi, JDK, dosya yolu, build dosyası özeti, test sözleşmesi özeti | Kaynak kod da aynıysa kaydın yaması **model çağrılmadan** tekrar uygulanır |
+| **Uyarlamalı** (`adaptability`) | Proje, CWE ailesi, JDK ve [yapısal imzanın](#yapısal-imza-25-ekim-hafta-4) biçimi: hedef çağrı, kurulum, kütüphane, kütüphane sürümü | Kayıt **modele örnek** olarak verilir; dosya, build ve test özetleri aranmaz |
 
-Zorunlu alanlar: proje, **CWE ailesi**, JDK, dosya yolu, build dosyası özeti, test sözleşmesi özeti. Kaynak kod özeti yalnız birebir tekrar için kullanılır.
+Korumalı modda (`guarded`, yeni işlerin varsayılanı ve deneylerde C kolu) bir kaydın kullanımı şöyle belirlenir:
+
+| Kullanım | Koşul |
+|---|---|
+| `replay` | Birebir karar `compatible` ve kaynak kod özeti aynı |
+| `example` | Uyarlamalı karar `compatible` |
+| `example_unknown` | Uyarlamalı karar `unknown` (ör. kayıtta imza yok, JDK bilinmiyor). Yol haritası kararı: bilinmeyen kayıt **en fazla modele örnek** olur, asla tekrar edilmez. |
+| Elenir | Uyarlamalı karar `incompatible` (başka proje, aile, JDK ya da imza biçimi) |
+
+- **Seçim sırası:** önce `replay`, sonra `example`, sonra `example_unknown`; her grupta en yeni kayıt. Hiçbir durumda hafızadan gelen aday doğrulamayı atlamaz.
+- **Hash'lerin rolü:** kaynak, build ve test özetleri yalnız birebir tekrar kararına girer.
+- **Kaynak türü:** değerin nereden geldiği (`source`) imza karşılaştırmasına girmez; düzeltme kalıbını değiştirmez.
+- **Kanıt:** her aday için iki karar ve kullanım, işin kanıtında `memory_lookup.considered` alanına, elenenler `rejected` alanına yazılır. Hafta 5'teki "neden seçildi / elendi" paneli bunu gösterecek.
+- **Ön koşulsuz kol** (`naive`, deneylerde B kolu): aynı ailedeki en yeni kaydı ön koşul aramadan örnek olarak verir, tekrar etmez.
+- **Başarısızlık kayıtları:** aynı kaynak (`same_source`), aynı sözleşme (`same_context`) ve aynı imza biçimi başka dosyada (`same_shape`) ilişkileriyle bulunur. `unknown` bağlamlar ders sayılmaz.
+
+**Etkisi:** Hafta 4'ten önce dosya yolu, build ve test özetlerinin hepsi aynı olmadan kayıt örnek olarak bile kullanılamıyordu. Aynı projede başka bir dosyadaki aynı kalıp hafızadan yararlanamıyordu. Bu değişiklik H1 deneyinin C kolunu da değiştirir. V0.1 benchmark kanıtı eski kararla üretilmiştir ve olduğu gibi kalır.
 
 ## CWE ailesi (25 Ekim, Hafta 4)
 
@@ -53,12 +68,11 @@ Hedef seçimi: bulgu satırını içeren metottaki hedef çağrılar aday olur. 
 
 Dokuz sentetik vakanın hepsinde imza, tarayıcının bildirdiği satırdan bağımsız olarak doğru çıkıyor. Spring `JdbcTemplate`, `prepareStatement` içinde birleştirme, `StringBuilder`, `Runtime.exec`, `Files.newInputStream(Paths.get(...))`, `FileInputStream` ve `Random` kalıpları testle sabit (`tests/test_signature.py`).
 
-İmza, her işin ve kaydın bağlamına `signature` alanıyla yazılır. **Uygunluk kararında henüz kullanılmaz;** bir sonraki adımda hash'lerin rolü daraltılırken devreye girecek.
+İmza, her işin ve kaydın bağlamına `signature` alanıyla yazılır ve uyarlamalı kararın temelidir (yukarıdaki Karar bölümü).
 
 **Bilinen sınırlar:** dosyalar arası veri akışı izlenmez (değer başka bir sınıftan geliyorsa kaynak `unknown`); alan (field) ve kalıtım üzerinden gelen türler yalnız bildirimden okunur; hedef tablosu şu an CWE-89, 22, 78 ve 330 içindir, yeni sınıf paketleri kendi hedeflerini ekler.
 
 ## Sıradaki adımlar (Hafta 4)
 
-- **Hash'lerin rolü:** kaynak, build ve test özetleri yalnız birebir tekrarda zorunlu olacak.
 - **Geçiş betiği:** eski kayıtlara aileyi yeni sürüm olarak yazan betik.
 - **Bilinen sınır:** runner'ın Sonar ön denetimi hâlâ laboratuvar etiketine göre kural seçiyor; yalnız sentetik vakalarda kullanılıyor.

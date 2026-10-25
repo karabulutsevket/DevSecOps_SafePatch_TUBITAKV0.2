@@ -200,7 +200,8 @@ class Engine:
                 self.memory.use(selected["id"], job_id)
                 self.store.mutate(job_id, lambda j: j.update(memory_ids=[selected["id"]]))
             memory_data = {"patch_diff": selected["diff"], "context": selected["context"]}
-            if job.get("memory_mode", "guarded") == "guarded" and selected["context"].get("source_sha256") == digest(source):
+            # Only an exact-compatible record on identical source is replayed; any other use is an example.
+            if job.get("memory_mode", "guarded") == "guarded" and lookup["use"] == "replay" and selected["context"].get("source_sha256") == digest(source):
                 # A replayed expert patch keeps its author, so the author cannot approve its reuse either.
                 replay = {"mode": "approved-memory-replay", "patch": selected["patch"], "memory_id": selected["id"], "author": selected.get("author"),
                           "metrics": {"duration_seconds": lookup["duration_seconds"], "prompt_tokens_measured": 0, "output_tokens_measured": 0}}
