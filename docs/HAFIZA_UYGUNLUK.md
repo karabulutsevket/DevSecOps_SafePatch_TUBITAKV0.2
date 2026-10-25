@@ -51,7 +51,7 @@ Artık her bulgu bir **CWE ailesine** indirgeniyor (`weakness.family`):
 
 **Rehber:** yeniden deneme rehberi de laboratuvar etiketi yerine aileden seçilir (`feedback.GUIDANCE_KEY`). Ailesi bilinen ama kendi metni olmayan zayıflıklar genel metni alır. H2, Hafta 3 ve path ölçümlerindeki 153 işin hepsinde aileden seçilen anahtar eski etiketle aynı; sentetik vakalarda model istemleri değişmedi.
 
-**Eski kayıtlar:** Hafta 4'ten önce yazılmış bağlamlarda `cwe_family` alanı yoktur. Ailesi kural kimliğinden hesaplanır. Kural tabloda yoksa kayıt `unknown` kalır. Kayıtların kendisi değiştirilmez; kalıcı geçiş betiği Hafta 4'ün ayrı maddesi.
+**Eski kayıtlar:** Hafta 4'ten önce yazılmış bağlamlarda `cwe_family` alanı yoktur. Okunurken ailesi kural kimliğinden hesaplanır; kural tabloda yoksa kayıt `unknown` kalır. Kalıcı geçiş için aşağıdaki [geçiş betiği](#eski-kayıtların-geçişi-25-ekim-hafta-4) kullanılır.
 
 ## Yapısal imza (25 Ekim, Hafta 4)
 
@@ -90,7 +90,28 @@ Her onaylı kayıt, kendi kabulünün ne kanıtladığını ve her yeniden kulla
 - **Bilinmeyen değer:** doğrulama kaydında bulunmayan bir bilgi `None` olarak kalır, "geçmedi" sayılmaz.
 - **Arayüz:** hafıza panelinde her kaydın kanıt vektörü okunur biçimde görünür.
 
-## Sıradaki adımlar (Hafta 4)
+## Eski kayıtların geçişi (25 Ekim, Hafta 4)
 
-- **Geçiş betiği:** eski kayıtlara aileyi yeni sürüm olarak yazan betik.
-- **Bilinen sınır:** runner'ın Sonar ön denetimi hâlâ laboratuvar etiketine göre kural seçiyor; yalnız sentetik vakalarda kullanılıyor.
+`scripts/migrate_memory.py` Hafta 4'ten önce yazılmış kayıtları yeni şemaya taşır. Sürüm yükseltmesinden sonra bir kez çalıştırılır. Önce `--dry-run` ile yazmadan rapor alınabilir.
+
+```powershell
+.venv/Scripts/python.exe scripts/migrate_memory.py --dry-run          # ne değişecek, yazmadan
+.venv/Scripts/python.exe scripts/migrate_memory.py                    # orkestratörün veritabanı (DATABASE_URL ya da .runtime/jobs.db)
+.venv/Scripts/python.exe scripts/migrate_memory.py --database sqlite:///C:/yol/jobs.db
+```
+
+| Eklenen | Nasıl | Tamamlanamazsa |
+|---|---|---|
+| `cwe_family` | Kaydın kural kimliğinden | `None`: kayıt eşleşmede `unknown` |
+| `signature` | Kayıtta saklı, düzeltme öncesi kaynaktan (`before`) | `None`: uyarlamalı karar `unknown`, en fazla örnek |
+| `evidence` | Kaydı doğuran iş hâlâ veritabanındaysa onun doğrulamasından; onay bilgisi kayıttaki onaydan | `None` |
+| `reuse` | Eski kullanımlar, sonuçları bilinmediği için `unrecorded`; sayılara katılmaz | — |
+
+- **Onaylı kayıtlar:** yeni sürüm olur. Önceki bağlam olay kaydında (`previous_context`) saklanır; durum (onaylı, karantina, geri çekilmiş) değişmez.
+- **Başarısızlık kayıtları:** aile eklenir. Kaynak saklanmadığı için imza `None` kalır. Bağlam imzası (`context_sha256`) yeni zorunlu alanlarla yeniden hesaplanır.
+- **Rapor:** taşınan, ailesi, imzası ya da kanıtı tamamlanamayan kayıtları ayrı ayrı listeler. İkinci çalıştırma hiçbir şey değiştirmez.
+- **Sınanma:** testler, V0.1 kodunun yazdığı kayıt şekliyle (`git` geçmişinden) yazıldı. Bu makinedeki 11 yerel veritabanının hiçbirinde hafıza kaydı bulunmadığı için betik gerçek bir V0.1 kaydı üzerinde çalıştırılamadı.
+
+## Bilinen sınırlar
+
+- **Sonar ön denetimi:** runner'ın Sonar ön denetimi hâlâ laboratuvar etiketine göre kural seçiyor; yalnız sentetik vakalarda kullanılıyor.

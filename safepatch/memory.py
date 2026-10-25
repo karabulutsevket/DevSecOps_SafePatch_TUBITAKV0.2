@@ -119,6 +119,14 @@ def reuse_result(job):
     return "failed"
 
 
+def migrated_context(context, before):
+    """A pre-week-4 context with the week-4 fields: the family from its rule, the signature from the stored source."""
+    upgraded = normalized(context)
+    if "signature" not in upgraded:
+        upgraded = {**upgraded, "signature": signature(before, upgraded["cwe_family"]) if before else None}
+    return upgraded
+
+
 class Memory:
     def __init__(self, store):
         self.store = store
@@ -239,6 +247,60 @@ class Memory:
                                                "rejected_by_reviewer": sum(e.get("review") == "reject" for e in record["reuse"])}
             conn.execute(update(self.table).where(self.table.c.id == memory_id).values(data=record))
             return record
+
+    def recovered_evidence(self, record):
+        """The evidence vector of an older record, rebuilt from its source job if that job is still stored."""
+        try:
+            job = self.store.get(record["source_job"])
+        except KeyError:
+            return None
+        passed = [a for a in job.get("attempts", []) if (a.get("verification") or {}).get("passed")]
+        attempt = next((a for a in passed if a.get("proposal", {}).get("patch") == record.get("patch")), passed[-1] if passed else None)
+        return evidence_vector({"approval": record.get("approval")}, attempt) if attempt else None
+
+    def migrate(self, dry_run=False):
+        """Bring records written before week 4 to the current schema (roadmap week 4).
+
+        Approved records become a new version whose event keeps the previous context; what
+        cannot be completed stays None (unknown). Running it twice changes nothing.
+        """
+        report = {"memory": {"total": 0, "migrated": [], "unknown_family": [], "no_signature": [], "no_evidence": []},
+                  "failures": {"total": 0, "migrated": [], "unknown_family": []}}
+        now = time.time()
+        with self.store.lock:
+            for record in self.all():
+                report["memory"]["total"] += 1
+                if all(k in record["context"] for k in ("cwe_family", "signature")) and "evidence" in record and "reuse" in record:
+                    continue
+                upgraded = copy.deepcopy(record)
+                upgraded["context"] = migrated_context(record["context"], record.get("before"))
+                upgraded.setdefault("evidence", self.recovered_evidence(record))
+                upgraded.setdefault("reuse", [{"job_id": j, "use": None, "result": "unrecorded", "review": None, "at": None} for j in record.get("uses", [])])
+                upgraded["version"] = record["version"] + 1
+                upgraded["events"].append({"state": record["state"], "actor": "safepatch-migration", "reason": "Hafta 4 şeması: cwe_family, signature, evidence",
+                                           "at": now, "migration": "week-4", "previous_context": record["context"]})
+                for key, missing in (("migrated", False), ("unknown_family", not upgraded["context"].get("cwe_family")),
+                                     ("no_signature", not upgraded["context"].get("signature")), ("no_evidence", not upgraded["evidence"])):
+                    if key == "migrated" or missing:
+                        report["memory"][key].append(record["id"])
+                if not dry_run:
+                    with self.store.engine.begin() as conn:
+                        conn.execute(update(self.table).where(self.table.c.id == record["id"]).values(data=upgraded))
+            for record in self.failure_records():
+                report["failures"]["total"] += 1
+                if all(k in record["context"] for k in ("cwe_family", "signature")):
+                    continue
+                # Failure records keep no source, so their signature stays unknown.
+                upgraded = {**record, "context": migrated_context(record["context"], None),
+                            "migration": {"name": "week-4", "at": now, "previous_context": record["context"]}}
+                upgraded["context_sha256"] = digest(canonical({k: upgraded["context"].get(k) for k in REQUIRED}))
+                report["failures"]["migrated"].append(record["id"])
+                if not upgraded["context"].get("cwe_family"):
+                    report["failures"]["unknown_family"].append(record["id"])
+                if not dry_run:
+                    with self.store.engine.begin() as conn:
+                        conn.execute(update(self.failure_table).where(self.failure_table.c.id == record["id"]).values(data=upgraded))
+        return report
 
     def failure_records(self, project=None):
         with self.store.engine.connect() as conn:
