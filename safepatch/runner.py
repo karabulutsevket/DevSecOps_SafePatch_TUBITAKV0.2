@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+import subprocess
 import threading
 import time
 import uuid
@@ -23,12 +24,63 @@ app = FastAPI(title="SafePatch restricted runner")
 lock = threading.Lock()
 
 
-def maven(workspace, args, deadline, extra=None, online=False, limit=240):
+# Docker sandbox (roadmap weeks 5–6): build and tests run project code, so a real project is
+# only ever built in a container with no network, a read-only root, no capabilities, a
+# non-root user and resource limits. Dependencies come from a read-only copy of the offline
+# Maven cache inside WSL (on /mnt/c a build takes ~8x longer).
+SANDBOX_IMAGE = "maven:3.9.16-eclipse-temurin-17@sha256:1a352420f7aba21f5ad08df31bab55f74c013fb491f1ae8ab1dd7ff9ed698584"
+MAVEN_FLAGS = ["-B", "-ntp", "-Dstyle.color=never", "-DargLine=-Xmx512m -Dfile.encoding=UTF-8"]
+
+
+def sandbox_mode(spec):
+    """'docker' or 'native'. Only the owned synthetic labs may still build natively."""
+    mode = setting("RUNNER_SANDBOX", "native")
+    if mode not in ("docker", "native"):
+        raise PolicyError("unknown_runner_sandbox")
+    if mode != "docker" and spec.labels.get("source") != "safepatch-synthetic":
+        raise PolicyError("sandbox_required_for_real_projects")
+    return mode
+
+
+def wsl(*argv):
+    return ["wsl", "-d", setting("WSL_DISTRO", "Debian"), "--exec", *argv]
+
+
+def sandboxed(argv, workspace, name):
+    """The docker command running argv for this workspace inside the sandbox."""
+    cache = setting("SANDBOX_MAVEN_CACHE")
+    if not cache or not cache.startswith("/"):
+        raise RuntimeError("sandbox_maven_cache_missing")
+    return wsl("docker", "run", "--rm", "--name", name, "--network", "none", "--read-only", "--tmpfs", "/tmp:rw,size=1g",
+               "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--pids-limit", "1024",
+               "--memory", setting("SANDBOX_MEMORY", "2g"), "--cpus", setting("SANDBOX_CPUS", "2"), "--user", setting("SANDBOX_USER", "1000:1000"),
+               "-e", "HOME=/tmp", "-e", "MAVEN_OPTS=-Xmx512m -Dfile.encoding=UTF-8",
+               "-v", wsl_path(workspace) + ":/workspace", "-w", "/workspace", "-v", cache + ":/m2:ro",
+               # The image's entrypoint script copies settings into a home it cannot write; skip it.
+               "--entrypoint", argv[0], setting("SANDBOX_IMAGE", SANDBOX_IMAGE), *argv[1:])
+
+
+def profile(sandbox):
+    return "docker:" + setting("SANDBOX_IMAGE", SANDBOX_IMAGE) if sandbox == "docker" else setting("RUNNER_PROFILE", "native-same-user")
+
+
+def maven(workspace, args, deadline, extra=None, online=False, limit=240, sandbox="native"):
+    if sandbox == "docker":
+        if online or extra:
+            raise PolicyError("sandbox_runs_offline_without_secrets")
+        name = "safepatch-" + uuid.uuid4().hex[:12]
+        argv = ["mvn", *MAVEN_FLAGS, "-o", "-Dmaven.repo.local=/tmp/m2", "-Dmaven.repo.local.tail=/m2", *args]
+        try:
+            return run(sandboxed(argv, workspace, name), workspace, remaining(deadline, limit))
+        except TimeoutError:
+            # Stopping the wsl client does not stop the container.
+            subprocess.run(wsl("docker", "kill", name), capture_output=True, timeout=30)
+            raise
     executable = shutil.which("mvn")
     if not executable:
         raise RuntimeError("maven_missing")
     cache = setting("MAVEN_CACHE", str(ROOT / ".runtime/m2"))
-    argv = [executable, "-B", "-ntp", "-Dmaven.repo.local=" + cache, "-Dstyle.color=never", "-DargLine=-Xmx512m -Dfile.encoding=UTF-8"]
+    argv = [executable, *MAVEN_FLAGS, "-Dmaven.repo.local=" + cache]
     if not online:
         argv.append("-o")
     return run(argv + args, workspace, remaining(deadline, limit), extra)
@@ -38,11 +90,11 @@ def maven(workspace, args, deadline, extra=None, online=False, limit=240):
 MISSING_WITNESS = {"passed": False, "missing": True, "tests": 0, "failures": 0, "errors": 0, "skipped": 0, "details": []}
 
 
-def tests(workspace, selection, deadline, limit=240):
+def tests(workspace, selection, deadline, limit=240, sandbox="native"):
     """Run one descriptor test selection and read every Surefire report it produced."""
     reports_dir = workspace / "target/surefire-reports"
     shutil.rmtree(reports_dir, ignore_errors=True)
-    result = maven(workspace, ["-Dtest=" + ",".join(selection.selectors), "test"], deadline, limit=limit)
+    result = maven(workspace, ["-Dtest=" + ",".join(selection.selectors), "test"], deadline, limit=limit, sandbox=sandbox)
     reports = sorted(reports_dir.glob("TEST-*.xml")) if reports_dir.exists() else []
     if not reports:
         return {"passed": False, "infrastructure_error": True, "reason": "missing_junit_report", "exit_code": result["exit_code"], "duration_seconds": result["duration_seconds"]}
@@ -113,6 +165,10 @@ def execute(req: VerifyRequest):
     remaining(req.deadline)
     case, files = baseline(req.case_id, req.base_commit)
     spec = case["spec"]
+    sandbox = sandbox_mode(spec)
+    if sandbox == "docker" and req.scanner == "sonarqube+semgrep":
+        # The Sonar Maven goal needs the Sonar server on the network; refuse before building anything.
+        raise PolicyError("sonar_scan_needs_network_not_sandboxed")
     workspace = runtime("runner-work") / f"{req.job_id}-{req.attempt}-{uuid.uuid4().hex[:8]}"
     checkout(req.case_id, req.base_commit, workspace)
     patch_meta, view, revision = None, files, req.base_commit
@@ -121,13 +177,13 @@ def execute(req: VerifyRequest):
         # This source revision is the exact patched content; never label it as base HEAD.
         revision = commit_candidate(workspace, req.base_commit, req.patch.edits, patch_meta["diff"])
         view = ChainMap({edit.path: edit.content for edit in req.patch.edits}, files)
-    compile_result = maven(workspace, spec.build.package_goals, req.deadline, limit=spec.limits.build_seconds)
+    compile_result = maven(workspace, spec.build.package_goals, req.deadline, limit=spec.limits.build_seconds, sandbox=sandbox)
     if compile_result["exit_code"]:
         errors = re.findall(r"\[ERROR\] .*?\.java:\[\d+,\d+\][^\n]*", compile_result["output"])
         return {"passed": False, "feedback": {"code": "compilation_failed", "diagnostics": [e[-400:] for e in errors[:4]]}, "patch": patch_meta, "build": {"passed": False, "duration_seconds": compile_result["duration_seconds"]}}
     witness = spec.tests.security
-    behavior = tests(workspace, spec.tests.behavior, req.deadline, spec.limits.test_seconds)
-    security = tests(workspace, witness, req.deadline, spec.limits.test_seconds) if witness else dict(MISSING_WITNESS)
+    behavior = tests(workspace, spec.tests.behavior, req.deadline, spec.limits.test_seconds, sandbox)
+    security = tests(workspace, witness, req.deadline, spec.limits.test_seconds, sandbox) if witness else dict(MISSING_WITNESS)
     reports = scan(workspace, spec, view, revision, req.scanner, req.job_id, req.attempt, req.deadline)
     if tracked_changes(workspace):
         raise PolicyError("tracked_file_changed_during_execution")
@@ -139,7 +195,7 @@ def execute(req: VerifyRequest):
     baseline_valid = bool(not req.patch and behavior["passed"] and findings and (witness_fails or not witness))
     passed = bool(req.patch and witness and behavior["passed"] and security["passed"] and not remaining_findings and gate_ok)
     code = "verified" if passed else "security_witness_missing" if req.patch and not witness and behavior["passed"] and not remaining_findings and gate_ok else "validation_failed"
-    response = {"passed": passed, "baseline_valid": baseline_valid, "base_commit": req.base_commit, "source_revision": revision, "build": {"passed": True, "duration_seconds": compile_result["duration_seconds"]}, "behavior": behavior, "security": security, "scans": reports, "tolerated": req.tolerated, "patch": patch_meta, "feedback": {"code": code, "behavior": behavior, "security": security, "remaining_rules": [f["rule_id"] for f in remaining_findings]}, "duration_seconds": round(time.monotonic() - started, 3), "runner_profile": setting("RUNNER_PROFILE", "native-same-user"), "versions": {"java": setting("JAVA_VERSION_LABEL", "17; inspect preparation evidence"), "maven": setting("MAVEN_VERSION_LABEL", "3.9.16")}}
+    response = {"passed": passed, "baseline_valid": baseline_valid, "base_commit": req.base_commit, "source_revision": revision, "build": {"passed": True, "duration_seconds": compile_result["duration_seconds"]}, "behavior": behavior, "security": security, "scans": reports, "tolerated": req.tolerated, "patch": patch_meta, "feedback": {"code": code, "behavior": behavior, "security": security, "remaining_rules": [f["rule_id"] for f in remaining_findings]}, "duration_seconds": round(time.monotonic() - started, 3), "runner_profile": profile(sandbox), "versions": {"java": setting("JAVA_VERSION_LABEL", "17; inspect preparation evidence"), "maven": setting("MAVEN_VERSION_LABEL", "3.9.16")}}
     if passed:
         if not spec.build.artifact:
             raise PolicyError("artifact_not_configured")
@@ -153,7 +209,7 @@ def execute(req: VerifyRequest):
 
 @app.get("/health")
 def health():
-    return {"service": "runner", "status": "ok", "profile": setting("RUNNER_PROFILE", "native-same-user")}
+    return {"service": "runner", "status": "ok", "profile": profile(setting("RUNNER_SANDBOX", "native"))}
 
 
 @app.post("/execute", dependencies=[Depends(require_service("RUNNER_TOKEN"))])

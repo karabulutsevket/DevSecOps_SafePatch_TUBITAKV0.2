@@ -15,6 +15,7 @@ Bu belgedeki adımlar 24–25 Ekim 2026'da bir geliştirici makinesinde çalış
 | Ollama | 0.34.0, yalnız `127.0.0.1` | Bulut özellikleri kapalı (`OLLAMA_NO_CLOUD=1`) |
 | Model | `qwen2.5-coder:7b-instruct-q4_K_M`, özet `dae161e2…f4364` | Özet kodda sabit; farklıysa iş durur |
 | GPU | NVIDIA RTX 4070 Laptop, 8 GB | Daha büyük model bu GPU'ya sığmaz |
+| Docker | 26.1.5, WSL Debian içinde (`docker.io` paketi) | Derleme sandbox'ı; imaj `maven:3.9.16-eclipse-temurin-17`, özetle sabit |
 
 ## 2. İlk kurulum
 
@@ -95,6 +96,45 @@ foreach ($port in 8100..8104) { Invoke-RestMethod "http://127.0.0.1:$port/health
 
 Ortam değişkenleri yalnız o PowerShell oturumunda geçerlidir. Servisleri yeni bir oturumda başlatırken yeniden verin.
 
+### Docker sandbox (Hafta 5)
+
+Derleme ve testler projenin kodunu çalıştırır. Bu yüzden gerçek (sentetik olmayan) bir proje **yalnız Docker sandbox'ında** derlenir; runner yerel kipte bunu reddeder (`sandbox_required_for_real_projects`). Sentetik laboratuvar vakaları iki kipte de çalışır.
+
+Bir kez hazırlık (Docker WSL Debian'da çalışırken: `wsl -d Debian -u root -- service docker start`):
+
+```powershell
+$env:MAVEN_CACHE = '<maven önbelleği>'
+.venv/Scripts/python.exe scripts/prepare_sandbox.py
+```
+
+Betik şunları yapar:
+1. Sabit imajı yoksa indirir (yaklaşık 233 MB).
+2. Çevrimdışı Maven önbelleğini WSL diskine kopyalar. `/mnt/c` üzerinden derleme yaklaşık 8 kat yavaştır.
+3. Bir kapsayıcıda ağın kapalı, önbellek ile kök dosya sisteminin salt okunur ve yalnız çalışma klasörünün yazılabilir olduğunu sınar. Biri tutmazsa durur.
+
+Sonra servisleri sandbox'la başlatın:
+
+```powershell
+$env:RUNNER_SANDBOX = 'docker'
+$env:SANDBOX_MAVEN_CACHE = '/home/<wsl-kullanıcısı>/.safepatch/m2'   # betiğin yazdığı yol
+./scripts/start-native.ps1 -Restart
+```
+
+**Kapsayıcının kısıtları:**
+- ağ yok (`--network none`);
+- salt okunur kök dosya sistemi, `/tmp` geçici bellekte;
+- tüm Linux yetkileri düşürülmüş, ayrıcalık yükseltme kapalı;
+- root olmayan kullanıcı (`1000:1000`);
+- 2 GB bellek, 2 işlemci, en çok 1024 süreç.
+
+**Dosya ve ayarlar:**
+- Maven önbelleği salt okunur bağlanır; yazmalar kapsayıcının geçici belleğine gider (`maven.repo.local.tail`).
+- Süre aşılırsa kapsayıcı öldürülür.
+- Sonar taraması Sonar sunucusuna ağ gerektirdiği için sandbox'ta reddedilir.
+- Ayarlar: `SANDBOX_MEMORY`, `SANDBOX_CPUS`, `SANDBOX_USER`, `SANDBOX_IMAGE`, `WSL_DISTRO`.
+
+Sandbox testleri: `./scripts/run-tests.ps1 -Sandbox` (`SANDBOX_MAVEN_CACHE` ayarlıyken). Bilgisayar yeniden başladıktan sonra Docker servisini yeniden başlatın. Docker çalışmıyorsa iş `verification_infrastructure` ile durur.
+
 Durdurma:
 
 ```powershell
@@ -134,5 +174,5 @@ Beklenen sonuç: `"status": "awaiting_review"`. SQL vakası tek denemede, yakla�
 ## 8. Henüz doğrulanmayanlar
 
 - Linux sunucuya doğrudan kurulum (CI'da yalnız birim testleri Ubuntu'da çalışıyor).
-- Docker / Compose kurulumu (dosyalar taslak; yol haritasında Hafta 5–6).
+- Servislerin tamamının Docker / Compose ile kurulumu (dosyalar taslak). Derleme sandbox'ı Hafta 5'te doğrulandı (yukarıda).
 - Tamamen internetsiz bir makinede sıfırdan kurulum ve ağ çıkışı testi (Hafta 10).

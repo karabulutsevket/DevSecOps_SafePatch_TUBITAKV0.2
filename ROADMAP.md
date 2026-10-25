@@ -139,7 +139,7 @@ L3 setindeki Vul4J ve OWASP Benchmark vakaları gerçek, çok dosyalı Maven pro
 | 4 | **Çoklu bulgu:** bir tarama → bulgu başına iş; aynı dosyadaki bulguların çakışması; ilk sürümde model yalnız bulgunun dosyasını değiştirebilir | Reşat, Şevket — **Tamam (25 Ekim):** dosya başına iş, diğer dosyaların bulguları yeniden taramada tolere edilir; gerçek Maven ile iki dosyalı projede doğrulandı ([ayrıntı](docs/GERCEK_DEPO_TASARIMI.md#8-bulgu-başına-iş-25-ekim-2026-hafta-4)) |
 | 4 | Test sonuçlarını sınıf adından bağımsız okuma (Surefire raporları); güvenlik tanığının proje içindeki yeri; tanığı olmayan projede sonuç "kanıt yetersiz" | Yiğithan |
 | 5 | **İlk gerçek açık kaynak proje:** bir Vul4J vakası uçtan uca (derleme, test, bulgu, yama, doğrulama) | Şevket, Yiğithan |
-| 5–6 | **Docker sandbox** (Hafta 8'den öne alındı; gerçek kod derlenmeden önce yalıtım gerekir) | Şevket |
+| 5–6 | **Docker sandbox** (Hafta 8'den öne alındı; gerçek kod derlenmeden önce yalıtım gerekir) | Şevket — **Tamam (25 Ekim):** ağsız, salt okunur, yetkisiz, root olmayan kapsayıcı; gerçek proje sandbox'sız derlenmez; üç sentetik aile kapsayıcıda doğrulandı ([kurulum](docs/KURULUM_V02.md#docker-sandbox-hafta-5)) |
 
 **Geçiş koşulu (Faz 2'den önce):** En az bir gerçek açık kaynak Java projesi, proje tanımıyla ve Docker sandbox içinde uçtan uca çalıştı.
 
