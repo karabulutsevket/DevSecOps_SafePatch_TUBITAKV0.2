@@ -69,6 +69,20 @@ class Build(Strict):
     tool: Literal["maven"] = "maven"
     package_goals: list[str] = Field(default_factory=lambda: ["-DskipTests", "package"], min_length=1, max_length=12)
     artifact: str | None = Field(default=None, max_length=200)
+    # One module of a multi-module build (Maven -pl); also_make builds the in-repository
+    # modules it depends on (-am). Tests and reports are the module's own.
+    # Each segment starts with a letter or digit: "-am" must never reach Maven as a module.
+    module: str | None = Field(default=None, pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]*(/[A-Za-z0-9][A-Za-z0-9._-]*)*$", max_length=200)
+    also_make: bool = False
+
+    def reactor(self):
+        """Maven arguments that select the module, if any."""
+        return [] if not self.module else ["-pl", self.module, *(["-am", "-Dsurefire.failIfNoSpecifiedTests=false"] if self.also_make else [])]
+
+    @field_validator("module")
+    @classmethod
+    def module_path(cls, value):
+        return value if value is None else _paths([value])[0]
 
     @field_validator("package_goals")
     @classmethod

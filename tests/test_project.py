@@ -91,3 +91,18 @@ def test_descriptor_round_trips_through_yaml(tmp_path, descriptor):
     file = tmp_path / "sql-01.yml"
     file.write_text(yaml.safe_dump(copy.deepcopy(descriptor), sort_keys=False), encoding="utf-8")
     assert load_project(file) == ProjectSpec.model_validate(descriptor)
+
+
+@pytest.mark.parametrize("module,also_make,reactor", [
+    (None, False, []), ("util", False, ["-pl", "util"]),
+    ("jspwiki-main", True, ["-pl", "jspwiki-main", "-am", "-Dsurefire.failIfNoSpecifiedTests=false"]), ("core/io", False, ["-pl", "core/io"]),
+])
+def test_a_module_of_a_multi_module_build(descriptor, module, also_make, reactor):
+    spec = ProjectSpec.model_validate({**descriptor, "build": {**descriptor["build"], "module": module, "also_make": also_make}})
+    assert spec.build.reactor() == reactor
+
+
+@pytest.mark.parametrize("module", ["../outside", "/abs", "a b", "-am", "util,other", "C:/x", ":util"])
+def test_a_module_cannot_carry_maven_options_or_leave_the_repository(descriptor, module):
+    with pytest.raises(ValidationError):
+        ProjectSpec.model_validate({**descriptor, "build": {**descriptor["build"], "module": module}})

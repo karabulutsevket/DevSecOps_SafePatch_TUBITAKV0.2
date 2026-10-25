@@ -51,7 +51,7 @@ def hidden_result(case_id, commit, edits, deadline=None):
                 raise ValueError(f"hidden test would replace a project file: {target.relative_to(workspace)}")
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(file, target)
-        result = runner.tests(workspace, hidden.selection(), deadline, spec.limits.test_seconds, runner.sandbox_mode(spec), spec.java)
+        result = runner.tests(workspace, hidden.selection(), deadline, spec.limits.test_seconds, runner.sandbox_mode(spec), spec.java, spec.build)
         return {k: result.get(k) for k in ("passed", "tests", "failures", "errors", "skipped", "details", "duration_seconds", "reason")}
     finally:
         shutil.rmtree(workspace, ignore_errors=True)

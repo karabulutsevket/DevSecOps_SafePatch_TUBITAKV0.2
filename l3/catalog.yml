@@ -34,7 +34,35 @@ cases:
     prepare: scripts/prepare_vul4j.py
     hidden: {path: l3/hidden/vul4j-79, selectors: [org.zeroturnaround.zip.HiddenTraversalTest]}
     status: ready
-  - {id: vul4j-41, source: vul4j, project: codehaus-plexus/plexus-archiver, cwe: CWE-22, split: evaluation, license: Apache-2.0, upstream: {repo: "https://github.com/codehaus-plexus/plexus-archiver", cve: CVE-2018-1002200}, status: planned}
-  - {id: vul4j-42, source: vul4j, project: codehaus-plexus/plexus-utils, cwe: CWE-78, split: evaluation, license: Apache-2.0, upstream: {repo: "https://github.com/codehaus-plexus/plexus-utils", cve: CVE-2017-1000487}, status: planned}
-  - {id: vul4j-43, source: vul4j, project: eclipse-rdf4j/rdf4j, cwe: CWE-22, split: evaluation, license: BSD-3-Clause, upstream: {repo: "https://github.com/eclipse-rdf4j/rdf4j", cve: CVE-2018-20227}, status: planned}
+  - id: vul4j-41
+    source: vul4j
+    project: codehaus-plexus/plexus-archiver
+    cwe: CWE-22
+    split: evaluation
+    license: Apache-2.0
+    upstream: {repo: "https://github.com/codehaus-plexus/plexus-archiver", vulnerable: 97c0d97504632a2a80b7d847bccdd9b37d27aea1, fix: 58bc24e465c0842981692adbf6d75680298989de, cve: CVE-2018-1002200}
+    prepare: scripts/prepare_l3.py
+    witness: l3/witness/vul4j-41
+    hidden: {path: l3/hidden/vul4j-41, selectors: [org.codehaus.plexus.archiver.SafePatchHiddenTraversalTest]}
+    status: planned
+  - id: vul4j-42
+    source: vul4j
+    project: codehaus-plexus/plexus-utils
+    cwe: CWE-78
+    split: evaluation
+    license: Apache-2.0
+    upstream: {repo: "https://github.com/codehaus-plexus/plexus-utils", vulnerable: 86c37983bb2bd92b1df43fe73f321ffbfa155070, fix: b38a1b3a4352303e4312b2bb601a0d7ec6e28f41, cve: CVE-2017-1000487}
+    status: excluded
+    reason: "The fix changes three main files (Commandline, BourneShell, Shell) and the expected outputs of existing tests; a job may change only the finding's file (decision 5, 25 Oct 2026)."
+  - id: vul4j-43
+    source: vul4j
+    project: eclipse-rdf4j/rdf4j
+    cwe: CWE-22
+    split: evaluation
+    license: BSD-3-Clause
+    upstream: {repo: "https://github.com/eclipse-rdf4j/rdf4j", vulnerable: f63510ba14910fee4a5489f584fd2fd2da5b42e5, fix: df15a4d7a8f2789c043b27c9eafe1b30316cfa79, cve: CVE-2018-20227}
+    prepare: scripts/prepare_l3.py
+    witness: l3/witness/vul4j-43
+    hidden: {path: l3/hidden/vul4j-43, selectors: [org.eclipse.rdf4j.common.io.SafePatchHiddenTraversalTest]}
+    status: planned
   - {id: vul4j-18, source: vul4j, project: apache/jspwiki, cwe: CWE-22, split: evaluation, license: Apache-2.0, upstream: {repo: "https://github.com/apache/jspwiki", cve: CVE-2019-0225}, status: planned}

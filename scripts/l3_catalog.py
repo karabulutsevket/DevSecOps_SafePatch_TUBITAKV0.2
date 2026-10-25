@@ -42,8 +42,10 @@ class Case(Strict):
     license: str = Field(min_length=1, max_length=60)
     upstream: dict[str, str] = Field(default_factory=dict)
     prepare: str | None = None
+    witness: str | None = Field(default=None, pattern=r"^l3/witness/[A-Za-z0-9._-]+$")   # SafePatch's own witness, copied into the case
     hidden: Hidden | None = None
-    status: Literal["ready", "planned"]
+    status: Literal["ready", "planned", "excluded"]
+    reason: str | None = Field(default=None, max_length=400)
 
 
 class Catalog(Strict):
@@ -79,6 +81,10 @@ def problems(catalog, root=ROOT):
                 found.append(f"{c.id}: hidden test folder {c.hidden.path} is missing")
         if c.prepare and not (root / c.prepare).is_file():
             found.append(f"{c.id}: prepare script {c.prepare} is missing")
+        if c.witness and not (root / c.witness).is_dir():
+            found.append(f"{c.id}: witness folder {c.witness} is missing")
+        if (c.status == "excluded") != bool(c.reason):
+            found.append(f"{c.id}: an excluded case, and only an excluded case, states its reason")
     found += [f"project {p} is on both sides" for p, s in sides.items() if len(s) > 1]
     owned = {c.hidden.path for c in catalog.cases if c.hidden}
     found += [f"hidden folder l3/hidden/{d.name} belongs to no case" for d in sorted((root / "l3/hidden").glob("*"))
@@ -93,8 +99,9 @@ def report(catalog):
         ready = [c for c in cases if c.status == "ready"]
         by_family = Counter(family({"cwe": c.cwe}) for c in ready)
         planned = Counter(family({"cwe": c.cwe}) for c in cases if c.status == "planned")
+        excluded = [c.id for c in cases if c.status == "excluded"]
         lines.append(f"{split}: {len(ready)} ready of target {catalog.targets[split]} ({len({c.project for c in ready})} projects); "
-                     f"ready by family {dict(sorted(by_family.items()))}; planned {dict(sorted(planned.items()))}")
+                     f"ready by family {dict(sorted(by_family.items()))}; planned {dict(sorted(planned.items()))}; excluded {excluded}")
     return lines
 
 

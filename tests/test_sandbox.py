@@ -182,3 +182,17 @@ def test_known_mode_is_refused_before_any_checkout_in_the_product_profile(monkey
                             deadline=time.time() + 60, scanner="known")
     with pytest.raises(PolicyError, match="known_findings_only_in_lab_profile"):
         runner.execute(request)
+
+
+def test_tests_of_a_module_select_it_and_read_its_reports(monkeypatch, tmp_path):
+    from safepatch.project import Build, SuiteSelection
+    reports = tmp_path / "util/target/surefire-reports"
+    seen = {}
+    def fake(workspace, args, deadline, **kwargs):
+        seen["args"] = args
+        reports.mkdir(parents=True)
+        (reports / "TEST-x.xml").write_text('<testsuite tests="2" errors="0" failures="0" skipped="0"><testcase name="a"/><testcase name="b"/></testsuite>', encoding="utf-8")
+        return {"exit_code": 0, "duration_seconds": 1, "output": ""}
+    monkeypatch.setattr(runner, "maven", fake)
+    result = runner.tests(tmp_path, SuiteSelection(selectors=["x.YTest"]), time.time() + 60, build=Build(module="util"))
+    assert seen["args"] == ["-pl", "util", "-Dtest=x.YTest", "test"] and result["passed"] and result["tests"] == 2

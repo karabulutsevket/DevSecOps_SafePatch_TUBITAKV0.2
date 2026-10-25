@@ -105,11 +105,13 @@ def maven(workspace, args, deadline, extra=None, online=False, limit=240, sandbo
 MISSING_WITNESS = {"passed": False, "missing": True, "tests": 0, "failures": 0, "errors": 0, "skipped": 0, "details": []}
 
 
-def tests(workspace, selection, deadline, limit=240, sandbox="native", java="17"):
-    """Run one descriptor test selection and read every Surefire report it produced."""
-    reports_dir = workspace / "target/surefire-reports"
+def tests(workspace, selection, deadline, limit=240, sandbox="native", java="17", build=None):
+    """Run one descriptor test selection and read every Surefire report it produced (the
+    descriptor's module only, when it names one)."""
+    reports_dir = workspace / ((build.module + "/") if build and build.module else "") / "target/surefire-reports"
     shutil.rmtree(reports_dir, ignore_errors=True)
-    result = maven(workspace, ["-Dtest=" + ",".join(selection.selectors), "test"], deadline, limit=limit, sandbox=sandbox, java=java)
+    reactor = build.reactor() if build else []
+    result = maven(workspace, [*reactor, "-Dtest=" + ",".join(selection.selectors), "test"], deadline, limit=limit, sandbox=sandbox, java=java)
     reports = sorted(reports_dir.glob("TEST-*.xml")) if reports_dir.exists() else []
     if not reports:
         return {"passed": False, "infrastructure_error": True, "reason": "missing_junit_report", "exit_code": result["exit_code"], "duration_seconds": result["duration_seconds"]}
@@ -246,12 +248,12 @@ def execute(req: VerifyRequest):
         # This source revision is the exact patched content; never label it as base HEAD.
         revision = commit_candidate(workspace, req.base_commit, req.patch.edits, patch_meta["diff"])
         view = ChainMap({edit.path: edit.content for edit in req.patch.edits}, files)
-    compile_result = maven(workspace, spec.build.package_goals, req.deadline, limit=spec.limits.build_seconds, sandbox=sandbox, java=spec.java)
+    compile_result = maven(workspace, [*spec.build.reactor(), *spec.build.package_goals], req.deadline, limit=spec.limits.build_seconds, sandbox=sandbox, java=spec.java)
     if compile_result["exit_code"]:
         return {"passed": False, "feedback": {"code": "compilation_failed", "diagnostics": diagnostics(compile_result["output"], workspace)}, "patch": patch_meta, "build": {"passed": False, "duration_seconds": compile_result["duration_seconds"]}}
     witness = spec.tests.security
-    behavior = tests(workspace, spec.tests.behavior, req.deadline, spec.limits.test_seconds, sandbox, spec.java)
-    security = tests(workspace, witness, req.deadline, spec.limits.test_seconds, sandbox, spec.java) if witness else dict(MISSING_WITNESS)
+    behavior = tests(workspace, spec.tests.behavior, req.deadline, spec.limits.test_seconds, sandbox, spec.java, spec.build)
+    security = tests(workspace, witness, req.deadline, spec.limits.test_seconds, sandbox, spec.java, spec.build) if witness else dict(MISSING_WITNESS)
     reports = scan(workspace, spec, view, revision, req.scanner, req.job_id, req.attempt, req.deadline, patched=bool(req.patch))
     if tracked_changes(workspace):
         raise PolicyError("tracked_file_changed_during_execution")
