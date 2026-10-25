@@ -39,6 +39,10 @@ CASES = {
         "sinks": ["final File f = FileUtils.resolveFile( dir, entryName );"], "cwe": "CWE-22", "kind": "path",
         "java": "8", "artifact": "target/plexus-archiver-3.6.0-SNAPSHOT.jar", "cve": "CVE-2018-1002200", "license": "Apache-2.0",
         "scope": "l3-plexus-archiver", "derived": "75078789042d2cd09685c8acc6a05f279e8a9441",
+        # The repository's symbolic links become plain files in a checkout on Windows (no symlink
+        # privilege), and the /mnt/c workspace keeps no permissions: these fail on any revision.
+        "not_here": ["org.codehaus.plexus.archiver.SymlinkTest", "org.codehaus.plexus.archiver.zip.ZipArchiverTest#testSymlinkFileSet",
+                     "org.codehaus.plexus.archiver.zip.ZipArchiverTest#testSymlinkZip", "org.codehaus.plexus.archiver.zip.ZipArchiverTest#testOveriddenPermissions"],
     },
     "vul4j-43": {
         "upstream": "rdf4j-upstream", "url": "https://github.com/eclipse-rdf4j/rdf4j.git",
@@ -106,7 +110,7 @@ def descriptor(case, spec, repo, commit):
              **({"module": module} if module else {})}
     data = {"schema": "safepatch-project/1", "id": case, "scope": spec["scope"], "repository": {"path": str(repo), "commit": commit},
             "java": spec["java"], "build": build,
-            "tests": {"behavior": {"selectors": [*DEFAULT_TESTS, "!" + spec["witness"]]}, "security": {"selectors": [spec["witness"]], "markers": ["PATH_TRAVERSAL_REGRESSION"]}},
+            "tests": {"behavior": {"selectors": [*DEFAULT_TESTS, "!" + spec["witness"], *("!" + t for t in spec.get("not_here", []))]}, "security": {"selectors": [spec["witness"]], "markers": ["PATH_TRAVERSAL_REGRESSION"]}},
             "editable": [prefix + "src/main/java/**/*.java"], "scan": {"paths": [prefix + "src/main/java"], "known": known},
             "limits": {"build_seconds": 900, "test_seconds": 900},
             "labels": {"kind": spec["kind"], "split": "evaluation", "source": "vul4j", "case": case.upper(), "cve": spec["cve"], "license": spec["license"]}}
