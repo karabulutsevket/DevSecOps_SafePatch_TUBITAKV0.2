@@ -17,6 +17,7 @@ import uuid
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from safepatch.common import Patch, VerifyRequest, digest, evidence
+from safepatch.engine import primary_finding
 from safepatch.feedback import classify
 from safepatch.repository import baseline, registry
 from safepatch.runner import execute
@@ -73,7 +74,7 @@ def main():
     rows, results = [], {}
     for job, attempt in accepted(args.source, selected):
         patch = Patch.model_validate(attempt["proposal"]["patch"])
-        target = job["baseline"]["scans"][0]["findings"][0]["file"]
+        target = primary_finding(job)["file"]
         key = (job["case_id"], attempt["patch_sha256"])
         if key not in results:
             request = VerifyRequest(job_id=uuid.uuid4().hex, case_id=job["case_id"], base_commit=cases[job["case_id"]]["commit"], attempt=1,

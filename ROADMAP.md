@@ -136,7 +136,7 @@ L3 setindeki Vul4J ve OWASP Benchmark vakaları gerçek, çok dosyalı Maven pro
 |---|---|---|
 | 2 | **Proje tanımı şeması:** depo ve commit, derleme komutu, test komutu, davranış ve güvenlik testi seçicileri, değiştirilebilir dosya kuralları, korunan dosyalar, çıktı (artifact) yolu, Java sürümü. Kaldırılacak sabitlerin envanteri | Şevket, Reşat |
 | 3 | 9 sentetik vakayı yeni proje tanımıyla çalıştır; sabitler kaldırılır, davranış aynı kalır (mevcut testler + kısa H2 tekrarıyla kanıt) | Reşat — **Tamam (25 Ekim):** 194 birim + 10 entegrasyon testi; 18 işlik model tekrarında ilk deneme istemleri H2 ile bayt bayt aynı, sonuç 17/18 işte aynı (tek fark model belirlenimsizliği) ([ayrıntı](docs/GERCEK_DEPO_TASARIMI.md#7-hafta-3-uygulaması-25-ekim-2026)) |
-| 4 | **Çoklu bulgu:** bir tarama → bulgu başına iş; aynı dosyadaki bulguların çakışması; ilk sürümde model yalnız bulgunun dosyasını değiştirebilir | Reşat, Şevket |
+| 4 | **Çoklu bulgu:** bir tarama → bulgu başına iş; aynı dosyadaki bulguların çakışması; ilk sürümde model yalnız bulgunun dosyasını değiştirebilir | Reşat, Şevket — **Tamam (25 Ekim):** dosya başına iş, diğer dosyaların bulguları yeniden taramada tolere edilir; gerçek Maven ile iki dosyalı projede doğrulandı ([ayrıntı](docs/GERCEK_DEPO_TASARIMI.md#8-bulgu-başına-iş-25-ekim-2026-hafta-4)) |
 | 4 | Test sonuçlarını sınıf adından bağımsız okuma (Surefire raporları); güvenlik tanığının proje içindeki yeri; tanığı olmayan projede sonuç "kanıt yetersiz" | Yiğithan |
 | 5 | **İlk gerçek açık kaynak proje:** bir Vul4J vakası uçtan uca (derleme, test, bulgu, yama, doğrulama) | Şevket, Yiğithan |
 | 5–6 | **Docker sandbox** (Hafta 8'den öne alındı; gerçek kod derlenmeden önce yalıtım gerekir) | Şevket |

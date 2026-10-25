@@ -1,5 +1,6 @@
 import difflib
 import time
+import uuid
 
 from safepatch.common import POLICY, Patch, canonical, digest, remaining, request, secret, setting
 from safepatch.memory import Memory, context_for
@@ -35,6 +36,31 @@ def read_only_context(files, target, limit=8000):
 EXPERT_ATTEMPTS = 3
 
 
+# Fields a per-file job keeps from the job whose scan it came from (week 4: one job per file).
+INHERITED = ("project", "memory_mode", "strategy", "case_id", "base_commit", "split", "policy_version", "scanner", "mode",
+             "max_attempts", "owner", "second_review", "evaluation", "seed")
+
+
+def finding_groups(initial):
+    """Baseline findings by file. One job per file, so two jobs never edit the same file."""
+    groups = {}
+    for report in initial.get("scans", []):
+        for finding in report["findings"]:
+            groups.setdefault(finding["file"], []).append(finding)
+    return [(path, sorted(found, key=lambda f: f.get("line") or 0)) for path, found in sorted(groups.items())]
+
+
+def primary_finding(job):
+    """The finding a job repairs: the first one in its target file (the first file for older jobs)."""
+    groups = finding_groups(job["baseline"])
+    return dict(groups).get(job.get("target_file"), groups[0][1])[0]
+
+
+def tolerated(initial, target):
+    """Baseline findings in other files: the patch cannot touch them, so the rescan may keep them."""
+    return sorted({f["fingerprint"] for report in initial.get("scans", []) for f in report["findings"] if f["file"] != target and f.get("fingerprint")})
+
+
 def expert_scope(job):
     """What a human may patch: the finding's file under the descriptor rules, as for the model."""
     if job.get("evaluation"):
@@ -42,7 +68,7 @@ def expert_scope(job):
     initial = job.get("baseline") or {}
     if not initial.get("baseline_valid"):
         raise PolicyError("baseline_not_valid")
-    finding = initial["scans"][0]["findings"][0]
+    finding = primary_finding(job)
     case, files = baseline(job["case_id"], job["base_commit"])
     return case, files, finding, allowed_files(case["spec"], files, finding.get("file"))
 
@@ -120,6 +146,16 @@ class Engine:
             # Never leak network URLs, tokens, raw model responses, or arbitrary code logs.
             self.set(job_id, "infrastructure_error", reason="dependency_failure:" + type(exc).__name__)
 
+    def split(self, job, initial, path, found):
+        """A queued job for one more file of the same scan; it reuses the scan instead of rescanning."""
+        now = time.time()
+        child = {k: job[k] for k in INHERITED if k in job}
+        child.update(id=uuid.uuid4().hex, parent_job=job["id"], status="queued", baseline=initial, target_file=path, findings=found,
+                     started_at=now, deadline=now + int(setting("JOB_BUDGET_SECONDS", "1200")), attempt_count=0, attempts=[],
+                     events=[{"time": now, "status": "queued", "parent_job": job["id"]}], approval=None)
+        created, _ = self.store.create(child, job["id"] + ":" + digest(path)[:32])
+        return created["id"]
+
     def accept(self, job_id, verified, meta, origin, author=None):
         current = self.active(job_id)
         self.memory.assert_active(current.get("memory_ids", []))
@@ -145,7 +181,7 @@ class Engine:
         number = max((a["number"] for a in job["attempts"]), default=0) + 1
         record = {"number": number, "proposal": {"mode": "human-authored", "patch": patch.model_dump(), "author": pending["author"], "submitted_at": pending["submitted_at"]}, **meta}
         self.set(job_id, "verifying", pending_expert_patch=None)
-        verified = self.worker("worker2", "/verify", {"job_id": job_id, "case_id": job["case_id"], "base_commit": job["base_commit"], "deadline": job["deadline"], "scanner": job["scanner"], "attempt": number, "patch": patch.model_dump(), "target_file": target}, job["deadline"])
+        verified = self.worker("worker2", "/verify", {"job_id": job_id, "case_id": job["case_id"], "base_commit": job["base_commit"], "deadline": job["deadline"], "scanner": job["scanner"], "attempt": number, "patch": patch.model_dump(), "target_file": target, "tolerated": tolerated(job["baseline"], target)}, job["deadline"])
         current = self.active(job_id)
         record.update(verification=verified, failure=None if verified.get("passed") else classify(verified))
         lesson = self.memory.record_failure(current, context_for(case, files, finding), record, "expert") if record["failure"] else None
@@ -168,16 +204,24 @@ class Engine:
             return self._run_expert(job)
         case, files = baseline(job["case_id"], job["base_commit"])
         verify = {"job_id": job_id, "case_id": job["case_id"], "base_commit": job["base_commit"], "deadline": job["deadline"], "scanner": job["scanner"], "attempt": 0, "patch": None, "target_file": None}
-        self.set(job_id, "scanning")
-        initial = self.worker("worker2", "/verify", verify, job["deadline"])
-        self.active(job_id)
-        self.set(job_id, "scanning", baseline=initial)
-        if not initial.get("baseline_valid"):
-            self.set(job_id, "needs_human", reason="baseline_missing_expected_failing_security_assertion_or_finding")
-            return
-        finding = initial["scans"][0]["findings"][0]
+        # A per-file job reuses the scan of the job it was split from; every other job scans.
+        initial = job.get("baseline") if job.get("parent_job") else None
+        if initial is None:
+            self.set(job_id, "scanning")
+            initial = self.worker("worker2", "/verify", verify, job["deadline"])
+            self.active(job_id)
+            self.set(job_id, "scanning", baseline=initial)
+            if not initial.get("baseline_valid"):
+                self.set(job_id, "needs_human", reason="baseline_missing_expected_failing_security_assertion_or_finding")
+                return
+            # One job per file: this job takes the first file, each further file gets its own job.
+            groups = finding_groups(initial)
+            children = [self.split(job, initial, path, found) for path, found in groups[1:]]
+            job = self.set(job_id, "scanning", target_file=groups[0][0], findings=groups[0][1], children=children)
+        finding = primary_finding(job)
         # Only the finding's file may change, and only if the descriptor makes it editable.
         target = finding.get("file")
+        verify["tolerated"] = tolerated(initial, target)
         allowed = allowed_files(case["spec"], files, target)
         if not allowed:
             self.set(job_id, "needs_human", reason="finding_file_not_editable")

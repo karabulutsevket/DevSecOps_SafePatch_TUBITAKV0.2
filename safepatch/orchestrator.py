@@ -14,7 +14,7 @@ from pydantic import Field
 
 from safepatch.auth import identity, require_role
 from safepatch.common import POLICY, PROJECT_ID, ROOT, Patch, Strict, digest, request, seal, secret, setting
-from safepatch.engine import Engine, check_expert_patch, expert_attempts_left, expert_scope
+from safepatch.engine import Engine, check_expert_patch, expert_attempts_left, expert_scope, primary_finding
 from safepatch.memory import Memory, context_for
 from safepatch.acceptance import check_evidence
 from safepatch.policy import PolicyError
@@ -34,8 +34,16 @@ def consume():
             job = store.get(job_id)
             if job["status"] == "queued":
                 Engine(store).run(job_id)
+                enqueue_children(job_id)
         finally:
             work.task_done()
+
+
+def enqueue_children(job_id):
+    """Per-file jobs split from this job's scan (week 4) wait in the same queue."""
+    for child in store.get(job_id).get("children", []):
+        if store.get(child)["status"] == "queued":
+            work.put(child)
 
 
 @asynccontextmanager
@@ -77,7 +85,7 @@ def promote(req: Promote, user=Depends(identity)):
         job = get_job(req.job_id, user)
         ensure_memory_and_evidence(job)
         case, files = baseline(job["case_id"], job["base_commit"])
-        finding = job["baseline"]["scans"][0]["findings"][0]
+        finding = primary_finding(job)
         context = context_for(case, files, finding)
         try:
             return Memory(store).promote(job, context, files[finding["file"]], user["subject"], req.reason)

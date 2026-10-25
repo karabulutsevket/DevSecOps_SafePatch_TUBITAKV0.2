@@ -4,6 +4,7 @@ import ipaddress
 import json
 import os
 from pathlib import Path, PurePosixPath
+import re
 import socket
 import time
 from urllib.parse import urlsplit
@@ -131,6 +132,16 @@ class VerifyRequest(Strict):
     scanner: str = Field(default="builtin", pattern=r"^(builtin|semgrep|sonarqube\+semgrep)$")
     # The finding's file: the only file a patch may change (decision 5, 25 Oct 2026).
     target_file: str | None = Field(default=None, max_length=300)
+    # Fingerprints of baseline findings in other files. Only the target file changes, so they
+    # may remain; anything else left after the patch, or new, fails the rescan (week 4).
+    tolerated: list[str] = Field(default_factory=list, max_length=500)
+
+    @field_validator("tolerated")
+    @classmethod
+    def fingerprints(cls, value):
+        if any(not re.fullmatch(r"[A-Za-z0-9_:.\-]{1,200}", v) for v in value):
+            raise ValueError("invalid finding fingerprint")
+        return value
 
     @field_validator("target_file")
     @classmethod

@@ -147,7 +147,7 @@ Vul4J her vaka için zafiyeti gösteren testleri listeler; bu bilginin şemaya n
 | — | Korunan dosyaların değişmediği `git status` ile denetlenir (bütün dosyaları belleğe almadan) |
 | — | Güvenlik tanığı olmayan projede aday asla kabul edilmez; iş `security_witness_missing` ile insana gider (karar 3) |
 
-Kalan envanter maddeleri: 11 (bulgu başına iş, Hafta 4), 14 (genel sistem talimatı, Hafta 4), 15 (staging yalnız sentetik demoda). 12 ve 10 Hafta 4'te yapıldı: hafıza ve rehber CWE ailesine bağlandı ([HAFIZA_UYGUNLUK.md](HAFIZA_UYGUNLUK.md)); 10'un kalan parçası olan Sonar ön denetimi yalnız sentetik vakalarda laboratuvar etiketini kullanıyor.
+Kalan envanter maddeleri: 14 (genel sistem talimatı, Hafta 4), 15 (staging yalnız sentetik demoda). 11 Hafta 4'te yapıldı (Bölüm 8). 12 ve 10 Hafta 4'te yapıldı: hafıza ve rehber CWE ailesine bağlandı ([HAFIZA_UYGUNLUK.md](HAFIZA_UYGUNLUK.md)); 10'un kalan parçası olan Sonar ön denetimi yalnız sentetik vakalarda laboratuvar etiketini kullanıyor.
 
 **Doğrulama:** 194 birim testi; gerçek Maven/JUnit ile 10 entegrasyon testi (9 sentetik vaka: başlangıçta zafiyet, referans düzeltme kabul, işlevi bozan yama ret, test dosyasına dokunan yama çalıştırılmadan ret; 1 staging/geri alma). Gerçek projeye benzeyen geçici bir depoyla (birden çok paket, ikili dosya, commit geçmişi) okuma, klon, aday commit ve izin testleri.
 
@@ -165,3 +165,21 @@ Kalan envanter maddeleri: 11 (bulgu başına iş, Hafta 4), 14 (genel sistem tal
 - Kabul edilen 11 işin hepsinde inceleme deposunun HEAD'i adayın commit'i, onun ebeveyni de gerçek taban commit.
 
 Sonuç: Hafta 3 kabul ölçütü ("sabitler kaldırılır, davranış aynı kalır") karşılandı.
+
+## 8. Bulgu başına iş (25 Ekim 2026, Hafta 4)
+
+Hafta 4'ten önce bir iş yalnız taramanın ilk bulgusunu ele alıyordu; diğer bulgular kayboluyordu. Kabul koşulu da "yeniden taramada hiç bulgu kalmasın" idi. Bu yüzden A dosyasındaki bulguyu düzelten bir yama, B dosyasındaki ilgisiz bulgu yüzünden hep reddedilirdi.
+
+| Konu | Karar |
+|---|---|
+| Bölme birimi | **Dosya.** Başlangıç taraması bulguları dosyaya göre gruplar. İlk iş ilk dosyayı (yol sırasıyla) alır; diğer her dosya için aynı taramayı kullanan bir iş açılır (`parent_job`, `children`). Aynı dosyadaki bulgular aynı işte kalır; böylece iki iş asla aynı dosyayı düzenlemez ve "aynı dosyadaki bulguların çakışması" baştan önlenir. |
+| Hedef bulgu | İşin dosyasındaki en üst satırdaki bulgu (`primary_finding`). Modele yine tek bulgu gider; tek bulgulu vakalarda istem değişmedi. |
+| Yeniden tarama | Hedef dosyada bulgu kalmamalı ve yeni bulgu çıkmamalı. Diğer dosyaların başlangıç bulguları **tolere edilir** (`tolerated`): politika yalnız hedef dosyanın değişmesine izin verdiği için bunlar değişemez. Listeyi orkestratör verir; runner ve bağımsız doğrulayıcı (worker2) kararı ona göre verir ve listeyi sonuca yazar. |
+| Alt işler | Kuyruğa ana işten sonra girer, yeniden taramaz. Proje tanımı dosyayı değiştirilebilir saymıyorsa alt iş modele gitmeden `finding_file_not_editable` ile insana gider. |
+| Güvenlik tanığı | Projede tek bir güvenlik test takımı varsa ve o takım başka bir dosyadaki açığı da sınıyorsa, o test düşmeye devam eder ve aday **kabul edilmez** (insana gider). Muhafazakâr: yanlış kabul yerine eksik kabul. Tanığı bulguya eşlemek sonraki iştir. |
+
+**Doğrulama:** gerçek Maven/JUnit ile iki açık dosyalı bir proje (`tests/test_java_integration.py`):
+- `DemoService` düzeltmesi, `OtherDao` bulgusu tolere edilince kabul edildi; tolere edilmeyince kalan bulgu yüzünden reddedildi.
+- `OtherDao` düzeltmesi kendi bulgusunu giderdi ama projenin tek güvenlik takımı `DemoService` açığını sömürmeye devam ettiği için kabul edilmedi.
+- Birim testleri: gruplama, alt işin taramayı yeniden kullanması, tolere listeleri, kuyruk (`tests/test_multi_finding.py`).
+

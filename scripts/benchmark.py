@@ -17,7 +17,7 @@ import uuid
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from safepatch.common import POLICY, SOURCE, digest, canonical, evidence
-from safepatch.engine import Engine
+from safepatch.engine import Engine, primary_finding
 from safepatch.memory import Memory, context_for
 from safepatch.repository import baseline, registry
 from safepatch.store import Store
@@ -95,7 +95,7 @@ def main():
                 "artifact_sha256": c["artifact_sha256"], "policy_version": c["policy_version"],
                 "reviewer": "SIMULATED-BENCHMARK-REVIEWER", "expires_at": time.time()+86400})
             case, files = baseline(job["case_id"], job["base_commit"])
-            Memory(store).promote(job, context_for(case, files, job["baseline"]["scans"][0]["findings"][0]),
+            Memory(store).promote(job, context_for(case, files, primary_finding(job)),
                                   files[SOURCE], "SIMULATED-BENCHMARK-REVIEWER", "Benchmark-only construction from real verified local-model patch")
     write(output / "construction.json", construction)
     pool = Memory(store).all()

@@ -8,6 +8,7 @@ from fastapi.responses import FileResponse
 from safepatch.common import VerifyRequest, digest, remaining, request, require_service, runtime, secret, setting
 from safepatch.policy import validate_patch
 from safepatch.repository import allowed_files, baseline, checkout, commit_candidate
+from safepatch.acceptance import untolerated
 
 app = FastAPI(title="Worker2 - independent verifier")
 
@@ -24,7 +25,8 @@ def verify(req: VerifyRequest):
     meta = validate_patch(files, req.patch, allowed=allowed) if req.patch else None
     result = request(setting("RUNNER_URL", "http://127.0.0.1:8103") + "/execute", "POST", token=secret("RUNNER_TOKEN"), body=req.model_dump(), timeout=remaining(req.deadline, 1200))
     if result.get("passed"):
-        if not req.patch or not result["behavior"]["passed"] or not result["security"]["passed"] or any(s["status"] != "ok" or s["findings"] for s in result["scans"]):
+        scans = result["scans"]
+        if not req.patch or not result["behavior"]["passed"] or not result["security"]["passed"] or any(s["status"] != "ok" for s in scans) or untolerated([f for s in scans for f in s["findings"]], req.tolerated):
             raise HTTPException(502, "runner_result_inconsistent")
         binary = base64.b64decode(result.pop("artifact_b64"), validate=True)
         checksum = digest(binary)

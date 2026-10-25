@@ -3,6 +3,12 @@ from safepatch.common import POLICY, canonical, digest
 from safepatch.policy import PolicyError
 
 
+def untolerated(findings, tolerated):
+    """Findings a rescan may not keep: everything except the baseline findings of other files."""
+    allowed = set(tolerated)
+    return [f for f in findings if f.get("fingerprint") not in allowed]
+
+
 def manifest(job, verified, patch_sha256, origin=None, author=None):
     # origin: the proposal mode, or "human-authored"; author binds the expert to the evidence.
     return {"schema": "safepatch-evidence-v1", "job_id": job["id"],

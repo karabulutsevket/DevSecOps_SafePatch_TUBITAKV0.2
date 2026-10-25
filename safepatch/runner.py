@@ -12,6 +12,7 @@ import xml.etree.ElementTree as ET
 
 from fastapi import Depends, FastAPI, HTTPException
 
+from safepatch.acceptance import untolerated
 from safepatch.common import ROOT, VerifyRequest, digest, remaining, require_service, runtime, secret, setting
 from safepatch.policy import PolicyError, validate_patch
 from safepatch.process import run
@@ -131,12 +132,14 @@ def execute(req: VerifyRequest):
     if tracked_changes(workspace):
         raise PolicyError("tracked_file_changed_during_execution")
     findings = [f for report in reports for f in report["findings"]]
+    # Baseline findings in other files may stay (only the target file changed); the rest must be gone.
+    remaining_findings = untolerated(findings, req.tolerated)
     gate_ok = all(r.get("quality_gate", "OK") == "OK" for r in reports)
     witness_fails = bool(witness) and security.get("failures", 0) >= 1 and security.get("errors") == 0 and security.get("skipped") == 0 and (not witness.markers or any(d["assertion"] in witness.markers for d in security.get("details", [])))
     baseline_valid = bool(not req.patch and behavior["passed"] and findings and (witness_fails or not witness))
-    passed = bool(req.patch and witness and behavior["passed"] and security["passed"] and not findings and gate_ok)
-    code = "verified" if passed else "security_witness_missing" if req.patch and not witness and behavior["passed"] and not findings and gate_ok else "validation_failed"
-    response = {"passed": passed, "baseline_valid": baseline_valid, "base_commit": req.base_commit, "source_revision": revision, "build": {"passed": True, "duration_seconds": compile_result["duration_seconds"]}, "behavior": behavior, "security": security, "scans": reports, "patch": patch_meta, "feedback": {"code": code, "behavior": behavior, "security": security, "remaining_rules": [f["rule_id"] for f in findings]}, "duration_seconds": round(time.monotonic() - started, 3), "runner_profile": setting("RUNNER_PROFILE", "native-same-user"), "versions": {"java": setting("JAVA_VERSION_LABEL", "17; inspect preparation evidence"), "maven": setting("MAVEN_VERSION_LABEL", "3.9.16")}}
+    passed = bool(req.patch and witness and behavior["passed"] and security["passed"] and not remaining_findings and gate_ok)
+    code = "verified" if passed else "security_witness_missing" if req.patch and not witness and behavior["passed"] and not remaining_findings and gate_ok else "validation_failed"
+    response = {"passed": passed, "baseline_valid": baseline_valid, "base_commit": req.base_commit, "source_revision": revision, "build": {"passed": True, "duration_seconds": compile_result["duration_seconds"]}, "behavior": behavior, "security": security, "scans": reports, "tolerated": req.tolerated, "patch": patch_meta, "feedback": {"code": code, "behavior": behavior, "security": security, "remaining_rules": [f["rule_id"] for f in remaining_findings]}, "duration_seconds": round(time.monotonic() - started, 3), "runner_profile": setting("RUNNER_PROFILE", "native-same-user"), "versions": {"java": setting("JAVA_VERSION_LABEL", "17; inspect preparation evidence"), "maven": setting("MAVEN_VERSION_LABEL", "3.9.16")}}
     if passed:
         if not spec.build.artifact:
             raise PolicyError("artifact_not_configured")
