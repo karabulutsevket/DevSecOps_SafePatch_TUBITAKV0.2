@@ -128,6 +128,48 @@ def test_policy_refusal_leaves_the_job_and_is_recorded(api, source, name):
     assert orchestrator.work.empty()
 
 
+def test_expert_source_is_the_findings_file_with_its_base_hash(api, source):
+    client, db, job = api
+    waiting(db, job, attempts=[{"number": 4, "proposal": {"mode": "human-authored"}}])
+    response = client.get(f'/v1/jobs/{job["id"]}/expert-source', headers=headers("developer"))
+    assert response.json() == {"path": SOURCE, "content": source[SOURCE], "sha256": digest(source[SOURCE]), "attempts_left": 2}
+    assert client.get(f'/v1/jobs/{job["id"]}/expert-source', headers=headers("reviewer")).status_code == 403
+
+
+@pytest.mark.parametrize("fields,code", [
+    ({"evaluation": True}, "evaluation_job_cannot_take_expert_patch"),
+    ({"baseline": {"baseline_valid": False, "scans": []}}, "baseline_not_valid"),
+    ({"baseline": {"baseline_valid": True, "scans": [{"findings": [{**FINDING, "file": "src/test/java/demo/SecurityTest.java"}]}]}}, "finding_file_not_editable"),
+])
+def test_expert_source_follows_the_same_limits(api, fields, code):
+    client, db, job = api
+    waiting(db, job, **fields)
+    response = client.get(f'/v1/jobs/{job["id"]}/expert-source', headers=headers("developer"))
+    assert response.status_code == 409 and response.json()["detail"] == code
+
+
+def test_preview_returns_the_policy_diff_and_changes_nothing(api, source):
+    client, db, job = api
+    waiting(db, job)
+    before = db.get(job["id"])
+    body = {**expert_body(source), "rationale": ""}   # a draft may preview before its rationale is written
+    response = client.post(f'/v1/jobs/{job["id"]}/expert-patch/preview', headers=headers("developer"), json=body)
+    assert response.status_code == 200
+    assert response.json() == validate_patch(source, Patch.model_validate(body), allowed={SOURCE})
+    assert db.get(job["id"]) == before and orchestrator.work.empty()
+
+
+def test_preview_reports_policy_errors_without_recording_them(api, source):
+    client, db, job = api
+    waiting(db, job)
+    before = db.get(job["id"])
+    body, code = policy_violations(source)["test_file"]
+    response = client.post(f'/v1/jobs/{job["id"]}/expert-patch/preview', headers=headers("developer"), json=body)
+    assert response.status_code == 409 and response.json()["detail"] == code
+    assert db.get(job["id"]) == before
+    assert client.post(f'/v1/jobs/{job["id"]}/expert-patch/preview', headers=headers("reviewer"), json=body).status_code == 403
+
+
 def run_expert(db, job, source, verdicts, patch=None):
     """Queue a pending expert patch and run the engine with mocked workers."""
     patch = patch or correct_patch("sql", source)
@@ -231,6 +273,26 @@ def approved_expert_job(db, job, author):
     j["approval"] = {"decision": "approve", "candidate_commit": j["candidate"]["commit"], "artifact_sha256": j["candidate"]["artifact_sha256"], "policy_version": j["candidate"]["policy_version"], "expires_at": time.time() + 300, "reviewer": "reviewer"}
     db.mutate(j["id"], lambda x: x.update(j))
     return j, context_for(case, files, FINDING), files[SOURCE]
+
+
+def test_replayed_expert_patch_keeps_its_author_so_the_author_cannot_approve_it(api, tmp_path):
+    client, db, job = api
+    add_user(tmp_path, "lead", ["submit", "review"])
+    j, context, before = approved_expert_job(db, job, "lead")
+    Memory(db).promote(j, context, before, "reviewer", "Reviewed expert fix")
+    later = {**{k: job[k] for k in ("case_id", "base_commit", "policy_version", "scanner", "mode", "owner", "max_attempts")},
+             "id": "f" * 32, "status": "queued", "started_at": time.time(), "deadline": time.time() + 1200, "attempt_count": 0, "attempts": [], "events": [], "approval": None}
+    db.create(later, "later-job")
+    success = {"passed": True, "candidate_commit": "a" * 40, "artifact_sha256": "b" * 64, "review_repository": "mock-only", "review_branch": "candidate"}
+    def call(url, method="GET", **kwargs):
+        assert url.endswith("/verify"), "an exact replay never reaches the model"
+        return {"baseline_valid": True, "scans": [{"findings": [FINDING]}]} if kwargs["body"]["attempt"] == 0 else success
+    Engine(db, call).run(later["id"])
+    candidate = db.get(later["id"])["candidate"]
+    assert (candidate["origin"], candidate["author"]) == ("approved-memory-replay", "lead")
+    decision = {"candidate_commit": candidate["commit"], "artifact_sha256": candidate["artifact_sha256"], "policy_version": candidate["policy_version"], "decision": "approve"}
+    assert client.post(f'/v1/jobs/{later["id"]}/approval', headers=headers("lead"), json=decision).status_code == 409
+    assert client.post(f'/v1/jobs/{later["id"]}/approval', headers=headers("reviewer"), json=decision).status_code == 200
 
 
 def test_memory_keeps_human_provenance_and_refuses_the_author(job_store):

@@ -13,8 +13,8 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import Field
 
 from safepatch.auth import identity, require_role
-from safepatch.common import POLICY, PROJECT_ID, ROOT, Patch, Strict, request, seal, secret, setting
-from safepatch.engine import Engine, check_expert_patch
+from safepatch.common import POLICY, PROJECT_ID, ROOT, Patch, Strict, digest, request, seal, secret, setting
+from safepatch.engine import Engine, check_expert_patch, expert_attempts_left, expert_scope
 from safepatch.memory import Memory, context_for
 from safepatch.acceptance import check_evidence
 from safepatch.policy import PolicyError
@@ -222,6 +222,33 @@ def cancel(job_id: str, user=Depends(identity)):
 class ExpertPatch(Patch):
     # The author comes from the backend identity, never from the request body.
     rationale: str = Field(min_length=20, max_length=1600)
+
+
+@app.get("/v1/jobs/{job_id}/expert-source")
+def expert_source(job_id: str, user=Depends(identity)):
+    """The finding's file as the expert edits it, with the base hash the patch must carry."""
+    require_role(user, "submit")
+    job = get_job(job_id, user)
+    try:
+        _, files, finding, allowed = expert_scope(job)
+        if finding.get("file") not in allowed:
+            raise PolicyError("finding_file_not_editable")
+        content = files[finding["file"]]
+    except PolicyError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    return {"path": finding["file"], "content": content, "sha256": digest(content), "attempts_left": expert_attempts_left(job)}
+
+
+@app.post("/v1/jobs/{job_id}/expert-patch/preview")
+def expert_patch_preview(job_id: str, req: Patch, user=Depends(identity)):
+    """Submission checks without storing anything: the diff exactly as it would be verified."""
+    require_role(user, "submit")
+    job = get_job(job_id, user)
+    try:
+        Memory(store).assert_active(job.get("memory_ids", []))
+        return check_expert_patch(job, req)
+    except PolicyError as exc:
+        raise HTTPException(409, str(exc)) from exc
 
 
 @app.post("/v1/jobs/{job_id}/expert-patch", status_code=202)

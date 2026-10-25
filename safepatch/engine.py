@@ -46,11 +46,15 @@ def expert_scope(job):
     return case, files, finding, allowed_files(case["spec"], files, finding.get("file"))
 
 
+def expert_attempts_left(job):
+    return EXPERT_ATTEMPTS - sum(a.get("proposal", {}).get("mode") == "human-authored" for a in job["attempts"])
+
+
 def check_expert_patch(job, patch):
     """Submission checks; the engine repeats the policy check before verification."""
     if job["status"] != "needs_human":
         raise PolicyError("job_not_waiting_for_a_human")
-    if sum(a.get("proposal", {}).get("mode") == "human-authored" for a in job["attempts"]) >= EXPERT_ATTEMPTS:
+    if expert_attempts_left(job) <= 0:
         raise PolicyError("expert_attempt_budget_exhausted")
     _, files, _, allowed = expert_scope(job)
     meta = validate_patch(files, patch, allowed=allowed)
@@ -196,7 +200,8 @@ class Engine:
                 self.store.mutate(job_id, lambda j: j.update(memory_ids=[selected["id"]]))
             memory_data = {"patch_diff": selected["diff"], "context": selected["context"]}
             if job.get("memory_mode", "guarded") == "guarded" and selected["context"].get("source_sha256") == digest(source):
-                replay = {"mode": "approved-memory-replay", "patch": selected["patch"], "memory_id": selected["id"],
+                # A replayed expert patch keeps its author, so the author cannot approve its reuse either.
+                replay = {"mode": "approved-memory-replay", "patch": selected["patch"], "memory_id": selected["id"], "author": selected.get("author"),
                           "metrics": {"duration_seconds": lookup["duration_seconds"], "prompt_tokens_measured": 0, "output_tokens_measured": 0}}
         strategy = job.get("strategy", "v01")
         if strategy not in STRATEGIES:
@@ -263,7 +268,8 @@ class Engine:
                 self.set(job_id, "needs_human", reason="security_witness_missing")
                 return
             if verified.get("passed"):
-                self.accept(job_id, verified, meta, proposal["mode"])
+                # Authorship only ever comes from our own memory record, never from a worker response.
+                self.accept(job_id, verified, meta, proposal["mode"], replay["author"] if proposal is replay else None)
                 return
             if strategy.startswith("guided"):
                 # Each retry receives deeper guidance, so the attempt budget bounds the loop.

@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "what": "Local UI walk-through of the expert patch flow on path-01: expert patch -> real verification -> second-reviewer approval -> memory -> exact replay in later jobs",
+  "recorded_at": 1792927305.0896385,
+  "git_commit": "0278fb2b41d210d1928a5176fcd9fb0207b69714",
+  "git_dirty": true,
+  "code_note": "UI and replay-authorship fix were uncommitted during the walk-through; they are committed together with this record",
+  "identities": "ui-lead (submit+review), ui-rev (review): test identities operated by Claude in the built-in browser; SIMULATED approvals, not human decisions",
+  "verification": "real Maven, JUnit (path witness with junction links) and Semgrep 1.136.0 via worker2/runner; no model call (Ollama stopped)",
+  "first_job": "copied from a v01 path-01 job of evidence/v02-path-tanigi/retry (needs_human, no_progress), with evaluation=false",
+  "replay_jobs": "the second replay job ran before the replay-authorship fix (candidate author empty); the third after it (author ui-lead, approval closed for ui-lead)",
+  "summary": [
+    {
+      "job": "e805bfdea3574a14b141a17afbde26fb",
+      "status": "approved",
+      "reason": null,
+      "candidate_origin": "human-authored",
+      "candidate_author": "ui-lead",
+      "approval_by": "ui-rev",
+      "attempts": [
+        [
+          1,
+          "real-local-model",
+          false
+        ],
+        [
+          2,
+          "real-local-model",
+          false
+        ],
+        [
+          3,
+          "human-authored",
+          true
+        ]
+      ]
+    },
+    {
+      "job": "9f812f741843478cb9b5f5c3e9fa42ae",
+      "status": "awaiting_review",
+      "reason": null,
+      "candidate_origin": "approved-memory-replay",
+      "candidate_author": null,
+      "approval_by": null,
+      "attempts": [
+        [
+          1,
+          "approved-memory-replay",
+          true
+        ]
+      ]
+    },
+    {
+      "job": "16a6a74e452947f3b65af1c504b3ebef",
+      "status": "awaiting_review",
+      "reason": null,
+      "candidate_origin": "approved-memory-replay",
+      "candidate_author": "ui-lead",
+      "approval_by": null,
+      "attempts": [
+        [
+          1,
+          "approved-memory-replay",
+          true
+        ]
+      ]
+    }
+  ]
+}

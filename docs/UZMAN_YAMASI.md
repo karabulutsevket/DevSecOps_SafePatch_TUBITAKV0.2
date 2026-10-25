@@ -52,8 +52,25 @@ Motor politika denetimini yeniden yapar, sonra yamayı **modeli hiç çağırmad
 - Köken ve yazar kanıt özetine (`acceptance_manifest`) bağlıdır. Adaydaki yazar sonradan değişirse onay `authorship_changed` ile durur.
 - Yazar kendi yamasını onaylayamaz (`409`) ve hafızaya alamaz (`author_cannot_promote_own_patch`). Hem `submit` hem `review` rolü olan kullanıcı için de geçerlidir.
 - Hafızaya alınan uzman yamasının kaydı `provenance: human-authored`, `author: <kullanıcı>`, `model: null` taşır.
+- Uzman yaması sonraki bir işte hafızadan birebir tekrar uygulanırsa, aday yine yazarını taşır (`origin: approved-memory-replay`, `author: <kullanıcı>`). Yazar, kendi yamasının tekrarını da onaylayamaz. Yazar bilgisi yalnız güvenilir hafıza kaydından alınır, worker yanıtından alınmaz.
+
+## Arayüz
+
+`needs_human` durumundaki ve başlangıç taraması geçerli olan bir işte, `submit` rolü olan kullanıcı "Uzman yaması" bölümünü görür:
+
+- **Düzenleyici:** bulgunun dosyası tam hâliyle yüklenir (`GET /v1/jobs/{id}/expert-source`: dosya, taban özeti, kalan uzman denemesi).
+- **Önizleme:** "Değişikliği önizle", gönderimdeki denetimlerin aynısını çalıştırır ve doğrulanacak diff'i güvenilir politika kodundan alır (`POST /v1/jobs/{id}/expert-patch/preview`). İşi değiştirmez, olay kaydına bir şey yazmaz. Politika ihlali gönderimden önce Türkçe açıklamasıyla görünür.
+- **Gönderim:** gerekçe en az 20 karakter olmalıdır.
+- **Taslak koruması:** iş değişmediği sürece detay paneli 5 saniyelik yenilemede yeniden çizilmez; taslak ve açık bölümler kaybolmaz.
+
+İş ekranında ayrıca şunlar bulunur:
+- **Renklendirilmiş diff:** eklenen ve silinen satırlar ayrı renkte.
+- **Deneme geçmişi:** köken (Yerel AI, Uzman yaması, Hafızadan tekrar), yazar, sonuç ve her denemenin diff'i.
+- **Türkçe gerekçeler:** durma gerekçelerinin açıklaması, kodun yanında.
+- **Yazara kapalı düğmeler:** yazar, kendi yamasının onay ve hafıza düğmelerini kapalı görür ve bir açıklama notu okur.
+
+**Yerel deneme (25 Ekim):** path-01 üzerinde uçtan uca çalıştırıldı. Model yaması `needs_human` ile durmuştu. Uzman yaması gerçek Maven, JUnit ve Semgrep doğrulamasından geçti. İkinci inceleyici onaylayıp hafızaya aldı. Sonraki işler aynı yamayı model çağrılmadan hafızadan tekrar uyguladı ve tam doğrulamadan geçirdi. Onaylar Claude'un yönettiği **test kimlikleriyle** verildi; gerçek insan onayı değildir. Ham kayıt: [`evidence/v02-uzman-arayuzu/demo/`](../evidence/v02-uzman-arayuzu/demo/).
 
 ## Henüz yok
 
-- Arayüzde gönderme ve diff ekranı (Hafta 3).
 - İnceleyicinin reddettiği (`rejected`) işe uzman yaması; şimdilik yalnız `needs_human` işler.
