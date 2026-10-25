@@ -110,6 +110,35 @@ Her onaylı kayıt, kendi kabulünün ne kanıtladığını ve her yeniden kulla
 - **Hafıza kapalıyken** (`memory_mode: off`) uyarı yoktur. Bu yüzden H2 tipi deneylerin istemleri değişmez.
 - **Etkisi:** H1 deneyinde hafızalı kolların istemlerini değiştirir ve ayrıca ölçülmeli.
 
+## Geçersizleşme v1 (25 Ekim, Hafta 5)
+
+Onaylı bir kayıt üç durumda **`needs_revalidation`** (yeniden doğrulanmalı) durumuna düşer:
+
+| Tetikleyici | Ne zaman | Olay gerekçesi |
+|---|---|---|
+| Birebir tekrar başarısız | Kaydın yaması, onaylandığı kodla aynı kodda doğrulamadan geçemedi. Örnek kullanımın başarısızlığı sayılmaz; o, modelin uyarlamasıdır. | `replay_failed:<iş>` |
+| Kural değişti | Kaydı doğuran kendi Semgrep kuralımızın tanımı değişti. Her kaydın onay anındaki kural özeti (`rule_sha256`) saklanır; başka kuralların değişmesi etkilemez. | `rule_changed:<kural>` |
+| Bağımlılık sürümü değişti | Aynı projede aynı hedef çağrı, kurulum ve kütüphane için `pom.xml`'deki sürüm farklı. Sürümü `managed` (BOM'dan gelen) ya da bilinmeyen kütüphane karşılaştırılmaz. | `dependency_version_changed:<kütüphane> <eski> -> <yeni>` |
+
+- **Kullanılmaz:** "yeniden doğrulanmalı" kayıt ne tekrar ne örnek olarak kullanılır. Panelde "Elendi · durum: yeniden doğrulanmalı" olarak görünür.
+- **Bekleyen onaylar:** onu kullanan ve onay bekleyen işler karantinadaki gibi insana döner (`memory_no_longer_approved`).
+- **Ne zaman denetlenir:** kural ve bağımlılık denetimi arama sırasında, kayıt kullanılmadan hemen önce yapılır.
+
+**Durum geçişleri:**
+
+| Hedef durum | Hangi durumlardan | Kim |
+|---|---|---|
+| `needs_revalidation` | yalnız `approved` | sistem |
+| `approved` (yeniden onay) | `quarantined`, `needs_revalidation` | inceleyici, gerekçeyle |
+| `quarantined` | `approved`, `needs_revalidation` | inceleyici |
+| `revoked` | geri çekilmiş dışındaki her durum | inceleyici |
+
+- **Son durum:** `revoked` kalıcıdır.
+- **Dört göz:** kaydın yazarı (uzman yaması) kendi kaydını yeniden onaylayamaz.
+- **Arayüz:** hafıza panelinde durum Türkçe görünür. Onaylı olmayan kayıtta son kararın sahibi ve gerekçesi yazar. İnceleyici için "Yeniden onayla" düğmesi çıkar.
+
+**v1'in sınırı:** yeniden onay insanın gerekçeli kararıdır. Kaydın yamasını güncel taban üzerinde yeniden doğrulayan otomatik yol (yeniden doğrulama işi) sonraki adımdır. Eski kayıtlarda kural özeti yoktur; onlar için kural denetimi yapılamaz.
+
 ## Eski kayıtların geçişi (25 Ekim, Hafta 4)
 
 `scripts/migrate_memory.py` Hafta 4'ten önce yazılmış kayıtları yeni şemaya taşır. Sürüm yükseltmesinden sonra bir kez çalıştırılır. Önce `--dry-run` ile yazmadan rapor alınabilir.

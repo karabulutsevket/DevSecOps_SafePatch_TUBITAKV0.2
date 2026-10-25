@@ -29,7 +29,7 @@ function render(j){const d=$('detail');d.replaceChildren(el('h2',j.case_id+' · 
 const uses={replay:'Birebir tekrar (model çağrılmaz, yine doğrulanır)',example:'Modele örnek',example_unknown:'Modele örnek (uygunluk bilinmiyor)'};
 const facts={project:'proje',cwe_family:'CWE ailesi',jdk:'JDK',source_path:'dosya',build_sha256:'build dosyası',contract_sha256:'test sözleşmesi',source_sha256:'kaynak kod',signature:'yapısal imza','signature.sink':'imzada hedef çağrı','signature.construction':'imzada değerin kuruluşu','signature.library':'imzada kütüphane','signature.library_version':'imzada kütüphane sürümü'};
 const relations={same_source:'aynı kaynak kod',same_context:'aynı dosya ve sözleşme',same_shape:'aynı imza biçimi, başka dosya'};
-function factText(d){const [k,u]=d.split(':');return (facts[k]||k)+(u?' bilinmiyor':' farklı')}
+function factText(d){const [k,u]=d.split(':');if(k==='state')return 'durum: '+(states[u]||u);return (facts[k]||k)+(u?' bilinmiyor':' farklı')}
 function memoryPanel(l){const box=el('section',undefined,'memory-why');box.append(el('h3','Hafıza kararı'));
   if(l.decision==='disabled'){box.append(el('p','Bu işte hafıza kapalı.'));return box}
   if(!('considered' in l)){box.append(el('p','Bu iş Hafta 5 öncesine ait; ayrıntı ham kanıtta.'));return box}
@@ -56,6 +56,7 @@ function expertPanel(j){const box=el('section',undefined,'expert');box.append(el
   return box}
 setInterval(()=>{if(me)guard(refresh)},5000);
 
+const states={approved:'onaylı',quarantined:'karantinada',revoked:'geri çekildi',needs_revalidation:'yeniden doğrulanmalı'};
 // Evidence vector of a memory record (week 4): what its own acceptance proved and how its reuses ended.
 function evidenceText(e){if(!e)return 'Kanıt vektörü yok (Hafta 4 öncesi kayıt)';const yes=v=>v==null?'bilinmiyor':v?'geçti':'geçmedi';const suite=s=>s?yes(s.passed)+(s.tests!=null?' ('+s.tests+' test)':''):'bilinmiyor';const r=e.reuse||{};return 'Kanıt · derleme: '+yes(e.build)+' · davranış: '+suite(e.behavior)+' · tanık: '+suite(e.security)+' · tarama: '+(e.rescan?(e.rescan.remaining===0?'temiz':e.rescan.remaining+' bulgu kaldı')+(e.rescan.tools.length?' ('+e.rescan.tools.join(', ')+')':''):'bilinmiyor')+' · yeniden kullanım: '+(r.verified||0)+' doğrulandı, '+(r.failed||0)+' başarısız, '+(r.inconclusive||0)+' belirsiz; inceleyici '+(r.approved_by_reviewer||0)+' onay, '+(r.rejected_by_reviewer||0)+' ret'}
 
@@ -64,11 +65,14 @@ async function refreshMemory(){
   const records=await api('/v1/memory');
   $('memories').replaceChildren(...records.map(r=>{
     const row=el('div',undefined,'memory-row');
-    row.append(el('b',(r.context.cwe_family||r.context.rule_id)+' · '+r.state),el('p',r.context.project+' · v'+r.version+' · '+r.uses.length+' kullanım'),el('p',evidenceText(r.evidence)),el('p',r.id,'hash'));
+    const last=r.events[r.events.length-1]||{};
+    row.append(el('b',(r.context.cwe_family||r.context.rule_id)+' · '+(states[r.state]||r.state)),el('p',r.context.project+' · v'+r.version+' · '+r.uses.length+' kullanım'),el('p',evidenceText(r.evidence)),el('p',r.id,'hash'));
+    if(r.state!=='approved')row.append(el('p','Son karar: '+(last.actor||'—')+' · '+(last.reason||'—'),'reason'));
     if(me.roles.includes('review')&&r.state!=='revoked'){
-      const reason=el('input');reason.placeholder='Karantina / geri çekme gerekçesi';reason.maxLength=1000;
+      const reason=el('input');reason.placeholder='Karar gerekçesi (en az 10 karakter)';reason.maxLength=1000;
       row.append(reason);
-      for(const [title,state] of [['Karantinaya al','quarantined'],['Geri çek','revoked']])row.append(act(title,async()=>{await api('/v1/memory/'+r.id+'/state','POST',{state,reason:reason.value});await refresh()}));
+      const choices=r.state==='approved'?[['Karantinaya al','quarantined'],['Geri çek','revoked']]:[['Yeniden onayla','approved'],['Karantinaya al','quarantined'],['Geri çek','revoked']];
+      for(const [title,state] of choices.filter(([,s])=>s!==r.state))row.append(act(title,async()=>{await api('/v1/memory/'+r.id+'/state','POST',{state,reason:reason.value});await refresh()}));
     }return row;
   }));
   if(!records.length)$('memories').append(el('p','Henüz onaylanıp hafızaya alınmış düzeltme yok.'));

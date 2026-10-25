@@ -104,7 +104,7 @@ def failure_memory(user=Depends(identity)):
 
 
 class MemoryDecision(Strict):
-    state: str = Field(pattern=r"^(quarantined|revoked)$")
+    state: str = Field(pattern=r"^(quarantined|revoked|approved)$")   # approved: a reviewer re-approves (week 5)
     reason: str = Field(min_length=10, max_length=1000)
 
 

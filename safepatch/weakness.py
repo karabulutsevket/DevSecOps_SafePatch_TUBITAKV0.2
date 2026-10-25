@@ -10,7 +10,7 @@ import re
 
 import yaml
 
-from safepatch.common import ROOT, setting
+from safepatch.common import ROOT, canonical, digest, setting
 
 # Child CWE -> family, from the CWE "ChildOf" relations of the supported classes.
 FAMILY = {"CWE-564": "CWE-89", "CWE-23": "CWE-22", "CWE-36": "CWE-22", "CWE-338": "CWE-330"}
@@ -36,13 +36,20 @@ def cwe_id(value):
     return None
 
 
+def rule_definitions(file=None):
+    data = yaml.safe_load(Path(file or setting("RULES_FILE", str(ROOT / "rules/java.yml"))).read_text(encoding="utf-8"))
+    return {rule["id"]: rule for rule in data.get("rules", [])}
+
+
 def own_rules(file=None):
     """CWE of each of our own Semgrep rules (trusted repository file)."""
-    data = yaml.safe_load(Path(file or setting("RULES_FILE", str(ROOT / "rules/java.yml"))).read_text(encoding="utf-8"))
-    return {rule["id"]: cwe_id((rule.get("metadata") or {}).get("cwe")) for rule in data.get("rules", [])}
+    return {rule_id: cwe_id((rule.get("metadata") or {}).get("cwe")) for rule_id, rule in rule_definitions(file).items()}
 
 
 RULE_CWE = {**own_rules(), **TOOL_RULES}
+# One digest per own rule: a memory record must be revalidated when its rule changes,
+# and only then (week 5); other rules may change freely.
+RULE_DIGESTS = {rule_id: digest(canonical(rule)) for rule_id, rule in rule_definitions().items()}
 
 
 def family(finding):

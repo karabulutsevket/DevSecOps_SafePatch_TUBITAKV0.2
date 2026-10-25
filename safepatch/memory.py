@@ -14,7 +14,7 @@ from safepatch.common import canonical, digest
 from safepatch.feedback import patch_caused
 from safepatch.policy import PolicyError
 from safepatch.signature import signature
-from safepatch.weakness import family
+from safepatch.weakness import RULE_DIGESTS, family
 
 
 def _bytes(files, path):
@@ -142,6 +142,26 @@ def reuse_result(job):
     return "failed"
 
 
+# Memory states and the states each may be reached from (roadmap week 5). `revoked` is final;
+# only an approved record can fall to `needs_revalidation`, and only a person re-approves.
+TRANSITIONS = {"quarantined": ("approved", "needs_revalidation"), "revoked": ("approved", "quarantined", "needs_revalidation"),
+               "needs_revalidation": ("approved",), "approved": ("quarantined", "needs_revalidation")}
+
+
+def staleness(record, context):
+    """Why an approved record must be revalidated before any use, or None (invalidation v1).
+    Its own rule changed, or the same sink's library has another version in this project."""
+    rule = record["context"].get("rule_id")
+    if record.get("rule_sha256") and RULE_DIGESTS.get(rule) != record["rule_sha256"]:
+        return "rule_changed:" + str(rule)
+    saved, current = record["context"].get("signature"), context.get("signature")
+    if saved and current and all(saved.get(k) == current.get(k) for k in ("sink", "construction", "library")):
+        versions = (saved.get("library_version"), current.get("library_version"))
+        if all(v and v != "managed" for v in versions) and versions[0] != versions[1]:
+            return f"dependency_version_changed:{saved['library']} {versions[0]} -> {versions[1]}"
+    return None
+
+
 def evidence_score(record):
     """Orders candidates of the same use by their evidence; it never accepts one (roadmap week 5).
     A failed reuse weighs twice a verified one; then what the record's own acceptance proved."""
@@ -212,6 +232,7 @@ class Memory:
                   "model": attempt["proposal"].get("model"), "author": attempt["proposal"].get("author"),
                   "provenance": "human-authored" if human else "human-approved-local-repair",
                   "evidence_sha256": candidate["evidence_sha256"], "evidence": evidence_vector(job, attempt),
+                  "rule_sha256": RULE_DIGESTS.get(context.get("rule_id")),
                   "approval": copy.deepcopy(approved), "uses": [], "reuse": [],
                   "events": [{"state": "approved", "actor": actor, "reason": rationale, "at": time.time()}]}
         with self.store.lock, self.store.engine.begin() as conn:
@@ -222,15 +243,21 @@ class Memory:
         return record
 
     def change(self, memory_id, state, actor, reason):
-        if state not in ("quarantined", "revoked"):
+        if state not in TRANSITIONS:
             raise PolicyError("invalid_memory_transition")
         with self.store.lock, self.store.engine.begin() as conn:
             record = self.get(memory_id)
             if record["state"] == "revoked":
                 raise PolicyError("revoked_memory_is_terminal")
+            if record["state"] not in TRANSITIONS[state]:
+                raise PolicyError("invalid_memory_transition")
+            if state == "approved" and record.get("author") is not None and actor == record["author"]:
+                raise PolicyError("author_cannot_reapprove_own_record")
             record.update(state=state, version=record["version"] + 1)
             record["events"].append({"state": state, "actor": actor, "reason": reason, "at": time.time()})
             conn.execute(update(self.table).where(self.table.c.id == memory_id).values(data=record))
+        if state == "approved":
+            return {**record, "affected_jobs": []}
         # Existing approvals become visibly stale. Deployed artifacts need a human
         # remediation decision; never silently change a running application.
         affected = []
@@ -284,7 +311,10 @@ class Memory:
                 record["evidence"]["reuse"] = {**counts, "approved_by_reviewer": sum(e.get("review") == "approve" for e in record["reuse"]),
                                                "rejected_by_reviewer": sum(e.get("review") == "reject" for e in record["reuse"])}
             conn.execute(update(self.table).where(self.table.c.id == memory_id).values(data=record))
-            return record
+        # The record's own patch failed on code it was approved for: it must be revalidated.
+        if result == "failed" and entry["use"] == "replay" and record["state"] == "approved":
+            return self.change(memory_id, "needs_revalidation", "safepatch", "replay_failed:" + job_id)
+        return record
 
     def recovered_evidence(self, record):
         """The evidence vector of an older record, rebuilt from its source job if that job is still stored."""
@@ -401,7 +431,15 @@ class Memory:
             return {"decision": "disabled", "selected": None, "duration_seconds": 0, "rejected": []}
         rejected, candidates, considered = [], [], []
         for record in self.all(context["project"]):
-            if record["state"] != "approved" or normalized(record["context"]).get("cwe_family") != normalized(context).get("cwe_family"):
+            if normalized(record["context"]).get("cwe_family") != normalized(context).get("cwe_family"):
+                continue
+            stale = staleness(record, context) if record["state"] == "approved" else None
+            if stale:
+                record = self.change(record["id"], "needs_revalidation", "safepatch", stale)
+            if record["state"] != "approved":
+                entry = {"id": record["id"], "exact": None, "adaptive": None, "differences": ["state:" + record["state"]]}
+                considered.append({**entry, "use": None})
+                rejected.append(entry)
                 continue
             decisions = {"id": record["id"], "exact": applicability(record["context"], context), "adaptive": adaptability(record["context"], context),
                          "differences": differences(record["context"], context)}
