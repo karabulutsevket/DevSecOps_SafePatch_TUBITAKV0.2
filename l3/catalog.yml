@@ -1,0 +1,40 @@
+# SafePatch L3 evaluation set (ROADMAP.md week 6). Metadata only: no code of an external
+# project is kept in this repository. Each case's repository and descriptor are prepared
+# under .runtime by the script named in `prepare`. Checked by scripts/l3_catalog.py.
+#
+# Rules: an external case (Vul4J, OWASP Benchmark) is evaluation only; a project is on one
+# side only, so all owned synthetic cases are development (their -02/-03 variants share the
+# -01 template); a ready evaluation case has hidden tests the verifier never runs.
+schema: safepatch-l3/1
+targets: {development: 20, evaluation: 40}
+cases:
+  # Owned synthetic labs (scripts/seed.py), one template per family.
+  - {id: sql-01, source: safepatch-synthetic, project: safepatch-synthetic-lab, cwe: CWE-89, split: development, license: MIT, prepare: scripts/seed.py, status: ready}
+  - {id: sql-02, source: safepatch-synthetic, project: safepatch-synthetic-lab, cwe: CWE-89, split: development, license: MIT, prepare: scripts/seed.py, status: ready}
+  - {id: sql-03, source: safepatch-synthetic, project: safepatch-synthetic-lab, cwe: CWE-89, split: development, license: MIT, prepare: scripts/seed.py, status: ready}
+  - {id: path-01, source: safepatch-synthetic, project: safepatch-synthetic-lab, cwe: CWE-22, split: development, license: MIT, prepare: scripts/seed.py, status: ready}
+  - {id: path-02, source: safepatch-synthetic, project: safepatch-synthetic-lab, cwe: CWE-22, split: development, license: MIT, prepare: scripts/seed.py, status: ready}
+  - {id: path-03, source: safepatch-synthetic, project: safepatch-synthetic-lab, cwe: CWE-22, split: development, license: MIT, prepare: scripts/seed.py, status: ready}
+  - {id: command-01, source: safepatch-synthetic, project: safepatch-synthetic-lab, cwe: CWE-78, split: development, license: MIT, prepare: scripts/seed.py, status: ready}
+  - {id: command-02, source: safepatch-synthetic, project: safepatch-synthetic-lab, cwe: CWE-78, split: development, license: MIT, prepare: scripts/seed.py, status: ready}
+  - {id: command-03, source: safepatch-synthetic, project: safepatch-synthetic-lab, cwe: CWE-78, split: development, license: MIT, prepare: scripts/seed.py, status: ready}
+  # Owned large-file cases for region mode (scripts/region_dev.py).
+  - {id: region-path-read, source: safepatch-synthetic, project: safepatch-region-dev, cwe: CWE-22, split: development, license: MIT, prepare: scripts/region_dev.py, status: ready}
+  - {id: region-path-write, source: safepatch-synthetic, project: safepatch-region-dev, cwe: CWE-22, split: development, license: MIT, prepare: scripts/region_dev.py, status: ready}
+  - {id: region-sql, source: safepatch-synthetic, project: safepatch-region-dev, cwe: CWE-89, split: development, license: MIT, prepare: scripts/region_dev.py, status: ready}
+  - {id: region-command, source: safepatch-synthetic, project: safepatch-region-dev, cwe: CWE-78, split: development, license: MIT, prepare: scripts/region_dev.py, status: ready}
+  # Vul4J (tuhh-softsec/vul4j, GPL-3.0, used as a case list only).
+  - id: vul4j-79
+    source: vul4j
+    project: zeroturnaround/zt-zip
+    cwe: CWE-22
+    split: evaluation
+    license: Apache-2.0
+    upstream: {repo: "https://github.com/zeroturnaround/zt-zip", vulnerable: d1c40776d2ff18550d95db2609d3d154692dea93, fix: 759b72f33bc8f4d69f84f09fcb7f010ad45d6fff, cve: CVE-2018-1002201}
+    prepare: scripts/prepare_vul4j.py
+    hidden: {path: l3/hidden/vul4j-79, selectors: [org.zeroturnaround.zip.HiddenTraversalTest]}
+    status: ready
+  - {id: vul4j-41, source: vul4j, project: codehaus-plexus/plexus-archiver, cwe: CWE-22, split: evaluation, license: Apache-2.0, upstream: {repo: "https://github.com/codehaus-plexus/plexus-archiver", cve: CVE-2018-1002200}, status: planned}
+  - {id: vul4j-42, source: vul4j, project: codehaus-plexus/plexus-utils, cwe: CWE-78, split: evaluation, license: Apache-2.0, upstream: {repo: "https://github.com/codehaus-plexus/plexus-utils", cve: CVE-2017-1000487}, status: planned}
+  - {id: vul4j-43, source: vul4j, project: eclipse-rdf4j/rdf4j, cwe: CWE-22, split: evaluation, license: BSD-3-Clause, upstream: {repo: "https://github.com/eclipse-rdf4j/rdf4j", cve: CVE-2018-20227}, status: planned}
+  - {id: vul4j-18, source: vul4j, project: apache/jspwiki, cwe: CWE-22, split: evaluation, license: Apache-2.0, upstream: {repo: "https://github.com/apache/jspwiki", cve: CVE-2019-0225}, status: planned}

@@ -5,11 +5,15 @@
 2. Human fix: the upstream fix of ZipUtil.java goes through the same patch policy and
    verification as any candidate, and must pass.
 3. Control: a patch that only adds a comment must fail, so the witness tells a fix apart.
+4. Partial fix (week 6): the human fix's guards for the two sinks the witness exercises only.
+   It passes verification; the hidden evaluation tests (l3/hidden/vul4j-79), which the
+   verifier never runs, must catch it. Hidden tests run on every variant.
 Writes vul4j-79-check.json to EVIDENCE_DIR. Needs prepare_vul4j.py (with --prefetch) first and:
 PROJECTS_DIR=.runtime/l3/projects SAFEPATCH_PROFILE=evaluation RUNNER_SANDBOX=docker SANDBOX_MAVEN_CACHE=<wsl path>
 """
 import json
 from pathlib import Path
+import re
 import subprocess
 import sys
 import time
@@ -21,8 +25,18 @@ from safepatch import runner
 from safepatch.common import Patch, VerifyRequest, digest, evidence, setting
 from safepatch.repository import baseline
 from prepare_vul4j import DERIVED, FIX, L3, TARGET
+from l3_hidden import hidden_result
 
 CASE = "vul4j-79"
+# One inserted guard of the upstream fix: a blank line, a comment, the check and a blank line.
+GUARD = re.compile(r"\n[ \t]*/\* If we see the relative traversal string.*?\n[ \t]*\}\n\n", re.S)
+
+
+def partial(fixed):
+    """The fix with only its first two guards (Unpacker, backslash directories): the witness's sinks."""
+    guards = list(GUARD.finditer(fixed))
+    assert len(guards) == 4
+    return fixed[:guards[2].start()] + fixed[guards[2].end():guards[3].start()] + fixed[guards[3].end():]
 
 
 def suite(result):
@@ -55,6 +69,8 @@ def main():
                                   "rationale": "Upstream human fix 759b72f (zt-zip), used to check the evaluation case."})
     control = Patch.model_validate({"edits": [{"path": TARGET, "old_sha256": digest(files[TARGET]), "content": files[TARGET] + "// control: no fix\n"}],
                                     "rationale": "Negative control: changes nothing that runs."})
+    half = Patch.model_validate({"edits": [{"path": TARGET, "old_sha256": digest(files[TARGET]), "content": partial(fixed)}],
+                                 "rationale": "Partial fix: guards only the two sinks the witness exercises."})
     started = time.time()
     record = {"case": "VUL4J-79", "cve": "CVE-2018-1002201", "cwe": "CWE-22", "upstream": "zeroturnaround/zt-zip", "derived_commit": DERIVED,
               "human_fix_commit": FIX, "started_at": started}
@@ -64,10 +80,17 @@ def main():
     print("human fix:", json.dumps({k: record["human_fix"][k] for k in ("passed", "feedback", "duration_seconds")}), flush=True)
     record["control"] = summary(verify(control))
     print("control:", json.dumps({k: record["control"][k] for k in ("passed", "feedback", "duration_seconds")}), flush=True)
+    record["partial_fix"] = summary(verify(half))
+    print("partial fix:", json.dumps({k: record["partial_fix"][k] for k in ("passed", "feedback", "duration_seconds")}), flush=True)
+    for name, edits in (("baseline", {}), ("human_fix", {TARGET: fixed}), ("control", {TARGET: control.edits[0].content}), ("partial_fix", {TARGET: half.edits[0].content})):
+        record[name]["hidden"] = hidden_result(CASE, DERIVED, edits)
+        print(name, "hidden:", json.dumps({k: record[name]["hidden"][k] for k in ("passed", "tests", "failures", "errors")}), flush=True)
     out = evidence("vul4j-79-check.json")
     out.write_text(json.dumps(record, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print("written:", out)
-    if not (record["baseline"]["baseline_valid"] and record["human_fix"]["passed"] and not record["control"]["passed"]):
+    expected = (record["baseline"]["baseline_valid"] and record["human_fix"]["passed"] and not record["control"]["passed"] and record["partial_fix"]["passed"]
+                and record["human_fix"]["hidden"]["passed"] and not record["baseline"]["hidden"]["passed"] and not record["partial_fix"]["hidden"]["passed"])
+    if not expected:
         raise SystemExit(1)
 
 
