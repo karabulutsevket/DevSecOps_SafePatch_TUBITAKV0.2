@@ -38,9 +38,27 @@ Artık her bulgu bir **CWE ailesine** indirgeniyor (`weakness.family`):
 
 **Eski kayıtlar:** Hafta 4'ten önce yazılmış bağlamlarda `cwe_family` alanı yoktur. Ailesi kural kimliğinden hesaplanır. Kural tabloda yoksa kayıt `unknown` kalır. Kayıtların kendisi değiştirilmez; kalıcı geçiş betiği Hafta 4'ün ayrı maddesi.
 
+## Yapısal imza (25 Ekim, Hafta 4)
+
+Kaynak kod farklı olduğunda (uyarlamalı kullanım), kaydın uygulanabilirliğini kod özetleri değil, **koddan okunan yapı** belirlemeli. `safepatch/signature.py` bunu tree-sitter-java ile çıkarır. Yalnız sözdizimine bakar: adlar dosyanın importlarından nitelendirilir, tip denetimi yapılmaz.
+
+| Alan | Anlamı | Örnek |
+|---|---|---|
+| `sink` | Zayıflığın hedef çağrısı, nitelikli adıyla | `java.sql.Statement.executeQuery`, `org.springframework.jdbc.core.JdbcTemplate.queryForList`, `java.lang.ProcessBuilder.<init>` |
+| `construction` | Hedefe giden değerin nasıl kurulduğu | `concatenation`, `format`, `string_builder`, `resolve`, `direct`, `literal`, `none`, `other` |
+| `source` | Değerin kökeni; birden çok kaynak varsa dışarıdan en kolay kontrol edilen | `http_request` > `method_parameter` > `environment` > `system_property` > `unknown` |
+| `library`, `library_version` | Hedefi sağlayan kütüphane; sürüm yalnız üçüncü taraf kütüphaneler için `pom.xml`'den (`${özellik}` çözülür, sürümsüz bağımlılık `managed`) | `jdbc`, `spring-jdbc` + `6.1.14`, `java-process` |
+
+Hedef seçimi: bulgu satırını içeren metottaki hedef çağrılar aday olur. Tarayıcılar farklı satır bildirir (Semgrep hedef çağrıyı, demo tarayıcı argümanın kurulduğu satırı). Adaylar arasında argümanı dışarıdan beslenen önce gelir, sonra satıra yakın olan. Değer geriye doğru en çok 4 yerel atama izlenir; `StringBuilder`'a sonradan eklenen (`append`) değerler de sayılır. Ailenin hedef tablosunda çağrı bulunamazsa imza `None` olur.
+
+Dokuz sentetik vakanın hepsinde imza, tarayıcının bildirdiği satırdan bağımsız olarak doğru çıkıyor. Spring `JdbcTemplate`, `prepareStatement` içinde birleştirme, `StringBuilder`, `Runtime.exec`, `Files.newInputStream(Paths.get(...))`, `FileInputStream` ve `Random` kalıpları testle sabit (`tests/test_signature.py`).
+
+İmza, her işin ve kaydın bağlamına `signature` alanıyla yazılır. **Uygunluk kararında henüz kullanılmaz;** bir sonraki adımda hash'lerin rolü daraltılırken devreye girecek.
+
+**Bilinen sınırlar:** dosyalar arası veri akışı izlenmez (değer başka bir sınıftan geliyorsa kaynak `unknown`); alan (field) ve kalıtım üzerinden gelen türler yalnız bildirimden okunur; hedef tablosu şu an CWE-89, 22, 78 ve 330 içindir, yeni sınıf paketleri kendi hedeflerini ekler.
+
 ## Sıradaki adımlar (Hafta 4)
 
-- **Yapısal imza:** koddan çıkarılan hedef çağrı, kirli değerin kuruluşu, kaynak türü ve kütüphane. Uyarlamalı kullanımda (kaynak kod farklı) karar buna dayanacak.
 - **Hash'lerin rolü:** kaynak, build ve test özetleri yalnız birebir tekrarda zorunlu olacak.
 - **Geçiş betiği:** eski kayıtlara aileyi yeni sürüm olarak yazan betik.
 - **Bilinen sınır:** runner'ın Sonar ön denetimi hâlâ laboratuvar etiketine göre kural seçiyor; yalnız sentetik vakalarda kullanılıyor.

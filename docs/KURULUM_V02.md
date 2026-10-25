@@ -28,11 +28,13 @@ python -m venv .venv
 ./scripts/run-tests.ps1                              # birim testleri; JUnit: evidence/v02-local/
 ```
 
-`python` PATH'te değilse başka bir Python 3.12 sanal ortamı kullanılabilir. Betikler `-PythonExecutable <tam-yol>` parametresi alır:
+`python` PATH'te değilse `.venv` herhangi bir Python 3.12 yorumlayıcısının tam yoluyla kurulabilir (`C:\yol\python.exe -m venv .venv`). Betikler başka bir ortam için `-PythonExecutable <tam-yol>` parametresi de alır. O ortam `requirements.lock`'taki paketleri, Hafta 4'ten beri `tree-sitter` ve `tree-sitter-java` dahil, içermelidir:
 
 ```powershell
 ./scripts/run-tests.ps1 -PythonExecutable C:\yol\python.exe
 ```
+
+Kapalı ağ kurulumu için paketler internetli makinede `pip download -r requirements.lock -d wheels` ile indirilir, hedefte `pip install --no-index --find-links wheels -r requirements.lock` ile kurulur. tree-sitter paketleri Windows ve Linux için hazır derlenmiş (wheel) gelir; derleyici gerekmez.
 
 ## 3. Model, Maven ve Semgrep hazırlığı (internetli hazırlık aşaması)
 

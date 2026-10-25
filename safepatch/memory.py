@@ -12,6 +12,7 @@ from sqlalchemy import Column, Float, JSON, MetaData, String, Table, select, upd
 from safepatch.common import canonical, digest
 from safepatch.feedback import patch_caused
 from safepatch.policy import PolicyError
+from safepatch.signature import signature
 from safepatch.weakness import family
 
 
@@ -30,13 +31,17 @@ def context_for(case, files, finding):
     source = finding["file"]
     spec = case.get("spec")
     tests = {p: digest(_bytes(files, p)) for p in files if p.startswith("src/test/") or "/src/test/" in p}
+    pom = _bytes(files, "pom.xml") if "pom.xml" in files else None
+    weakness = family(finding)
     return {
         "project": case.get("project", "owned-java-demo"),
-        "cwe_family": family(finding), "rule_id": finding["rule_id"],
+        "cwe_family": weakness, "rule_id": finding["rule_id"],
         "jdk": spec.java if spec else "17", "source_path": source,
-        "build_sha256": digest(_bytes(files, "pom.xml")) if "pom.xml" in files else None,
+        "build_sha256": digest(pom) if pom is not None else None,
         "contract_sha256": digest(canonical(tests)),
         "source_sha256": digest(files[source]),
+        # Read from the code, not the scanner; recorded now, used for adaptive matching next (week 4).
+        "signature": signature(files[source], weakness, finding.get("line"), pom),
     }
 
 

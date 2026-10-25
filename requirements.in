@@ -6,3 +6,5 @@ sqlalchemy==2.0.43
 psycopg[binary]==3.2.9
 pyyaml==6.0.2
 pytest==9.1.1
+tree-sitter==0.26.0
+tree-sitter-java==0.23.5

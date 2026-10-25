@@ -23,7 +23,7 @@ SafePatch, Java güvenlik bulguları için yerel modelle düzeltme adayı üreti
 | Runner — derleme/test/tarama | `safepatch/runner.py`, `scanner.py` | 8103 |
 | Deployer — staging | `safepatch/deployer.py` | 8104 |
 
-Diğerleri: proje tanımı şeması `safepatch/project.py` ve depo erişimi `safepatch/repository.py` (Git'e sabitlenmiş taban, tembel okuma, aday commit; tasarım: [docs/GERCEK_DEPO_TASARIMI.md](docs/GERCEK_DEPO_TASARIMI.md)), hafıza `safepatch/memory.py`, politika `safepatch/policy.py`, iş deposu `safepatch/store.py`, sentetik vakalar `samples/`, testler `tests/`, betikler `scripts/`, ölçüm kanıtları `evidence/`, belgeler `docs/`.
+Diğerleri: proje tanımı şeması `safepatch/project.py` ve depo erişimi `safepatch/repository.py` (Git'e sabitlenmiş taban, tembel okuma, aday commit; tasarım: [docs/GERCEK_DEPO_TASARIMI.md](docs/GERCEK_DEPO_TASARIMI.md)), hafıza `safepatch/memory.py` (CWE ailesi `weakness.py`, yapısal imza `signature.py`; uygunluk kararı: [docs/HAFIZA_UYGUNLUK.md](docs/HAFIZA_UYGUNLUK.md)), politika `safepatch/policy.py`, iş deposu `safepatch/store.py`, sentetik vakalar `samples/`, testler `tests/`, betikler `scripts/`, ölçüm kanıtları `evidence/`, belgeler `docs/`.
 
 ## Komutlar (PowerShell)
 
