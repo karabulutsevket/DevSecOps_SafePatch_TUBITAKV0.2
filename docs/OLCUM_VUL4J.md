@@ -115,5 +115,6 @@ Bu sonuçlar sistem talimatı, CWE-22 notu ya da derleme geri bildirimi değişt
 - **Tanık 4 konumun 2'sini sınıyor** (`unpack` ve `BackslashUnpacker`). Bu iki yolu koruyan ama `unwrap` ve üst düzey `BackslashUnpacker` dalını korumayan bir yama da kabul edilir. Bu Vul4J'nin saldırı testinin sınırıdır; raporlarda belirtilmelidir.
 - **Bulgu konumları düzeltmeden alındı.** Bilinen bulgu kipi, tarayıcının bulmadığı açıkları onarım ölçümüne sokmak içindir. Tespit başarısı ayrıca ölçülecek (Hafta 7).
 - **Tek vaka.** Genelleme yapılmaz. Davranış testleri projenin kendi testleridir; gizli değerlendirme testi yoktur.
-- **Model bu dosyayı bütünüyle göremez.** `ZipUtil.java` 97 694 karakter; model bağlamı 8K token. Bölge kipiyle yalnız bulguları içeren metotları görüyor (yukarıda). Henüz doğrulanan bir model yaması yok (0/3).
+- **Model bu dosyayı bütünüyle göremez.** `ZipUtil.java` 97 694 karakter; model bağlamı 8K token. Bölge kipiyle yalnız bulguları içeren metotları görüyor (yukarıda).
+- **Henüz doğrulanan bir model yaması yok.** Geliştirme vakalarındaki düzeltmelerden sonra yeniden koşuldu, yine 0/3. Import sorunu kalktı; kalan hatalar modelin `File` ile `Path` API'lerini karıştırmasından ([OLCUM_BOLGE_GELISTIRME.md](OLCUM_BOLGE_GELISTIRME.md#vul4j-79-bir-kez-yeniden-26-ekim)).
 - **Arayüz tarayıcıda denenmedi.** Yeni seçenek ("Bilinen bulgu · değerlendirme vakası", cevap anahtarı olan vakada kendiliğinden seçilir) ve yeni açıklama metinleri tarayıcıda görülmedi. Uçtan uca akış API üzerinden koştu.

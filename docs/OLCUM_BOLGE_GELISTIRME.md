@@ -49,11 +49,40 @@ Notlar:
    - Şimdi bu başarısız bir deneme sayılıyor ve model geri bildirimle yeniden deniyor. `after2`'de path-read bir işte, command bir işte bu sayede sonraki denemede doğrulandı.
 5. **`region-path-write` hiç çözülmedi.** Model ilk iki denemede kodu değiştirmeden döndürüyor; üçüncüde ya derleme hatası ya da yeni dosyada `toRealPath()` (davranış testlerinde 4 hata) çıkıyor.
 
-## Sonraki adım
+## Bütün dosya kipine etkisi: sentetik yeniden ölçüm (26 Ekim)
+
+**Ham kayıt:** [evidence/v02-bolge-sentetik/retry/](../evidence/v02-bolge-sentetik/retry/summary.json), commit `731943e`.
 
 Bu turdaki değişikliklerin bir kısmı bütün dosya kipini de etkiler:
 - derleme hatalarının biçimi;
 - path tanısı ve tarifi;
 - boş cevabın yeniden denenmesi.
 
-Bu yüzden 9 sentetik vakanın genel talimat ölçümü ([OLCUM_GENEL_TALIMAT.md](OLCUM_GENEL_TALIMAT.md)) yeniden yapılmalı. VUL4J-79 ancak bundan sonra bir kez yeniden koşulmalı.
+Bu yüzden 9 sentetik vakanın genel talimat ölçümü ([OLCUM_GENEL_TALIMAT.md](OLCUM_GENEL_TALIMAT.md)) aynı koşullarla tekrarlandı: 2 strateji × 3 seed = 54 iş. Sistem talimatı ve zafiyet notları referansla bayt bayt aynı; yalnız yeniden deneme metinleri ve kod farklı.
+
+| Strateji | SQL | Path | Command | Toplam | Referans |
+|---|---|---|---|---|---|
+| `v01` | 9/9 | 0/9 | 0/9 | **9/27** | 9/27 |
+| `guided+context` | 9/9 | 9/9 | 0/9 | **18/27** | 18/27 |
+
+Notlar:
+- **Sonuç değişmedi.** Vaka, strateji ve seed eşleştirmesinde 54 işin hiçbirinde sonuç farklı değil.
+- **Durma nedenleri kaydı.** Başarısız `v01` işlerinde durma nedeni değişti: önceki patch'in tekrarı (`duplicate_patch`) 11→14, ilerleme yok (`no_progress`) 1→4, deneme bütçesi 6→0.
+  - Olası açıklama: derleme hataları eskiden runner'ın her denemede farklı olan çalışma klasörü yolunu içeriyordu. Artık aynı hata aynı istemi veriyor, bu yüzden model aynı yamayı daha erken tekrarlıyor.
+  - Kabul sayısını etkilemedi.
+
+## VUL4J-79, bir kez yeniden (26 Ekim)
+
+**Ham kayıt:** [evidence/v02-vul4j-model2/model/](../evidence/v02-vul4j-model2/model/summary.json), commit `731943e`. Koşullar ilk ölçümle aynı ([OLCUM_VUL4J.md](OLCUM_VUL4J.md#model-bölge-kipinde-25-ekim-hafta-5)).
+
+| Ölçü | İlk ölçüm (`9c89d47`) | Yeniden (`731943e`) |
+|---|---|---|
+| Doğrulanan iş | 0 / 3 | **0 / 3** |
+| Doğrulamaya giren denemelerin sonucu | 6/6 derleme hatası, "cannot find symbol" | 6/6 derleme hatası, tip hatası |
+| SafePatch'in eklediği import | — | 9 denemenin 9'unda `Files`, `Path`, `Paths`, `StandardCopyOption` |
+
+Eksik import sorunu kalktı. Kalan hatalar modelin kendi hatası:
+- `Paths.get(...)` metoduna `File` veriyor (ancak `String` ya da `URI` alır);
+- `File` beklenen yerde `String` kullanıyor.
+
+Geliştirme vakalarında da benzer bir kalıp var ("cannot find symbol: toRealPath": `File` üzerinde `Path` metodu). Bu, 7B modelin `File` ile `Path` API'lerini karıştırdığını gösteriyor. VUL4J-79'a bakarak başka ayar yapılmadı.
