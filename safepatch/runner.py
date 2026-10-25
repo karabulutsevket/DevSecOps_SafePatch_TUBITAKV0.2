@@ -14,7 +14,7 @@ import xml.etree.ElementTree as ET
 from fastapi import Depends, FastAPI, HTTPException
 
 from safepatch.acceptance import untolerated
-from safepatch.common import ROOT, VerifyRequest, digest, known_findings_enabled, remaining, require_service, runtime, secret, setting
+from safepatch.common import ROOT, VerifyRequest, digest, known_findings_enabled, safe_path, remaining, require_service, runtime, secret, setting
 from safepatch.policy import PolicyError, validate_patch
 from safepatch.process import run
 from safepatch.repository import allowed_files, baseline, checkout, commit_candidate, tracked_changes
@@ -133,6 +133,43 @@ def wsl_path(path):
     return "/mnt/" + path[0].lower() + "/" + path[3:].replace("\\", "/")
 
 
+DIAGNOSTIC = re.compile(r"\[ERROR\] (.*?\.java):\[(\d+),(\d+)\]([^\n]*)")
+IDENTIFIER = re.compile(r"[A-Za-z_$][\w$]*")
+
+
+def symbol_at(workspace, relative, line, column):
+    """The identifier at a compiler position; plugins report 0- or 1-based columns."""
+    file = Path(workspace) / relative
+    if not safe_path(relative) or not file.is_file():
+        return None
+    lines = file.read_text(encoding="utf-8", errors="replace").splitlines()
+    text = lines[line - 1] if 1 <= line <= len(lines) else ""
+    for index in (column, column - 1):
+        if 0 <= index < len(text) and (index == 0 or not (text[index - 1].isalnum() or text[index - 1] in "_$")):
+            match = IDENTIFIER.match(text, index)
+            if match:
+                return match.group()[:80]
+    return None
+
+
+def diagnostics(output, workspace):
+    """Compiler errors with repository-relative paths: the workspace path never reaches a prompt.
+    For "cannot find symbol" the name is read from the source, because old compiler plugins
+    (zt-zip's 2.3.2) drop javac's "symbol:" line (VUL4J-79, 25 Oct 2026)."""
+    base = Path(workspace).resolve().as_posix()
+    prefixes = ("/workspace/", "/" + base + "/", base + "/")
+    out = []
+    for path, line, column, message in DIAGNOSTIC.findall(output):
+        relative = next((path[len(p):] for p in prefixes if path.startswith(p)), path.rsplit("/", 1)[-1])
+        message = message.strip()
+        if "cannot find symbol" in message and (name := symbol_at(workspace, relative, int(line), int(column))):
+            message += ": " + name
+        entry = f"[ERROR] {relative}:[{line},{column}] {message}"[-400:]
+        if entry not in out:
+            out.append(entry)
+    return out[:4]
+
+
 def known_findings(spec, commit, patched):
     """Findings from the answer key. Lab and evaluation profiles only; after a patch nothing is
     rescanned, so acceptance rests on the security witness (roadmap week 6)."""
@@ -211,8 +248,7 @@ def execute(req: VerifyRequest):
         view = ChainMap({edit.path: edit.content for edit in req.patch.edits}, files)
     compile_result = maven(workspace, spec.build.package_goals, req.deadline, limit=spec.limits.build_seconds, sandbox=sandbox, java=spec.java)
     if compile_result["exit_code"]:
-        errors = re.findall(r"\[ERROR\] .*?\.java:\[\d+,\d+\][^\n]*", compile_result["output"])
-        return {"passed": False, "feedback": {"code": "compilation_failed", "diagnostics": [e[-400:] for e in errors[:4]]}, "patch": patch_meta, "build": {"passed": False, "duration_seconds": compile_result["duration_seconds"]}}
+        return {"passed": False, "feedback": {"code": "compilation_failed", "diagnostics": diagnostics(compile_result["output"], workspace)}, "patch": patch_meta, "build": {"passed": False, "duration_seconds": compile_result["duration_seconds"]}}
     witness = spec.tests.security
     behavior = tests(workspace, spec.tests.behavior, req.deadline, spec.limits.test_seconds, sandbox, spec.java)
     security = tests(workspace, witness, req.deadline, spec.limits.test_seconds, sandbox, spec.java) if witness else dict(MISSING_WITNESS)

@@ -321,8 +321,20 @@ class Engine:
                 patch = Patch.model_validate(proposal["patch"])
                 meta = validate_patch(files, patch, allowed=allowed)
             except PolicyError as exc:
-                self.store.mutate(job_id, lambda j: j["attempts"].append({"number": attempt, "proposal": proposal, "policy_error": str(exc)}))
-                raise
+                empty = str(exc) == "empty_patch"
+                failure = {"category": "empty_patch"} if empty else None
+                self.store.mutate(job_id, lambda j: j["attempts"].append({"number": attempt, "proposal": proposal, "policy_error": str(exc), **({"failure": failure} if empty else {})}))
+                if not empty:
+                    raise
+                # A model answer that changes nothing is a failed attempt, not a policy breach
+                # (region-mode development cases, 25 Oct 2026): retry with feedback.
+                feedback = dict(failure) if strategy.startswith("guided") else {"code": "empty_patch"}
+                if not strategy.startswith("guided"):
+                    if ("empty_patch",) == previous_feedback:
+                        self.set(job_id, "needs_human", reason="no_progress")
+                        return
+                    previous_feedback = ("empty_patch",)
+                continue
             record = {"number": attempt, "proposal": proposal, "retry": retry, **meta}
             if meta["patch_sha256"] in seen:
                 self.store.mutate(job_id, lambda j: j["attempts"].append({**record, "stopped": "duplicate_patch"}))

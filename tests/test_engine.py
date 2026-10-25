@@ -289,3 +289,32 @@ def test_a_region_answer_for_another_region_is_refused(job_store, monkeypatch, s
     job, seen = region_run(job_store, monkeypatch, source, lambda region: {"regions": [{"region": 2, "content": "x"}], "rationale": "MOCK TEST ONLY"})
     assert (job["status"], job["reason"]) == ("rejected", "region_answer_invalid") and seen["verify"] == []
     assert job["attempts"][0]["policy_error"] == "region_answer_invalid"
+
+
+def unchanged_then(job_store, patch_factory, source, answers, strategy="v01"):
+    db, job = job_store
+    db.mutate(job["id"], lambda j: j.update(strategy=strategy))
+    proposals, verified = iter(answers), []
+    def call(url, method="GET", **kwargs):
+        body = kwargs.get("body", {})
+        if url.endswith("/propose"):
+            content = next(proposals)
+            return {"mode": "mock-test", "patch": patch_factory(content if content is not None else source[SOURCE]).model_dump()}
+        if body.get("attempt") == 0:
+            return fake_initial()
+        verified.append(body["attempt"])
+        return {"passed": False, "feedback": {"code": "compile"}}
+    Engine(db, call).run(job["id"])
+    return db.get(job["id"]), verified
+
+
+@pytest.mark.parametrize("strategy", ["v01", "guided"])
+def test_a_model_answer_that_changes_nothing_is_a_failed_attempt_not_a_rejection(job_store, patch_factory, source, strategy):
+    job, verified = unchanged_then(job_store, patch_factory, source, [None, source[SOURCE] + "// changed\n", source[SOURCE] + "// again\n"], strategy)
+    assert job["status"] == "needs_human" and verified[0] == 2
+    assert (job["attempts"][0]["policy_error"], job["attempts"][0]["failure"]) == ("empty_patch", {"category": "empty_patch"})
+
+
+def test_repeated_empty_answers_stop_as_no_progress(job_store, patch_factory, source):
+    job, verified = unchanged_then(job_store, patch_factory, source, [None, None, None])
+    assert (job["status"], job["reason"], verified) == ("needs_human", "no_progress", [])

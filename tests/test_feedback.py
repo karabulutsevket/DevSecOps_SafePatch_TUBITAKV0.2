@@ -57,6 +57,14 @@ def test_path_recipe_requires_real_paths():
     assert RECIPES["path"].count("toRealPath()") >= 2 and "or normalize()" not in RECIPES["path"]
 
 
+def test_path_advice_covers_files_about_to_be_created():
+    # toRealPath() fails on a file that does not exist yet (region-mode development cases):
+    # normalize it under the real root, then check the real path of its parent.
+    from safepatch.worker1 import WEAKNESS_NOTES
+    for text in (RECIPES["path"], WEAKNESS_NOTES["CWE-22"]):
+        assert "about to be created" in text and "normalize()" in text and "parent" in text
+
+
 def test_guidance_tables_use_known_categories_and_fit_worker_limit():
     for kind, texts in DIAGNOSIS.items():
         assert set(texts) <= set(CATEGORIES)

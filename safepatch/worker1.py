@@ -27,7 +27,8 @@ Always end Java source with a newline. Do not add markdown fences to file conten
 # Project facts (helper classes, conventions) reach the model only as read-only context data.
 WEAKNESS_NOTES = {
     "CWE-89": "SQL injection: keep the results for normal input; pass input as bound parameters, never concatenate it into SQL.\n",
-    "CWE-22": "Path traversal: keep nested relative reads inside the root working; resolve real paths with toRealPath() before checking containment.\n",
+    # 25 Oct (week 5): toRealPath() fails on a file about to be created (region-mode development cases).
+    "CWE-22": "Path traversal: keep nested relative paths inside the root working; check containment on real paths: toRealPath() for files that exist; for a file about to be created (toRealPath() fails on it), normalize() the path resolved under the real root, then check the real path of its parent directory too.\n",
     "CWE-78": "Command injection: keep the program's output for normal input; never run a shell; pass input as one literal argument of a fixed executable.\n",
 }
 # Appended only when used, so first attempts of the V0.1 strategy keep the exact prompt.
@@ -43,7 +44,8 @@ WHOLE_FILE_OUTPUT = "Return only permitted file replacements, original SHA-256 a
 REGION_SYSTEM = SYSTEM.replace(WHOLE_FILE_OUTPUT, "Return only the regions you change, import lines you add and a short rationale.\n") + (
     "\nThe file is too large to show whole. source_regions_data shows only the regions that contain the finding: "
     "whole methods with their line range in the file and enclosing classes, and the file's imports. Return the complete "
-    "new text of each region you change, by its id. Code outside the regions cannot change.\n")
+    "new text of each region you change, by its id. Code outside the regions cannot change. Add an import line "
+    "for each type your regions use that the file's imports do not cover.\n")
 assert WHOLE_FILE_OUTPUT in SYSTEM
 
 
