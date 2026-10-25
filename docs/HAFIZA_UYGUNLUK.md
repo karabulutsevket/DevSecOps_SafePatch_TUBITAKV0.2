@@ -90,6 +90,24 @@ Her onaylı kayıt, kendi kabulünün ne kanıtladığını ve her yeniden kulla
 - **Bilinmeyen değer:** doğrulama kaydında bulunmayan bir bilgi `None` olarak kalır, "geçmedi" sayılmaz.
 - **Arayüz:** hafıza panelinde her kaydın kanıt vektörü okunur biçimde görünür.
 
+## Sıralama v1 ve başarısızlık uyarıları (25 Ekim, Hafta 5)
+
+**Sıralama:** adaylar önce uygunluğa göre ayrılır: `replay`, sonra `example`, sonra `example_unknown`. Aynı grup içinde kanıt vektörüne göre sıralanır (`evidence_score`):
+
+1. Yeniden kullanım: doğrulanmış kullanım +1, başarısız kullanım −2.
+2. Kaydın kendi kabulünde kanıtlananlar: derleme, davranış ve güvenlik tanığı geçti mi (0–3).
+3. İnceleyici kararları: onay +1, ret −1.
+4. En yeni kayıt.
+
+- **Puan kabul kararı vermez.** Birebir tekrar, kanıtı ne kadar güçlü olursa olsun en üstte kalır, ama yine tam doğrulamadan geçer ve başarısız olabilir. Bu bir testle sabit.
+- **Kanıt:** her adayın puanı ve sırası işin kanıtında, `memory_lookup.considered` alanında.
+
+**Başarısızlık uyarıları:** aynı kaynakta, aynı sözleşmede ya da aynı imza biçiminde başka bir dosyada daha önce başarısız olmuş en çok iki yama, yalnız değişen satırlarıyla (en çok 1200 karakter) modele veri olarak gider (`failed_repair_data`). Sistem talimatına tek bir not eklenir: "doğrulamadan geçemeyen önceki yamalar; bunları tekrarlama".
+- **Güven sınırı:** doğrulayıcı notunu taklit eden bir diff gönderilmez; worker1 de aynı denetimi ayrıca yapar. Gönderilen uyarılar işin kanıtında, `memory_lookup.warnings_sent` alanında.
+- **Bütçe:** istem bütçesi aşılırsa önce bağlam dosyaları, sonra uyarılar, en son önceki denemenin diff'i bırakılır.
+- **Hafıza kapalıyken** (`memory_mode: off`) uyarı yoktur. Bu yüzden H2 tipi deneylerin istemleri değişmez.
+- **Etkisi:** H1 deneyinde hafızalı kolların istemlerini değiştirir ve ayrıca ölçülmeli.
+
 ## Eski kayıtların geçişi (25 Ekim, Hafta 4)
 
 `scripts/migrate_memory.py` Hafta 4'ten önce yazılmış kayıtları yeni şemaya taşır. Sürüm yükseltmesinden sonra bir kez çalıştırılır. Önce `--dry-run` ile yazmadan rapor alınabilir.

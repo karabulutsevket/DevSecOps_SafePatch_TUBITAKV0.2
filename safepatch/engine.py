@@ -240,6 +240,11 @@ class Engine:
         lookup = self.memory.search(context, job.get("memory_mode", "guarded"))
         selected = lookup.pop("selected")
         lookup["selected_id"] = selected["id"] if selected else None
+        # Week 5: the closest failed candidates go to the model as "did not work here" data.
+        # Stored diffs are data; one that imitates the verifier note is never sent.
+        warnings = [w for w in self.memory.failure_warnings(lookup.get("failures", []), context["project"]) if not imitates_note(w["changed_lines"])]
+        lookup["warnings_sent"] = [{"id": w["id"], "relation": w["relation"], "failure": w["failure"]} for w in warnings]
+        failure_data = [{k: w[k] for k in ("relation", "failure", "changed_lines")} for w in warnings]
         self.set(job_id, "scanning", memory_lookup=lookup, memory_context=context, memory_ids=[])
         memory_data = None
         replay = None
@@ -247,7 +252,7 @@ class Engine:
             with self.store.lock:
                 self.memory.use(selected["id"], job_id, lookup["use"])
                 self.store.mutate(job_id, lambda j: j.update(memory_ids=[selected["id"]]))
-            memory_data = {"patch_diff": selected["diff"], "context": selected["context"]}
+            memory_data = None if imitates_note(selected["diff"]) else {"patch_diff": selected["diff"], "context": selected["context"]}
             # Only an exact-compatible record on identical source is replayed; any other use is an example.
             if job.get("memory_mode", "guarded") == "guarded" and lookup["use"] == "replay" and selected["context"].get("source_sha256") == digest(source):
                 # A replayed expert patch keeps its author, so the author cannot approve its reuse either.
@@ -275,7 +280,7 @@ class Engine:
             else:
                 self.store.mutate(job_id, lambda j: j.update(tokens_reserved=used + reservation))
                 options = retry_options(strategy, GUIDANCE_KEY.get(family(finding)), attempt, failure, context_files)
-                proposal = self.worker("worker1", "/propose", {"job_id": job_id, "attempt": attempt, "deadline": job["deadline"], "source": {target: source}, "finding": finding, "feedback": feedback, "memory_data": memory_data, "seed": job.get("seed", 42) + attempt, **options}, job["deadline"])
+                proposal = self.worker("worker1", "/propose", {"job_id": job_id, "attempt": attempt, "deadline": job["deadline"], "source": {target: source}, "finding": finding, "feedback": feedback, "memory_data": memory_data, "seed": job.get("seed", 42) + attempt, **({"failure_data": failure_data} if failure_data else {}), **options}, job["deadline"])
             retry = {"strategy": strategy, "temperature": options.get("temperature", 0.0), "guidance_level": attempt - 2 if "guidance" in options else None, "context_paths": sorted(options.get("context_files", {}))}
             self.active(job_id)
             if proposal.get("mode") not in ("real-local-model", "mock-test", "approved-memory-replay"):

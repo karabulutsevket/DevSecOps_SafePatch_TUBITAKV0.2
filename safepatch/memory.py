@@ -119,6 +119,21 @@ def reuse_result(job):
     return "failed"
 
 
+def evidence_score(record):
+    """Orders candidates of the same use by their evidence; it never accepts one (roadmap week 5).
+    A failed reuse weighs twice a verified one; then what the record's own acceptance proved."""
+    evidence = record.get("evidence") or {}
+    reuse = evidence.get("reuse") or {}
+    proven = int(evidence.get("build") is True) + sum(int((evidence.get(k) or {}).get("passed") is True) for k in ("behavior", "security"))
+    return {"reuse": reuse.get("verified", 0) - 2 * reuse.get("failed", 0), "proven": proven,
+            "review": reuse.get("approved_by_reviewer", 0) - reuse.get("rejected_by_reviewer", 0)}
+
+
+def changed_only(diff, limit=1200):
+    """A stored unified diff reduced to its changed lines, as the model sees a failed attempt."""
+    return "".join(line + "\n" for line in diff.splitlines() if line[:1] in "+-" and not line.startswith(("+++", "---")))[:limit]
+
+
 def migrated_context(context, before):
     """A pre-week-4 context with the week-4 fields: the family from its rule, the signature from the stored source."""
     upgraded = normalized(context)
@@ -335,6 +350,12 @@ class Memory:
             conn.execute(self.failure_table.insert().values(id=record["id"], created=time.time(), data=record))
         return record["id"]
 
+    def failure_warnings(self, failures, project, limit=2):
+        """'This pattern did not work here': changed lines of the closest failed candidates, as data."""
+        records = {r["id"]: r for r in self.failure_records(project)}
+        return [{"id": f["id"], "relation": f["relation"], "failure": records[f["id"]]["failure"]["category"],
+                 "changed_lines": changed_only(records[f["id"]]["diff"])} for f in failures[:limit] if f["id"] in records]
+
     def failures(self, context, limit=20):
         """Failures for this exact source, then the same contract, then the same signature shape
         elsewhere; summaries only. `unknown` contexts never count as a lesson."""
@@ -367,10 +388,15 @@ class Memory:
                 rejected.append(decisions)
                 continue
             candidates.append((use, record))
-        # Replay first, then a compatible example, then an unknown one; newest within each.
-        # No semantic correctness score is made up.
+        # Ranking v1: applicability first (replay, compatible example, unknown example), then the
+        # evidence vector, then the newest. The score only orders; every candidate is still verified.
         rank = ("replay", "example", "example_unknown")
-        candidates.sort(key=lambda c: (rank.index(c[0]), -c[1]["created_at"]))
+        scores = {record["id"]: evidence_score(record) for _, record in candidates}
+        candidates.sort(key=lambda c: (rank.index(c[0]), -scores[c[1]["id"]]["reuse"], -scores[c[1]["id"]]["proven"],
+                                       -scores[c[1]["id"]]["review"], -c[1]["created_at"]))
+        order = {record["id"]: index for index, (_, record) in enumerate(candidates, 1)}
+        for entry in considered:
+            entry.update(score=scores.get(entry["id"]), rank=order.get(entry["id"]))
         use, selected = candidates[0] if candidates else (None, None)
         # Recorded for review and evidence; the model does not see failures yet (roadmap week 5).
         failures = self.failures(context)

@@ -197,10 +197,10 @@ Sorumlular: kurallar ve tanıklar *Yiğithan*, vakalar ve L2 kayıtları *Kadir*
 #### Hafta 5 · 23 – 29 Kasım
 **Hedef:** Açıklanabilir sıralama ve otomatik geçersizleşme.
 
-- [ ] Sıralama v1: önce kural filtresi (uygunluk), sonra kanıt; ilgili başarısızlık kayıtları modele "bu bağlamda şu kalıp çalışmadı" uyarısı olarak verilir — *Kadir*
+- [x] Sıralama v1: önce kural filtresi (uygunluk), sonra kanıt; ilgili başarısızlık kayıtları modele "bu bağlamda şu kalıp çalışmadı" uyarısı olarak verilir — *Kadir*. **25 Ekim:** uygunluk grubu içinde kanıt vektörüyle sıralama; en yakın iki başarısız yama veri olarak modele gidiyor, hafıza kapalıyken istem değişmiyor ([docs/HAFIZA_UYGUNLUK.md](docs/HAFIZA_UYGUNLUK.md#sıralama-v1-ve-başarısızlık-uyarıları-25-ekim-hafta-5))
 - [ ] Arayüzde "Bu kayıt neden seçildi / neden elendi?" paneli — *Reşat*
 - [ ] Geçersizleşme v1: ilgili bağımlılık sürümü değişince, Semgrep kural sürümü değişince ya da kayıt tekrar kullanımda başarısız olunca kayıt `yeniden doğrulanmalı` durumuna düşer — *Reşat, Yiğithan*
-- [ ] Puan, kabul kararı vermez: hafızadan gelen her aday tam doğrulamadan geçer (V0.1 kuralı korunur) — *Yiğithan (test)*
+- [x] Puan, kabul kararı vermez: hafızadan gelen her aday tam doğrulamadan geçer (V0.1 kuralı korunur) — *Yiğithan (test)*. **25 Ekim:** en güçlü kanıtlı birebir tekrar da doğrulamada düşebiliyor (`tests/test_ranking.py`); Yiğithan gözden geçirecek
 
 **Faz 1 geçiş koşulu:** (1) Bir uzman yaması hafızaya girdi ve sonraki bir işte kullanılıp doğrulamadan geçti. (2) Kaynak hash'i farklı bir varyant vakada hafıza kaydı yapısal imzayla seçildi ve doğrulamadan geçti. (3) Uyumsuz bir kayıt doğru gerekçeyle elendi.
 
