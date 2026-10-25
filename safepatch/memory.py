@@ -83,11 +83,34 @@ def adaptability(saved, current):
     return "compatible" if shapes[0] == shapes[1] else "incompatible"
 
 
+def differences(saved, current):
+    """Which matching facts differ (or are unknown, suffix ':unknown') between a record and a job:
+    the 'why selected / why rejected' answer, field by field (roadmap week 5)."""
+    saved, current = normalized(saved), normalized(current)
+    found = []
+    for key in dict.fromkeys(REQUIRED + ("source_sha256",)):
+        if not saved.get(key) or not current.get(key):
+            found.append(key + ":unknown")
+        elif saved[key] != current[key]:
+            found.append(key)
+    shapes = [c.get("signature") for c in (saved, current)]
+    if None in shapes:
+        found.append("signature:unknown")
+    else:
+        found += ["signature." + k for k in SHAPE if shapes[0].get(k) != shapes[1].get(k)]
+    return found
+
+
 def use_of(saved, current):
-    """How a guarded job may use an approved record: replay, example, example_unknown, or None."""
+    """How a guarded job may use an approved record: replay, example, example_unknown, or None.
+    A known, different signature shape rules out every use: in an identical file it means the
+    record fixed another sink than this finding's."""
+    adaptive = adaptability(saved, current)
+    if adaptive == "incompatible":
+        return None
     if applicability(saved, current) == "compatible" and saved.get("source_sha256") == current.get("source_sha256"):
         return "replay"
-    return {"compatible": "example", "unknown": "example_unknown"}.get(adaptability(saved, current))
+    return {"compatible": "example", "unknown": "example_unknown"}.get(adaptive)
 
 
 def evidence_vector(job, attempt):
@@ -380,7 +403,8 @@ class Memory:
         for record in self.all(context["project"]):
             if record["state"] != "approved" or normalized(record["context"]).get("cwe_family") != normalized(context).get("cwe_family"):
                 continue
-            decisions = {"id": record["id"], "exact": applicability(record["context"], context), "adaptive": adaptability(record["context"], context)}
+            decisions = {"id": record["id"], "exact": applicability(record["context"], context), "adaptive": adaptability(record["context"], context),
+                         "differences": differences(record["context"], context)}
             # naive (arm B): any record of the family is an example; guarded (arm C): the rules above.
             use = "example" if mode != "guarded" else use_of(record["context"], context)
             considered.append({**decisions, "use": use})

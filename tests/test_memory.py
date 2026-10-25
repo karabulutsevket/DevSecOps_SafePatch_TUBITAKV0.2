@@ -56,7 +56,30 @@ def test_other_signature_shape_is_never_used(job_store):
     assert record["context"]["signature"]["sink"] == "java.sql.Statement.executeQuery"
     changed = {**record["context"], "source_sha256": "x" * 64, "signature": {**record["context"]["signature"], "construction": "format"}}
     lookup = Memory(db).search(changed)
-    assert lookup["selected"] is None and lookup["rejected"] == [{"id": record["id"], "exact": "compatible", "adaptive": "incompatible"}]
+    assert lookup["selected"] is None and lookup["rejected"] == [{"id": record["id"], "exact": "compatible", "adaptive": "incompatible",
+                                                                  "differences": ["source_sha256", "signature.construction"]}]
+
+
+def test_a_record_for_another_sink_in_the_same_file_is_never_replayed(job_store):
+    # Identical file and hashes, but the record fixed a different sink: no replay, no example.
+    db, job = job_store
+    record = approved_record(db, job)
+    other_sink = {**record["context"], "signature": {**record["context"]["signature"], "sink": "java.sql.Statement.execute"}}
+    lookup = Memory(db).search(other_sink)
+    assert lookup["selected"] is None and lookup["rejected"][0]["exact"] == "compatible"
+    # Unknown on one side keeps the exact replay: the code is byte for byte the same.
+    assert Memory(db).search({**record["context"], "signature": None})["use"] == "replay"
+
+
+def test_differences_name_each_fact_that_differs_or_is_unknown(job_store):
+    from safepatch.memory import differences
+    db, job = job_store
+    record = approved_record(db, job)
+    assert differences(record["context"], record["context"]) == []
+    changed = {**record["context"], "build_sha256": "x", "jdk": None, "signature": {**record["context"]["signature"], "sink": "java.sql.Statement.execute"}}
+    assert differences(record["context"], changed) == ["jdk:unknown", "build_sha256", "signature.sink"]
+    assert differences(record["context"], {**record["context"], "signature": None})[-1] == "signature:unknown"
+    assert Memory(db).search(changed)["considered"][0]["differences"] == ["jdk:unknown", "build_sha256", "signature.sink"]
 
 
 def test_replay_is_preferred_to_a_newer_example(job_store):

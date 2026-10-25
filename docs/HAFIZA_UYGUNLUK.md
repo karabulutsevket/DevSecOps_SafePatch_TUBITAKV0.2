@@ -23,7 +23,9 @@ Korumalı modda (`guarded`, yeni işlerin varsayılanı ve deneylerde C kolu) bi
 - **Seçim sırası:** önce `replay`, sonra `example`, sonra `example_unknown`; her grupta en yeni kayıt. Hiçbir durumda hafızadan gelen aday doğrulamayı atlamaz.
 - **Hash'lerin rolü:** kaynak, build ve test özetleri yalnız birebir tekrar kararına girer.
 - **Kaynak türü:** değerin nereden geldiği (`source`) imza karşılaştırmasına girmez; düzeltme kalıbını değiştirmez.
-- **Kanıt:** her aday için iki karar ve kullanım, işin kanıtında `memory_lookup.considered` alanına, elenenler `rejected` alanına yazılır. Hafta 5'teki "neden seçildi / elendi" paneli bunu gösterecek.
+- **Farklı hedef çağrı:** imza biçimi açıkça farklı olan kayıt hiçbir şekilde kullanılmaz; aynı dosya ve aynı özetler olsa bile. Bu, kaydın bu bulgunun değil, aynı dosyadaki başka bir hedef çağrının düzeltmesi olduğu anlamına gelir (Hafta 5'te arayüz denemesinde bulundu). İmza bir tarafta bilinmiyorsa birebir tekrar eskisi gibi mümkündür; kod bayt bayt aynıdır.
+- **Kanıt:** her aday için iki karar, kullanım ve **farklı ya da bilinmeyen alanlar** (`differences`, ör. `build_sha256`, `signature.construction`, `jdk:unknown`) işin kanıtında, `memory_lookup.considered` alanında; elenenler ayrıca `rejected` alanında.
+- **"Neden seçildi / elendi?" paneli (Hafta 5):** iş ekranında her aday için sıra, kullanım ve Türkçe gerekçe (ör. "dosya farklı", "imzada değerin kuruluşu farklı") gösterilir. Seçilen kayıt vurgulanır; modele gönderilen başarısızlık uyarıları da listelenir.
 - **Ön koşulsuz kol** (`naive`, deneylerde B kolu): aynı ailedeki en yeni kaydı ön koşul aramadan örnek olarak verir, tekrar etmez.
 - **Başarısızlık kayıtları:** aynı kaynak (`same_source`), aynı sözleşme (`same_context`) ve aynı imza biçimi başka dosyada (`same_shape`) ilişkileriyle bulunur. `unknown` bağlamlar ders sayılmaz.
 
