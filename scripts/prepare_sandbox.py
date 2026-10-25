@@ -1,8 +1,10 @@
 """Prepare the Docker sandbox (ROADMAP.md weeks 5–6) and prove its isolation.
 
-1. Pulls the pinned Maven image if it is missing (internet, once; ~233 MB compressed).
+1. Pulls the pinned Maven images (JDK 17 and JDK 8) if missing (internet, once; ~233 and
+   ~150 MB compressed).
 2. Copies the offline Maven cache (MAVEN_CACHE) into the WSL file system, where a build
-   is ~8x faster than over /mnt/c, and mounts it read-only in every container.
+   is ~8x faster than over /mnt/c, and mounts it read-only in every container. The copy adds
+   to what is there: dependencies prefetched for evaluation cases (prepare_vul4j.py) stay.
 3. Starts a sandboxed container and requires: no network, read-only cache, read-only root.
 Prints the runner settings. Docker must run in WSL (`service docker start`).
 """
@@ -16,7 +18,7 @@ import uuid
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from safepatch.common import setting
-from safepatch.runner import SANDBOX_IMAGE, sandboxed, wsl, wsl_path
+from safepatch.runner import SANDBOX_IMAGES, sandbox_image, sandboxed, wsl, wsl_path
 
 PROBE = ("exec 3<>/dev/tcp/1.1.1.1/53 2>/dev/null && echo NETWORK_OPEN || echo NETWORK_BLOCKED; "
          "touch /m2/probe 2>/dev/null && echo CACHE_WRITABLE || echo CACHE_READONLY; "
@@ -32,14 +34,14 @@ def main():
     cache = setting("MAVEN_CACHE")
     if not cache or not Path(cache).is_dir():
         raise SystemExit("Set MAVEN_CACHE to the prepared offline Maven cache (docs/KURULUM_V02.md, section 3)")
-    image = setting("SANDBOX_IMAGE", SANDBOX_IMAGE)
-    if check("docker", "image", "inspect", image).returncode:
-        print("pulling", image, flush=True)
-        if check("docker", "pull", "-q", image).returncode:
-            raise SystemExit("docker pull failed; is Docker running in WSL (service docker start)?")
+    for image in map(sandbox_image, SANDBOX_IMAGES):
+        if check("docker", "image", "inspect", image).returncode:
+            print("pulling", image, flush=True)
+            if check("docker", "pull", "-q", image).returncode:
+                raise SystemExit("docker pull failed; is Docker running in WSL (service docker start)?")
     home = check("sh", "-c", 'printf %s "$HOME"').stdout.strip()
     target = setting("SANDBOX_MAVEN_CACHE") or home + "/.safepatch/m2"
-    copied = check("sh", "-c", f'rm -rf "{target}" && mkdir -p "$(dirname "{target}")" && cp -r "{wsl_path(cache)}" "{target}" && du -sh "{target}"')
+    copied = check("sh", "-c", f'mkdir -p "{target}" && cp -r "{wsl_path(cache)}/." "{target}/" && du -sh "{target}"')
     if copied.returncode:
         raise SystemExit("copying the Maven cache into WSL failed: " + copied.stderr[-300:])
     os.environ["SANDBOX_MAVEN_CACHE"] = target

@@ -11,6 +11,7 @@ SafePatch, Java güvenlik bulguları için yerel modelle düzeltme adayı üreti
 - Tarayıcı: Semgrep 1.136.0 (Windows'ta WSL içinden), kurallar `rules/java.yml`. Sürüm uyuşmazlığı işi durdurur.
 - Maven çevrimdışı (`-o`) çalışır; eksik artifact internetten indirilmez.
 - Gerçek (sentetik olmayan) bir proje yalnız Docker sandbox'ında derlenir ve test edilir (`RUNNER_SANDBOX=docker`; ağsız, salt okunur, yetkisiz). Runner yerel kipte reddeder; bu kural gevşetilmez.
+- Değerlendirme vakaları (ilk: VUL4J-79) `.runtime/l3` altında, `scripts/prepare_vul4j.py` ile hazırlanır; bulgular cevap anahtarından gelir ("bilinen bulgu", `scanner: known`) ve bu kip yalnız `SAFEPATCH_PROFILE=lab|evaluation` iken açılır ([docs/OLCUM_VUL4J.md](docs/OLCUM_VUL4J.md)).
 - Modele giden sistem talimatı geneldir; projeye özgü bilgi talimata yazılmaz, yalnız bağlam verisi olarak gider (`worker1.SYSTEM`, `WEAKNESS_NOTES`; ölçüm: [docs/OLCUM_GENEL_TALIMAT.md](docs/OLCUM_GENEL_TALIMAT.md)).
 - Yeni işlerin varsayılan yeniden deneme stratejisi `guided+context` (ölçüm: [docs/OLCUM_V02_YENIDEN_DENEME.md](docs/OLCUM_V02_YENIDEN_DENEME.md)). Rehber metinleri `safepatch/feedback.py` içindeki güvenilir statik metindir; model ya da depo içeriği oraya girmez.
 - V0.2'de FindSecBugs adaptörü eklenecek. Hafıza hiçbir tarayıcının kural kimliğine bağımlı olmamalı: eşleştirme CWE ailesi ve koddan çıkarılan yapısal imza ile yapılır (ROADMAP.md Hafta 4).

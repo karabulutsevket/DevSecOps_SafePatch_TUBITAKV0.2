@@ -58,13 +58,17 @@ def test_glob_segments():
     ("tests", {"behavior": {"selectors": ["$(id)"]}}), ("tests", {"behavior": {"selectors": ["a b"]}}),
     ("tests", {"behavior": {"selectors": ["demo.A"], "markers": ["lower case"]}}),
     ("java", "99"), ("id", "Has Space"), ("unknown_field", "x"), ("schema", "safepatch-project/2"),
+    ("tests", {"behavior": {"selectors": ["!!demo.A"]}}), ("tests", {"behavior": {"selectors": ["demo.!A"]}}),
+    ("scan", {"paths": ["src"], "known": [{"id": "V-1", "file": "../x.java", "cwe": "CWE-22", "source": "x"}]}),
+    ("scan", {"paths": ["src"], "known": [{"id": "V-1", "file": "A.java", "cwe": "22", "source": "x"}]}),
+    ("scan", {"paths": ["src"], "known": [{"id": "V-1", "file": "A.java", "cwe": "CWE-22", "source": "x", "line": 0}]}),
 ])
 def test_invalid_descriptors_are_rejected(descriptor, field, value):
     with pytest.raises(ValidationError):
         ProjectSpec.model_validate({**descriptor, field: value})
 
 
-@pytest.mark.parametrize("selector", ["demo.BehaviorTest", "org.x.*Test", "org.x.ParserTest#testXxe", "Test*"])
+@pytest.mark.parametrize("selector", ["demo.BehaviorTest", "org.x.*Test", "org.x.ParserTest#testXxe", "Test*", "!org.x.WitnessTest"])
 def test_valid_test_selectors(descriptor, selector):
     spec = ProjectSpec.model_validate({**descriptor, "tests": {"behavior": {"selectors": [selector]}}})
     assert spec.tests.security is None

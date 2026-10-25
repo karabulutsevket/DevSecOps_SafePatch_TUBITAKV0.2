@@ -46,6 +46,38 @@ def test_capability_and_suppression_rejected(source, patch_factory, capability):
         validate_patch(source, patch_factory(source[SOURCE] + capability + "\n"), allowed=ALLOWED)
 
 
+KEPT = "    // NOSONAR kept by the project\n"
+
+
+def project_file(source, tail=KEPT):
+    base = dict(source)
+    base[SOURCE] = source[SOURCE] + tail
+    return base
+
+
+def edit(base, content):
+    return Patch.model_validate({"edits": [{"path": SOURCE, "old_sha256": digest(base[SOURCE]), "content": content}], "rationale": "MOCK TEST ONLY"})
+
+
+def test_a_token_already_in_untouched_code_does_not_block_a_patch(source):
+    # Real project files carry such tokens (zt-zip's ZipUtil.java has three NOSONAR); a patch
+    # elsewhere in the file is judged on what it adds.
+    base = project_file(source)
+    assert validate_patch(base, edit(base, base[SOURCE].replace("// Case", "// changed Case")), allowed=ALLOWED)["changed_lines"] == 2
+
+
+@pytest.mark.parametrize("change", [
+    lambda text: text + "// NOSONAR again\n",                                  # added line
+    lambda text: text.replace(KEPT, "") + "// NOSONAR\n",                      # moved onto new code
+    lambda text: text.replace(KEPT, KEPT.replace("project", "project // NOSONAR")),
+    lambda text: text + ".exit(1); } }\n",                                     # completes "System" + ".exit" across lines
+])
+def test_a_patch_cannot_add_or_move_a_suppression(source, change):
+    base = project_file(source, KEPT + "class Y { void y() { System\n")
+    with pytest.raises(PolicyError, match="forbidden"):
+        validate_patch(base, edit(base, change(base[SOURCE])), allowed=ALLOWED)
+
+
 def test_symlink_escape(source, patch_factory, tmp_path, monkeypatch):
     from pathlib import Path
     original = Path.is_symlink
@@ -66,3 +98,10 @@ def test_model_response_cannot_add_deployment_command(patch_factory):
 def test_external_or_unsafe_endpoints_rejected(url):
     with pytest.raises(ValueError):
         local_url(url)
+
+
+def test_a_whole_real_project_file_fits_in_an_edit():
+    # zt-zip's ZipUtil.java is ~98 KB; the model's input stays capped in worker1.
+    Patch.model_validate({"edits": [{"path": SOURCE, "old_sha256": "0" * 64, "content": "x" * 200_000}], "rationale": "MOCK TEST ONLY"})
+    with pytest.raises(ValidationError):
+        Patch.model_validate({"edits": [{"path": SOURCE, "old_sha256": "0" * 64, "content": "x" * 1_000_001}], "rationale": "MOCK TEST ONLY"})

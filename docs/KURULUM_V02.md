@@ -15,7 +15,7 @@ Bu belgedeki adımlar 24–25 Ekim 2026'da bir geliştirici makinesinde çalış
 | Ollama | 0.34.0, yalnız `127.0.0.1` | Bulut özellikleri kapalı (`OLLAMA_NO_CLOUD=1`) |
 | Model | `qwen2.5-coder:7b-instruct-q4_K_M`, özet `dae161e2…f4364` | Özet kodda sabit; farklıysa iş durur |
 | GPU | NVIDIA RTX 4070 Laptop, 8 GB | Daha büyük model bu GPU'ya sığmaz |
-| Docker | 26.1.5, WSL Debian içinde (`docker.io` paketi) | Derleme sandbox'ı; imaj `maven:3.9.16-eclipse-temurin-17`, özetle sabit |
+| Docker | 26.1.5, WSL Debian içinde (`docker.io` paketi) | Derleme sandbox'ı; imajlar `maven:3.9.16-eclipse-temurin-17` ve `-8`, özetle sabit |
 
 ## 2. İlk kurulum
 
@@ -108,8 +108,8 @@ $env:MAVEN_CACHE = '<maven önbelleği>'
 ```
 
 Betik şunları yapar:
-1. Sabit imajı yoksa indirir (yaklaşık 233 MB).
-2. Çevrimdışı Maven önbelleğini WSL diskine kopyalar. `/mnt/c` üzerinden derleme yaklaşık 8 kat yavaştır.
+1. Sabit imajları yoksa indirir: JDK 17 (yaklaşık 233 MB) ve eski projeler için JDK 8 (yaklaşık 150 MB, sıkıştırılmış).
+2. Çevrimdışı Maven önbelleğini WSL diskine kopyalar. `/mnt/c` üzerinden derleme yaklaşık 8 kat yavaştır. Kopya mevcut içeriğe eklenir; değerlendirme vakaları için önceden indirilen bağımlılıklar silinmez.
 3. Bir kapsayıcıda ağın kapalı, önbellek ile kök dosya sisteminin salt okunur ve yalnız çalışma klasörünün yazılabilir olduğunu sınar. Biri tutmazsa durur.
 
 Sonra servisleri sandbox'la başlatın:
@@ -123,6 +123,7 @@ $env:SANDBOX_MAVEN_CACHE = '/home/<wsl-kullanıcısı>/.safepatch/m2'   # betiğ
 **Kapsayıcının kısıtları:**
 - ağ yok (`--network none`);
 - salt okunur kök dosya sistemi, `/tmp` geçici bellekte;
+- test JVM'inin geçici klasörü ayrı (`/jvmtmp`); `/tmp` gibi geçici bellekte ve orada program çalıştırılamaz (`noexec`). Ayrı olmasının nedeni: `/tmp`'yi hedefleyen bir dizin aşma testi, açma klasörü `/tmp`'nin kendisiyken düzeltmeyi ayırt edemez (VUL4J-79);
 - tüm Linux yetkileri düşürülmüş, ayrıcalık yükseltme kapalı;
 - root olmayan kullanıcı (`1000:1000`);
 - 2 GB bellek, 2 işlemci, en çok 1024 süreç.
@@ -131,9 +132,35 @@ $env:SANDBOX_MAVEN_CACHE = '/home/<wsl-kullanıcısı>/.safepatch/m2'   # betiğ
 - Maven önbelleği salt okunur bağlanır; yazmalar kapsayıcının geçici belleğine gider (`maven.repo.local.tail`).
 - Süre aşılırsa kapsayıcı öldürülür.
 - Sonar taraması Sonar sunucusuna ağ gerektirdiği için sandbox'ta reddedilir.
-- Ayarlar: `SANDBOX_MEMORY`, `SANDBOX_CPUS`, `SANDBOX_USER`, `SANDBOX_IMAGE`, `WSL_DISTRO`.
+- İmajı proje tanımındaki `java` sürümü seçer (`17` ya da `8`); tanımlı imajı olmayan bir sürüm reddedilir.
+- Ayarlar: `SANDBOX_MEMORY`, `SANDBOX_CPUS`, `SANDBOX_USER`, `SANDBOX_IMAGE` (JDK 17), `SANDBOX_IMAGE_<sürüm>`, `WSL_DISTRO`.
 
 Sandbox testleri: `./scripts/run-tests.ps1 -Sandbox` (`SANDBOX_MAVEN_CACHE` ayarlıyken). Bilgisayar yeniden başladıktan sonra Docker servisini yeniden başlatın. Docker çalışmıyorsa iş `verification_infrastructure` ile durur.
+
+### Değerlendirme vakası: VUL4J-79 (L3, Hafta 5)
+
+Yalnız değerlendirme içindir; ürüne, `samples/`'a ve Git'e girmez. Her şey `.runtime/l3` altına yazılır. Bir kez hazırlık (internet; zt-zip kaynağı yaklaşık 2,5 MB, Maven bağımlılıkları yaklaşık 28 MB):
+
+```powershell
+.venv/Scripts/python.exe scripts/prepare_vul4j.py --prefetch
+```
+
+Betik şunları yapar:
+1. zt-zip deposunu klonlar.
+2. Açık sürüm ile düzeltmedeki saldırı testinden tek bir commit türetir (özeti betikte sabit).
+3. Proje tanımını yazar.
+4. Bağımlılıkları ağı açık, öteki kısıtları aynı bir kapsayıcıda indirir. Bu sırada zt-zip testi çalışmaz; Surefire'ın JUnit 4 sağlayıcısı kendi küçük deneme projemizle çözülür.
+
+Doğrulama (açık sürümün başlangıç taraması ve upstream insan düzeltmesi):
+
+```powershell
+$env:PROJECTS_DIR = '.runtime/l3/projects'; $env:SAFEPATCH_PROFILE = 'evaluation'
+$env:RUNNER_SANDBOX = 'docker'; $env:SANDBOX_MAVEN_CACHE = '/home/<wsl-kullanıcısı>/.safepatch/m2'
+$env:EVIDENCE_DIR = 'evidence/v02-vul4j'
+.venv/Scripts/python.exe scripts/vul4j_check.py
+```
+
+Bulgular tarayıcıdan değil, vakanın cevap anahtarından gelir ("bilinen bulgu" kipi, `scanner: known`). Bu kip yalnız `SAFEPATCH_PROFILE=lab` ya da `evaluation` iken açılır; ürün profilinde runner reddeder. Sonuç ve sınırlar: [OLCUM_VUL4J.md](OLCUM_VUL4J.md).
 
 Durdurma:
 

@@ -18,7 +18,8 @@ PROTECTED = ("pom.xml", "**/pom.xml", "*.gradle", "**/*.gradle", "*.gradle.kts",
              "gradlew*", "mvnw*", ".mvn/**", "src/test/**", "**/src/test/**", ".github/**",
              ".gitlab-ci.yml", "Jenkinsfile", ".git/**", ".semgrep*", "**/.semgrep*", "sonar-project.properties")
 # A safe subset of Maven -Dtest syntax: Class, pkg.Class, pkg.*Test, pkg.Class#method.
-SELECTOR = re.compile(r"^[A-Za-z_*][A-Za-z0-9_.*$]*(#[A-Za-z_*][A-Za-z0-9_*]*)?$")
+# A leading "!" excludes (Surefire syntax): e.g. a behavior suite of every test but the witness.
+SELECTOR = re.compile(r"^!?[A-Za-z_*][A-Za-z0-9_.*$]*(#[A-Za-z_*][A-Za-z0-9_*]*)?$")
 MARKER = re.compile(r"^[A-Z][A-Z0-9_]{2,63}$")
 PHASES = {"validate", "compile", "test-compile", "package", "verify"}
 PROPERTY = re.compile(r"^-D([A-Za-z0-9_.-]+)(=[A-Za-z0-9_.,-]*)?$")
@@ -110,8 +111,27 @@ class Suites(Strict):
     security: SuiteSelection | None = None   # no witness: never "ready for review"; needs_human / security_witness_missing (decision 3, 25 Oct 2026)
 
 
+class KnownFinding(Strict):
+    """A finding from an evaluation case's answer key (e.g. a Vul4J vulnerability location)."""
+    id: str = Field(pattern=r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$")
+    file: str = Field(max_length=300)
+    line: int | None = Field(default=None, ge=1)
+    cwe: str = Field(pattern=r"^CWE-[0-9]{1,5}$")
+    source: str = Field(max_length=200)
+
+    @field_validator("file")
+    @classmethod
+    def file_path(cls, value):
+        if not safe_path(value):
+            raise ValueError("unsafe known-finding path")
+        return value
+
+
 class Scan(Strict):
     paths: list[str] = Field(min_length=1, max_length=20)
+    # Known-finding mode (roadmap week 6, used early for the first Vul4J case): only in the lab
+    # and evaluation profiles; the security witness decides, a rescan proves nothing here.
+    known: list[KnownFinding] = Field(default_factory=list, max_length=20)
 
     @field_validator("paths")
     @classmethod
