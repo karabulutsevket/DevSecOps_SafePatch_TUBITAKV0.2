@@ -147,7 +147,7 @@ Vul4J her vaka için zafiyeti gösteren testleri listeler; bu bilginin şemaya n
 | — | Korunan dosyaların değişmediği `git status` ile denetlenir (bütün dosyaları belleğe almadan) |
 | — | Güvenlik tanığı olmayan projede aday asla kabul edilmez; iş `security_witness_missing` ile insana gider (karar 3) |
 
-Kalan envanter maddeleri: 14 (genel sistem talimatı, Hafta 4), 15 (staging yalnız sentetik demoda). 11 Hafta 4'te yapıldı (Bölüm 8). 12 ve 10 Hafta 4'te yapıldı: hafıza ve rehber CWE ailesine bağlandı ([HAFIZA_UYGUNLUK.md](HAFIZA_UYGUNLUK.md)); 10'un kalan parçası olan Sonar ön denetimi yalnız sentetik vakalarda laboratuvar etiketini kullanıyor.
+Kalan envanter maddesi: 15 (staging yalnız sentetik demoda). 11 Hafta 4'te yapıldı (Bölüm 8). 14 Hafta 4'te yapıldı: sistem talimatı genelleştirildi, sentetik vakalarda sonuç değişmedi ([OLCUM_GENEL_TALIMAT.md](OLCUM_GENEL_TALIMAT.md)). 12 ve 10 Hafta 4'te yapıldı: hafıza ve rehber CWE ailesine bağlandı ([HAFIZA_UYGUNLUK.md](HAFIZA_UYGUNLUK.md)); 10'un kalan parçası olan Sonar ön denetimi yalnız sentetik vakalarda laboratuvar etiketini kullanıyor.
 
 **Doğrulama:** 194 birim testi; gerçek Maven/JUnit ile 10 entegrasyon testi (9 sentetik vaka: başlangıçta zafiyet, referans düzeltme kabul, işlevi bozan yama ret, test dosyasına dokunan yama çalıştırılmadan ret; 1 staging/geri alma). Gerçek projeye benzeyen geçici bir depoyla (birden çok paket, ikili dosya, commit geçmişi) okuma, klon, aday commit ve izin testleri.
 

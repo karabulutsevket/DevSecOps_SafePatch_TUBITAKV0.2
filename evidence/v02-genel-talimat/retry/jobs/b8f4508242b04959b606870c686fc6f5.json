@@ -1,0 +1,566 @@
+{
+  "id": "b8f4508242b04959b606870c686fc6f5",
+  "case_id": "command-02",
+  "base_commit": "4c59567758299163ad25aa6ca259edd07e5b12f5",
+  "project": "owned-java-demo",
+  "policy_version": "java-synthetic-v1",
+  "scanner": "semgrep",
+  "mode": "real-local-model",
+  "evaluation": true,
+  "status": "needs_human",
+  "owner": "EXPERIMENT-NOT-A-HUMAN",
+  "started_at": 1792933735.5103247,
+  "deadline": 1792934935.5103247,
+  "max_attempts": 3,
+  "attempt_count": 3,
+  "attempts": [
+    {
+      "number": 1,
+      "proposal": {
+        "mode": "real-local-model",
+        "patch": {
+          "edits": [
+            {
+              "path": "src/main/java/demo/DemoService.java",
+              "old_sha256": "fe5a91a4824f08bfc5c4ad638ff1fcb3da2b15b6ea471afe556518555888ef45",
+              "content": "package demo;\n\nimport java.nio.file.*;\nimport java.nio.charset.StandardCharsets;\nimport java.util.concurrent.TimeUnit;\n\n// Case invocation-02.\n// Deliberately vulnerable synthetic subprocess; no network or real targets.\npublic class DemoService {\n    public String lookup(String input) throws Exception {\n        boolean windows = System.getProperty(\"os.name\").toLowerCase().contains(\"win\");\n        String java = Path.of(System.getProperty(\"java.home\"), \"bin\", windows ? \"java.exe\" : \"java\").toString();\n        String flag = windows ? \"/c\" : \"-c\";\n        String invocation = \"echo echo:\" + input;\n        ProcessBuilder child = new ProcessBuilder(java, flag, invocation).redirectErrorStream(true).start();\n        if (!child.waitFor(5, TimeUnit.SECONDS)) { child.destroyForcibly(); throw new IllegalStateException(\"child timeout\"); }\n        if (child.exitValue() != 0) throw new IllegalStateException(\"child failed\");\n        return new String(child.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();\n    }\n}\n"
+            }
+          ],
+          "rationale": "The original code was attempting to execute a shell command using `ProcessBuilder`, which is a security risk due to the potential for command injection. The fix replaces the shell with the `java` executable and passes the command as arguments, which avoids the need for a shell and mitigates the risk of injection."
+        },
+        "model": {
+          "runtime": "ollama",
+          "runtime_version": "0.34.0",
+          "model": "qwen2.5-coder:7b-instruct-q4_K_M",
+          "model_digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+          "quantization": "Q4_K_M",
+          "license_sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e"
+        },
+        "metrics": {
+          "duration_seconds": 8.579,
+          "prompt_tokens_measured": 963,
+          "output_tokens_measured": 412,
+          "context_chars": 2840,
+          "prompt_sha256": "b2ff37ce41f33e601dd22e71c27c3e1a63d5e6588d5ccc161c605f3268264d23",
+          "system_prompt_sha256": "6fe64e5797891110272eecb58dfdbdc47f4607429da159ca798d2d07597f39dd",
+          "seed": 43,
+          "temperature": 0.0,
+          "dropped_optional_context": [],
+          "note_tag": null,
+          "num_ctx": 8192,
+          "num_predict": 2048
+        }
+      },
+      "retry": {
+        "strategy": "guided+context",
+        "temperature": 0.0,
+        "guidance_level": null,
+        "context_paths": [
+          "src/main/java/demo/Application.java",
+          "src/main/java/demo/EchoMain.java"
+        ]
+      },
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -10,10 +10,9 @@\n     public String lookup(String input) throws Exception {\n         boolean windows = System.getProperty(\"os.name\").toLowerCase().contains(\"win\");\n         String java = Path.of(System.getProperty(\"java.home\"), \"bin\", windows ? \"java.exe\" : \"java\").toString();\n-        String shell = windows ? \"cmd.exe\" : \"/bin/sh\";\n         String flag = windows ? \"/c\" : \"-c\";\n         String invocation = \"echo echo:\" + input;\n-        Process child = new ProcessBuilder(shell, flag, invocation).redirectErrorStream(true).start();\n+        ProcessBuilder child = new ProcessBuilder(java, flag, invocation).redirectErrorStream(true).start();\n         if (!child.waitFor(5, TimeUnit.SECONDS)) { child.destroyForcibly(); throw new IllegalStateException(\"child timeout\"); }\n         if (child.exitValue() != 0) throw new IllegalStateException(\"child failed\");\n         return new String(child.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();\n",
+      "patch_sha256": "2f5892180ec755e3404a6eef3ecd12ed90b8a1d5755fc178bf6e50db1146c1a9",
+      "changed_lines": 3,
+      "verification": {
+        "passed": false,
+        "feedback": {
+          "code": "compilation_failed",
+          "diagnostics": [
+            "[ERROR] /C:/TUBITAKClaude/SafePatch_V0.2/.runtime/runner-work/b8f4508242b04959b606870c686fc6f5-1-d6aadb47/src/main/java/demo/DemoService.java:[15,106] incompatible types: java.lang.Process cannot be converted to java.lang.ProcessBuilder\r",
+            "[ERROR] /C:/TUBITAKClaude/SafePatch_V0.2/.runtime/runner-work/b8f4508242b04959b606870c686fc6f5-1-d6aadb47/src/main/java/demo/DemoService.java:[16,19] cannot find symbol",
+            "[ERROR] /C:/TUBITAKClaude/SafePatch_V0.2/.runtime/runner-work/b8f4508242b04959b606870c686fc6f5-1-d6aadb47/src/main/java/demo/DemoService.java:[16,57] cannot find symbol",
+            "[ERROR] /C:/TUBITAKClaude/SafePatch_V0.2/.runtime/runner-work/b8f4508242b04959b606870c686fc6f5-1-d6aadb47/src/main/java/demo/DemoService.java:[17,18] cannot find symbol"
+          ]
+        },
+        "patch": {
+          "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -10,10 +10,9 @@\n     public String lookup(String input) throws Exception {\n         boolean windows = System.getProperty(\"os.name\").toLowerCase().contains(\"win\");\n         String java = Path.of(System.getProperty(\"java.home\"), \"bin\", windows ? \"java.exe\" : \"java\").toString();\n-        String shell = windows ? \"cmd.exe\" : \"/bin/sh\";\n         String flag = windows ? \"/c\" : \"-c\";\n         String invocation = \"echo echo:\" + input;\n-        Process child = new ProcessBuilder(shell, flag, invocation).redirectErrorStream(true).start();\n+        ProcessBuilder child = new ProcessBuilder(java, flag, invocation).redirectErrorStream(true).start();\n         if (!child.waitFor(5, TimeUnit.SECONDS)) { child.destroyForcibly(); throw new IllegalStateException(\"child timeout\"); }\n         if (child.exitValue() != 0) throw new IllegalStateException(\"child failed\");\n         return new String(child.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();\n",
+          "patch_sha256": "2f5892180ec755e3404a6eef3ecd12ed90b8a1d5755fc178bf6e50db1146c1a9",
+          "changed_lines": 3
+        },
+        "build": {
+          "passed": false,
+          "duration_seconds": 2.703
+        }
+      },
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] /C:/TUBITAKClaude/SafePatch_V0.2/.runtime/runner-work/b8f4508242b04959b606870c686fc6f5-1-d6aadb47/src/main/java/demo/DemoService.java:[15,106] incompatible types: java.lang.Process cannot be converted to java.lang.ProcessBuilder\r",
+          "[ERROR] /C:/TUBITAKClaude/SafePatch_V0.2/.runtime/runner-work/b8f4508242b04959b606870c686fc6f5-1-d6aadb47/src/main/java/demo/DemoService.java:[16,19] cannot find symbol",
+          "[ERROR] /C:/TUBITAKClaude/SafePatch_V0.2/.runtime/runner-work/b8f4508242b04959b606870c686fc6f5-1-d6aadb47/src/main/java/demo/DemoService.java:[16,57] cannot find symbol",
+          "[ERROR] /C:/TUBITAKClaude/SafePatch_V0.2/.runtime/runner-work/b8f4508242b04959b606870c686fc6f5-1-d6aadb47/src/main/java/demo/DemoService.java:[17,18] cannot find symbol"
+        ]
+      }
+    },
+    {
+      "number": 2,
+      "proposal": {
+        "mode": "real-local-model",
+        "patch": {
+          "edits": [
+            {
+              "path": "src/main/java/demo/DemoService.java",
+              "old_sha256": "fe5a91a4824f08bfc5c4ad638ff1fcb3da2b15b6ea471afe556518555888ef45",
+              "content": "package demo;\n\nimport java.nio.file.*;\nimport java.nio.charset.StandardCharsets;\nimport java.util.concurrent.TimeUnit;\nimport java.io.IOException;\n\n// Case invocation-02.\n// Deliberately vulnerable synthetic subprocess; no network or real targets.\npublic class DemoService {\n    public String lookup(String input) throws Exception {\n        boolean windows = System.getProperty(\"os.name\").toLowerCase().contains(\"win\");\n        String java = Path.of(System.getProperty(\"java.home\"), \"bin\", windows ? \"java.exe\" : \"java\").toString();\n        String flag = windows ? \"/c\" : \"-c\";\n        String invocation = \"echo echo:\" + input;\n        ProcessBuilder child = new ProcessBuilder(java, flag, invocation).redirectErrorStream(true);\n        try {\n            child.start();\n            if (!child.waitFor(5, TimeUnit.SECONDS)) { child.destroyForcibly(); throw new IllegalStateException(\"child timeout\"); }\n            if (child.exitValue() != 0) throw new IllegalStateException(\"child failed\");\n            return new String(child.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();\n        } catch (IOException | InterruptedException e) {\n            throw new Exception(e);\n        }\n    }\n}\n"
+            }
+          ],
+          "rationale": "The previous patch was incorrect as it did not compile. The new patch uses a `ProcessBuilder` correctly and handles exceptions properly."
+        },
+        "model": {
+          "runtime": "ollama",
+          "runtime_version": "0.34.0",
+          "model": "qwen2.5-coder:7b-instruct-q4_K_M",
+          "model_digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+          "quantization": "Q4_K_M",
+          "license_sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e"
+        },
+        "metrics": {
+          "duration_seconds": 8.859,
+          "prompt_tokens_measured": 1354,
+          "output_tokens_measured": 411,
+          "context_chars": 3480,
+          "prompt_sha256": "ac7a020fe8bd7546c3f0a50a54948cae7d445553a5b60fbe11baf98ad78764ee",
+          "system_prompt_sha256": "2293e76331c2bae5b095a118c79cb557fad351bede7d3ecc08b8981ac8b9404a",
+          "seed": 44,
+          "temperature": 0.4,
+          "dropped_optional_context": [
+            "src/main/java/demo/Application.java"
+          ],
+          "note_tag": "b5b5d293e8d2",
+          "num_ctx": 8192,
+          "num_predict": 2048
+        }
+      },
+      "retry": {
+        "strategy": "guided+context",
+        "temperature": 0.4,
+        "guidance_level": 0,
+        "context_paths": [
+          "src/main/java/demo/Application.java",
+          "src/main/java/demo/EchoMain.java"
+        ]
+      },
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -3,6 +3,7 @@\n import java.nio.file.*;\n import java.nio.charset.StandardCharsets;\n import java.util.concurrent.TimeUnit;\n+import java.io.IOException;\n \n // Case invocation-02.\n // Deliberately vulnerable synthetic subprocess; no network or real targets.\n@@ -10,12 +11,16 @@\n     public String lookup(String input) throws Exception {\n         boolean windows = System.getProperty(\"os.name\").toLowerCase().contains(\"win\");\n         String java = Path.of(System.getProperty(\"java.home\"), \"bin\", windows ? \"java.exe\" : \"java\").toString();\n-        String shell = windows ? \"cmd.exe\" : \"/bin/sh\";\n         String flag = windows ? \"/c\" : \"-c\";\n         String invocation = \"echo echo:\" + input;\n-        Process child = new ProcessBuilder(shell, flag, invocation).redirectErrorStream(true).start();\n-        if (!child.waitFor(5, TimeUnit.SECONDS)) { child.destroyForcibly(); throw new IllegalStateException(\"child timeout\"); }\n-        if (child.exitValue() != 0) throw new IllegalStateException(\"child failed\");\n-        return new String(child.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();\n+        ProcessBuilder child = new ProcessBuilder(java, flag, invocation).redirectErrorStream(true);\n+        try {\n+            child.start();\n+            if (!child.waitFor(5, TimeUnit.SECONDS)) { child.destroyForcibly(); throw new IllegalStateException(\"child timeout\"); }\n+            if (child.exitValue() != 0) throw new IllegalStateException(\"child failed\");\n+            return new String(child.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();\n+        } catch (IOException | InterruptedException e) {\n+            throw new Exception(e);\n+        }\n     }\n }\n",
+      "patch_sha256": "bcace0408c6cdb740dfbf25486cdd2407ab2baca60d8366cddd283d34b2eda02",
+      "changed_lines": 15,
+      "verification": {
+        "passed": false,
+        "feedback": {
+          "code": "compilation_failed",
+          "diagnostics": [
+            "[ERROR] /C:/TUBITAKClaude/SafePatch_V0.2/.runtime/runner-work/b8f4508242b04959b606870c686fc6f5-2-b23b6d01/src/main/java/demo/DemoService.java:[19,23] cannot find symbol",
+            "[ERROR] /C:/TUBITAKClaude/SafePatch_V0.2/.runtime/runner-work/b8f4508242b04959b606870c686fc6f5-2-b23b6d01/src/main/java/demo/DemoService.java:[19,61] cannot find symbol",
+            "[ERROR] /C:/TUBITAKClaude/SafePatch_V0.2/.runtime/runner-work/b8f4508242b04959b606870c686fc6f5-2-b23b6d01/src/main/java/demo/DemoService.java:[20,22] cannot find symbol",
+            "[ERROR] /C:/TUBITAKClaude/SafePatch_V0.2/.runtime/runner-work/b8f4508242b04959b606870c686fc6f5-2-b23b6d01/src/main/java/demo/DemoService.java:[21,36] cannot find symbol"
+          ]
+        },
+        "patch": {
+          "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -3,6 +3,7 @@\n import java.nio.file.*;\n import java.nio.charset.StandardCharsets;\n import java.util.concurrent.TimeUnit;\n+import java.io.IOException;\n \n // Case invocation-02.\n // Deliberately vulnerable synthetic subprocess; no network or real targets.\n@@ -10,12 +11,16 @@\n     public String lookup(String input) throws Exception {\n         boolean windows = System.getProperty(\"os.name\").toLowerCase().contains(\"win\");\n         String java = Path.of(System.getProperty(\"java.home\"), \"bin\", windows ? \"java.exe\" : \"java\").toString();\n-        String shell = windows ? \"cmd.exe\" : \"/bin/sh\";\n         String flag = windows ? \"/c\" : \"-c\";\n         String invocation = \"echo echo:\" + input;\n-        Process child = new ProcessBuilder(shell, flag, invocation).redirectErrorStream(true).start();\n-        if (!child.waitFor(5, TimeUnit.SECONDS)) { child.destroyForcibly(); throw new IllegalStateException(\"child timeout\"); }\n-        if (child.exitValue() != 0) throw new IllegalStateException(\"child failed\");\n-        return new String(child.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();\n+        ProcessBuilder child = new ProcessBuilder(java, flag, invocation).redirectErrorStream(true);\n+        try {\n+            child.start();\n+            if (!child.waitFor(5, TimeUnit.SECONDS)) { child.destroyForcibly(); throw new IllegalStateException(\"child timeout\"); }\n+            if (child.exitValue() != 0) throw new IllegalStateException(\"child failed\");\n+            return new String(child.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();\n+        } catch (IOException | InterruptedException e) {\n+            throw new Exception(e);\n+        }\n     }\n }\n",
+          "patch_sha256": "bcace0408c6cdb740dfbf25486cdd2407ab2baca60d8366cddd283d34b2eda02",
+          "changed_lines": 15
+        },
+        "build": {
+          "passed": false,
+          "duration_seconds": 2.657
+        }
+      },
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] /C:/TUBITAKClaude/SafePatch_V0.2/.runtime/runner-work/b8f4508242b04959b606870c686fc6f5-2-b23b6d01/src/main/java/demo/DemoService.java:[19,23] cannot find symbol",
+          "[ERROR] /C:/TUBITAKClaude/SafePatch_V0.2/.runtime/runner-work/b8f4508242b04959b606870c686fc6f5-2-b23b6d01/src/main/java/demo/DemoService.java:[19,61] cannot find symbol",
+          "[ERROR] /C:/TUBITAKClaude/SafePatch_V0.2/.runtime/runner-work/b8f4508242b04959b606870c686fc6f5-2-b23b6d01/src/main/java/demo/DemoService.java:[20,22] cannot find symbol",
+          "[ERROR] /C:/TUBITAKClaude/SafePatch_V0.2/.runtime/runner-work/b8f4508242b04959b606870c686fc6f5-2-b23b6d01/src/main/java/demo/DemoService.java:[21,36] cannot find symbol"
+        ]
+      }
+    },
+    {
+      "number": 3,
+      "proposal": {
+        "mode": "real-local-model",
+        "patch": {
+          "edits": [
+            {
+              "path": "src/main/java/demo/DemoService.java",
+              "old_sha256": "fe5a91a4824f08bfc5c4ad638ff1fcb3da2b15b6ea471afe556518555888ef45",
+              "content": "package demo;\n\nimport java.nio.file.*;\nimport java.nio.charset.StandardCharsets;\nimport java.util.concurrent.TimeUnit;\n\n// Case invocation-02.\n// Deliberately vulnerable synthetic subprocess; no network or real targets.\npublic class DemoService {\n    public String lookup(String input) throws Exception {\n        boolean windows = System.getProperty(\"os.name\").toLowerCase().contains(\"win\");\n        String java = Path.of(System.getProperty(\"java.home\"), \"bin\", windows ? \"java.exe\" : \"java\").toString();\n        Process child = new ProcessBuilder(java, input).redirectErrorStream(true).start();\n        if (!child.waitFor(5, TimeUnit.SECONDS)) { child.destroyForcibly(); throw new IllegalStateException(\"child timeout\"); }\n        if (child.exitValue() != 0) throw new IllegalStateException(\"child failed\");\n        return new String(child.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();\n    }\n}\n"
+            }
+          ],
+          "rationale": "The previous patch was not compileable. The new patch starts a fixed executable with the input as its own argv element, following the SafePatch verifier note."
+        },
+        "model": {
+          "runtime": "ollama",
+          "runtime_version": "0.34.0",
+          "model": "qwen2.5-coder:7b-instruct-q4_K_M",
+          "model_digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+          "quantization": "Q4_K_M",
+          "license_sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e"
+        },
+        "metrics": {
+          "duration_seconds": 7.672,
+          "prompt_tokens_measured": 1233,
+          "output_tokens_measured": 350,
+          "context_chars": 3200,
+          "prompt_sha256": "c2a935cfa2db0aa3e4ed28c91d87691d6f3d442f8f10cbc7d024e98383e39f82",
+          "system_prompt_sha256": "54ddbcf9ae190ae3a535cab31d0fde09fbe1e535c218219d3c82ae5e29241d6b",
+          "seed": 45,
+          "temperature": 0.4,
+          "dropped_optional_context": [
+            "src/main/java/demo/Application.java",
+            "src/main/java/demo/EchoMain.java",
+            "previous_patch_diff"
+          ],
+          "note_tag": "dfcf6acd619a",
+          "num_ctx": 8192,
+          "num_predict": 2048
+        }
+      },
+      "retry": {
+        "strategy": "guided+context",
+        "temperature": 0.4,
+        "guidance_level": 1,
+        "context_paths": [
+          "src/main/java/demo/Application.java",
+          "src/main/java/demo/EchoMain.java"
+        ]
+      },
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -10,10 +10,7 @@\n     public String lookup(String input) throws Exception {\n         boolean windows = System.getProperty(\"os.name\").toLowerCase().contains(\"win\");\n         String java = Path.of(System.getProperty(\"java.home\"), \"bin\", windows ? \"java.exe\" : \"java\").toString();\n-        String shell = windows ? \"cmd.exe\" : \"/bin/sh\";\n-        String flag = windows ? \"/c\" : \"-c\";\n-        String invocation = \"echo echo:\" + input;\n-        Process child = new ProcessBuilder(shell, flag, invocation).redirectErrorStream(true).start();\n+        Process child = new ProcessBuilder(java, input).redirectErrorStream(true).start();\n         if (!child.waitFor(5, TimeUnit.SECONDS)) { child.destroyForcibly(); throw new IllegalStateException(\"child timeout\"); }\n         if (child.exitValue() != 0) throw new IllegalStateException(\"child failed\");\n         return new String(child.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();\n",
+      "patch_sha256": "ad83d22bbd86f69b736ce3142f3e450d412433c0ef6a689cee21202cba19dfdb",
+      "changed_lines": 5,
+      "verification": {
+        "passed": false,
+        "baseline_valid": false,
+        "base_commit": "4c59567758299163ad25aa6ca259edd07e5b12f5",
+        "source_revision": "8eb1a4eb14494ede41f1c485311cb40aba1b3a13",
+        "build": {
+          "passed": true,
+          "duration_seconds": 3.891
+        },
+        "behavior": {
+          "passed": false,
+          "tests": 2,
+          "failures": 0,
+          "errors": 2,
+          "skipped": 0,
+          "details": [
+            {
+              "name": "echoesHello",
+              "type": "error",
+              "assertion": "BEHAVIOR_REGRESSION"
+            },
+            {
+              "name": "echoesWorld",
+              "type": "error",
+              "assertion": "BEHAVIOR_REGRESSION"
+            }
+          ],
+          "exit_code": 1,
+          "duration_seconds": 3.234,
+          "junit_sha256": "e7d8c91df7f7846a2744d18151ca4a987cd99175ee44089c02f29c6229bd1f1d"
+        },
+        "security": {
+          "passed": false,
+          "tests": 1,
+          "failures": 0,
+          "errors": 1,
+          "skipped": 0,
+          "details": [
+            {
+              "name": "shellMetacharactersAreLiteral",
+              "type": "error",
+              "assertion": "BEHAVIOR_REGRESSION"
+            }
+          ],
+          "exit_code": 1,
+          "duration_seconds": 2.891,
+          "junit_sha256": "993e8b4de45e161807b649e1a398cf343b1f43b7b45b8d7cd495b00cc7014f2c"
+        },
+        "scans": [
+          {
+            "tool": "semgrep",
+            "version": "1.136.0",
+            "status": "ok",
+            "analysis_id": "d6ba949de0ca45929a10314d7fc8aa07",
+            "commit": "8eb1a4eb14494ede41f1c485311cb40aba1b3a13",
+            "findings": []
+          }
+        ],
+        "tolerated": [],
+        "patch": {
+          "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -10,10 +10,7 @@\n     public String lookup(String input) throws Exception {\n         boolean windows = System.getProperty(\"os.name\").toLowerCase().contains(\"win\");\n         String java = Path.of(System.getProperty(\"java.home\"), \"bin\", windows ? \"java.exe\" : \"java\").toString();\n-        String shell = windows ? \"cmd.exe\" : \"/bin/sh\";\n-        String flag = windows ? \"/c\" : \"-c\";\n-        String invocation = \"echo echo:\" + input;\n-        Process child = new ProcessBuilder(shell, flag, invocation).redirectErrorStream(true).start();\n+        Process child = new ProcessBuilder(java, input).redirectErrorStream(true).start();\n         if (!child.waitFor(5, TimeUnit.SECONDS)) { child.destroyForcibly(); throw new IllegalStateException(\"child timeout\"); }\n         if (child.exitValue() != 0) throw new IllegalStateException(\"child failed\");\n         return new String(child.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();\n",
+          "patch_sha256": "ad83d22bbd86f69b736ce3142f3e450d412433c0ef6a689cee21202cba19dfdb",
+          "changed_lines": 5
+        },
+        "feedback": {
+          "code": "validation_failed",
+          "behavior": {
+            "passed": false,
+            "tests": 2,
+            "failures": 0,
+            "errors": 2,
+            "skipped": 0,
+            "details": [
+              {
+                "name": "echoesHello",
+                "type": "error",
+                "assertion": "BEHAVIOR_REGRESSION"
+              },
+              {
+                "name": "echoesWorld",
+                "type": "error",
+                "assertion": "BEHAVIOR_REGRESSION"
+              }
+            ],
+            "exit_code": 1,
+            "duration_seconds": 3.234,
+            "junit_sha256": "e7d8c91df7f7846a2744d18151ca4a987cd99175ee44089c02f29c6229bd1f1d"
+          },
+          "security": {
+            "passed": false,
+            "tests": 1,
+            "failures": 0,
+            "errors": 1,
+            "skipped": 0,
+            "details": [
+              {
+                "name": "shellMetacharactersAreLiteral",
+                "type": "error",
+                "assertion": "BEHAVIOR_REGRESSION"
+              }
+            ],
+            "exit_code": 1,
+            "duration_seconds": 2.891,
+            "junit_sha256": "993e8b4de45e161807b649e1a398cf343b1f43b7b45b8d7cd495b00cc7014f2c"
+          },
+          "remaining_rules": []
+        },
+        "duration_seconds": 20.766,
+        "runner_profile": "native-same-user",
+        "versions": {
+          "java": "17; inspect preparation evidence",
+          "maven": "3.9.16"
+        }
+      },
+      "failure": {
+        "category": "behavior_regression",
+        "failed_tests": [
+          {
+            "suite": "behavior",
+            "test": "echoesHello",
+            "marker": "BEHAVIOR_REGRESSION"
+          },
+          {
+            "suite": "behavior",
+            "test": "echoesWorld",
+            "marker": "BEHAVIOR_REGRESSION"
+          },
+          {
+            "suite": "security",
+            "test": "shellMetacharactersAreLiteral",
+            "marker": "BEHAVIOR_REGRESSION"
+          }
+        ],
+        "remaining_rules": []
+      }
+    }
+  ],
+  "events": [
+    {
+      "time": 1792933735.5852354,
+      "status": "scanning"
+    },
+    {
+      "time": 1792933756.060705,
+      "status": "scanning"
+    },
+    {
+      "time": 1792933756.070514,
+      "status": "scanning"
+    },
+    {
+      "time": 1792933756.2076046,
+      "status": "scanning"
+    },
+    {
+      "time": 1792933756.220156,
+      "status": "patching"
+    },
+    {
+      "time": 1792933764.91889,
+      "status": "verifying"
+    },
+    {
+      "time": 1792933768.33104,
+      "status": "patching"
+    },
+    {
+      "time": 1792933777.3338816,
+      "status": "verifying"
+    },
+    {
+      "time": 1792933780.675286,
+      "status": "patching"
+    },
+    {
+      "time": 1792933788.4975262,
+      "status": "verifying"
+    },
+    {
+      "time": 1792933809.438143,
+      "status": "needs_human"
+    }
+  ],
+  "approval": null,
+  "memory_mode": "off",
+  "strategy": "guided+context",
+  "seed": 42,
+  "baseline": {
+    "passed": false,
+    "baseline_valid": true,
+    "base_commit": "4c59567758299163ad25aa6ca259edd07e5b12f5",
+    "source_revision": "4c59567758299163ad25aa6ca259edd07e5b12f5",
+    "build": {
+      "passed": true,
+      "duration_seconds": 3.843
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "exit_code": 0,
+      "duration_seconds": 2.891,
+      "junit_sha256": "73214ed642fe98dbf69587652986cffb1fab04d9f97b593848454bda4128462c"
+    },
+    "security": {
+      "passed": false,
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "shellMetacharactersAreLiteral",
+          "type": "failure",
+          "assertion": "COMMAND_INJECTION_REGRESSION"
+        }
+      ],
+      "exit_code": 1,
+      "duration_seconds": 2.875,
+      "junit_sha256": "adc47b0114bc9f23259570afd6dbb2fb582bcbb39f1c1425817aa8a1eb95586f"
+    },
+    "scans": [
+      {
+        "tool": "semgrep",
+        "version": "1.136.0",
+        "status": "ok",
+        "analysis_id": "cc8da1b08ca54fc3b5a7f14d6459960f",
+        "commit": "4c59567758299163ad25aa6ca259edd07e5b12f5",
+        "findings": [
+          {
+            "tool": "semgrep",
+            "rule_id": "bigg.java.shell-command",
+            "raw_rule_id": "mnt.c.TUBITAKClaude.SafePatch_V0.2.rules.bigg.java.shell-command",
+            "type": "VULNERABILITY",
+            "file": "src/main/java/demo/DemoService.java",
+            "line": 16,
+            "severity": "ERROR",
+            "message": "Pass fixed executable and separate literal argv; do not call a shell.",
+            "cwe": "CWE-78",
+            "fingerprint": "28cc46870e034154cc56af172a3d989a42cf40422479caa1e50a030df4152135"
+          }
+        ]
+      }
+    ],
+    "tolerated": [],
+    "patch": null,
+    "feedback": {
+      "code": "validation_failed",
+      "behavior": {
+        "passed": true,
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 2.891,
+        "junit_sha256": "73214ed642fe98dbf69587652986cffb1fab04d9f97b593848454bda4128462c"
+      },
+      "security": {
+        "passed": false,
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "details": [
+          {
+            "name": "shellMetacharactersAreLiteral",
+            "type": "failure",
+            "assertion": "COMMAND_INJECTION_REGRESSION"
+          }
+        ],
+        "exit_code": 1,
+        "duration_seconds": 2.875,
+        "junit_sha256": "adc47b0114bc9f23259570afd6dbb2fb582bcbb39f1c1425817aa8a1eb95586f"
+      },
+      "remaining_rules": [
+        "bigg.java.shell-command"
+      ]
+    },
+    "duration_seconds": 20.344,
+    "runner_profile": "native-same-user",
+    "versions": {
+      "java": "17; inspect preparation evidence",
+      "maven": "3.9.16"
+    }
+  },
+  "target_file": "src/main/java/demo/DemoService.java",
+  "findings": [
+    {
+      "tool": "semgrep",
+      "rule_id": "bigg.java.shell-command",
+      "raw_rule_id": "mnt.c.TUBITAKClaude.SafePatch_V0.2.rules.bigg.java.shell-command",
+      "type": "VULNERABILITY",
+      "file": "src/main/java/demo/DemoService.java",
+      "line": 16,
+      "severity": "ERROR",
+      "message": "Pass fixed executable and separate literal argv; do not call a shell.",
+      "cwe": "CWE-78",
+      "fingerprint": "28cc46870e034154cc56af172a3d989a42cf40422479caa1e50a030df4152135"
+    }
+  ],
+  "children": [],
+  "memory_lookup": {
+    "decision": "disabled",
+    "duration_seconds": 0,
+    "rejected": [],
+    "selected_id": null
+  },
+  "memory_context": {
+    "project": "owned-java-demo",
+    "cwe_family": "CWE-78",
+    "rule_id": "bigg.java.shell-command",
+    "jdk": "17",
+    "source_path": "src/main/java/demo/DemoService.java",
+    "build_sha256": "26e043fae58e551912409518b9d20e281bf34a51d8980781ee6c3c299fec6819",
+    "contract_sha256": "8723ecf146850955660c4ae45afba8df8399503349d0891add653c515f2011d1",
+    "source_sha256": "fe5a91a4824f08bfc5c4ad638ff1fcb3da2b15b6ea471afe556518555888ef45",
+    "signature": {
+      "schema": "safepatch-signature/1",
+      "sink": "java.lang.ProcessBuilder.<init>",
+      "construction": "concatenation",
+      "source": "method_parameter",
+      "library": "java-process",
+      "library_version": null
+    }
+  },
+  "memory_ids": [],
+  "tokens_reserved": 24576,
+  "reason": "attempt_budget_exhausted",
+  "wall_seconds": 73.914
+}
