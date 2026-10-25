@@ -119,10 +119,12 @@ def evidence_vector(job, attempt):
     suite = lambda result: {"passed": result.get("passed"), "tests": result.get("tests")} if result else None
     findings = [f for scan in verified.get("scans", []) for f in scan.get("findings", [])]
     approval = job.get("approval") or {}
+    tools = sorted({s.get("tool") for s in verified.get("scans", []) if s.get("tool")})
+    # Answer-key findings are not rescanned after a patch (the witness decides): no rescan result.
+    rescanned = any(tool != "known-finding" for tool in tools)
     return {"build": (verified.get("build") or {}).get("passed"),
             "behavior": suite(verified.get("behavior")), "security": suite(verified.get("security")),
-            "rescan": {"tools": sorted({s.get("tool") for s in verified.get("scans", []) if s.get("tool")}),
-                       "remaining": len(untolerated(findings, verified.get("tolerated", []))),
+            "rescan": {"tools": tools, "remaining": len(untolerated(findings, verified.get("tolerated", []))) if rescanned else None,
                        "tolerated": len(verified.get("tolerated", []))} if "scans" in verified else None,
             "approval": {"reviewer": approval.get("reviewer"), "at": approval.get("approved_at")},
             "reuse": {"verified": 0, "failed": 0, "inconclusive": 0, "approved_by_reviewer": 0, "rejected_by_reviewer": 0}}

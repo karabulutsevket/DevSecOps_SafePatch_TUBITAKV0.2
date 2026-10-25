@@ -2,7 +2,7 @@ import difflib
 import time
 import uuid
 
-from safepatch.common import POLICY, Patch, canonical, digest, remaining, request, secret, setting
+from safepatch.common import MODEL_SOURCE_CHARS, POLICY, Patch, canonical, digest, remaining, request, secret, setting
 from safepatch.memory import Memory, context_for, reuse_result
 from safepatch.acceptance import manifest
 from safepatch.feedback import GUIDANCE_KEY, classify, guidance_for, imitates_note
@@ -278,6 +278,11 @@ class Engine:
             if replay and attempt == 1:
                 proposal = replay
             else:
+                if len(source) > MODEL_SOURCE_CHARS:
+                    # The model can neither read nor return this file whole (VUL4J-79's ZipUtil.java
+                    # is ~98 KB): the job goes to the expert without a model attempt.
+                    self.set(job_id, "needs_human", reason="source_exceeds_model_context", attempt_count=attempt - 1)
+                    return
                 self.store.mutate(job_id, lambda j: j.update(tokens_reserved=used + reservation))
                 options = retry_options(strategy, GUIDANCE_KEY.get(family(finding)), attempt, failure, context_files)
                 proposal = self.worker("worker1", "/propose", {"job_id": job_id, "attempt": attempt, "deadline": job["deadline"], "source": {target: source}, "finding": finding, "feedback": feedback, "memory_data": memory_data, "seed": job.get("seed", 42) + attempt, **({"failure_data": failure_data} if failure_data else {}), **options}, job["deadline"])

@@ -22,6 +22,12 @@ def test_vector_states_what_the_acceptance_proved():
                       "reuse": {"verified": 0, "failed": 0, "inconclusive": 0, "approved_by_reviewer": 0, "rejected_by_reviewer": 0}}
 
 
+def test_answer_key_findings_are_not_reported_as_a_clean_rescan():
+    # Known-finding mode (VUL4J-79): after a patch nothing is rescanned, the witness decides.
+    known = {**VERIFIED, "scans": [{"tool": "known-finding", "status": "ok", "findings": []}], "tolerated": []}
+    assert evidence_vector({}, {"verification": known})["rescan"] == {"tools": ["known-finding"], "remaining": None, "tolerated": 0}
+
+
 def test_missing_facts_are_unknown_never_failed():
     vector = evidence_vector({}, {"verification": {"passed": True}})
     assert (vector["build"], vector["behavior"], vector["security"], vector["rescan"]) == (None, None, None, None)

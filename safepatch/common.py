@@ -40,6 +40,15 @@ def setting(name, default=None):
     return os.environ.get(name, default)
 
 
+# The model rewrites the whole file, so the file must fit its 8K-token context (worker1).
+MODEL_SOURCE_CHARS = 24000
+
+
+def known_findings_enabled():
+    """Findings from an answer key are for the lab and evaluation profiles only (roadmap week 6)."""
+    return setting("SAFEPATCH_PROFILE", "product") in ("lab", "evaluation")
+
+
 def runtime(part=""):
     base = Path(setting("DATA_ROOT", str(ROOT / ".runtime")))
     path = base / part

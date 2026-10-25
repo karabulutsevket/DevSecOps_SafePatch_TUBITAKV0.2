@@ -14,7 +14,7 @@ import xml.etree.ElementTree as ET
 from fastapi import Depends, FastAPI, HTTPException
 
 from safepatch.acceptance import untolerated
-from safepatch.common import ROOT, VerifyRequest, digest, remaining, require_service, runtime, secret, setting
+from safepatch.common import ROOT, VerifyRequest, digest, known_findings_enabled, remaining, require_service, runtime, secret, setting
 from safepatch.policy import PolicyError, validate_patch
 from safepatch.process import run
 from safepatch.repository import allowed_files, baseline, checkout, commit_candidate, tracked_changes
@@ -136,7 +136,7 @@ def wsl_path(path):
 def known_findings(spec, commit, patched):
     """Findings from the answer key. Lab and evaluation profiles only; after a patch nothing is
     rescanned, so acceptance rests on the security witness (roadmap week 6)."""
-    if setting("SAFEPATCH_PROFILE", "product") not in ("lab", "evaluation"):
+    if not known_findings_enabled():
         raise PolicyError("known_findings_only_in_lab_profile")
     if not spec.scan.known or not spec.tests.security:
         raise PolicyError("known_findings_need_answer_key_and_witness")

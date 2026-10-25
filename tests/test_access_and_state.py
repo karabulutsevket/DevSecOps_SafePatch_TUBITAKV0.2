@@ -52,3 +52,26 @@ def test_jobs_need_a_registered_project_id(api):
     create=lambda case: client.post('/v1/jobs',headers=headers('developer'),json={'case_id':case,'idempotency_key':uuid.uuid4().hex})
     assert create('not-registered').status_code==404
     assert create('Has Space').status_code==422
+
+
+def test_known_finding_jobs_only_in_lab_and_evaluation_profiles(api, tmp_path, monkeypatch):
+    import yaml
+    from safepatch.repository import projects_dir
+    client,db,job=api
+    create=lambda case: client.post('/v1/jobs',headers=headers('developer'),json={'case_id':case,'scanner':'known','idempotency_key':uuid.uuid4().hex})
+    monkeypatch.delenv('SAFEPATCH_PROFILE',raising=False)
+    assert create('sql-01').json()['detail']=='known_findings_only_in_lab_profile'
+    monkeypatch.setenv('SAFEPATCH_PROFILE','evaluation')
+    assert create('sql-01').json()['detail']=='known_findings_need_answer_key_and_witness'
+    assert 'known_findings' not in client.get('/v1/cases',headers=headers('developer')).json()['sql-01']
+    # A case with an answer key (as prepare_vul4j.py writes for VUL4J-79) is listed and accepted.
+    folder=tmp_path/'projects'; folder.mkdir()
+    data=yaml.safe_load((projects_dir()/'sql-01.yml').read_text(encoding='utf-8'))
+    data['scan']['known']=[{'id':'K-1','file':data['editable'][0],'line':1,'cwe':'CWE-89','source':'test answer key'}]
+    (folder/'sql-01.yml').write_text(yaml.safe_dump(data),encoding='utf-8')
+    monkeypatch.setenv('PROJECTS_DIR',str(folder))
+    assert client.get('/v1/cases',headers=headers('developer')).json()['sql-01']['known_findings']==1
+    created=create('sql-01')
+    assert created.status_code==201 and created.json()['scanner']=='known'
+    monkeypatch.setenv('SAFEPATCH_PROFILE','product')
+    assert create('sql-01').status_code==409

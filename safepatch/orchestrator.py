@@ -13,13 +13,13 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import Field
 
 from safepatch.auth import identity, require_role
-from safepatch.common import POLICY, PROJECT_ID, ROOT, Patch, Strict, digest, request, seal, secret, setting
+from safepatch.common import POLICY, PROJECT_ID, ROOT, Patch, Strict, digest, known_findings_enabled, request, seal, secret, setting
 from safepatch.engine import Engine, check_expert_patch, expert_attempts_left, expert_scope, primary_finding
 from safepatch.memory import Memory, context_for
 from safepatch.acceptance import check_evidence
 from safepatch.policy import PolicyError
 from safepatch.repository import baseline
-from safepatch.repository import registry
+from safepatch.repository import projects, registry
 from safepatch.store import Store
 
 store = None
@@ -150,13 +150,16 @@ def me(user=Depends(identity)):
 
 @app.get("/v1/cases")
 def cases(user=Depends(identity)):
-    return {k: v for k, v in registry()[1].items() if v.get("project", "owned-java-demo") in user["projects"]}
+    specs = projects()
+    # Evaluation cases with an answer key say so; the UI then offers the known-finding scanner.
+    return {k: {**v, **({"known_findings": len(specs[k].scan.known)} if specs[k].scan.known else {})}
+            for k, v in registry()[1].items() if v.get("project", "owned-java-demo") in user["projects"]}
 
 
 class NewJob(Strict):
     case_id: str = Field(pattern=PROJECT_ID)   # registered project id (descriptor)
     idempotency_key: str = Field(min_length=8, max_length=100, pattern=r"^[A-Za-z0-9_-]+$")
-    scanner: str = Field(default="semgrep", pattern=r"^(builtin|semgrep|sonarqube\+semgrep)$")
+    scanner: str = Field(default="semgrep", pattern=r"^(builtin|semgrep|sonarqube\+semgrep|known)$")
     max_attempts: int = Field(default=3, ge=1, le=3)
     second_review: bool = False
     memory_mode: str = Field(default="guarded", pattern=r"^(off|guarded)$")
@@ -171,6 +174,10 @@ def create_job(req: NewJob, user=Depends(identity)):
     _, cases = registry()
     if req.case_id not in cases or cases[req.case_id].get("project", "owned-java-demo") not in user["projects"]:
         raise HTTPException(404, "Yetkili proje bulunamadı")
+    if req.scanner == "known" and not known_findings_enabled():
+        raise HTTPException(409, "known_findings_only_in_lab_profile")
+    if req.scanner == "known" and not projects()[req.case_id].scan.known:
+        raise HTTPException(409, "known_findings_need_answer_key_and_witness")
     now = time.time()
     data = {"id": uuid.uuid4().hex, "project": cases[req.case_id].get("project", "owned-java-demo"), "memory_mode": req.memory_mode, "strategy": req.strategy, "case_id": req.case_id, "base_commit": cases[req.case_id]["commit"], "split": cases[req.case_id]["split"], "policy_version": POLICY, "scanner": req.scanner, "mode": "real-local-model", "status": "queued", "started_at": now, "deadline": now + int(setting("JOB_BUDGET_SECONDS", "1200")), "max_attempts": req.max_attempts, "attempt_count": 0, "attempts": [], "events": [{"time": now, "status": "queued"}], "owner": user["subject"], "second_review": req.second_review, "approval": None}
     try:

@@ -5,7 +5,7 @@ import time
 from fastapi import Depends, FastAPI, HTTPException
 from pydantic import Field
 
-from safepatch.common import Patch, Strict, canonical, digest, remaining, request, require_service, safe_path, setting
+from safepatch.common import MODEL_SOURCE_CHARS, Patch, Strict, canonical, digest, remaining, request, require_service, safe_path, setting
 from safepatch.feedback import NOTE_TITLE, imitates_note
 from safepatch.project import is_protected
 from safepatch.weakness import family
@@ -117,7 +117,7 @@ def compose(req, tag):
 
 def propose(req):
     # One editable Java source; read-only context must be other, non-protected Java sources.
-    if len(req.source) != 1 or not all(java_source(p) for p in req.source) or sum(len(x) for x in req.source.values()) > 24000:
+    if len(req.source) != 1 or not all(java_source(p) for p in req.source) or sum(len(x) for x in req.source.values()) > MODEL_SOURCE_CHARS:
         raise ValueError("Context scope exceeded")
     if any(p in req.source or not java_source(p) for p in req.context_files) or sum(len(x) for x in req.context_files.values()) > 8000:
         raise ValueError("Context scope exceeded")

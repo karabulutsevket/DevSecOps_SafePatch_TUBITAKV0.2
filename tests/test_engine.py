@@ -235,3 +235,18 @@ def test_verify_requests_carry_the_finding_file(job_store, patch_factory, source
     db.mutate(job["id"], lambda j: j.update(max_attempts=1))
     Engine(db, call).run(job["id"])
     assert verified[0]["target_file"] is None and verified[1]["target_file"] == SOURCE
+
+
+def test_a_file_the_model_cannot_hold_goes_to_the_expert_without_a_model_call(job_store, monkeypatch):
+    # VUL4J-79's ZipUtil.java is ~98 KB; the model rewrites whole files within 24 000 characters.
+    from safepatch import engine
+    monkeypatch.setattr(engine, "MODEL_SOURCE_CHARS", 10)
+    db, job = job_store
+    def call(url, method="GET", **kwargs):
+        if url.endswith("/propose"):
+            pytest.fail("the model is never asked")
+        return fake_initial()
+    Engine(db, call).run(job["id"])
+    stored = db.get(job["id"])
+    assert (stored["status"], stored["reason"], stored["attempt_count"]) == ("needs_human", "source_exceeds_model_context", 0)
+    assert stored.get("tokens_reserved", 0) == 0
