@@ -1,5 +1,7 @@
 # SafePatch V0.2 — Yeniden deneme stratejisi deneyi (H2)
 
+> **Düzeltme (25 Ekim 2026, Hafta 3):** Path tanığı güçlendirildi (mutlak yol ve kök içinden dışarıyı gösteren bağlantı). `guided`'ın 9 path kabulünden 6'sı bu tanığı geçmiyor. `v01` → `guided` farkı anlamlılığını kaybediyor (4–0, p = 0,125). `v01` → `guided+context` farkı korunuyor (10–0, p = 0,002). Aşağıdaki sayılar H2'nin özgün ölçümüdür ve değiştirilmedi. Ayrıntı: [OLCUM_PATH_TANIGI.md](OLCUM_PATH_TANIGI.md).
+
 **Tarih:** 24 Ekim 2026 · **Ürün kodu:** commit `3d0f54f` (işlerin ilk 50'si) ve `216b732` (kalan 58; `safepatch/` aynı, yalnız deney betiğine devam özelliği eklendi) · **Ham kanıt:** [`evidence/v02-retry/retry/`](../evidence/v02-retry/retry/) · **Sayıların kaynağı:** [`analysis.json`](../evidence/v02-retry/retry/analysis.json) (`scripts/analyze_retry.py` ham iş dosyalarından üretir)
 
 ## Soru
@@ -79,7 +81,7 @@ Kabul edilen path düzeltmeleri iki gruba ayrılıyor:
 | `guided` | 9 | 3 | 6 |
 | `guided+context` | 9 | 9 | 0 |
 
-`normalize()` yalnız metin üzerinde çalışır ve dosya sistemine bakmaz; kök dizin içindeki, dışarıyı gösteren bir sembolik bağlantıyı yakalamaz. Mevcut güvenlik tanığı yalnız `../secret.txt` girdisini denediği için bu düzeltmeler "doğrulandı" diye geçti. Daha güçlü bir tanıkla (sembolik bağlantı ve mutlak yol vakaları) `guided` stratejisinin 6 path düzeltmesi büyük olasılıkla reddedilirdi. Bu, sınanmadı.
+`normalize()` yalnız metin üzerinde çalışır ve dosya sistemine bakmaz; kök dizin içindeki, dışarıyı gösteren bir sembolik bağlantıyı yakalamaz. Mevcut güvenlik tanığı yalnız `../secret.txt` girdisini denediği için bu düzeltmeler "doğrulandı" diye geçti. Daha güçlü bir tanıkla (sembolik bağlantı ve mutlak yol vakaları) `guided` stratejisinin 6 path düzeltmesi büyük olasılıkla reddedilirdi. **Hafta 3'te sınandı:** altısı da kök içinden dışarıyı gösteren bağlantı testinde reddedildi; `toRealPath()` kullanan 12 düzeltmenin hepsi geçti ([OLCUM_PATH_TANIGI.md](OLCUM_PATH_TANIGI.md)).
 
 İki not:
 1. Ekibin yazdığı path reçetesi "`toRealPath()` **veya** `normalize()`" diyordu; yani zayıf düzeltmeye kendi rehberimiz izin verdi.
@@ -112,7 +114,7 @@ Bu bulgu, "doğrulanmış düzeltme" ifadesinin tanık testinin gücü kadar anl
 
 ## Sonraki adımlar
 
-1. **Path sınıf paketi (Hafta 3):** sembolik bağlantı ve mutlak yol tanıkları; reçetede `toRealPath()` zorunlu. Path vakaları yeniden ölçülür. Kaç kabulün daha güçlü tanığı geçtiği ayrıca raporlanır.
+1. **Path sınıf paketi (Hafta 3) — yapıldı (25 Ekim):** sembolik bağlantı ve mutlak yol tanıkları eklendi, reçetede `toRealPath()` zorunlu. H2 kabullerinden 12/18'i güçlü tanığı geçiyor; yeni reçeteyle `guided` ve `guided+context` path vakalarında 8/9 ([OLCUM_PATH_TANIGI.md](OLCUM_PATH_TANIGI.md)).
 2. **Varsayılan strateji (karar verildi, 25 Ekim):** yeni işler `guided+context` ile açılıyor; diğer stratejiler iş başına seçilebilir. Strateji alanı olmayan eski iş kayıtları V0.1 döngüsünde kalır.
 3. **Command ailesi:** reçete ve bağlam yetmiyor. Seçenekler: yardımcı sınıfın bulunmasına yönelik daha somut bağlam, daha büyük model (8 GB GPU sınırı), ya da iyi kanıtla insana devretme.
 4. **Genelleme:** asıl ölçüm L3 setinde (OWASP Benchmark, Vul4J), Hafta 9.

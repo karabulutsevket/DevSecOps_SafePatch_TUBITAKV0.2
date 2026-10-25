@@ -1,0 +1,653 @@
+{
+  "id": "de99fb1bb00844eb9e00bb209a67adbe",
+  "case_id": "path-03",
+  "base_commit": "38f3b9a765a4378b71f4a40c67fbe7e9d2690ebe",
+  "project": "owned-java-demo",
+  "policy_version": "java-synthetic-v1",
+  "scanner": "semgrep",
+  "mode": "real-local-model",
+  "evaluation": true,
+  "status": "awaiting_review",
+  "owner": "EXPERIMENT-NOT-A-HUMAN",
+  "started_at": 1792922443.8908498,
+  "deadline": 1792923643.8908498,
+  "max_attempts": 3,
+  "attempt_count": 3,
+  "attempts": [
+    {
+      "number": 1,
+      "proposal": {
+        "mode": "real-local-model",
+        "patch": {
+          "edits": [
+            {
+              "path": "src/main/java/demo/DemoService.java",
+              "old_sha256": "8eedbcbf37953216a6c653590f2a471c9860ddf2a9baf27bcfa0f7bd53fd3286",
+              "content": "package demo;\n\nimport java.nio.file.*;\n\n// Case path-03.\n// Deliberately vulnerable synthetic example. Root is supplied by trusted runner.\npublic class DemoService {\n    public String lookup(String input) throws Exception {\n        Path root = Path.of(System.getProperty(\"demo.root\"));\n        Path requested = root.resolve(input);\n        if (!requested.startsWith(root)) {\n            throw new SecurityException(\"Path traversal detected\");\n        }\n        return Files.readString(requested);\n    }\n}\n"
+            }
+          ],
+          "rationale": "Added a check to ensure that the resolved path starts with the canonical root, preventing path traversal attacks."
+        },
+        "model": {
+          "runtime": "ollama",
+          "runtime_version": "0.34.0",
+          "model": "qwen2.5-coder:7b-instruct-q4_K_M",
+          "model_digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+          "quantization": "Q4_K_M",
+          "license_sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e"
+        },
+        "metrics": {
+          "duration_seconds": 6.25,
+          "prompt_tokens_measured": 568,
+          "output_tokens_measured": 241,
+          "context_chars": 1058,
+          "prompt_sha256": "b7ef3c1bf1eba8960d2d47c84ed9a0513bb611c1bd03255bb28cf5896b7aa606",
+          "system_prompt_sha256": "a578679af058fcc3a984e793e02fc6c1202fdff60d8685668ab892c99cbf5743",
+          "seed": 43,
+          "temperature": 0.0,
+          "dropped_optional_context": [],
+          "note_tag": null,
+          "num_ctx": 8192,
+          "num_predict": 2048
+        }
+      },
+      "retry": {
+        "strategy": "guided",
+        "temperature": 0.0,
+        "guidance_level": null,
+        "context_paths": []
+      },
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -8,6 +8,9 @@\n     public String lookup(String input) throws Exception {\n         Path root = Path.of(System.getProperty(\"demo.root\"));\n         Path requested = root.resolve(input);\n+        if (!requested.startsWith(root)) {\n+            throw new SecurityException(\"Path traversal detected\");\n+        }\n         return Files.readString(requested);\n     }\n }\n",
+      "patch_sha256": "f74b874d998f843a7dbaad7a2b45241870b67e144407a75c57ad71bd735071eb",
+      "changed_lines": 3,
+      "verification": {
+        "passed": false,
+        "baseline_valid": false,
+        "base_commit": "38f3b9a765a4378b71f4a40c67fbe7e9d2690ebe",
+        "source_revision": "e221308ddaddae3b49c642c9d3ced9e7cb1c1612",
+        "build": {
+          "passed": true,
+          "duration_seconds": 6.39
+        },
+        "behavior": {
+          "passed": true,
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "details": [],
+          "exit_code": 0,
+          "duration_seconds": 4.156,
+          "junit_sha256": "db18487f5142b7e4583b218a2f1b7c838480182a134a751d7da7bc5e6f23b391"
+        },
+        "security": {
+          "passed": false,
+          "tests": 3,
+          "failures": 2,
+          "errors": 0,
+          "skipped": 0,
+          "details": [
+            {
+              "name": "cannotEscapeThroughLinkInsideRoot",
+              "type": "failure",
+              "assertion": "PATH_TRAVERSAL_REGRESSION"
+            },
+            {
+              "name": "cannotReadParentSecret",
+              "type": "failure",
+              "assertion": "PATH_TRAVERSAL_REGRESSION"
+            }
+          ],
+          "exit_code": 1,
+          "duration_seconds": 3.969,
+          "junit_sha256": "e480b4964efe07f4695e11e33ec39513a2c30783c47fc146c2fb8a9d18cf09d6"
+        },
+        "scans": [
+          {
+            "tool": "semgrep",
+            "version": "1.136.0",
+            "status": "ok",
+            "analysis_id": "d74bd5a0ad484b27afff888aeec28286",
+            "commit": "e221308ddaddae3b49c642c9d3ced9e7cb1c1612",
+            "findings": []
+          }
+        ],
+        "patch": {
+          "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -8,6 +8,9 @@\n     public String lookup(String input) throws Exception {\n         Path root = Path.of(System.getProperty(\"demo.root\"));\n         Path requested = root.resolve(input);\n+        if (!requested.startsWith(root)) {\n+            throw new SecurityException(\"Path traversal detected\");\n+        }\n         return Files.readString(requested);\n     }\n }\n",
+          "patch_sha256": "f74b874d998f843a7dbaad7a2b45241870b67e144407a75c57ad71bd735071eb",
+          "changed_lines": 3
+        },
+        "feedback": {
+          "code": "validation_failed",
+          "behavior": {
+            "passed": true,
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "details": [],
+            "exit_code": 0,
+            "duration_seconds": 4.156,
+            "junit_sha256": "db18487f5142b7e4583b218a2f1b7c838480182a134a751d7da7bc5e6f23b391"
+          },
+          "security": {
+            "passed": false,
+            "tests": 3,
+            "failures": 2,
+            "errors": 0,
+            "skipped": 0,
+            "details": [
+              {
+                "name": "cannotEscapeThroughLinkInsideRoot",
+                "type": "failure",
+                "assertion": "PATH_TRAVERSAL_REGRESSION"
+              },
+              {
+                "name": "cannotReadParentSecret",
+                "type": "failure",
+                "assertion": "PATH_TRAVERSAL_REGRESSION"
+              }
+            ],
+            "exit_code": 1,
+            "duration_seconds": 3.969,
+            "junit_sha256": "e480b4964efe07f4695e11e33ec39513a2c30783c47fc146c2fb8a9d18cf09d6"
+          },
+          "remaining_rules": []
+        },
+        "duration_seconds": 43.984,
+        "runner_profile": "native-same-user",
+        "versions": {
+          "java": "17; inspect preparation evidence",
+          "maven": "3.9.16"
+        }
+      },
+      "failure": {
+        "category": "security_witness_failed",
+        "failed_tests": [
+          {
+            "suite": "security",
+            "test": "cannotEscapeThroughLinkInsideRoot",
+            "marker": "PATH_TRAVERSAL_REGRESSION"
+          },
+          {
+            "suite": "security",
+            "test": "cannotReadParentSecret",
+            "marker": "PATH_TRAVERSAL_REGRESSION"
+          }
+        ],
+        "remaining_rules": []
+      }
+    },
+    {
+      "number": 2,
+      "proposal": {
+        "mode": "real-local-model",
+        "patch": {
+          "edits": [
+            {
+              "path": "src/main/java/demo/DemoService.java",
+              "old_sha256": "8eedbcbf37953216a6c653590f2a471c9860ddf2a9baf27bcfa0f7bd53fd3286",
+              "content": "package demo;\n\nimport java.nio.file.*;\n\n// Case path-03.\n// Deliberately vulnerable synthetic example. Root is supplied by trusted runner.\npublic class DemoService {\n    public String lookup(String input) throws Exception {\n        Path root = Path.of(System.getProperty(\"demo.root\"));\n        Path requested = root.resolve(input);\n        if (!requested.startsWith(root)) {\n            throw new SecurityException(\"Path traversal detected\");\n        }\n        return Files.readString(requested);\n    }\n}\n"
+            }
+          ],
+          "rationale": "Added a check to ensure that the resolved path starts with the root directory. This prevents path traversal attacks by verifying that the requested path is within the canonical root directory."
+        },
+        "model": {
+          "runtime": "ollama",
+          "runtime_version": "0.34.0",
+          "model": "qwen2.5-coder:7b-instruct-q4_K_M",
+          "model_digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+          "quantization": "Q4_K_M",
+          "license_sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e"
+        },
+        "metrics": {
+          "duration_seconds": 6.578,
+          "prompt_tokens_measured": 834,
+          "output_tokens_measured": 254,
+          "context_chars": 1935,
+          "prompt_sha256": "c2a514ff49f13aa20d7db1913edf08ee2d03434696f844e1e616bb175ad67b6c",
+          "system_prompt_sha256": "1d8413c52c440202a32d4077d8ff692900cb78c41cbee9986ae625b902784bb7",
+          "seed": 44,
+          "temperature": 0.4,
+          "dropped_optional_context": [],
+          "note_tag": "101c1d5d8a6e",
+          "num_ctx": 8192,
+          "num_predict": 2048
+        }
+      },
+      "retry": {
+        "strategy": "guided",
+        "temperature": 0.4,
+        "guidance_level": 0,
+        "context_paths": []
+      },
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -8,6 +8,9 @@\n     public String lookup(String input) throws Exception {\n         Path root = Path.of(System.getProperty(\"demo.root\"));\n         Path requested = root.resolve(input);\n+        if (!requested.startsWith(root)) {\n+            throw new SecurityException(\"Path traversal detected\");\n+        }\n         return Files.readString(requested);\n     }\n }\n",
+      "patch_sha256": "f74b874d998f843a7dbaad7a2b45241870b67e144407a75c57ad71bd735071eb",
+      "changed_lines": 3,
+      "stopped": "duplicate_patch"
+    },
+    {
+      "number": 3,
+      "proposal": {
+        "mode": "real-local-model",
+        "patch": {
+          "edits": [
+            {
+              "path": "src/main/java/demo/DemoService.java",
+              "old_sha256": "8eedbcbf37953216a6c653590f2a471c9860ddf2a9baf27bcfa0f7bd53fd3286",
+              "content": "package demo;\n\nimport java.nio.file.*;\n\n// Case path-03.\n// Deliberately vulnerable synthetic example. Root is supplied by trusted runner.\npublic class DemoService {\n    public String lookup(String input) throws Exception {\n        Path root = Paths.get(System.getProperty(\"demo.root\")).toRealPath();\n        Path requested = root.resolve(input).toRealPath();\n        if (!requested.startsWith(root)) {\n            throw new SecurityException(\"Path traversal detected\");\n        }\n        return Files.readString(requested);\n    }\n}\n"
+            }
+          ],
+          "rationale": "Resolved both the root and the requested path through the file system using toRealPath() before checking if the requested path starts with the root. This ensures that links are followed and the check is accurate."
+        },
+        "model": {
+          "runtime": "ollama",
+          "runtime_version": "0.34.0",
+          "model": "qwen2.5-coder:7b-instruct-q4_K_M",
+          "model_digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+          "quantization": "Q4_K_M",
+          "license_sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e"
+        },
+        "metrics": {
+          "duration_seconds": 7.141,
+          "prompt_tokens_measured": 908,
+          "output_tokens_measured": 270,
+          "context_chars": 2307,
+          "prompt_sha256": "a46971ad1e90180d234fac2cbeff9eed9e79eec3f8f8075a389c2d9cb42dc44a",
+          "system_prompt_sha256": "f13e3a6d54f800a29927f1db1dcb600a54a4024f8c8f423a2d9850cf80d95696",
+          "seed": 45,
+          "temperature": 0.4,
+          "dropped_optional_context": [],
+          "note_tag": "99e5d2ecb092",
+          "num_ctx": 8192,
+          "num_predict": 2048
+        }
+      },
+      "retry": {
+        "strategy": "guided",
+        "temperature": 0.4,
+        "guidance_level": 1,
+        "context_paths": []
+      },
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -6,8 +6,11 @@\n // Deliberately vulnerable synthetic example. Root is supplied by trusted runner.\n public class DemoService {\n     public String lookup(String input) throws Exception {\n-        Path root = Path.of(System.getProperty(\"demo.root\"));\n-        Path requested = root.resolve(input);\n+        Path root = Paths.get(System.getProperty(\"demo.root\")).toRealPath();\n+        Path requested = root.resolve(input).toRealPath();\n+        if (!requested.startsWith(root)) {\n+            throw new SecurityException(\"Path traversal detected\");\n+        }\n         return Files.readString(requested);\n     }\n }\n",
+      "patch_sha256": "430790ffb779cdf6193b828184350d6589002482c10403e26ba6ffcccd3ed71d",
+      "changed_lines": 7,
+      "verification": {
+        "passed": true,
+        "baseline_valid": false,
+        "base_commit": "38f3b9a765a4378b71f4a40c67fbe7e9d2690ebe",
+        "source_revision": "8391c92abc72cc72a5ccaf978617a67d91db696c",
+        "build": {
+          "passed": true,
+          "duration_seconds": 6.641
+        },
+        "behavior": {
+          "passed": true,
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "details": [],
+          "exit_code": 0,
+          "duration_seconds": 4.0,
+          "junit_sha256": "85563e0e4332ef49807be0bb4381b734c2dc78b581379198261f2698ff74c8f7"
+        },
+        "security": {
+          "passed": true,
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "details": [],
+          "exit_code": 0,
+          "duration_seconds": 4.047,
+          "junit_sha256": "c8d569d2fc0fc277bbf707af8c7a947ec54a21435addb319cdf0faa5ff3a6e2c"
+        },
+        "scans": [
+          {
+            "tool": "semgrep",
+            "version": "1.136.0",
+            "status": "ok",
+            "analysis_id": "34811afc9bbb459fa081cfc5949cb761",
+            "commit": "8391c92abc72cc72a5ccaf978617a67d91db696c",
+            "findings": []
+          }
+        ],
+        "patch": {
+          "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -6,8 +6,11 @@\n // Deliberately vulnerable synthetic example. Root is supplied by trusted runner.\n public class DemoService {\n     public String lookup(String input) throws Exception {\n-        Path root = Path.of(System.getProperty(\"demo.root\"));\n-        Path requested = root.resolve(input);\n+        Path root = Paths.get(System.getProperty(\"demo.root\")).toRealPath();\n+        Path requested = root.resolve(input).toRealPath();\n+        if (!requested.startsWith(root)) {\n+            throw new SecurityException(\"Path traversal detected\");\n+        }\n         return Files.readString(requested);\n     }\n }\n",
+          "patch_sha256": "430790ffb779cdf6193b828184350d6589002482c10403e26ba6ffcccd3ed71d",
+          "changed_lines": 7
+        },
+        "feedback": {
+          "code": "verified",
+          "behavior": {
+            "passed": true,
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "details": [],
+            "exit_code": 0,
+            "duration_seconds": 4.0,
+            "junit_sha256": "85563e0e4332ef49807be0bb4381b734c2dc78b581379198261f2698ff74c8f7"
+          },
+          "security": {
+            "passed": true,
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "details": [],
+            "exit_code": 0,
+            "duration_seconds": 4.047,
+            "junit_sha256": "c8d569d2fc0fc277bbf707af8c7a947ec54a21435addb319cdf0faa5ff3a6e2c"
+          },
+          "remaining_rules": []
+        },
+        "duration_seconds": 45.328,
+        "runner_profile": "native-same-user",
+        "versions": {
+          "java": "17; inspect preparation evidence",
+          "maven": "3.9.16"
+        },
+        "artifact_sha256": "90afc0a7e4f9407f83b91e9dfcc6aa3c92a6f7501f80e52c85ad0e99c4d95e84",
+        "candidate_commit": "8391c92abc72cc72a5ccaf978617a67d91db696c",
+        "review_branch": "candidate",
+        "review_repository": "C:\\TUBITAKClaude\\SafePatch_V0.2\\.runtime\\review\\de99fb1bb00844eb9e00bb209a67adbe-fd8f1a6a"
+      },
+      "failure": null
+    }
+  ],
+  "events": [
+    {
+      "time": 1792922443.9943147,
+      "status": "scanning"
+    },
+    {
+      "time": 1792922487.6734874,
+      "status": "scanning"
+    },
+    {
+      "time": 1792922487.8927805,
+      "status": "scanning"
+    },
+    {
+      "time": 1792922487.9098876,
+      "status": "patching"
+    },
+    {
+      "time": 1792922494.3412554,
+      "status": "verifying"
+    },
+    {
+      "time": 1792922538.587067,
+      "status": "patching"
+    },
+    {
+      "time": 1792922545.3348463,
+      "status": "patching"
+    },
+    {
+      "time": 1792922552.6549034,
+      "status": "verifying"
+    },
+    {
+      "time": 1792922599.392061,
+      "status": "awaiting_review"
+    }
+  ],
+  "approval": null,
+  "memory_mode": "off",
+  "strategy": "guided",
+  "seed": 42,
+  "baseline": {
+    "passed": false,
+    "baseline_valid": true,
+    "base_commit": "38f3b9a765a4378b71f4a40c67fbe7e9d2690ebe",
+    "source_revision": "38f3b9a765a4378b71f4a40c67fbe7e9d2690ebe",
+    "build": {
+      "passed": true,
+      "duration_seconds": 6.657
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "exit_code": 0,
+      "duration_seconds": 4.156,
+      "junit_sha256": "adebef466311b170251d8130868bd77f7af7425cbdf7210370f2c2b93d8f4d5a"
+    },
+    "security": {
+      "passed": false,
+      "tests": 3,
+      "failures": 3,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "cannotEscapeThroughLinkInsideRoot",
+          "type": "failure",
+          "assertion": "PATH_TRAVERSAL_REGRESSION"
+        },
+        {
+          "name": "cannotReadParentSecret",
+          "type": "failure",
+          "assertion": "PATH_TRAVERSAL_REGRESSION"
+        },
+        {
+          "name": "cannotReadAbsolutePathOutsideRoot",
+          "type": "failure",
+          "assertion": "PATH_TRAVERSAL_REGRESSION"
+        }
+      ],
+      "exit_code": 1,
+      "duration_seconds": 4.109,
+      "junit_sha256": "93c466ebf8b06dc2fe53c0e1d256b2d7d0f2fb8a3e1201a48b61dc9f83656b07"
+    },
+    "scans": [
+      {
+        "tool": "semgrep",
+        "version": "1.136.0",
+        "status": "ok",
+        "analysis_id": "91334025854f4f3682de72a85272b323",
+        "commit": "38f3b9a765a4378b71f4a40c67fbe7e9d2690ebe",
+        "findings": [
+          {
+            "tool": "semgrep",
+            "rule_id": "bigg.java.path-resolution",
+            "raw_rule_id": "mnt.c.TUBITAKClaude.SafePatch_V0.2.rules.bigg.java.path-resolution",
+            "type": "VULNERABILITY",
+            "file": "src/main/java/demo/DemoService.java",
+            "line": 11,
+            "severity": "ERROR",
+            "message": "Synthetic path requires canonical root containment before reading.",
+            "cwe": "CWE-22",
+            "fingerprint": "56d7bcba77c8af2c9b4fbf2ee140780a3f021d4e6d73dec92fd1bebe46cd32a9"
+          }
+        ]
+      }
+    ],
+    "patch": null,
+    "feedback": {
+      "code": "validation_failed",
+      "behavior": {
+        "passed": true,
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 4.156,
+        "junit_sha256": "adebef466311b170251d8130868bd77f7af7425cbdf7210370f2c2b93d8f4d5a"
+      },
+      "security": {
+        "passed": false,
+        "tests": 3,
+        "failures": 3,
+        "errors": 0,
+        "skipped": 0,
+        "details": [
+          {
+            "name": "cannotEscapeThroughLinkInsideRoot",
+            "type": "failure",
+            "assertion": "PATH_TRAVERSAL_REGRESSION"
+          },
+          {
+            "name": "cannotReadParentSecret",
+            "type": "failure",
+            "assertion": "PATH_TRAVERSAL_REGRESSION"
+          },
+          {
+            "name": "cannotReadAbsolutePathOutsideRoot",
+            "type": "failure",
+            "assertion": "PATH_TRAVERSAL_REGRESSION"
+          }
+        ],
+        "exit_code": 1,
+        "duration_seconds": 4.109,
+        "junit_sha256": "93c466ebf8b06dc2fe53c0e1d256b2d7d0f2fb8a3e1201a48b61dc9f83656b07"
+      },
+      "remaining_rules": [
+        "bigg.java.path-resolution"
+      ]
+    },
+    "duration_seconds": 43.516,
+    "runner_profile": "native-same-user",
+    "versions": {
+      "java": "17; inspect preparation evidence",
+      "maven": "3.9.16"
+    }
+  },
+  "memory_lookup": {
+    "decision": "disabled",
+    "duration_seconds": 0,
+    "rejected": [],
+    "selected_id": null
+  },
+  "memory_context": {
+    "project": "owned-java-demo",
+    "kind": "path",
+    "rule_id": "bigg.java.path-resolution",
+    "jdk": "17",
+    "source_path": "src/main/java/demo/DemoService.java",
+    "build_sha256": "26e043fae58e551912409518b9d20e281bf34a51d8980781ee6c3c299fec6819",
+    "contract_sha256": "e154b3c293b96bd61f254dcc6c39a5a527ea08de65b6d38497f9f767b39372d5",
+    "source_sha256": "8eedbcbf37953216a6c653590f2a471c9860ddf2a9baf27bcfa0f7bd53fd3286"
+  },
+  "memory_ids": [],
+  "tokens_reserved": 24576,
+  "acceptance_manifest": {
+    "schema": "safepatch-evidence-v1",
+    "job_id": "de99fb1bb00844eb9e00bb209a67adbe",
+    "base_commit": "38f3b9a765a4378b71f4a40c67fbe7e9d2690ebe",
+    "policy": "java-synthetic-v1",
+    "patch_sha256": "430790ffb779cdf6193b828184350d6589002482c10403e26ba6ffcccd3ed71d",
+    "verification": {
+      "passed": true,
+      "baseline_valid": false,
+      "base_commit": "38f3b9a765a4378b71f4a40c67fbe7e9d2690ebe",
+      "source_revision": "8391c92abc72cc72a5ccaf978617a67d91db696c",
+      "build": {
+        "passed": true,
+        "duration_seconds": 6.641
+      },
+      "behavior": {
+        "passed": true,
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 4.0,
+        "junit_sha256": "85563e0e4332ef49807be0bb4381b734c2dc78b581379198261f2698ff74c8f7"
+      },
+      "security": {
+        "passed": true,
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 4.047,
+        "junit_sha256": "c8d569d2fc0fc277bbf707af8c7a947ec54a21435addb319cdf0faa5ff3a6e2c"
+      },
+      "scans": [
+        {
+          "tool": "semgrep",
+          "version": "1.136.0",
+          "status": "ok",
+          "analysis_id": "34811afc9bbb459fa081cfc5949cb761",
+          "commit": "8391c92abc72cc72a5ccaf978617a67d91db696c",
+          "findings": []
+        }
+      ],
+      "patch": {
+        "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -6,8 +6,11 @@\n // Deliberately vulnerable synthetic example. Root is supplied by trusted runner.\n public class DemoService {\n     public String lookup(String input) throws Exception {\n-        Path root = Path.of(System.getProperty(\"demo.root\"));\n-        Path requested = root.resolve(input);\n+        Path root = Paths.get(System.getProperty(\"demo.root\")).toRealPath();\n+        Path requested = root.resolve(input).toRealPath();\n+        if (!requested.startsWith(root)) {\n+            throw new SecurityException(\"Path traversal detected\");\n+        }\n         return Files.readString(requested);\n     }\n }\n",
+        "patch_sha256": "430790ffb779cdf6193b828184350d6589002482c10403e26ba6ffcccd3ed71d",
+        "changed_lines": 7
+      },
+      "feedback": {
+        "code": "verified",
+        "behavior": {
+          "passed": true,
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "details": [],
+          "exit_code": 0,
+          "duration_seconds": 4.0,
+          "junit_sha256": "85563e0e4332ef49807be0bb4381b734c2dc78b581379198261f2698ff74c8f7"
+        },
+        "security": {
+          "passed": true,
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "details": [],
+          "exit_code": 0,
+          "duration_seconds": 4.047,
+          "junit_sha256": "c8d569d2fc0fc277bbf707af8c7a947ec54a21435addb319cdf0faa5ff3a6e2c"
+        },
+        "remaining_rules": []
+      },
+      "duration_seconds": 45.328,
+      "runner_profile": "native-same-user",
+      "versions": {
+        "java": "17; inspect preparation evidence",
+        "maven": "3.9.16"
+      },
+      "artifact_sha256": "90afc0a7e4f9407f83b91e9dfcc6aa3c92a6f7501f80e52c85ad0e99c4d95e84",
+      "candidate_commit": "8391c92abc72cc72a5ccaf978617a67d91db696c",
+      "review_branch": "candidate",
+      "review_repository": "C:\\TUBITAKClaude\\SafePatch_V0.2\\.runtime\\review\\de99fb1bb00844eb9e00bb209a67adbe-fd8f1a6a"
+    },
+    "memory_ids": [],
+    "mode": "real-local-model",
+    "origin": "real-local-model",
+    "author": null
+  },
+  "candidate": {
+    "evidence_sha256": "7d3f89da24d4e8e5ccba13ce1a2fc0b2626d1b63b4c7e37218e7055356339971",
+    "commit": "8391c92abc72cc72a5ccaf978617a67d91db696c",
+    "artifact_sha256": "90afc0a7e4f9407f83b91e9dfcc6aa3c92a6f7501f80e52c85ad0e99c4d95e84",
+    "patch_sha256": "430790ffb779cdf6193b828184350d6589002482c10403e26ba6ffcccd3ed71d",
+    "policy_version": "java-synthetic-v1",
+    "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -6,8 +6,11 @@\n // Deliberately vulnerable synthetic example. Root is supplied by trusted runner.\n public class DemoService {\n     public String lookup(String input) throws Exception {\n-        Path root = Path.of(System.getProperty(\"demo.root\"));\n-        Path requested = root.resolve(input);\n+        Path root = Paths.get(System.getProperty(\"demo.root\")).toRealPath();\n+        Path requested = root.resolve(input).toRealPath();\n+        if (!requested.startsWith(root)) {\n+            throw new SecurityException(\"Path traversal detected\");\n+        }\n         return Files.readString(requested);\n     }\n }\n",
+    "review_repository": "C:\\TUBITAKClaude\\SafePatch_V0.2\\.runtime\\review\\de99fb1bb00844eb9e00bb209a67adbe-fd8f1a6a",
+    "review_branch": "candidate",
+    "origin": "real-local-model",
+    "author": null
+  },
+  "advisory": null,
+  "review_expires_at": 1793008999.3910434,
+  "duration_seconds": 155.5,
+  "wall_seconds": 155.484
+}

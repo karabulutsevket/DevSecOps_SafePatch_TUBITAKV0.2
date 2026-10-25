@@ -120,7 +120,7 @@ Her hafta: hedef, görevler (sorumlu), çıktı, geçiş koşulu. Bir fazın ge�
 - [x] Gerçek depo desteği tasarımı: proje tanımı şeması ve kaldırılacak sabitlerin envanteri (aşağıdaki iş akışı) — *Şevket, Reşat*. **Onaylandı (25 Ekim):** [docs/GERCEK_DEPO_TASARIMI.md](docs/GERCEK_DEPO_TASARIMI.md) (16 maddelik envanter, şema, 5 karar); şema kodu `safepatch/project.py`, 9 sentetik vakanın tanımları `seed.py` tarafından üretiliyor
 - [ ] Toplam 3 müşteri görüşmesi; görüşmelerde kullanılan Java API'leri, tarayıcılar ve Git platformu (GitLab/GitHub) sorulur — *Şevket, Reşat*
 
-**Faz 0 geçiş koşulu:** Path veya command vakalarından en az biri gerçek modelle kabul edildi **ya da** çözülememe nedeni ham kanıtla belgelendi *(24 Ekim'de sağlandı: path 9/9, command 1/9)*. CI her PR'da yeşil. Proje tanımı şeması ekipçe onaylandı.
+**Faz 0 geçiş koşulu:** Path veya command vakalarından en az biri gerçek modelle kabul edildi **ya da** çözülememe nedeni ham kanıtla belgelendi *(24 Ekim'de sağlandı: path 9/9, command 1/9; 25 Ekim'de güçlü path tanığıyla `guided+context` path 8/9, [ayrıntı](docs/OLCUM_PATH_TANIGI.md))*. CI her PR'da yeşil. Proje tanımı şeması ekipçe onaylandı.
 
 ### Paralel iş akışı — Gerçek depo desteği (Hafta 2–6)
 
@@ -180,7 +180,7 @@ Sorumlular: kurallar ve tanıklar *Yiğithan*, vakalar ve L2 kayıtları *Kadir*
 - [x] `needs_human` durumundaki işe uzman yaması gönderen uç nokta. Yama, model yamasıyla **aynı politika ve doğrulayıcıdan** geçer; köken `human-authored` — *Reşat*. **25 Ekim:** `POST /v1/jobs/{id}/expert-patch`; yazar kendi yamasını onaylayamaz ve hafızaya alamaz ([docs/UZMAN_YAMASI.md](docs/UZMAN_YAMASI.md))
 - [ ] Arayüzde uzman yaması gönderme ve diff ekranı — *Reşat*
 - [x] Başarısızlık hafızası şeması: kural, bağlam imzası, strateji, başarısızlık kodu, kanıt hash'i. Başarısız denemeler artık aramada kullanılabilir — *Reşat, Kadir*. **25 Ekim:** yalnız yamanın neden olduğu başarısızlıklar kaydedilir, altyapı hatası ve deney işleri girmez; arama sonucu işin kanıtında, model henüz görmez (Hafta 5) ([docs/BASARISIZLIK_HAFIZASI.md](docs/BASARISIZLIK_HAFIZASI.md))
-- [ ] **Path tanığını güçlendir:** sembolik bağlantı ve mutlak yol vakaları ekle; reçetede `toRealPath()` zorunlu olsun. H2 deneyinde `guided` stratejisinin kabul edilen 9 path düzeltmesinden 6'sı yalnız `normalize()` kullanıyordu ve mevcut tanığı geçti. Path vakalarını yeniden ölç ve daha güçlü tanığı geçen kabul sayısını ayrıca raporla — *Yiğithan, Kadir*
+- [x] **Path tanığını güçlendir:** sembolik bağlantı ve mutlak yol vakaları ekle; reçetede `toRealPath()` zorunlu olsun. H2 deneyinde `guided` stratejisinin kabul edilen 9 path düzeltmesinden 6'sı yalnız `normalize()` kullanıyordu ve mevcut tanığı geçti. Path vakalarını yeniden ölç ve daha güçlü tanığı geçen kabul sayısını ayrıca raporla — *Yiğithan, Kadir*. **25 Ekim:** H2 path kabullerinden `guided` 3/9, `guided+context` 9/9 güçlü tanığı geçiyor; `v01`→`guided` farkı anlamlılığını kaybetti, `v01`→`guided+context` korundu. Yeni reçeteyle iki strateji de 8/9 ([docs/OLCUM_PATH_TANIGI.md](docs/OLCUM_PATH_TANIGI.md))
 - [x] Testler: uzman yaması yetki, politika ve doğrulama sınırlarını aşamıyor — *Yiğithan*. **25 Ekim:** 28 birim testi (`tests/test_expert_patch.py`) ve gerçek runner'da uzman deneme numarası; birleştirmeden önce Yiğithan gözden geçirir
 
 #### Hafta 4 · 16 – 22 Kasım

@@ -1,0 +1,261 @@
+{
+  "scope": "synthetic H2 retry-strategy smoke experiment; not an independent project benchmark",
+  "n": 27,
+  "elapsed_seconds": 4328.377,
+  "groups": [
+    {
+      "strategy": "v01",
+      "split": "all",
+      "kind": "all",
+      "n": 9,
+      "accepted": 0,
+      "median_wall_seconds": 148.576,
+      "statuses": {
+        "needs_human": 9
+      },
+      "reasons": {
+        "no_progress": 9
+      }
+    },
+    {
+      "strategy": "v01",
+      "split": "all",
+      "kind": "path",
+      "n": 9,
+      "accepted": 0,
+      "median_wall_seconds": 148.576,
+      "statuses": {
+        "needs_human": 9
+      },
+      "reasons": {
+        "no_progress": 9
+      }
+    },
+    {
+      "strategy": "v01",
+      "split": "development",
+      "kind": "all",
+      "n": 3,
+      "accepted": 0,
+      "median_wall_seconds": 148.576,
+      "statuses": {
+        "needs_human": 3
+      },
+      "reasons": {
+        "no_progress": 3
+      }
+    },
+    {
+      "strategy": "v01",
+      "split": "development",
+      "kind": "path",
+      "n": 3,
+      "accepted": 0,
+      "median_wall_seconds": 148.576,
+      "statuses": {
+        "needs_human": 3
+      },
+      "reasons": {
+        "no_progress": 3
+      }
+    },
+    {
+      "strategy": "v01",
+      "split": "evaluation",
+      "kind": "all",
+      "n": 6,
+      "accepted": 0,
+      "median_wall_seconds": 148.031,
+      "statuses": {
+        "needs_human": 6
+      },
+      "reasons": {
+        "no_progress": 6
+      }
+    },
+    {
+      "strategy": "v01",
+      "split": "evaluation",
+      "kind": "path",
+      "n": 6,
+      "accepted": 0,
+      "median_wall_seconds": 148.031,
+      "statuses": {
+        "needs_human": 6
+      },
+      "reasons": {
+        "no_progress": 6
+      }
+    },
+    {
+      "strategy": "guided",
+      "split": "all",
+      "kind": "all",
+      "n": 9,
+      "accepted": 8,
+      "median_wall_seconds": 156.141,
+      "statuses": {
+        "awaiting_review": 8,
+        "needs_human": 1
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 1
+      }
+    },
+    {
+      "strategy": "guided",
+      "split": "all",
+      "kind": "path",
+      "n": 9,
+      "accepted": 8,
+      "median_wall_seconds": 156.141,
+      "statuses": {
+        "awaiting_review": 8,
+        "needs_human": 1
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 1
+      }
+    },
+    {
+      "strategy": "guided",
+      "split": "development",
+      "kind": "all",
+      "n": 3,
+      "accepted": 3,
+      "median_wall_seconds": 160.759,
+      "statuses": {
+        "awaiting_review": 3
+      },
+      "reasons": {}
+    },
+    {
+      "strategy": "guided",
+      "split": "development",
+      "kind": "path",
+      "n": 3,
+      "accepted": 3,
+      "median_wall_seconds": 160.759,
+      "statuses": {
+        "awaiting_review": 3
+      },
+      "reasons": {}
+    },
+    {
+      "strategy": "guided",
+      "split": "evaluation",
+      "kind": "all",
+      "n": 6,
+      "accepted": 5,
+      "median_wall_seconds": 155.812,
+      "statuses": {
+        "awaiting_review": 5,
+        "needs_human": 1
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 1
+      }
+    },
+    {
+      "strategy": "guided",
+      "split": "evaluation",
+      "kind": "path",
+      "n": 6,
+      "accepted": 5,
+      "median_wall_seconds": 155.812,
+      "statuses": {
+        "awaiting_review": 5,
+        "needs_human": 1
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 1
+      }
+    },
+    {
+      "strategy": "guided+context",
+      "split": "all",
+      "kind": "all",
+      "n": 9,
+      "accepted": 8,
+      "median_wall_seconds": 163.68,
+      "statuses": {
+        "awaiting_review": 8,
+        "needs_human": 1
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 1
+      }
+    },
+    {
+      "strategy": "guided+context",
+      "split": "all",
+      "kind": "path",
+      "n": 9,
+      "accepted": 8,
+      "median_wall_seconds": 163.68,
+      "statuses": {
+        "awaiting_review": 8,
+        "needs_human": 1
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 1
+      }
+    },
+    {
+      "strategy": "guided+context",
+      "split": "development",
+      "kind": "all",
+      "n": 3,
+      "accepted": 3,
+      "median_wall_seconds": 200.852,
+      "statuses": {
+        "awaiting_review": 3
+      },
+      "reasons": {}
+    },
+    {
+      "strategy": "guided+context",
+      "split": "development",
+      "kind": "path",
+      "n": 3,
+      "accepted": 3,
+      "median_wall_seconds": 200.852,
+      "statuses": {
+        "awaiting_review": 3
+      },
+      "reasons": {}
+    },
+    {
+      "strategy": "guided+context",
+      "split": "evaluation",
+      "kind": "all",
+      "n": 6,
+      "accepted": 5,
+      "median_wall_seconds": 158.746,
+      "statuses": {
+        "awaiting_review": 5,
+        "needs_human": 1
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 1
+      }
+    },
+    {
+      "strategy": "guided+context",
+      "split": "evaluation",
+      "kind": "path",
+      "n": 6,
+      "accepted": 5,
+      "median_wall_seconds": 158.746,
+      "statuses": {
+        "awaiting_review": 5,
+        "needs_human": 1
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 1
+      }
+    }
+  ],
+  "human_minutes_saved": null,
+  "customer_validation": "not performed"
+}

@@ -1,0 +1,526 @@
+{
+  "id": "f5aea9d05d484ca2875eae35c68b67e4",
+  "case_id": "path-02",
+  "base_commit": "b10397dc95e1b77ddc1343d7578b622e0de7c13b",
+  "project": "owned-java-demo",
+  "policy_version": "java-synthetic-v1",
+  "scanner": "semgrep",
+  "mode": "real-local-model",
+  "evaluation": true,
+  "status": "needs_human",
+  "owner": "EXPERIMENT-NOT-A-HUMAN",
+  "started_at": 1792921989.1605725,
+  "deadline": 1792923189.1605725,
+  "max_attempts": 3,
+  "attempt_count": 2,
+  "attempts": [
+    {
+      "number": 1,
+      "proposal": {
+        "mode": "real-local-model",
+        "patch": {
+          "edits": [
+            {
+              "path": "src/main/java/demo/DemoService.java",
+              "old_sha256": "c129654151360c4fa75f363908c9d3ede3b43877a49205a99604235683aab7e4",
+              "content": "package demo;\n\nimport java.nio.file.*;\n\n// Case path-02.\n// Deliberately vulnerable synthetic example. Root is supplied by trusted runner.\npublic class DemoService {\n    public String lookup(String input) throws Exception {\n        Path root = Path.of(System.getProperty(\"demo.root\"));\n        Path target = root.resolve(input);\n        if (!target.startsWith(root)) {\n            throw new SecurityException(\"Path traversal detected\");\n        }\n        return Files.readString(target);\n    }\n}\n"
+            }
+          ],
+          "rationale": "Added a check to ensure that the resolved path starts with the canonical root, preventing path traversal attacks."
+        },
+        "model": {
+          "runtime": "ollama",
+          "runtime_version": "0.34.0",
+          "model": "qwen2.5-coder:7b-instruct-q4_K_M",
+          "model_digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+          "quantization": "Q4_K_M",
+          "license_sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e"
+        },
+        "metrics": {
+          "duration_seconds": 6.532,
+          "prompt_tokens_measured": 572,
+          "output_tokens_measured": 245,
+          "context_chars": 1052,
+          "prompt_sha256": "52ee035feec2db3d5a25f04fb93049e19c698360fe23f4a1abd961be8f3ed24f",
+          "system_prompt_sha256": "a578679af058fcc3a984e793e02fc6c1202fdff60d8685668ab892c99cbf5743",
+          "seed": 43,
+          "temperature": 0.0,
+          "dropped_optional_context": [],
+          "note_tag": null,
+          "num_ctx": 8192,
+          "num_predict": 2048
+        }
+      },
+      "retry": {
+        "strategy": "v01",
+        "temperature": 0.0,
+        "guidance_level": null,
+        "context_paths": []
+      },
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -8,6 +8,9 @@\n     public String lookup(String input) throws Exception {\n         Path root = Path.of(System.getProperty(\"demo.root\"));\n         Path target = root.resolve(input);\n+        if (!target.startsWith(root)) {\n+            throw new SecurityException(\"Path traversal detected\");\n+        }\n         return Files.readString(target);\n     }\n }\n",
+      "patch_sha256": "d8959aef9a892069b83669d6c9ae0277c2c87802aa44935e07be2c9da031d560",
+      "changed_lines": 3,
+      "verification": {
+        "passed": false,
+        "baseline_valid": false,
+        "base_commit": "b10397dc95e1b77ddc1343d7578b622e0de7c13b",
+        "source_revision": "77ab9f73ce5c8647ddafd1d6ef33aeb18282e67c",
+        "build": {
+          "passed": true,
+          "duration_seconds": 7.297
+        },
+        "behavior": {
+          "passed": true,
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "details": [],
+          "exit_code": 0,
+          "duration_seconds": 4.234,
+          "junit_sha256": "c819cda8236d86939c6af07e495e37e81baaa6e406ea6c792112606b4d9e66bd"
+        },
+        "security": {
+          "passed": false,
+          "tests": 3,
+          "failures": 2,
+          "errors": 0,
+          "skipped": 0,
+          "details": [
+            {
+              "name": "cannotEscapeThroughLinkInsideRoot",
+              "type": "failure",
+              "assertion": "PATH_TRAVERSAL_REGRESSION"
+            },
+            {
+              "name": "cannotReadParentSecret",
+              "type": "failure",
+              "assertion": "PATH_TRAVERSAL_REGRESSION"
+            }
+          ],
+          "exit_code": 1,
+          "duration_seconds": 4.063,
+          "junit_sha256": "9d282c0837d371e80b58d95a5f285960737feecaf5b634b8348b3fff132ef2fa"
+        },
+        "scans": [
+          {
+            "tool": "semgrep",
+            "version": "1.136.0",
+            "status": "ok",
+            "analysis_id": "7a7149e4212e446cb5e00c38d3d9eb4a",
+            "commit": "77ab9f73ce5c8647ddafd1d6ef33aeb18282e67c",
+            "findings": []
+          }
+        ],
+        "patch": {
+          "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -8,6 +8,9 @@\n     public String lookup(String input) throws Exception {\n         Path root = Path.of(System.getProperty(\"demo.root\"));\n         Path target = root.resolve(input);\n+        if (!target.startsWith(root)) {\n+            throw new SecurityException(\"Path traversal detected\");\n+        }\n         return Files.readString(target);\n     }\n }\n",
+          "patch_sha256": "d8959aef9a892069b83669d6c9ae0277c2c87802aa44935e07be2c9da031d560",
+          "changed_lines": 3
+        },
+        "feedback": {
+          "code": "validation_failed",
+          "behavior": {
+            "passed": true,
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "details": [],
+            "exit_code": 0,
+            "duration_seconds": 4.234,
+            "junit_sha256": "c819cda8236d86939c6af07e495e37e81baaa6e406ea6c792112606b4d9e66bd"
+          },
+          "security": {
+            "passed": false,
+            "tests": 3,
+            "failures": 2,
+            "errors": 0,
+            "skipped": 0,
+            "details": [
+              {
+                "name": "cannotEscapeThroughLinkInsideRoot",
+                "type": "failure",
+                "assertion": "PATH_TRAVERSAL_REGRESSION"
+              },
+              {
+                "name": "cannotReadParentSecret",
+                "type": "failure",
+                "assertion": "PATH_TRAVERSAL_REGRESSION"
+              }
+            ],
+            "exit_code": 1,
+            "duration_seconds": 4.063,
+            "junit_sha256": "9d282c0837d371e80b58d95a5f285960737feecaf5b634b8348b3fff132ef2fa"
+          },
+          "remaining_rules": []
+        },
+        "duration_seconds": 47.531,
+        "runner_profile": "native-same-user",
+        "versions": {
+          "java": "17; inspect preparation evidence",
+          "maven": "3.9.16"
+        }
+      },
+      "failure": {
+        "category": "security_witness_failed",
+        "failed_tests": [
+          {
+            "suite": "security",
+            "test": "cannotEscapeThroughLinkInsideRoot",
+            "marker": "PATH_TRAVERSAL_REGRESSION"
+          },
+          {
+            "suite": "security",
+            "test": "cannotReadParentSecret",
+            "marker": "PATH_TRAVERSAL_REGRESSION"
+          }
+        ],
+        "remaining_rules": []
+      }
+    },
+    {
+      "number": 2,
+      "proposal": {
+        "mode": "real-local-model",
+        "patch": {
+          "edits": [
+            {
+              "path": "src/main/java/demo/DemoService.java",
+              "old_sha256": "c129654151360c4fa75f363908c9d3ede3b43877a49205a99604235683aab7e4",
+              "content": "package demo;\n\nimport java.nio.file.*;\n\n// Case path-02.\n// Deliberately vulnerable synthetic example. Root is supplied by trusted runner.\npublic class DemoService {\n    public String lookup(String input) throws Exception {\n        Path root = Path.of(System.getProperty(\"demo.root\"));\n        Path target = root.resolve(input);\n        if (!target.startsWith(root)) {\n            throw new SecurityException(\"Input path is outside the allowed root\");\n        }\n        return Files.readString(target);\n    }\n}\n"
+            }
+          ],
+          "rationale": "The original code did not enforce canonical root containment before reading files, which could lead to path traversal vulnerabilities. The new code checks if the resolved path starts with the root directory, ensuring that the input path is within the allowed root. This prevents attackers from accessing files outside the intended directory."
+        },
+        "model": {
+          "runtime": "ollama",
+          "runtime_version": "0.34.0",
+          "model": "qwen2.5-coder:7b-instruct-q4_K_M",
+          "model_digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+          "quantization": "Q4_K_M",
+          "license_sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e"
+        },
+        "metrics": {
+          "duration_seconds": 7.485,
+          "prompt_tokens_measured": 886,
+          "output_tokens_measured": 286,
+          "context_chars": 1756,
+          "prompt_sha256": "40600da22c8238785be39a6869ec935a8e1555666b89ed5b67b558e5cd961bfd",
+          "system_prompt_sha256": "a578679af058fcc3a984e793e02fc6c1202fdff60d8685668ab892c99cbf5743",
+          "seed": 44,
+          "temperature": 0.0,
+          "dropped_optional_context": [],
+          "note_tag": null,
+          "num_ctx": 8192,
+          "num_predict": 2048
+        }
+      },
+      "retry": {
+        "strategy": "v01",
+        "temperature": 0.0,
+        "guidance_level": null,
+        "context_paths": []
+      },
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -8,6 +8,9 @@\n     public String lookup(String input) throws Exception {\n         Path root = Path.of(System.getProperty(\"demo.root\"));\n         Path target = root.resolve(input);\n+        if (!target.startsWith(root)) {\n+            throw new SecurityException(\"Input path is outside the allowed root\");\n+        }\n         return Files.readString(target);\n     }\n }\n",
+      "patch_sha256": "7d612eb0db99e6461f38712ad4fd9f8d653fae32035cd8a09edf6b6017fa408e",
+      "changed_lines": 3,
+      "verification": {
+        "passed": false,
+        "baseline_valid": false,
+        "base_commit": "b10397dc95e1b77ddc1343d7578b622e0de7c13b",
+        "source_revision": "da4b60185fd667ca256679013046337d59111055",
+        "build": {
+          "passed": true,
+          "duration_seconds": 7.312
+        },
+        "behavior": {
+          "passed": true,
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "details": [],
+          "exit_code": 0,
+          "duration_seconds": 4.468,
+          "junit_sha256": "5428c9aa514c58c83386f91429ed8ced9e34822fadb4b0fff901e02d6019e50e"
+        },
+        "security": {
+          "passed": false,
+          "tests": 3,
+          "failures": 2,
+          "errors": 0,
+          "skipped": 0,
+          "details": [
+            {
+              "name": "cannotEscapeThroughLinkInsideRoot",
+              "type": "failure",
+              "assertion": "PATH_TRAVERSAL_REGRESSION"
+            },
+            {
+              "name": "cannotReadParentSecret",
+              "type": "failure",
+              "assertion": "PATH_TRAVERSAL_REGRESSION"
+            }
+          ],
+          "exit_code": 1,
+          "duration_seconds": 4.187,
+          "junit_sha256": "6c9350cc55f82a5b0ea1a50355faf07dd1115c43e8851928d7ebe9481479909d"
+        },
+        "scans": [
+          {
+            "tool": "semgrep",
+            "version": "1.136.0",
+            "status": "ok",
+            "analysis_id": "07119cb9c0d54294a18381eadb881ee7",
+            "commit": "da4b60185fd667ca256679013046337d59111055",
+            "findings": []
+          }
+        ],
+        "patch": {
+          "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -8,6 +8,9 @@\n     public String lookup(String input) throws Exception {\n         Path root = Path.of(System.getProperty(\"demo.root\"));\n         Path target = root.resolve(input);\n+        if (!target.startsWith(root)) {\n+            throw new SecurityException(\"Input path is outside the allowed root\");\n+        }\n         return Files.readString(target);\n     }\n }\n",
+          "patch_sha256": "7d612eb0db99e6461f38712ad4fd9f8d653fae32035cd8a09edf6b6017fa408e",
+          "changed_lines": 3
+        },
+        "feedback": {
+          "code": "validation_failed",
+          "behavior": {
+            "passed": true,
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "details": [],
+            "exit_code": 0,
+            "duration_seconds": 4.468,
+            "junit_sha256": "5428c9aa514c58c83386f91429ed8ced9e34822fadb4b0fff901e02d6019e50e"
+          },
+          "security": {
+            "passed": false,
+            "tests": 3,
+            "failures": 2,
+            "errors": 0,
+            "skipped": 0,
+            "details": [
+              {
+                "name": "cannotEscapeThroughLinkInsideRoot",
+                "type": "failure",
+                "assertion": "PATH_TRAVERSAL_REGRESSION"
+              },
+              {
+                "name": "cannotReadParentSecret",
+                "type": "failure",
+                "assertion": "PATH_TRAVERSAL_REGRESSION"
+              }
+            ],
+            "exit_code": 1,
+            "duration_seconds": 4.187,
+            "junit_sha256": "6c9350cc55f82a5b0ea1a50355faf07dd1115c43e8851928d7ebe9481479909d"
+          },
+          "remaining_rules": []
+        },
+        "duration_seconds": 47.391,
+        "runner_profile": "native-same-user",
+        "versions": {
+          "java": "17; inspect preparation evidence",
+          "maven": "3.9.16"
+        }
+      },
+      "failure": {
+        "category": "security_witness_failed",
+        "failed_tests": [
+          {
+            "suite": "security",
+            "test": "cannotEscapeThroughLinkInsideRoot",
+            "marker": "PATH_TRAVERSAL_REGRESSION"
+          },
+          {
+            "suite": "security",
+            "test": "cannotReadParentSecret",
+            "marker": "PATH_TRAVERSAL_REGRESSION"
+          }
+        ],
+        "remaining_rules": []
+      }
+    }
+  ],
+  "events": [
+    {
+      "time": 1792921989.2764084,
+      "status": "scanning"
+    },
+    {
+      "time": 1792922037.3244364,
+      "status": "scanning"
+    },
+    {
+      "time": 1792922037.5606713,
+      "status": "scanning"
+    },
+    {
+      "time": 1792922037.5741992,
+      "status": "patching"
+    },
+    {
+      "time": 1792922044.3003666,
+      "status": "verifying"
+    },
+    {
+      "time": 1792922092.0713449,
+      "status": "patching"
+    },
+    {
+      "time": 1792922099.7540922,
+      "status": "verifying"
+    },
+    {
+      "time": 1792922147.4251387,
+      "status": "needs_human"
+    }
+  ],
+  "approval": null,
+  "memory_mode": "off",
+  "strategy": "v01",
+  "seed": 42,
+  "baseline": {
+    "passed": false,
+    "baseline_valid": true,
+    "base_commit": "b10397dc95e1b77ddc1343d7578b622e0de7c13b",
+    "source_revision": "b10397dc95e1b77ddc1343d7578b622e0de7c13b",
+    "build": {
+      "passed": true,
+      "duration_seconds": 7.609
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "exit_code": 0,
+      "duration_seconds": 4.328,
+      "junit_sha256": "e66f453e8d41c41adb70486a422b0eb85ab35740fd208f5a07974ea4415abf88"
+    },
+    "security": {
+      "passed": false,
+      "tests": 3,
+      "failures": 3,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "cannotEscapeThroughLinkInsideRoot",
+          "type": "failure",
+          "assertion": "PATH_TRAVERSAL_REGRESSION"
+        },
+        {
+          "name": "cannotReadParentSecret",
+          "type": "failure",
+          "assertion": "PATH_TRAVERSAL_REGRESSION"
+        },
+        {
+          "name": "cannotReadAbsolutePathOutsideRoot",
+          "type": "failure",
+          "assertion": "PATH_TRAVERSAL_REGRESSION"
+        }
+      ],
+      "exit_code": 1,
+      "duration_seconds": 4.421,
+      "junit_sha256": "94f4107ef0cf1335ceb2ffaec697ddb0133db8856c43423902c76a04cd121157"
+    },
+    "scans": [
+      {
+        "tool": "semgrep",
+        "version": "1.136.0",
+        "status": "ok",
+        "analysis_id": "7c85bb1039e146f7814385579031a292",
+        "commit": "b10397dc95e1b77ddc1343d7578b622e0de7c13b",
+        "findings": [
+          {
+            "tool": "semgrep",
+            "rule_id": "bigg.java.path-resolution",
+            "raw_rule_id": "mnt.c.TUBITAKClaude.SafePatch_V0.2.rules.bigg.java.path-resolution",
+            "type": "VULNERABILITY",
+            "file": "src/main/java/demo/DemoService.java",
+            "line": 11,
+            "severity": "ERROR",
+            "message": "Synthetic path requires canonical root containment before reading.",
+            "cwe": "CWE-22",
+            "fingerprint": "56d7bcba77c8af2c9b4fbf2ee140780a3f021d4e6d73dec92fd1bebe46cd32a9"
+          }
+        ]
+      }
+    ],
+    "patch": null,
+    "feedback": {
+      "code": "validation_failed",
+      "behavior": {
+        "passed": true,
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 4.328,
+        "junit_sha256": "e66f453e8d41c41adb70486a422b0eb85ab35740fd208f5a07974ea4415abf88"
+      },
+      "security": {
+        "passed": false,
+        "tests": 3,
+        "failures": 3,
+        "errors": 0,
+        "skipped": 0,
+        "details": [
+          {
+            "name": "cannotEscapeThroughLinkInsideRoot",
+            "type": "failure",
+            "assertion": "PATH_TRAVERSAL_REGRESSION"
+          },
+          {
+            "name": "cannotReadParentSecret",
+            "type": "failure",
+            "assertion": "PATH_TRAVERSAL_REGRESSION"
+          },
+          {
+            "name": "cannotReadAbsolutePathOutsideRoot",
+            "type": "failure",
+            "assertion": "PATH_TRAVERSAL_REGRESSION"
+          }
+        ],
+        "exit_code": 1,
+        "duration_seconds": 4.421,
+        "junit_sha256": "94f4107ef0cf1335ceb2ffaec697ddb0133db8856c43423902c76a04cd121157"
+      },
+      "remaining_rules": [
+        "bigg.java.path-resolution"
+      ]
+    },
+    "duration_seconds": 47.844,
+    "runner_profile": "native-same-user",
+    "versions": {
+      "java": "17; inspect preparation evidence",
+      "maven": "3.9.16"
+    }
+  },
+  "memory_lookup": {
+    "decision": "disabled",
+    "duration_seconds": 0,
+    "rejected": [],
+    "selected_id": null
+  },
+  "memory_context": {
+    "project": "owned-java-demo",
+    "kind": "path",
+    "rule_id": "bigg.java.path-resolution",
+    "jdk": "17",
+    "source_path": "src/main/java/demo/DemoService.java",
+    "build_sha256": "26e043fae58e551912409518b9d20e281bf34a51d8980781ee6c3c299fec6819",
+    "contract_sha256": "e154b3c293b96bd61f254dcc6c39a5a527ea08de65b6d38497f9f767b39372d5",
+    "source_sha256": "c129654151360c4fa75f363908c9d3ede3b43877a49205a99604235683aab7e4"
+  },
+  "memory_ids": [],
+  "tokens_reserved": 16384,
+  "reason": "no_progress",
+  "wall_seconds": 158.242
+}
