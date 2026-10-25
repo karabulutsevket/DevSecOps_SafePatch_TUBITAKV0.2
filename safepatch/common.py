@@ -42,6 +42,10 @@ def setting(name, default=None):
 
 # The model rewrites the whole file, so the file must fit its 8K-token context (worker1).
 MODEL_SOURCE_CHARS = 24000
+# A larger file is shown as the methods holding its findings (region mode, safepatch/region.py).
+# The model returns those methods too: 2,048 output tokens hold about 6,000 characters of Java
+# as JSON, so the regions stay well below that to leave room for the fix.
+MODEL_REGION_CHARS = 5000
 
 
 def known_findings_enabled():

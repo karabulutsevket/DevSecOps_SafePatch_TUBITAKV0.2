@@ -2,10 +2,11 @@ import difflib
 import time
 import uuid
 
-from safepatch.common import MODEL_SOURCE_CHARS, POLICY, Patch, canonical, digest, remaining, request, secret, setting
+from safepatch.common import MODEL_REGION_CHARS, MODEL_SOURCE_CHARS, POLICY, Patch, canonical, digest, remaining, request, secret, setting
 from safepatch.memory import Memory, context_for, reuse_result
 from safepatch.acceptance import manifest
 from safepatch.feedback import GUIDANCE_KEY, classify, guidance_for, imitates_note
+from safepatch.region import RegionPatch, region_view, splice
 from safepatch.policy import PolicyError, validate_patch
 from safepatch.project import is_protected
 from safepatch.repository import allowed_files, baseline
@@ -89,6 +90,24 @@ def check_expert_patch(job, patch):
     if imitates_note(patch.rationale, *(e.content for e in patch.edits)):
         raise PolicyError("suspected_prompt_injection")
     return meta
+
+
+def model_view(target, source, findings):
+    """The methods holding the job's findings, if they are few and small enough for the model."""
+    view = region_view(target, source, [f.get("line") for f in findings])
+    return view if view and sum(len(r["content"]) for r in view["regions"]) <= MODEL_REGION_CHARS else None
+
+
+def region_answer(proposal, view, target, source):
+    """A region answer as a whole-file patch: policy and verification judge the whole file."""
+    if view is None:
+        raise PolicyError("region_answer_without_regions")
+    try:
+        answer = RegionPatch.model_validate(proposal["region_patch"])
+    except ValueError as exc:
+        raise PolicyError("region_answer_invalid") from exc
+    edit = {"path": target, "old_sha256": digest(source), "content": splice(source, view, answer)}
+    return {**proposal, "patch": {"edits": [edit], "rationale": answer.rationale}}
 
 
 def changed_lines(before, after, limit=1500):
@@ -262,6 +281,8 @@ class Engine:
         if strategy not in STRATEGIES:
             raise PolicyError("unknown_retry_strategy")
         context_files = siblings if strategy == "guided+context" else {}
+        # Offered with every model call; worker1 uses it only when the whole file does not fit.
+        view = model_view(target, source, job.get("findings") or [finding])
         seen, previous_feedback, feedback, failure = set(), None, None, None
         for attempt in range(1, job["max_attempts"] + 1):
             self.active(job_id)
@@ -278,14 +299,14 @@ class Engine:
             if replay and attempt == 1:
                 proposal = replay
             else:
-                if len(source) > MODEL_SOURCE_CHARS:
-                    # The model can neither read nor return this file whole (VUL4J-79's ZipUtil.java
-                    # is ~98 KB): the job goes to the expert without a model attempt.
+                if len(source) > MODEL_SOURCE_CHARS and view is None:
+                    # Too large to show whole and no small set of methods holds the findings:
+                    # the job goes to the expert without a model attempt.
                     self.set(job_id, "needs_human", reason="source_exceeds_model_context", attempt_count=attempt - 1)
                     return
                 self.store.mutate(job_id, lambda j: j.update(tokens_reserved=used + reservation))
                 options = retry_options(strategy, GUIDANCE_KEY.get(family(finding)), attempt, failure, context_files)
-                proposal = self.worker("worker1", "/propose", {"job_id": job_id, "attempt": attempt, "deadline": job["deadline"], "source": {target: source}, "finding": finding, "feedback": feedback, "memory_data": memory_data, "seed": job.get("seed", 42) + attempt, **({"failure_data": failure_data} if failure_data else {}), **options}, job["deadline"])
+                proposal = self.worker("worker1", "/propose", {"job_id": job_id, "attempt": attempt, "deadline": job["deadline"], **({"source": {target: source}} if len(source) <= MODEL_SOURCE_CHARS else {}), **({"region_source": view} if view else {}), "finding": finding, "feedback": feedback, "memory_data": memory_data, "seed": job.get("seed", 42) + attempt, **({"failure_data": failure_data} if failure_data else {}), **options}, job["deadline"])
             retry = {"strategy": strategy, "temperature": options.get("temperature", 0.0), "guidance_level": attempt - 2 if "guidance" in options else None, "context_paths": sorted(options.get("context_files", {}))}
             self.active(job_id)
             if proposal.get("mode") not in ("real-local-model", "mock-test", "approved-memory-replay"):
@@ -294,8 +315,10 @@ class Engine:
                 raise PolicyError("worker_cannot_claim_memory_replay")
             if proposal["mode"] == "mock-test" and job["mode"] != "mock-test":
                 raise PolicyError("mock_result_on_real_job")
-            patch = Patch.model_validate(proposal["patch"])
             try:
+                if "region_patch" in proposal:
+                    proposal = region_answer(proposal, view, target, source)
+                patch = Patch.model_validate(proposal["patch"])
                 meta = validate_patch(files, patch, allowed=allowed)
             except PolicyError as exc:
                 self.store.mutate(job_id, lambda j: j["attempts"].append({"number": attempt, "proposal": proposal, "policy_error": str(exc)}))

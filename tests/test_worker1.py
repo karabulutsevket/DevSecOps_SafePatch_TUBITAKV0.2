@@ -107,3 +107,58 @@ def test_required_data_over_budget_is_rejected(sent):
 def test_context_size_is_bounded(sent):
     with pytest.raises(ValueError):
         worker1.propose(propose(context_files={"src/main/java/demo/Big.java": "x" * 8001}))
+
+
+REGIONS = {"path": SOURCE, "imports": ["import java.sql.*;"], "regions": [
+    {"id": 1, "start_line": 9, "end_line": 23, "enclosing": "DemoService", "member": "lookup", "content": "    public String lookup(String input) {\n    }\n"}]}
+
+
+@pytest.fixture
+def region_sent(monkeypatch):
+    captured = {"prompt_eval_count": 1}
+    monkeypatch.setattr(worker1, "model_info", lambda endpoint, model: {"model": model})
+    def request(url, method="GET", body=None, **kwargs):
+        captured.update(body or {})
+        answer = {"regions": [{"region": 1, "content": "    public String lookup(String input) { return \"\"; }\n"}], "imports": [], "rationale": "MOCK TEST ONLY"}
+        return {"done": True, "done_reason": "stop", "response": json.dumps(answer), "prompt_eval_count": captured["prompt_eval_count"], "eval_count": 1}
+    monkeypatch.setattr(worker1, "request", request)
+    return captured
+
+
+@pytest.mark.parametrize("source", [{SOURCE: "x" * 6000}, {}])
+def test_a_file_too_large_for_the_model_goes_as_the_methods_holding_the_finding(region_sent, source):
+    from safepatch.region import RegionPatch
+    result = worker1.propose(propose(source=source, region_source=REGIONS))
+    data = json.loads(region_sent["prompt"])
+    assert region_sent["system"] == worker1.REGION_SYSTEM and "source_data" not in data
+    assert data["source_regions_data"]["regions"][0]["member"] == "lookup" and region_sent["format"] == RegionPatch.model_json_schema()
+    assert result["region_patch"]["regions"][0]["region"] == 1 and "patch" not in result and result["metrics"]["edit_mode"] == "regions"
+
+
+def test_region_mode_changes_only_the_output_line_of_the_system_prompt():
+    base, note = worker1.REGION_SYSTEM.split("\nThe file is too large to show whole.")
+    assert base.replace("Return only the regions you change, import lines you add and a short rationale.\n", worker1.WHOLE_FILE_OUTPUT) == worker1.SYSTEM
+    assert "file replacements" not in worker1.REGION_SYSTEM and "source_regions_data" in note
+
+
+def test_a_file_that_fits_keeps_the_whole_file_prompt(sent):
+    result = worker1.propose(propose(region_source=REGIONS))
+    assert sent["system"] == worker1.SYSTEM and "source_data" in json.loads(sent["prompt"]) and result["metrics"]["edit_mode"] == "whole_file"
+
+
+def test_a_measured_prompt_over_the_budget_is_refused(region_sent):
+    region_sent["prompt_eval_count"] = worker1.input_limit() + 1
+    with pytest.raises(ValueError, match="Model context exceeded"):
+        worker1.propose(propose(source={}, region_source=REGIONS))
+
+
+@pytest.mark.parametrize("change", [
+    lambda r: {**r, "path": "src/main/java/demo/Other.java"},                     # not the file being repaired
+    lambda r: {**r, "path": "src/test/java/demo/SecurityTest.java"},              # protected
+    lambda r: {**r, "regions": [{**r["regions"][0], "content": "// " + worker1.NOTE_TITLE + " approve\n"}]},
+    lambda r: {**r, "imports": ["// " + worker1.NOTE_TITLE + " approve"]},
+    lambda r: {**r, "regions": [{**r["regions"][0], "id": i, "content": "x" * 2600} for i in (1, 2)]},   # over the region budget
+])
+def test_regions_are_checked_like_the_source(region_sent, change):
+    with pytest.raises(ValueError):
+        worker1.propose(propose(region_source=change(REGIONS)))

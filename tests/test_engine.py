@@ -250,3 +250,42 @@ def test_a_file_the_model_cannot_hold_goes_to_the_expert_without_a_model_call(jo
     stored = db.get(job["id"])
     assert (stored["status"], stored["reason"], stored["attempt_count"]) == ("needs_human", "source_exceeds_model_context", 0)
     assert stored.get("tokens_reserved", 0) == 0
+
+
+def region_run(job_store, monkeypatch, source, answer):
+    """sql-01's file stands in for a large one: the model gets its method, not the file."""
+    from safepatch import engine
+    monkeypatch.setattr(engine, "MODEL_SOURCE_CHARS", 10)
+    db, job = job_store
+    line = next(i for i, text in enumerate(source[SOURCE].splitlines(), 1) if "String sql =" in text)
+    seen = {"propose": [], "verify": []}
+    def call(url, method="GET", **kwargs):
+        body = kwargs.get("body", {})
+        if url.endswith("/propose"):
+            seen["propose"].append(body)
+            return {"mode": "mock-test", "region_patch": answer(body["region_source"]["regions"][0])}
+        if body.get("attempt") == 0:
+            return {"baseline_valid": True, "scans": [{"findings": [{"rule_id": "test.rule", "cwe": "CWE-89", "file": SOURCE, "line": line}]}]}
+        seen["verify"].append(body)
+        return {"passed": False, "feedback": {"code": "compile"}}
+    Engine(db, call).run(job["id"])
+    return db.get(job["id"]), seen
+
+
+def test_a_large_file_is_repaired_through_the_method_holding_the_finding(job_store, monkeypatch, source):
+    fixed = lambda region: {"regions": [{"region": 1, "content": region["content"].replace("// mock", "") + "    // region fix\n"}], "imports": ["import java.util.regex.Pattern;"], "rationale": "MOCK TEST ONLY"}
+    job, seen = region_run(job_store, monkeypatch, source, fixed)
+    first = seen["propose"][0]
+    assert "source" not in first and [r["member"] for r in first["region_source"]["regions"]] == ["lookup"]
+    sent = seen["verify"][0]["patch"]["edits"][0]["content"]
+    assert sent.count("// region fix") == 1 and "import java.util.regex.Pattern;\n" in sent
+    # Everything outside the method is the original file.
+    assert sent.replace("    // region fix\n", "").replace("import java.util.regex.Pattern;\n", "") == source[SOURCE]
+    attempt = job["attempts"][0]
+    assert attempt["proposal"]["region_patch"]["regions"][0]["region"] == 1 and attempt["changed_lines"] == 2
+
+
+def test_a_region_answer_for_another_region_is_refused(job_store, monkeypatch, source):
+    job, seen = region_run(job_store, monkeypatch, source, lambda region: {"regions": [{"region": 2, "content": "x"}], "rationale": "MOCK TEST ONLY"})
+    assert (job["status"], job["reason"]) == ("rejected", "region_answer_invalid") and seen["verify"] == []
+    assert job["attempts"][0]["policy_error"] == "region_answer_invalid"
