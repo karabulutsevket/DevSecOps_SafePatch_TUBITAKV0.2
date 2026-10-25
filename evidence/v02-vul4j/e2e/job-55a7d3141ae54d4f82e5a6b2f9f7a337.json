@@ -1,0 +1,80 @@
+{
+  "id": "55a7d3141ae54d4f82e5a6b2f9f7a337",
+  "case_id": "vul4j-79",
+  "scanner": "known",
+  "status": "approved",
+  "reason": null,
+  "base_commit": "57c32d5d78d13bdc8b3198436261d0edae1fd0da",
+  "target_file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+  "findings": [
+    "known:VUL4J-79.1 line 1152",
+    "known:VUL4J-79.2 line 1220",
+    "known:VUL4J-79.3 line 1225",
+    "known:VUL4J-79.4 line 1260"
+  ],
+  "baseline": {
+    "baseline_valid": true,
+    "runner_profile": "docker:maven:3.9.16-eclipse-temurin-8@sha256:0f402712b7a469189cfea5ec69cdcadcb32b22aaf1ea62777ab925c3d8470175",
+    "duration_seconds": 37.875
+  },
+  "attempts": [
+    {
+      "number": 1,
+      "mode": "approved-memory-replay",
+      "author": "SIMULATED-expert",
+      "memory_id": "c95c9eac7d874208bac562c8b702a6da",
+      "changed_lines": 36,
+      "patch_sha256": "d351a91390a3a0ef29985af49f83f798da0d1145dcd1dd9b624e12db397be7e7",
+      "passed": true,
+      "failure": null
+    }
+  ],
+  "candidate": {
+    "origin": "approved-memory-replay",
+    "author": "SIMULATED-expert",
+    "commit": "91496df6aa852ac4dbb53e2190bebae8b732ea8e",
+    "artifact_sha256": "4f12d1530828f2f278b79091c504d629da83bd3b8842350330f59c6e2a1df098",
+    "patch_sha256": "d351a91390a3a0ef29985af49f83f798da0d1145dcd1dd9b624e12db397be7e7"
+  },
+  "approval": {
+    "reviewer": "SIMULATED-reviewer",
+    "decision": "approve"
+  },
+  "memory": {
+    "use": "replay",
+    "selected_id": "c95c9eac7d874208bac562c8b702a6da",
+    "ids": [
+      "c95c9eac7d874208bac562c8b702a6da"
+    ]
+  },
+  "events": [
+    {
+      "status": "queued"
+    },
+    {
+      "status": "scanning"
+    },
+    {
+      "status": "scanning"
+    },
+    {
+      "status": "scanning"
+    },
+    {
+      "status": "scanning"
+    },
+    {
+      "status": "patching"
+    },
+    {
+      "status": "verifying"
+    },
+    {
+      "status": "awaiting_review"
+    },
+    {
+      "status": "approved",
+      "actor": "SIMULATED-reviewer"
+    }
+  ]
+}

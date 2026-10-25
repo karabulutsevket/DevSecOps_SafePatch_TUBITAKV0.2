@@ -1,0 +1,95 @@
+{
+  "id": "c95c9eac7d874208bac562c8b702a6da",
+  "state": "approved",
+  "version": 1,
+  "created_at": 1792956145.4464595,
+  "context": {
+    "project": "l3-vul4j-zt-zip",
+    "cwe_family": "CWE-22",
+    "rule_id": "known:VUL4J-79.1",
+    "jdk": "8",
+    "source_path": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+    "build_sha256": "a9236c07d5f6f89fd7d51c48b7b42a57528fc6fcdf3cc3a523600039d77180c6",
+    "contract_sha256": "be0e380154ec3b0852a91f8fbef385b472f87ed6337a2cc951fca03eec2da89a",
+    "source_sha256": "971bebccc295ac173bdfe02a023f6472d1388751349631d93fa26377c82fff26",
+    "signature": {
+      "schema": "safepatch-signature/1",
+      "sink": "java.io.File.<init>",
+      "construction": "other",
+      "source": "method_parameter",
+      "library": "java-io",
+      "library_version": null
+    }
+  },
+  "source_job": "e2d1d474aa4a43c5a39d43e84b499509",
+  "model": null,
+  "author": "SIMULATED-expert",
+  "provenance": "human-authored",
+  "evidence_sha256": "c0912d415d0b2b983969a195f534d9c0b08cbc77bc91b1fb48be2d9fe7a09c12",
+  "evidence": {
+    "build": true,
+    "behavior": {
+      "passed": true,
+      "tests": 116
+    },
+    "security": {
+      "passed": true,
+      "tests": 2
+    },
+    "rescan": {
+      "tools": [
+        "known-finding"
+      ],
+      "remaining": null,
+      "tolerated": 0
+    },
+    "approval": {
+      "reviewer": "SIMULATED-reviewer",
+      "at": 1792956143.5831835
+    },
+    "reuse": {
+      "verified": 1,
+      "failed": 0,
+      "inconclusive": 0,
+      "approved_by_reviewer": 1,
+      "rejected_by_reviewer": 0
+    }
+  },
+  "rule_sha256": null,
+  "approval": {
+    "job_id": "e2d1d474aa4a43c5a39d43e84b499509",
+    "evidence_sha256": "c0912d415d0b2b983969a195f534d9c0b08cbc77bc91b1fb48be2d9fe7a09c12",
+    "candidate_commit": "91496df6aa852ac4dbb53e2190bebae8b732ea8e",
+    "artifact_sha256": "92bbc8ea1ee05459e1f067a5c06a4a0c4ba84072966f5a8f7fe6d244ce0c8f2e",
+    "policy_version": "java-synthetic-v1",
+    "reviewer": "SIMULATED-reviewer",
+    "approved_at": 1792956143.5831835,
+    "expires_at": 1793042543.533122,
+    "decision": "approve",
+    "comment": "",
+    "mode": "real-local-model"
+  },
+  "uses": [
+    "55a7d3141ae54d4f82e5a6b2f9f7a337"
+  ],
+  "reuse": [
+    {
+      "job_id": "55a7d3141ae54d4f82e5a6b2f9f7a337",
+      "use": "replay",
+      "result": "verified",
+      "review": "approve",
+      "at": 1792956224.020063
+    }
+  ],
+  "events": [
+    {
+      "state": "approved",
+      "actor": "SIMULATED-reviewer",
+      "reason": "VUL4J-79 expert fix, reviewed (simulated)",
+      "at": 1792956145.4464595
+    }
+  ],
+  "patch_sha256": "8b02ffeb9f4342cd05390eef91003918fe47d8ec83b06247e4048a8be71fbb2e",
+  "diff_sha256": "d351a91390a3a0ef29985af49f83f798da0d1145dcd1dd9b624e12db397be7e7",
+  "before_sha256": "971bebccc295ac173bdfe02a023f6472d1388751349631d93fa26377c82fff26"
+}

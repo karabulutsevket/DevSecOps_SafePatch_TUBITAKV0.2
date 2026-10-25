@@ -1,0 +1,86 @@
+{
+  "id": "e2d1d474aa4a43c5a39d43e84b499509",
+  "case_id": "vul4j-79",
+  "scanner": "known",
+  "status": "approved",
+  "reason": null,
+  "base_commit": "57c32d5d78d13bdc8b3198436261d0edae1fd0da",
+  "target_file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+  "findings": [
+    "known:VUL4J-79.1 line 1152",
+    "known:VUL4J-79.2 line 1220",
+    "known:VUL4J-79.3 line 1225",
+    "known:VUL4J-79.4 line 1260"
+  ],
+  "baseline": {
+    "baseline_valid": true,
+    "runner_profile": "docker:maven:3.9.16-eclipse-temurin-8@sha256:0f402712b7a469189cfea5ec69cdcadcb32b22aaf1ea62777ab925c3d8470175",
+    "duration_seconds": 46.734
+  },
+  "attempts": [
+    {
+      "number": 1,
+      "mode": "human-authored",
+      "author": "SIMULATED-expert",
+      "memory_id": null,
+      "changed_lines": 36,
+      "patch_sha256": "d351a91390a3a0ef29985af49f83f798da0d1145dcd1dd9b624e12db397be7e7",
+      "passed": true,
+      "failure": null
+    }
+  ],
+  "candidate": {
+    "origin": "human-authored",
+    "author": "SIMULATED-expert",
+    "commit": "91496df6aa852ac4dbb53e2190bebae8b732ea8e",
+    "artifact_sha256": "92bbc8ea1ee05459e1f067a5c06a4a0c4ba84072966f5a8f7fe6d244ce0c8f2e",
+    "patch_sha256": "d351a91390a3a0ef29985af49f83f798da0d1145dcd1dd9b624e12db397be7e7"
+  },
+  "approval": {
+    "reviewer": "SIMULATED-reviewer",
+    "decision": "approve"
+  },
+  "memory": {
+    "use": null,
+    "selected_id": null,
+    "ids": []
+  },
+  "events": [
+    {
+      "status": "queued"
+    },
+    {
+      "status": "scanning"
+    },
+    {
+      "status": "scanning"
+    },
+    {
+      "status": "scanning"
+    },
+    {
+      "status": "scanning"
+    },
+    {
+      "status": "patching"
+    },
+    {
+      "status": "needs_human"
+    },
+    {
+      "status": "queued",
+      "actor": "SIMULATED-expert",
+      "origin": "human-authored"
+    },
+    {
+      "status": "verifying"
+    },
+    {
+      "status": "awaiting_review"
+    },
+    {
+      "status": "approved",
+      "actor": "SIMULATED-reviewer"
+    }
+  ]
+}

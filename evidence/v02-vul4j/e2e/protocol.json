@@ -1,0 +1,104 @@
+{
+  "schema": 1,
+  "what": "VUL4J-79 through the orchestrator: known-finding scan in the JDK 8 sandbox, model limit, expert patch, four-eyes approval, memory, exact replay in a second job",
+  "recorded_at": 1792956224.0994933,
+  "git_commit": "e83544e1cebfb4edfb153df6d3e16598c76b4445",
+  "git_dirty": false,
+  "policy": "java-synthetic-v1",
+  "identities": "SIMULATED-expert (submit+review), SIMULATED-reviewer (review): test identities driven by scripts/vul4j_e2e.py; SIMULATED decisions, not human ones",
+  "expert_patch": "the upstream human fix 759b72f33bc8f4d69f84f09fcb7f010ad45d6fff of src/main/java/org/zeroturnaround/zip/ZipUtil.java, submitted as the expert's patch; preview changed_lines=36",
+  "model": "not called: the file exceeds the model's input budget (source_exceeds_model_context)",
+  "jobs": [
+    "e2d1d474aa4a43c5a39d43e84b499509",
+    "55a7d3141ae54d4f82e5a6b2f9f7a337"
+  ],
+  "memory_id": "c95c9eac7d874208bac562c8b702a6da",
+  "steps": [
+    {
+      "actor": "SIMULATED-expert",
+      "call": "GET /v1/cases",
+      "status": 200
+    },
+    {
+      "actor": "SIMULATED-expert",
+      "call": "POST /v1/jobs",
+      "status": 201
+    },
+    {
+      "engine": "e2d1d474aa4a43c5a39d43e84b499509",
+      "status": "needs_human",
+      "reason": "source_exceeds_model_context",
+      "seconds": 48.8
+    },
+    {
+      "actor": "SIMULATED-expert",
+      "call": "GET /v1/jobs/e2d1d474aa4a43c5a39d43e84b499509/expert-source",
+      "status": 200
+    },
+    {
+      "actor": "SIMULATED-expert",
+      "call": "POST /v1/jobs/e2d1d474aa4a43c5a39d43e84b499509/expert-patch/preview",
+      "status": 200
+    },
+    {
+      "actor": "SIMULATED-expert",
+      "call": "POST /v1/jobs/e2d1d474aa4a43c5a39d43e84b499509/expert-patch",
+      "status": 202
+    },
+    {
+      "engine": "e2d1d474aa4a43c5a39d43e84b499509",
+      "status": "awaiting_review",
+      "reason": null,
+      "seconds": 42.1
+    },
+    {
+      "actor": "SIMULATED-expert",
+      "call": "POST /v1/jobs/e2d1d474aa4a43c5a39d43e84b499509/approval",
+      "status": 409,
+      "detail": "Kendi yazdığınız yamayı onaylayamazsınız"
+    },
+    {
+      "actor": "SIMULATED-reviewer",
+      "call": "POST /v1/jobs/e2d1d474aa4a43c5a39d43e84b499509/approval",
+      "status": 200
+    },
+    {
+      "actor": "SIMULATED-expert",
+      "call": "POST /v1/memory/promote",
+      "status": 409,
+      "detail": "author_cannot_promote_own_patch"
+    },
+    {
+      "actor": "SIMULATED-reviewer",
+      "call": "POST /v1/memory/promote",
+      "status": 201
+    },
+    {
+      "actor": "SIMULATED-expert",
+      "call": "POST /v1/jobs",
+      "status": 201
+    },
+    {
+      "engine": "55a7d3141ae54d4f82e5a6b2f9f7a337",
+      "status": "awaiting_review",
+      "reason": null,
+      "seconds": 78.5
+    },
+    {
+      "actor": "SIMULATED-expert",
+      "call": "POST /v1/jobs/55a7d3141ae54d4f82e5a6b2f9f7a337/approval",
+      "status": 409,
+      "detail": "Kendi yazdığınız yamayı onaylayamazsınız"
+    },
+    {
+      "actor": "SIMULATED-reviewer",
+      "call": "POST /v1/jobs/55a7d3141ae54d4f82e5a6b2f9f7a337/approval",
+      "status": 200
+    },
+    {
+      "actor": "SIMULATED-reviewer",
+      "call": "GET /v1/memory",
+      "status": 200
+    }
+  ]
+}

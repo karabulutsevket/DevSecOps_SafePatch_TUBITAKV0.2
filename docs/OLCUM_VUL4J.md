@@ -39,6 +39,30 @@ Notlar:
 - Kontrol yaması tanığın sonucu belirlediğini gösterir. Bilinen bulgu kipinde yamadan sonra yeniden tarama yapılmaz, bu yüzden bulgu listesi her yamada boştur; kabulü tanık verir.
 - Jar özeti koşudan koşuya değişir, çünkü Maven arşive zaman damgası yazar. Özet yalnız o koşuyu tanımlar.
 
+## Uçtan uca: orkestratör üzerinden uzman yolu
+
+**Ham kayıt:** [evidence/v02-vul4j/e2e/](../evidence/v02-vul4j/e2e/protocol.json). Betik: `scripts/vul4j_e2e.py`. Kayıt temiz bir commit'ten (`e83544e`) alındı.
+
+Akış, orkestratörün gerçek uygulamasıyla (uç noktalar, yetki, iş deposu, motor) koştu; doğrulama worker2 ve runner servisleri üzerinden sandbox'ta yapıldı. İki kimlik betiğin sürdüğü **test kimlikleridir**: `SIMULATED-expert` (iş açar, inceler) ve `SIMULATED-reviewer` (inceler). Kararlar **simüledir**, insan kararı değildir. Uzman yaması olarak upstream insan düzeltmesi gönderildi.
+
+| Adım | Sonuç |
+|---|---|
+| 1. İş (bilinen bulgu kipi) | Taban sandbox'ta geçerli, 4 bulgu tek dosyada tek iş |
+| 2. Model | **Çağrılmadı.** Dosya modelin girdi sınırını aşıyor; iş `needs_human` / `source_exceeds_model_context` ile uzmana düştü (0 model denemesi, token ayrılmadı) |
+| 3. Uzman yaması | Ön izleme 36 satır; politika ve doğrulamadan geçti, `awaiting_review` |
+| 4. Dört göz | Yazarın kendi onayı reddedildi; ikinci kimlik onayladı |
+| 5. Hafıza | Yazarın hafızaya alması reddedildi (`author_cannot_promote_own_patch`); ikinci kimlik aldı |
+| 6. İkinci iş, aynı vaka | Kayıt **birebir tekrar** edildi (`approved-memory-replay`, model yok), sandbox'ta yeniden doğrulandı |
+| 7. İkinci işin onayı | Tekrar edilen yama yazarını korur: yazarın onayı yine reddedildi; ikinci kimlik onayladı |
+
+Hafıza kaydının kanıt vektörü:
+- 1 doğrulanmış yeniden kullanım ve 1 inceleyici onayı.
+- Tarama sonucu "yok". Bilinen bulgu kipinde yamadan sonra yeniden tarama yapılmaz; arayüz bunu "yeniden taranmadı, tanık belirler" diye gösterir.
+
+Yapısal imza: hedef çağrı `java.io.File.<init>`, kaynak metot parametresi.
+
+Dağıtım (staging) bu akışa dahil edilmedi. zt-zip bir kütüphanedir; staging'in çalıştırdığı bir uygulama değildir.
+
 ## Vakayı çalıştırırken bulunan ve düzeltilen sorunlar
 
 1. **Yasak ifade kontrolü bütün dosyaya bakıyordu.** `ZipUtil.java` dosyasında projenin kendi koyduğu üç `// NOSONAR` var. Bu yüzden bu dosyaya gelen her yama, insan düzeltmesi dahil, reddediliyordu.
@@ -64,5 +88,5 @@ Notlar:
 - **Tanık 4 konumun 2'sini sınıyor** (`unpack` ve `BackslashUnpacker`). Bu iki yolu koruyan ama `unwrap` ve üst düzey `BackslashUnpacker` dalını korumayan bir yama da kabul edilir. Bu Vul4J'nin saldırı testinin sınırıdır; raporlarda belirtilmelidir.
 - **Bulgu konumları düzeltmeden alındı.** Bilinen bulgu kipi, tarayıcının bulmadığı açıkları onarım ölçümüne sokmak içindir. Tespit başarısı ayrıca ölçülecek (Hafta 7).
 - **Tek vaka.** Genelleme yapılmaz. Davranış testleri projenin kendi testleridir; gizli değerlendirme testi yoktur.
-- **Model bu dosyayı göremiyor.** `ZipUtil.java` 97 694 karakter. worker1 en çok 24 000 karakterlik kaynak alıyor, model bağlamı 8K token. Model bütün dosyayı yeniden yazdığı için çıktı da sığmaz. Bu vakada model tarafı (bölge tabanlı düzenleme ya da yalnız uzman yolu) ayrıca kararlaştırılacak.
-- **Uçtan uca iş henüz yok.** Bu kayıt runner düzeyindedir: orkestratör üzerinden iş, inceleme, hafıza ve dağıtım bu vakada çalıştırılmadı. Orkestratörün iş isteği `known` tarayıcısını henüz kabul etmiyor.
+- **Model bu dosyayı göremiyor.** `ZipUtil.java` 97 694 karakter. worker1 en çok 24 000 karakterlik kaynak alıyor, model bağlamı 8K token. Model bütün dosyayı yeniden yazdığı için çıktı da sığmaz. Karar (25 Ekim): önce uzman yolu (yukarıda), sonra modelin yalnız bulgunun metotlarını görüp değiştirdiği bölge tabanlı düzenleme.
+- **Arayüz tarayıcıda denenmedi.** Yeni seçenek ("Bilinen bulgu · değerlendirme vakası", cevap anahtarı olan vakada kendiliğinden seçilir) ve yeni açıklama metinleri tarayıcıda görülmedi. Uçtan uca akış API üzerinden koştu.
