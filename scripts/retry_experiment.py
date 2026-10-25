@@ -19,12 +19,12 @@ import uuid
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from safepatch.common import POLICY, digest, evidence, setting
+from safepatch.common import POLICY, canonical, digest, evidence, setting
 from safepatch.engine import STRATEGIES, Engine
 from safepatch.feedback import GUIDANCE_SHA256
 from safepatch.repository import registry
 from safepatch.store import Store
-from safepatch.worker1 import SYSTEM
+from safepatch.worker1 import SYSTEM, WEAKNESS_NOTES
 
 
 def write(path, data):
@@ -123,7 +123,7 @@ def main():
         write(output / "protocol.json", {
         "schema": 1, "hypothesis": "H2: failure-aware retries solve more cases than the fixed V0.1 retry loop",
         "started_at": started, "git_commit": git("rev-parse", "HEAD").stdout.strip(), "git_dirty": bool(git("status", "--porcelain", "--", "safepatch").stdout.strip()),
-        "model": setting("OLLAMA_MODEL", "qwen2.5-coder:7b-instruct-q4_K_M"), "system_prompt_sha256": digest(SYSTEM),
+        "model": setting("OLLAMA_MODEL", "qwen2.5-coder:7b-instruct-q4_K_M"), "system_prompt_sha256": digest(SYSTEM), "weakness_notes_sha256": digest(canonical(WEAKNESS_NOTES)),
         "guidance_sha256": GUIDANCE_SHA256, "retry_temperature": float(setting("RETRY_TEMPERATURE", "0.4")),
         "strategies": strategies, "cases": selected, "seeds": seeds, "max_attempts": attempts, "memory": "off",
         "order": "seeds outermost; strategy order rotated per case and seed", "jobs": len(order),

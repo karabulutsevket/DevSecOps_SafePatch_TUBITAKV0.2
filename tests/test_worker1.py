@@ -20,7 +20,8 @@ def sent(monkeypatch):
 
 
 def propose(**extra):
-    return worker1.Propose(job_id="a" * 32, attempt=2, deadline=time.time() + 60, source={SOURCE: "class DemoService {}\n"}, finding={"rule_id": "test.rule"}, **extra)
+    base = {"job_id": "a" * 32, "attempt": 2, "deadline": time.time() + 60, "source": {SOURCE: "class DemoService {}\n"}, "finding": {"rule_id": "test.rule"}}
+    return worker1.Propose(**{**base, **extra})
 
 
 def test_default_request_keeps_v01_prompt(sent):
@@ -29,6 +30,23 @@ def test_default_request_keeps_v01_prompt(sent):
     assert sent["options"]["temperature"] == 0.0
     assert "read_only_context_data" not in json.loads(sent["prompt"])
     assert result["metrics"]["note_tag"] is None
+
+
+def test_system_prompt_names_no_case_class_or_project():
+    # Week 4: project facts reach the model only as data, never in the trusted instructions.
+    text = (worker1.SYSTEM + "".join(worker1.WEAKNESS_NOTES.values())).lower()
+    assert not any(word in text for word in ("synthetic", "demo", "echomain", "echo:", "accounts", "bigg"))
+
+
+@pytest.mark.parametrize("finding,note", [
+    ({"rule_id": "bigg.java.sql-concatenation", "cwe": "CWE-89"}, "CWE-89"),
+    ({"rule_id": "javasecurity:S2083"}, "CWE-22"),
+    ({"rule_id": "COMMAND_INJECTION"}, "CWE-78"),
+    ({"rule_id": "vendor.unmapped"}, None),
+])
+def test_only_the_findings_weakness_note_is_added(sent, finding, note):
+    worker1.propose(propose(finding=finding))
+    assert sent["system"] == worker1.SYSTEM + (worker1.WEAKNESS_NOTES[note] if note else "")
 
 
 def test_note_tag_is_random_per_request(sent):
