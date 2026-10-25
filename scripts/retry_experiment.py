@@ -85,6 +85,7 @@ def main():
     parser.add_argument("--seeds", default="42,43,44")
     parser.add_argument("--attempts", type=int, default=3)
     parser.add_argument("--resume", action="store_true", help="Continue an interrupted run in the same EVIDENCE_DIR with its recorded plan")
+    parser.add_argument("--note", help="What differs from earlier runs (recorded in the protocol)")
     args = parser.parse_args()
     output = evidence("retry")
     if (output / "summary.json").exists():
@@ -130,7 +131,7 @@ def main():
         "guidance_placement": "appended after the JSON data in the user prompt. Pre-experiment probe on path-01 (seeds 43/44, temperature 0.4): the same text in the system prompt was ignored (identical patches); after the data it produced canonicalizing patches.",
         "duplicate_handling": "v01/sampling stop on a duplicate patch; guided strategies skip re-verification and retry with deeper guidance",
         "python": platform.python_version(), "scanner": "Semgrep 1.136.0 with three owned rules",
-        "runner": "native-same-user; no airgap claim", "human_approval": "none; experiment never approves"})
+        "runner": "native-same-user; no airgap claim", "human_approval": "none; experiment never approves", "note": args.note})
     done = {(r["seed"], r["case_id"], r["strategy"]) for r in rows}
     for index, (seed, case_id, strategy) in enumerate(order, 1):
         if (seed, case_id, strategy) in done:

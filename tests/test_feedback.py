@@ -52,6 +52,11 @@ def test_category_without_kind_text_uses_generic_diagnosis_but_kind_recipe():
     assert guidance_for("path", None, 0) is None
 
 
+def test_path_recipe_requires_real_paths():
+    # The H2 review found normalize()-only fixes that a link inside the root defeats.
+    assert RECIPES["path"].count("toRealPath()") >= 2 and "or normalize()" not in RECIPES["path"]
+
+
 def test_guidance_tables_use_known_categories_and_fit_worker_limit():
     for kind, texts in DIAGNOSIS.items():
         assert set(texts) <= set(CATEGORIES)
