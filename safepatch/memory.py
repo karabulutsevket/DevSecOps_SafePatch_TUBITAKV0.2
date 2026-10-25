@@ -12,6 +12,7 @@ from sqlalchemy import Column, Float, JSON, MetaData, String, Table, select, upd
 from safepatch.common import canonical, digest
 from safepatch.feedback import patch_caused
 from safepatch.policy import PolicyError
+from safepatch.weakness import family
 
 
 def _bytes(files, path):
@@ -23,16 +24,15 @@ def context_for(case, files, finding):
     """Only facts from the trusted registry and baseline enter applicability checks.
 
     V0.1 intentionally requires identical build/test contracts. This is narrower
-    than AST/dataflow applicability and may miss reusable examples. Projects without
-    a lab `kind` label get kind None, so their records stay `unknown` until the CWE
-    mapping (roadmap week 4) replaces it.
+    than AST/dataflow applicability and may miss reusable examples. The weakness is
+    its CWE family, not one scanner's rule id; `rule_id` is kept for traceability only.
     """
     source = finding["file"]
     spec = case.get("spec")
     tests = {p: digest(_bytes(files, p)) for p in files if p.startswith("src/test/") or "/src/test/" in p}
     return {
         "project": case.get("project", "owned-java-demo"),
-        "kind": case.get("kind"), "rule_id": finding["rule_id"],
+        "cwe_family": family(finding), "rule_id": finding["rule_id"],
         "jdk": spec.java if spec else "17", "source_path": source,
         "build_sha256": digest(_bytes(files, "pom.xml")) if "pom.xml" in files else None,
         "contract_sha256": digest(canonical(tests)),
@@ -40,10 +40,16 @@ def context_for(case, files, finding):
     }
 
 
-REQUIRED = ("project", "kind", "rule_id", "jdk", "source_path", "build_sha256", "contract_sha256")
+REQUIRED = ("project", "cwe_family", "jdk", "source_path", "build_sha256", "contract_sha256")
+
+
+def normalized(context):
+    """Records written before week 4 carry a rule id and a lab kind; their family comes from the rule."""
+    return context if "cwe_family" in context else {**context, "cwe_family": family({"rule_id": context.get("rule_id")})}
 
 
 def applicability(saved, current):
+    saved, current = normalized(saved), normalized(current)
     if any(not saved.get(k) or not current.get(k) for k in REQUIRED):
         return "unknown"
     if any(saved[k] != current[k] for k in REQUIRED):
@@ -197,7 +203,7 @@ class Memory:
             return {"decision": "disabled", "selected": None, "duration_seconds": 0, "rejected": []}
         rejected, candidates = [], []
         for record in self.all(context["project"]):
-            if record["state"] != "approved" or record["context"].get("rule_id") != context["rule_id"]:
+            if record["state"] != "approved" or normalized(record["context"]).get("cwe_family") != normalized(context).get("cwe_family"):
                 continue
             decision = applicability(record["context"], context)
             if mode == "guarded" and decision != "compatible":

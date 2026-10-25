@@ -7,7 +7,7 @@ from safepatch.engine import Engine
 
 
 def fake_initial():
-    return {"baseline_valid": True, "scans": [{"findings": [{"rule_id": "test.rule", "file": SOURCE}]}]}
+    return {"baseline_valid": True, "scans": [{"findings": [{"rule_id": "test.rule", "cwe": "CWE-89", "file": SOURCE}]}]}
 
 
 def scenario(job_store, patch_factory, source, failures, duplicate=False):

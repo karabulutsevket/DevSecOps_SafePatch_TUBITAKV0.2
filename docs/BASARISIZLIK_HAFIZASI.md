@@ -21,8 +21,8 @@ Her başarısız doğrulamadan sonra kayıt yazılır: model yaması, hafızadan
 
 | Alan | İçerik |
 |---|---|
-| `context` | Onaylı kayıtlarla aynı bağlam: proje, kural, sınıf, JDK, dosya yolu, build ve test sözleşmesi özetleri, kaynak özeti |
-| `context_sha256` | Bağlam imzası: kaynak özeti dışındaki bağlamın özeti; aynı sözleşmedeki farklı kod sürümlerini gruplar |
+| `context` | Onaylı kayıtlarla aynı bağlam: proje, CWE ailesi, kural (yalnız izlenebilirlik), JDK, dosya yolu, build ve test sözleşmesi özetleri, kaynak özeti ([uygunluk kararı](HAFIZA_UYGUNLUK.md)) |
+| `context_sha256` | Bağlam imzası: zorunlu alanların özeti (kaynak özeti ve tarayıcı kuralı hariç); aynı sözleşmedeki farklı kod sürümlerini ve aynı zayıflığın farklı tarayıcı bulgularını gruplar |
 | `patch_sha256`, `diff`, `changed_lines` | Başarısız aday |
 | `origin`, `strategy`, `retry`, `model`, `author` | Adayı kim üretti: model modu ve özeti, yeniden deneme stratejisi ve seviyesi, uzman yazarı |
 | `failure` | Başarısızlık sınıfı ve ayrıntısı: derleyici tanıları, düşen test adları, kalan kurallar |

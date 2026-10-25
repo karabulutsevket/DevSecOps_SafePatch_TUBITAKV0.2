@@ -30,7 +30,7 @@ def approved_record(db, job, actor="SIMULATED-UNIT-REVIEWER"):
     return Memory(db).promote(j, context, files[SOURCE], actor, "Simulated unit fixture approval")
 
 
-@pytest.mark.parametrize("field", ["project", "kind", "rule_id", "jdk", "source_path", "build_sha256", "contract_sha256"])
+@pytest.mark.parametrize("field", ["project", "cwe_family", "jdk", "source_path", "build_sha256", "contract_sha256"])
 def test_wrong_precondition_never_replayed(job_store, field):
     db, job = job_store
     record = approved_record(db, job)
@@ -39,7 +39,25 @@ def test_wrong_precondition_never_replayed(job_store, field):
     assert Memory(db).search(changed)["selected"] is None
 
 
-@pytest.mark.parametrize("field", ["kind", "jdk", "build_sha256", "contract_sha256"])
+def test_same_weakness_from_another_scanner_uses_the_record(job_store):
+    db, job = job_store
+    record = approved_record(db, job)
+    assert record["context"]["cwe_family"] == "CWE-89"
+    for rule in ("javasecurity:S3649", "SQL_INJECTION_JDBC"):
+        other = {**record["context"], "rule_id": rule}
+        assert applicability(record["context"], other) == "compatible"
+        assert Memory(db).search(other)["selected"]["id"] == record["id"]
+
+
+def test_records_from_before_week_4_get_their_family_from_the_rule():
+    old = {"project": "p", "kind": "sql", "rule_id": "bigg.java.sql-concatenation", "jdk": "17", "source_path": SOURCE,
+           "build_sha256": "b", "contract_sha256": "c", "source_sha256": "s"}
+    new = {**{k: v for k, v in old.items() if k != "kind"}, "cwe_family": "CWE-89", "rule_id": "SQL_INJECTION_JDBC"}
+    assert applicability(old, new) == "compatible"
+    assert applicability({**old, "rule_id": "legacy.unmapped.rule"}, new) == "unknown"
+
+
+@pytest.mark.parametrize("field", ["cwe_family", "jdk", "build_sha256", "contract_sha256"])
 def test_unknown_precondition_abstains(job_store, field):
     db, job = job_store
     record = approved_record(db, job)

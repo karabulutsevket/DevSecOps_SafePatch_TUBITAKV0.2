@@ -4,10 +4,11 @@ import time
 from safepatch.common import POLICY, Patch, canonical, digest, remaining, request, secret, setting
 from safepatch.memory import Memory, context_for
 from safepatch.acceptance import manifest
-from safepatch.feedback import classify, guidance_for, imitates_note
+from safepatch.feedback import GUIDANCE_KEY, classify, guidance_for, imitates_note
 from safepatch.policy import PolicyError, validate_patch
 from safepatch.project import is_protected
 from safepatch.repository import allowed_files, baseline
+from safepatch.weakness import family
 
 TERMINAL = {"awaiting_review", "rejected", "needs_human", "infrastructure_error", "cancelled", "expired", "approved", "deployed"}
 # v01: original loop. sampling: retries at higher temperature. guided: plus classified
@@ -70,13 +71,13 @@ def changed_lines(before, after, limit=1500):
     return "".join(lines)[:limit]
 
 
-def retry_options(strategy, kind, attempt, failure, context_files):
+def retry_options(strategy, guide, attempt, failure, context_files):
     """Extra worker1 fields per strategy; v01 sends none so its requests stay unchanged."""
     if strategy == "v01":
         return {}
     options = {"temperature": 0.0 if attempt == 1 else float(setting("RETRY_TEMPERATURE", "0.4"))}
     if strategy.startswith("guided") and failure:
-        options["guidance"] = guidance_for(kind, failure, attempt - 2)
+        options["guidance"] = guidance_for(guide, failure, attempt - 2)
     if context_files:
         options["context_files"] = context_files
     return options
@@ -224,7 +225,7 @@ class Engine:
                 proposal = replay
             else:
                 self.store.mutate(job_id, lambda j: j.update(tokens_reserved=used + reservation))
-                options = retry_options(strategy, case.get("kind"), attempt, failure, context_files)
+                options = retry_options(strategy, GUIDANCE_KEY.get(family(finding)), attempt, failure, context_files)
                 proposal = self.worker("worker1", "/propose", {"job_id": job_id, "attempt": attempt, "deadline": job["deadline"], "source": {target: source}, "finding": finding, "feedback": feedback, "memory_data": memory_data, "seed": job.get("seed", 42) + attempt, **options}, job["deadline"])
             retry = {"strategy": strategy, "temperature": options.get("temperature", 0.0), "guidance_level": attempt - 2 if "guidance" in options else None, "context_paths": sorted(options.get("context_files", {}))}
             self.active(job_id)

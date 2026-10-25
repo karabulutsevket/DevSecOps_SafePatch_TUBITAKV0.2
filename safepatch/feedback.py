@@ -42,6 +42,8 @@ RECIPES = {
     "*": "Fix the root cause at the sink with the standard safe API for this weakness; keep the public API and legitimate behavior.",
 }
 GUIDANCE_SHA256 = digest(canonical({"diagnosis": DIAGNOSIS, "recipes": RECIPES}))
+# CWE family (safepatch.weakness) -> guidance texts; any other family gets the generic ("*") texts.
+GUIDANCE_KEY = {"CWE-89": "sql", "CWE-22": "path", "CWE-78": "command"}
 
 # Title of the trusted note worker1 appends after the data. Repository text that
 # imitates it is treated as a prompt-injection attempt, never as guidance.

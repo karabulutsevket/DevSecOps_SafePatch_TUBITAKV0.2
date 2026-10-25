@@ -88,7 +88,7 @@ def test_disabled_memory_has_no_failure_lookup(job_store, patch_factory, source)
     assert second["memory_lookup"]["decision"] == "disabled" and "failures" not in second["memory_lookup"]
 
 
-CONTEXT = {"project": "owned-java-demo", "kind": "sql", "rule_id": "bigg.java.sql-concatenation", "jdk": "17", "source_path": SOURCE,
+CONTEXT = {"project": "owned-java-demo", "cwe_family": "CWE-89", "rule_id": "bigg.java.sql-concatenation", "jdk": "17", "source_path": SOURCE,
            "build_sha256": "b" * 64, "contract_sha256": "t" * 64, "source_sha256": "s" * 64}
 
 
@@ -101,11 +101,12 @@ def record_direct(db, context=CONTEXT, patch="c" * 64):
 @pytest.mark.parametrize("change,relation", [
     ({}, "same_source"),
     ({"source_sha256": "x" * 64}, "same_context"),
-    ({"rule_id": "other.rule"}, None),
+    ({"rule_id": "javasecurity:S3649"}, "same_source"),   # same weakness from another scanner
+    ({"cwe_family": "CWE-22"}, None),
     ({"build_sha256": "x" * 64}, None),
     ({"contract_sha256": "x" * 64}, None),
     ({"project": "other-project"}, None),
-    ({"kind": None}, None),
+    ({"cwe_family": None}, None),
 ])
 def test_failure_search_needs_a_compatible_context(job_store, change, relation):
     db, _ = job_store
@@ -119,7 +120,8 @@ def test_failure_record_keeps_the_schema_fields(job_store):
     record_direct(db)
     [record] = Memory(db).failure_records()
     assert record["schema"] == "safepatch-failure/1"
-    assert record["context_sha256"] == digest(canonical({k: v for k, v in CONTEXT.items() if k != "source_sha256"}))
+    # The signature leaves out the source hash and the scanner rule.
+    assert record["context_sha256"] == digest(canonical({k: v for k, v in CONTEXT.items() if k not in ("source_sha256", "rule_id")}))
     assert record["model"] == {"model_digest": "d" * 64} and record["strategy"] == "guided" and record["memory_ids"] == []
 
 
