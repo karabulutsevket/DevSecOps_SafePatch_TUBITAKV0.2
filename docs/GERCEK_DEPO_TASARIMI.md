@@ -183,3 +183,21 @@ Hafta 4'ten önce bir iş yalnız taramanın ilk bulgusunu ele alıyordu; diğer
 - `OtherDao` düzeltmesi kendi bulgusunu giderdi ama projenin tek güvenlik takımı `DemoService` açığını sömürmeye devam ettiği için kabul edilmedi.
 - Birim testleri: gruplama, alt işin taramayı yeniden kullanması, tolere listeleri, kuyruk (`tests/test_multi_finding.py`).
 
+
+## 9. Bölge tabanlı düzenleme (25 Ekim 2026, Hafta 5)
+
+Model dosyayı bütünüyle okuyup bütünüyle yeniden yazıyordu. Gerçek projelerde bu çoğu dosyada mümkün değil:
+- worker1'in muhafazakâr bütçesi bayt sayısını token sayısı kabul eder. Bu yüzden istemde dosyaya yaklaşık 3 600 bayt kalır, ilk denemeden sonra daha da az. `MODEL_SOURCE_CHARS` (24 000) yalnız bir ön kontroldür.
+- VUL4J-79'un `ZipUtil.java` dosyası 97 694 karakter. Bu boyuttaki bir dosya modele gidemiyordu; iş uzmana düşüyordu.
+
+| Konu | Karar |
+|---|---|
+| Model ne görür | İşin bulgularını içeren **metotlar** (yapıcılar, başlatıcılar dahil): dosyadaki satır aralıkları, içinde bulundukları sınıflar ve dosyanın import satırları. Satır bir iç sınıftaki metottaysa bölge o metottur; isimsiz sınıftaysa onu içeren dış metot. Bölgeleri tree-sitter çıkarır (`safepatch/region.py`). |
+| Model ne döndürür | Yalnız değiştirdiği bölgelerin yeni metni (bölge numarasıyla), eklediği import satırları ve kısa gerekçe (`RegionPatch`). Bölgenin dışı değişemez; bölge büyüyebilir (ör. yanına yardımcı metot eklenebilir). |
+| Birleştirme | Güvenilir kod (orkestratör) cevabı dosyaya yerleştirir. Bilinmeyen bölge numarası ya da import satırı biçiminde olmayan bir satır politika hatasıdır (`region_answer_invalid`, `region_import_invalid`). |
+| Kabul | Değişmedi: politika ve doğrulayıcı birleştirilmiş **bütün dosyayı** görür. Yasak ifade, satır sınırı, derleme, davranış, tanık ve tarama aynen uygulanır. Bölge bir bağlam aracıdır, güvenlik sınırı değildir. |
+| Hangi kip | worker1 karar verir: dosya bütünüyle sığıyorsa istem eskisiyle **bayt bayt aynı** kalır. Sığmıyorsa bölgeler kullanılır. Sistem talimatında yalnız çıktı satırı değişir ve bölgeleri anlatan bir paragraf eklenir. |
+| Bütçe | Bölgeler toplam en çok 5 000 karakter (`MODEL_REGION_CHARS`), çünkü model onları geri de yazar. Bölge kipinde bütçe iki bayt bir token sayılarak hesaplanır (Java'da yaklaşık üç); üretimden sonra Ollama'nın ölçtüğü istem token sayısı sınırı aşıyorsa sonuç reddedilir. |
+| Sığmayan | Bulgu bir metodun dışındaysa (ör. alan başlatıcısı), dosya ayrıştırılamıyorsa ya da bölgeler bütçeyi aşıyorsa iş model denemesi olmadan uzmana gider (`source_exceeds_model_context`). |
+
+Hafıza değişmedi: kayıt yine bütün dosyanın yamasını ve farkını tutar, birebir tekrar bütün dosyayla yapılır. Ölçüm: [OLCUM_VUL4J.md](OLCUM_VUL4J.md).
