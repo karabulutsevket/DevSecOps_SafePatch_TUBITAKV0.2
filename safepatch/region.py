@@ -107,13 +107,51 @@ def splice(source, view, answer):
         if line not in view["imports"] and line + "\n" not in added:
             added.append(line + "\n")
     text = source.splitlines(True)
-    # Imports precede every type, so this index survives the region edits below.
-    anchor = max((i for i, line in enumerate(text) if line.startswith("import ")), default=None)
-    if anchor is None:
-        anchor = next((i for i, line in enumerate(text) if line.startswith("package ")), -1)
     for edit in sorted(answer.regions, key=lambda e: regions[e.region]["start_line"], reverse=True):
         region = regions[edit.region]
         content = edit.content if edit.content.endswith("\n") else edit.content + "\n"
         text[region["start_line"] - 1:region["end_line"]] = content.splitlines(True)
-    text[anchor + 1:anchor + 1] = added
+    return insert_imports(text, added)
+
+
+def insert_imports(text, lines):
+    """Lines (with newlines) put after the last import, else after the package line."""
+    anchor = max((i for i, line in enumerate(text) if line.startswith("import ")), default=None)
+    if anchor is None:
+        anchor = next((i for i, line in enumerate(text) if line.startswith("package ")), -1)
+    text[anchor + 1:anchor + 1] = lines
     return "".join(text)
+
+
+# JDK types a repair commonly needs, by simple name. Import completion adds only these: the
+# 7B model leaves the answer's `imports` empty (region-mode development cases, 25 Oct 2026).
+JDK_TYPES = {name: package + "." + name for package, names in {
+    "java.io": ("File", "IOException", "UncheckedIOException", "InputStream", "OutputStream", "FileInputStream", "FileOutputStream",
+                "Writer", "OutputStreamWriter", "BufferedReader", "InputStreamReader"),
+    "java.nio.file": ("Path", "Paths", "Files", "LinkOption", "StandardCopyOption", "StandardOpenOption", "NoSuchFileException",
+                      "InvalidPathException", "AccessDeniedException"),
+    "java.nio.charset": ("StandardCharsets", "Charset"),
+    "java.sql": ("Connection", "DriverManager", "PreparedStatement", "ResultSet", "SQLException", "Statement"),
+    "java.util": ("List", "ArrayList", "Arrays", "Collections", "Map", "HashMap", "LinkedHashMap", "Set", "HashSet", "Objects", "Optional", "Locale"),
+    "java.util.regex": ("Pattern", "Matcher"),
+    "java.util.concurrent": ("TimeUnit",),
+}.items() for name in names}
+NOISE = re.compile(r'"(?:\\.|[^"\\\n])*"|\'(?:\\.|[^\'\\\n])+\'|//[^\n]*|/\*.*?\*/', re.S)
+
+
+def complete_imports(content, changed):
+    """`content` with imports added for JDK types that `changed` uses but the file does not
+    resolve: no import of that name or of its package's wildcard, and no type of that name
+    declared in the file. Returns (content, added)."""
+    imports = [line.strip() for line in content.splitlines() if line.startswith("import ")]
+    # A name after a dot is qualified (java.util.List) or nested (Outer.Inner): not imported.
+    used = set(re.findall(r"(?<![.\w])[A-Z][A-Za-z0-9_]*\b", NOISE.sub(" ", changed)))
+    added = []
+    for name in sorted(used & set(JDK_TYPES)):
+        qualified = JDK_TYPES[name]
+        if any(line.endswith("." + name + ";") or line == "import " + qualified.rsplit(".", 1)[0] + ".*;" for line in imports):
+            continue
+        if re.search(r"\b(class|interface|enum|record)\s+" + name + r"\b", NOISE.sub(" ", content)):
+            continue
+        added.append("import " + qualified + ";")
+    return insert_imports(content.splitlines(True), [line + "\n" for line in added]), added

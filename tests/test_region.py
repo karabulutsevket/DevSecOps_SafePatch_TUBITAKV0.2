@@ -103,3 +103,25 @@ def test_splice_refuses_unknown_regions_and_anything_but_import_lines(bad, code)
     view = region_view(PATH, SOURCE, [line("File file = new File(outputDir"), line("return new File(root")])
     with pytest.raises(PolicyError, match=code):
         splice(SOURCE, view, bad())
+
+
+def test_jdk_types_the_regions_use_are_imported():
+    from safepatch.region import complete_imports
+    used = 'Path p = Paths.get(name).normalize(); // Files\nString s = "Pattern"; File f = null;'
+    content, added = complete_imports(SOURCE, used)
+    assert added == ["import java.nio.file.Path;", "import java.nio.file.Paths;"]
+    assert content == SOURCE.replace("import java.io.IOException;\n", "import java.io.IOException;\nimport java.nio.file.Path;\nimport java.nio.file.Paths;\n")
+
+
+@pytest.mark.parametrize("header,used", [
+    ("import java.nio.file.*;\n", "Path p;"),                         # wildcard of the package
+    ("import org.example.Path;\n", "Path p;"),                        # another type of that name
+    ("", "Path p; } class Path {"),                                   # declared in the file
+    ("", "Widget w; java.util.List<String> l;"),                      # not a known JDK type; qualified use
+])
+def test_nothing_is_imported_that_the_file_already_resolves(header, used):
+    from safepatch.region import complete_imports
+    source = SOURCE.replace("import java.io.File;\n", "import java.io.File;\n" + header)
+    if "class Path" in used:
+        source = source.replace("public class Archive {", "public class Archive {\n    static class Path {}")
+    assert complete_imports(source, used)[1] == []

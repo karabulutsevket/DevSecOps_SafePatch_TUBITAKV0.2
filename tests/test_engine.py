@@ -318,3 +318,10 @@ def test_a_model_answer_that_changes_nothing_is_a_failed_attempt_not_a_rejection
 def test_repeated_empty_answers_stop_as_no_progress(job_store, patch_factory, source):
     job, verified = unchanged_then(job_store, patch_factory, source, [None, None, None])
     assert (job["status"], job["reason"], verified) == ("needs_human", "no_progress", [])
+
+
+def test_jdk_types_a_region_answer_uses_are_imported_and_recorded(job_store, monkeypatch, source):
+    fixed = lambda region: {"regions": [{"region": 1, "content": region["content"].replace("String sql =", "Pattern unused = null;\n            String sql =")}], "rationale": "MOCK TEST ONLY"}
+    job, seen = region_run(job_store, monkeypatch, source, fixed)
+    sent = seen["verify"][0]["patch"]["edits"][0]["content"]
+    assert "import java.util.regex.Pattern;\n" in sent and job["attempts"][0]["proposal"]["imports_completed"] == ["import java.util.regex.Pattern;"]

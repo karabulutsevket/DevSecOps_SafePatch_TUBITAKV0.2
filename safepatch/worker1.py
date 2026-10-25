@@ -28,7 +28,9 @@ Always end Java source with a newline. Do not add markdown fences to file conten
 WEAKNESS_NOTES = {
     "CWE-89": "SQL injection: keep the results for normal input; pass input as bound parameters, never concatenate it into SQL.\n",
     # 25 Oct (week 5): toRealPath() fails on a file about to be created (region-mode development cases).
-    "CWE-22": "Path traversal: keep nested relative paths inside the root working; check containment on real paths: toRealPath() for files that exist; for a file about to be created (toRealPath() fails on it), normalize() the path resolved under the real root, then check the real path of its parent directory too.\n",
+    # The longer 25 Oct revision (files about to be created) made the model return unchanged
+    # regions on the development cases; that advice stays in the retry recipe (feedback.py).
+    "CWE-22": "Path traversal: keep nested relative reads inside the root working; resolve real paths with toRealPath() before checking containment.\n",
     "CWE-78": "Command injection: keep the program's output for normal input; never run a shell; pass input as one literal argument of a fixed executable.\n",
 }
 # Appended only when used, so first attempts of the V0.1 strategy keep the exact prompt.

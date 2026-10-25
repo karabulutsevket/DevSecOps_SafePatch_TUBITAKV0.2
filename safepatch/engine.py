@@ -6,7 +6,7 @@ from safepatch.common import MODEL_REGION_CHARS, MODEL_SOURCE_CHARS, POLICY, Pat
 from safepatch.memory import Memory, context_for, reuse_result
 from safepatch.acceptance import manifest
 from safepatch.feedback import GUIDANCE_KEY, classify, guidance_for, imitates_note
-from safepatch.region import RegionPatch, region_view, splice
+from safepatch.region import RegionPatch, complete_imports, region_view, splice
 from safepatch.policy import PolicyError, validate_patch
 from safepatch.project import is_protected
 from safepatch.repository import allowed_files, baseline
@@ -106,8 +106,11 @@ def region_answer(proposal, view, target, source):
         answer = RegionPatch.model_validate(proposal["region_patch"])
     except ValueError as exc:
         raise PolicyError("region_answer_invalid") from exc
-    edit = {"path": target, "old_sha256": digest(source), "content": splice(source, view, answer)}
-    return {**proposal, "patch": {"edits": [edit], "rationale": answer.rationale}}
+    # JDK types the regions use but the file does not import are imported by SafePatch, and
+    # recorded as such: the model leaves `imports` empty (region-mode development cases).
+    content, completed = complete_imports(splice(source, view, answer), "".join(e.content for e in answer.regions))
+    edit = {"path": target, "old_sha256": digest(source), "content": content}
+    return {**proposal, "patch": {"edits": [edit], "rationale": answer.rationale}, "imports_completed": completed}
 
 
 def changed_lines(before, after, limit=1500):
