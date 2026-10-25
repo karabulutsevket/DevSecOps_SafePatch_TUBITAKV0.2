@@ -202,7 +202,7 @@ Sorumlular: kurallar ve tanıklar *Yiğithan*, vakalar ve L2 kayıtları *Kadir*
 - [x] Geçersizleşme v1: ilgili bağımlılık sürümü değişince, Semgrep kural sürümü değişince ya da kayıt tekrar kullanımda başarısız olunca kayıt `yeniden doğrulanmalı` durumuna düşer — *Reşat, Yiğithan*. **25 Ekim:** `needs_revalidation` durumu, kural başına özet, aynı hedef çağrının kütüphane sürümü, birebir tekrar başarısızlığı; inceleyici gerekçeyle yeniden onaylar (yazar hariç). Otomatik yeniden doğrulama işi sonraki adım ([docs/HAFIZA_UYGUNLUK.md](docs/HAFIZA_UYGUNLUK.md#geçersizleşme-v1-25-ekim-hafta-5))
 - [x] Puan, kabul kararı vermez: hafızadan gelen her aday tam doğrulamadan geçer (V0.1 kuralı korunur) — *Yiğithan (test)*. **25 Ekim:** en güçlü kanıtlı birebir tekrar da doğrulamada düşebiliyor (`tests/test_ranking.py`); Yiğithan gözden geçirecek
 
-**Faz 1 geçiş koşulu:** (1) Bir uzman yaması hafızaya girdi ve sonraki bir işte kullanılıp doğrulamadan geçti. (2) Kaynak hash'i farklı bir varyant vakada hafıza kaydı yapısal imzayla seçildi ve doğrulamadan geçti. (3) Uyumsuz bir kayıt doğru gerekçeyle elendi.
+**Faz 1 geçiş koşulu:** (1) Bir uzman yaması hafızaya girdi ve sonraki bir işte kullanılıp doğrulamadan geçti. (2) Kaynak hash'i farklı bir varyant vakada hafıza kaydı yapısal imzayla seçildi ve doğrulamadan geçti. (3) Uyumsuz bir kayıt doğru gerekçeyle elendi. *(25 Ekim'de sağlandı: (1) arayüz denemesinde test kimlikleriyle; (2) 4 varyantta gerçek modelle; (3) `sql-execute` varyantında hedef çağrı farkıyla. Onaylar simüle. [docs/OLCUM_FAZ1_CIKIS.md](docs/OLCUM_FAZ1_CIKIS.md))*
 
 ### Faz 2 — L3 test seti, L2 başlangıcı, sandbox (Hafta 6–8)
 

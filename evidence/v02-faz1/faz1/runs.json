@@ -1,0 +1,272 @@
+[
+  {
+    "id": "efc02d99c6a84ae4b908378a3c43aee8",
+    "case_id": "sql-02",
+    "phase": "variant",
+    "arm": "off",
+    "status": "awaiting_review",
+    "accepted": true,
+    "reason": null,
+    "attempts": 1,
+    "wall_seconds": 30.138,
+    "memory_use": null,
+    "memory_selected": null,
+    "considered": [],
+    "warnings_sent": 0,
+    "failures": "passed"
+  },
+  {
+    "id": "90c4ccc6bbf24f07a85f1c16b8ab76a5",
+    "case_id": "sql-02",
+    "phase": "variant",
+    "arm": "guarded",
+    "status": "awaiting_review",
+    "accepted": true,
+    "reason": null,
+    "attempts": 1,
+    "wall_seconds": 30.527,
+    "memory_use": "example",
+    "memory_selected": "c2b8a80880a04cc38cb5900517bfd120",
+    "considered": [
+      {
+        "id": "c2b8a80880a04cc38cb5900517bfd120",
+        "use": "example",
+        "rank": 1,
+        "differences": [
+          "source_sha256"
+        ]
+      }
+    ],
+    "warnings_sent": 0,
+    "failures": "passed"
+  },
+  {
+    "id": "a9944c6418ab41ea964681855e6ab38b",
+    "case_id": "sql-03",
+    "phase": "variant",
+    "arm": "guarded",
+    "status": "awaiting_review",
+    "accepted": true,
+    "reason": null,
+    "attempts": 1,
+    "wall_seconds": 32.723,
+    "memory_use": "example",
+    "memory_selected": "c2b8a80880a04cc38cb5900517bfd120",
+    "considered": [
+      {
+        "id": "c2b8a80880a04cc38cb5900517bfd120",
+        "use": "example",
+        "rank": 1,
+        "differences": [
+          "source_sha256"
+        ]
+      }
+    ],
+    "warnings_sent": 0,
+    "failures": "passed"
+  },
+  {
+    "id": "922b815ac4db49a1929b69a90675c00f",
+    "case_id": "sql-03",
+    "phase": "variant",
+    "arm": "off",
+    "status": "awaiting_review",
+    "accepted": true,
+    "reason": null,
+    "attempts": 1,
+    "wall_seconds": 30.849,
+    "memory_use": null,
+    "memory_selected": null,
+    "considered": [],
+    "warnings_sent": 0,
+    "failures": "passed"
+  },
+  {
+    "id": "32135d7a548444fa8e4b9c0955284452",
+    "case_id": "path-02",
+    "phase": "variant",
+    "arm": "off",
+    "status": "awaiting_review",
+    "accepted": true,
+    "reason": null,
+    "attempts": 3,
+    "wall_seconds": 60.581,
+    "memory_use": null,
+    "memory_selected": null,
+    "considered": [],
+    "warnings_sent": 0,
+    "failures": "security_witness_failed|security_witness_failed|passed"
+  },
+  {
+    "id": "39e0574fbed84e6ebf246b46607f385d",
+    "case_id": "path-02",
+    "phase": "variant",
+    "arm": "guarded",
+    "status": "awaiting_review",
+    "accepted": true,
+    "reason": null,
+    "attempts": 1,
+    "wall_seconds": 28.815,
+    "memory_use": "example",
+    "memory_selected": "a94a829f49bf44668e43394453c6929d",
+    "considered": [
+      {
+        "id": "a94a829f49bf44668e43394453c6929d",
+        "use": "example",
+        "rank": 1,
+        "differences": [
+          "source_sha256"
+        ]
+      }
+    ],
+    "warnings_sent": 2,
+    "failures": "passed"
+  },
+  {
+    "id": "406f3ec0c736428c9f9a859a9aca8e8a",
+    "case_id": "path-03",
+    "phase": "variant",
+    "arm": "guarded",
+    "status": "awaiting_review",
+    "accepted": true,
+    "reason": null,
+    "attempts": 1,
+    "wall_seconds": 27.94,
+    "memory_use": "example",
+    "memory_selected": "a94a829f49bf44668e43394453c6929d",
+    "considered": [
+      {
+        "id": "a94a829f49bf44668e43394453c6929d",
+        "use": "example",
+        "rank": 1,
+        "differences": [
+          "source_sha256"
+        ]
+      }
+    ],
+    "warnings_sent": 2,
+    "failures": "passed"
+  },
+  {
+    "id": "a873f2c641fe4d0bbe292f681b3bd449",
+    "case_id": "path-03",
+    "phase": "variant",
+    "arm": "off",
+    "status": "awaiting_review",
+    "accepted": true,
+    "reason": null,
+    "attempts": 3,
+    "wall_seconds": 60.259,
+    "memory_use": null,
+    "memory_selected": null,
+    "considered": [],
+    "warnings_sent": 0,
+    "failures": "security_witness_failed|security_witness_failed|passed"
+  },
+  {
+    "id": "e601865e88e24def97a0f9b34cb88155",
+    "case_id": "command-02",
+    "phase": "variant",
+    "arm": "off",
+    "status": "rejected",
+    "accepted": false,
+    "reason": "empty_patch",
+    "attempts": 1,
+    "wall_seconds": 20.822,
+    "memory_use": null,
+    "memory_selected": null,
+    "considered": [],
+    "warnings_sent": 0,
+    "failures": "-"
+  },
+  {
+    "id": "bc64de785fa3415eafab95401e16fb83",
+    "case_id": "command-02",
+    "phase": "variant",
+    "arm": "guarded",
+    "status": "needs_human",
+    "accepted": false,
+    "reason": "attempt_budget_exhausted",
+    "attempts": 3,
+    "wall_seconds": 71.775,
+    "memory_use": null,
+    "memory_selected": null,
+    "considered": [],
+    "warnings_sent": 2,
+    "failures": "security_witness_failed|security_witness_failed|security_witness_failed"
+  },
+  {
+    "id": "7b5edc1180664428af62eba7ef0f5e84",
+    "case_id": "command-03",
+    "phase": "variant",
+    "arm": "guarded",
+    "status": "rejected",
+    "accepted": false,
+    "reason": "empty_patch",
+    "attempts": 2,
+    "wall_seconds": 39.509,
+    "memory_use": null,
+    "memory_selected": null,
+    "considered": [],
+    "warnings_sent": 2,
+    "failures": "behavior_regression|-"
+  },
+  {
+    "id": "918fc80fce854aa0abad877b0b98ee2b",
+    "case_id": "command-03",
+    "phase": "variant",
+    "arm": "off",
+    "status": "rejected",
+    "accepted": false,
+    "reason": "empty_patch",
+    "attempts": 1,
+    "wall_seconds": 19.428,
+    "memory_use": null,
+    "memory_selected": null,
+    "considered": [],
+    "warnings_sent": 0,
+    "failures": "-"
+  },
+  {
+    "id": "7e4416d7d9494f4091fd069c7311d2d5",
+    "case_id": "sql-execute",
+    "phase": "variant",
+    "arm": "off",
+    "status": "awaiting_review",
+    "accepted": true,
+    "reason": null,
+    "attempts": 1,
+    "wall_seconds": 30.852,
+    "memory_use": null,
+    "memory_selected": null,
+    "considered": [],
+    "warnings_sent": 0,
+    "failures": "passed"
+  },
+  {
+    "id": "07c4c8b17d5648b8857645bfb3ba9f3e",
+    "case_id": "sql-execute",
+    "phase": "variant",
+    "arm": "guarded",
+    "status": "awaiting_review",
+    "accepted": true,
+    "reason": null,
+    "attempts": 1,
+    "wall_seconds": 30.514,
+    "memory_use": null,
+    "memory_selected": null,
+    "considered": [
+      {
+        "id": "c2b8a80880a04cc38cb5900517bfd120",
+        "use": null,
+        "rank": null,
+        "differences": [
+          "source_sha256",
+          "signature.sink"
+        ]
+      }
+    ],
+    "warnings_sent": 0,
+    "failures": "passed"
+  }
+]
