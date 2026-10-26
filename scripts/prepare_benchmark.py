@@ -47,7 +47,7 @@ from prepare_vul4j import L3, git, maven_online
 
 SNAPSHOT = "acc50f20ec449e2b977a7c409fa8175491657cba"
 # Reproducible from the snapshot, the sample and recorded.json (the answers are deterministic).
-DERIVED = "5b970a28b55652de33c47bf5f19d68c058dd439e"
+DERIVED = "8bd5841cf9c0a8d0f8ce85c2649c497bc0b70e6e"
 UPSTREAM = "benchmark-upstream"
 SEED = 20261026
 SAMPLE = {"pathtraver": {"true": 10, "false": 5}, "sqli": {"true": 10, "false": 5}, "cmdi": {"true": 10, "false": 5}}

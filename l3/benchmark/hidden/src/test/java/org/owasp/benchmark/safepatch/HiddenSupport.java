@@ -10,7 +10,8 @@ import java.util.regex.Pattern;
  * into some answers ("No results returned for query: ...", "Update complete for query: ...",
  * "For query: ..."). A parameterised query necessarily reads otherwise there, so a benign
  * answer is compared with that text replaced; the rows, messages and refusals around it still
- * count. Java 8 source level.
+ * count. WitnessSupport.sqlAnswer compares the same way since 26 October 2026; this copy keeps
+ * the hidden tests runnable on evaluation commits from before that (5b970a2). Java 8 source level.
  */
 public final class HiddenSupport {
 

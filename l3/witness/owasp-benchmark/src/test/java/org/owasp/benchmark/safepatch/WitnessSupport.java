@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
@@ -450,9 +451,21 @@ public final class WitnessSupport {
     return differs(servlet, name, "comment tautology", "' OR 1=1 --", "' OR 1=2 --");
   }
 
-  /** SHA-256 of the answer to a benign value on freshly initialised tables. */
+  // The echo ends where Benchmark's markup or the line does; ESAPI's HTML encoding leaves no '<' in it.
+  private static final Pattern QUERY_ECHO = Pattern.compile("(?i)(query: )[^<\\r\\n]*");
+
+  /**
+   * The answer with the query text Benchmark echoes ("No results returned for query: ...",
+   * "Update complete for query: ...", "For query: ...") replaced by {QUERY}: a parameterised
+   * query necessarily reads otherwise there. Rows, messages and refusals still count.
+   */
+  static String withoutQuery(String answer) {
+    return QUERY_ECHO.matcher(answer).replaceAll("$1{QUERY}");
+  }
+
+  /** SHA-256 of the answer to a benign value on freshly initialised tables, the echoed query aside. */
   public static String sqlAnswer(Class<?> servlet, String name, String value) throws Exception {
-    return sha256(sqlRun(servlet, name, value));
+    return sha256(withoutQuery(sqlRun(servlet, name, value)));
   }
 
   // ---- OS command injection (CWE-78) ----

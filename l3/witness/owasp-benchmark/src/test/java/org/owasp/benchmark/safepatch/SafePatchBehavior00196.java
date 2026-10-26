@@ -9,6 +9,6 @@ class SafePatchBehavior00196 {
 
   @Test
   void benignInputAnswersAsBefore() throws Exception {
-    assertEquals("3f8f3ae53ee9c12dbe4ab3be2d309d96d4d388148ea256fb1bc5295df8ce92e0", WitnessSupport.sqlAnswer(org.owasp.benchmark.testcode.BenchmarkTest00196.class, "BenchmarkTest00196", "bar"), "BEHAVIOR_REGRESSION");
+    assertEquals("1bc8042b44b6f246cbc911c90aa09ba01c4fa595ca4ab308594143088a2728cf", WitnessSupport.sqlAnswer(org.owasp.benchmark.testcode.BenchmarkTest00196.class, "BenchmarkTest00196", "bar"), "BEHAVIOR_REGRESSION");
   }
 }

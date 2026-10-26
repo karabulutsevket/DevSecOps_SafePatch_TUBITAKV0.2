@@ -313,8 +313,8 @@
     "BenchmarkTest00196": {
       "visible": "quote: answers differ; ",
       "nested": "",
-      "benign_1": "3f8f3ae53ee9c12dbe4ab3be2d309d96d4d388148ea256fb1bc5295df8ce92e0",
-      "benign_2": "3f8f3ae53ee9c12dbe4ab3be2d309d96d4d388148ea256fb1bc5295df8ce92e0",
+      "benign_1": "1bc8042b44b6f246cbc911c90aa09ba01c4fa595ca4ab308594143088a2728cf",
+      "benign_2": "1bc8042b44b6f246cbc911c90aa09ba01c4fa595ca4ab308594143088a2728cf",
       "dots_1": "1bc8042b44b6f246cbc911c90aa09ba01c4fa595ca4ab308594143088a2728cf",
       "dots_2": "1bc8042b44b6f246cbc911c90aa09ba01c4fa595ca4ab308594143088a2728cf"
     },
@@ -361,16 +361,16 @@
     "BenchmarkTest01097": {
       "visible": "quote: answers differ; insert: the input added a row; ",
       "nested": "",
-      "benign_1": "514134df76a24b47713f53714aef05dc4386a6c14cc06e431d204fc847554b87",
-      "benign_2": "514134df76a24b47713f53714aef05dc4386a6c14cc06e431d204fc847554b87",
+      "benign_1": "a7d6a5b482d46ce516afed30d5021a27002c11a8d23a746bce857a3a8fd3c5d8",
+      "benign_2": "a7d6a5b482d46ce516afed30d5021a27002c11a8d23a746bce857a3a8fd3c5d8",
       "dots_1": "a7d6a5b482d46ce516afed30d5021a27002c11a8d23a746bce857a3a8fd3c5d8",
       "dots_2": "a7d6a5b482d46ce516afed30d5021a27002c11a8d23a746bce857a3a8fd3c5d8"
     },
     "BenchmarkTest01315": {
       "visible": "",
       "nested": "",
-      "benign_1": "799b1aeb85d5ef8baedf4b8d61499bb223b6e1680ec6da33da76957d098c3fad",
-      "benign_2": "799b1aeb85d5ef8baedf4b8d61499bb223b6e1680ec6da33da76957d098c3fad",
+      "benign_1": "a7d6a5b482d46ce516afed30d5021a27002c11a8d23a746bce857a3a8fd3c5d8",
+      "benign_2": "a7d6a5b482d46ce516afed30d5021a27002c11a8d23a746bce857a3a8fd3c5d8",
       "dots_1": "a7d6a5b482d46ce516afed30d5021a27002c11a8d23a746bce857a3a8fd3c5d8",
       "dots_2": "a7d6a5b482d46ce516afed30d5021a27002c11a8d23a746bce857a3a8fd3c5d8"
     },
