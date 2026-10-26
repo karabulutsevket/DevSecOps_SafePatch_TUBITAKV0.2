@@ -78,6 +78,31 @@ def test_a_patch_cannot_add_or_move_a_suppression(source, change):
         validate_patch(base, edit(base, change(base[SOURCE])), allowed=ALLOWED)
 
 
+CAPABLE = ("class Uses {\n  void a() throws Exception {\n    try { b(); } catch (java.net.URISyntaxException e) { }\n"
+           "    Runtime r = Runtime.getRuntime();\n  }\n  void b() throws java.net.URISyntaxException { }\n}\n")
+
+
+@pytest.mark.parametrize("change", [
+    lambda text: text.replace("catch (java.net.URISyntaxException e) { }", "new java.net.URL(\"http://x\").openStream();"),   # same token count, a network class
+    lambda text: "import java.net.*;\n" + text,                                                                           # wildcard import
+    lambda text: text.replace("Runtime r = Runtime.getRuntime();", "Runtime.getRuntime().exec(\"x\");"),                  # an existing token now runs a process
+    lambda text: text.replace("catch (java.net.URISyntaxException e) { }", "catch (java.net.URISyntaxException e) { } // NOSONAR"),
+])
+def test_a_token_the_file_already_has_cannot_bring_a_new_capability(source, change):
+    # Guards for any refinement of the rule below (docs/KOK_NEDEN_UC_SORUN.md): kept refused.
+    base = project_file(source, CAPABLE)
+    with pytest.raises(PolicyError, match="forbidden"):
+        validate_patch(base, edit(base, change(base[SOURCE])), allowed=ALLOWED)
+
+
+@pytest.mark.xfail(strict=True, raises=PolicyError, reason="policy owner's decision pending: an edited line keeping an existing "
+                   "java.net reference is refused today (L3 run, owasp-benchmark-01643; docs/KOK_NEDEN_UC_SORUN.md)")
+def test_an_edited_line_may_keep_a_reference_the_file_already_had(source):
+    base = project_file(source, CAPABLE)
+    widened = base[SOURCE].replace("catch (java.net.URISyntaxException e)", "catch (java.net.URISyntaxException | java.io.IOException e)")
+    assert validate_patch(base, edit(base, widened), allowed=ALLOWED)["changed_lines"] == 2
+
+
 def test_symlink_escape(source, patch_factory, tmp_path, monkeypatch):
     from pathlib import Path
     original = Path.is_symlink
