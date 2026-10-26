@@ -113,6 +113,26 @@ def region_answer(proposal, view, target, source):
     return {**proposal, "patch": {"edits": [edit], "rationale": answer.rationale}, "imports_completed": completed}
 
 
+def no_change(proposal, view, source, initial):
+    """Why an answer changed nothing, for the reviewer; the model's feedback stays as it was.
+
+    `answer`: whether the model repeated the code it was shown (in the L3 run of 26 Oct 2026
+    all 13 such answers did, while their rationale described a fix) or its edits made no
+    difference once applied. `change_required_by`: the baseline's evidence. A failing security
+    witness proves a change is needed; a finding without a witness may be a false positive."""
+    shown = {r["id"]: r["content"] for r in (view or {}).get("regions", [])}
+    regions = (proposal.get("region_patch") or {}).get("regions")
+    if regions:
+        repeated = all(r["content"].rstrip("\n") == shown.get(r["region"], "").rstrip("\n") for r in regions)
+    else:
+        repeated = all(e["content"] == source for e in proposal["patch"]["edits"])
+    security = initial.get("security") or {}
+    required = ("finding_without_security_witness" if security.get("missing") else
+                "failing_security_witness" if security.get("failures") or security.get("errors") else None)
+    return {"answer": "repeats_shown_code" if repeated else "edits_made_no_difference",
+            "shown": "regions" if regions else "whole_file", "change_required_by": required}
+
+
 def changed_lines(before, after, limit=1500):
     """Previous attempt as changed lines only (no context, no file headers)."""
     lines = list(difflib.unified_diff(before.splitlines(True), after.splitlines(True), n=0))[2:]
@@ -326,7 +346,8 @@ class Engine:
             except PolicyError as exc:
                 empty = str(exc) == "empty_patch"
                 failure = {"category": "empty_patch"} if empty else None
-                self.store.mutate(job_id, lambda j: j["attempts"].append({"number": attempt, "proposal": proposal, "policy_error": str(exc), **({"failure": failure} if empty else {})}))
+                report = {"failure": failure, "no_change": no_change(proposal, view, source, initial)} if empty else {}
+                self.store.mutate(job_id, lambda j: j["attempts"].append({"number": attempt, "proposal": proposal, "policy_error": str(exc), **report}))
                 if not empty:
                     raise
                 # A model answer that changes nothing is a failed attempt, not a policy breach

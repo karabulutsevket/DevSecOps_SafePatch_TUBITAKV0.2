@@ -39,7 +39,7 @@ def attempt_row(attempt):
             "imports_added": (proposal.get("region_patch") or {}).get("imports", []),
             "changed_lines": attempt.get("changed_lines"), "patch_sha256": attempt.get("patch_sha256"),
             "policy_error": attempt.get("policy_error"), "stopped": attempt.get("stopped"),
-            "passed": verified.get("passed"), "failure": attempt.get("failure"),
+            "passed": verified.get("passed"), "failure": attempt.get("failure"), "no_change": attempt.get("no_change"),
             "build": (verified.get("build") or {}).get("passed"),
             "behavior": {k: (verified.get("behavior") or {}).get(k) for k in ("tests", "failures", "errors")},
             "security": {k: (verified.get("security") or {}).get(k) for k in ("tests", "failures", "errors")},

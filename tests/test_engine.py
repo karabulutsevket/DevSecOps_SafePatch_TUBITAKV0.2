@@ -315,6 +315,28 @@ def test_a_model_answer_that_changes_nothing_is_a_failed_attempt_not_a_rejection
     assert (job["attempts"][0]["policy_error"], job["attempts"][0]["failure"]) == ("empty_patch", {"category": "empty_patch"})
 
 
+@pytest.mark.parametrize("security,required", [
+    ({"tests": 1, "failures": 1, "errors": 0}, "failing_security_witness"),
+    ({"missing": True, "tests": 0, "failures": 0, "errors": 0}, "finding_without_security_witness"),
+    (None, None),
+])
+def test_an_unchanged_answer_says_what_it_repeated_and_what_asks_for_a_change(job_store, patch_factory, source, monkeypatch, security, required):
+    # The L3 run's 13 empty answers repeated the code shown while their rationale described a fix.
+    monkeypatch.setitem(globals(), "fake_initial", lambda: {"baseline_valid": True, "scans": [{"findings": [{"rule_id": "test.rule", "cwe": "CWE-89", "file": SOURCE}]}],
+                                                           **({"security": security} if security else {})})
+    job, _ = unchanged_then(job_store, patch_factory, source, [None, source[SOURCE] + "// changed\n", None], "guided")
+    assert job["attempts"][0]["no_change"] == {"answer": "repeats_shown_code", "shown": "whole_file", "change_required_by": required}
+    # The model's feedback is unchanged: the report is for the reviewer.
+    assert job["attempts"][0]["failure"] == {"category": "empty_patch"} and "no_change" not in job["attempts"][1]
+
+
+def test_an_unchanged_region_answer_is_reported_as_repeating_the_region(job_store, monkeypatch, source):
+    # Two of the L3 answers dropped only the region's final newline; splicing restores it.
+    job, seen = region_run(job_store, monkeypatch, source, lambda region: {"regions": [{"region": 1, "content": region["content"].rstrip("\n")}], "rationale": "MOCK TEST ONLY"})
+    assert seen["verify"] == [] and job["attempts"][0]["policy_error"] == "empty_patch"
+    assert job["attempts"][0]["no_change"] == {"answer": "repeats_shown_code", "shown": "regions", "change_required_by": None}
+
+
 def test_repeated_empty_answers_stop_as_no_progress(job_store, patch_factory, source):
     job, verified = unchanged_then(job_store, patch_factory, source, [None, None, None])
     assert (job["status"], job["reason"], verified) == ("needs_human", "no_progress", [])
