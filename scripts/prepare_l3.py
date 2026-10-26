@@ -42,7 +42,9 @@ CASES = {
         # The repository's symbolic links become plain files in a checkout on Windows (no symlink
         # privilege), and the /mnt/c workspace keeps no permissions: these fail on any revision.
         "not_here": ["org.codehaus.plexus.archiver.SymlinkTest", "org.codehaus.plexus.archiver.zip.ZipArchiverTest#testSymlinkFileSet",
-                     "org.codehaus.plexus.archiver.zip.ZipArchiverTest#testSymlinkZip", "org.codehaus.plexus.archiver.zip.ZipArchiverTest#testOveriddenPermissions"],
+                     "org.codehaus.plexus.archiver.zip.ZipArchiverTest#testSymlinkZip", "org.codehaus.plexus.archiver.zip.ZipArchiverTest#testOveriddenPermissions",
+                     # Skipped, and a skip fails a suite: module tests need JDK 9+, the other is @Ignore upstream.
+                     "org.codehaus.plexus.archiver.jar.JarToolModularJarArchiverTest", "org.codehaus.plexus.archiver.zip.ConcurrentJarCreatorTest"],
     },
     "vul4j-43": {
         "upstream": "rdf4j-upstream", "url": "https://github.com/eclipse-rdf4j/rdf4j.git",
