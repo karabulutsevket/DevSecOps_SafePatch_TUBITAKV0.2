@@ -161,10 +161,24 @@ def test_a_servlet_sized_file_with_its_retry_context_goes_whole(sent):
     assert result["metrics"]["dropped_optional_context"] == ["src/main/java/demo/Sibling1.java"]
 
 
+def test_a_file_whose_whole_answer_would_not_fit_the_output_goes_as_regions():
+    # A whole-file answer repeats the file: the development region cases (6.2 KB) took ~1 890 of
+    # 2 048 output tokens per answer when they went whole, five times the time of a region answer.
+    assert worker1.compose(propose(source={SOURCE: "x" * 6000}, region_source=REGIONS), "t")[3] == "regions"
+    # No regions to fall back on: the whole file is tried.
+    assert worker1.compose(propose(source={SOURCE: "x" * 6000}), "t")[3] == "whole_file"
+
+
+@pytest.mark.parametrize("size,fits", [(3500, True), (4900, True), (5000, False)])
+def test_the_answer_estimate_counts_three_bytes_per_token_and_room_for_the_rationale(size, fits):
+    assert worker1.answer_fits({SOURCE: "x" * size}) is fits
+
+
 @pytest.fixture
 def counted(monkeypatch):
-    """Answers in the requested shape; the prompt counts come from `counts`, one per call."""
-    calls = {"counts": [], "bodies": []}
+    """Answers in the requested shape; the prompt counts come from `counts` and the done
+    reasons from `reasons` (default "stop"), one per call."""
+    calls = {"counts": [], "reasons": [], "bodies": []}
     monkeypatch.setattr(worker1, "model_info", lambda endpoint, model: {"model": model})
     def request(url, method="GET", body=None, **kwargs):
         calls["bodies"].append(body)
@@ -172,7 +186,8 @@ def counted(monkeypatch):
             answer = {"regions": [{"region": 1, "content": "    public String lookup(String input) { return \"\"; }\n"}], "imports": [], "rationale": "MOCK TEST ONLY"}
         else:
             answer = {"edits": [{"path": SOURCE, "old_sha256": "a" * 64, "content": "class A {}\n"}], "rationale": "MOCK TEST ONLY"}
-        return {"done": True, "done_reason": "stop", "response": json.dumps(answer), "prompt_eval_count": calls["counts"].pop(0), "eval_count": 1}
+        reason = calls["reasons"].pop(0) if calls["reasons"] else "stop"
+        return {"done": True, "done_reason": reason, "response": json.dumps(answer), "prompt_eval_count": calls["counts"].pop(0), "eval_count": 1}
     monkeypatch.setattr(worker1, "request", request)
     return calls
 
@@ -181,7 +196,20 @@ def test_a_whole_file_the_model_counts_over_budget_goes_again_as_its_regions(cou
     counted["counts"] = [worker1.input_limit() + 1, 900]
     result = worker1.propose(propose(region_source=REGIONS))
     assert [b["system"] for b in counted["bodies"]] == [worker1.SYSTEM, worker1.REGION_SYSTEM]
-    assert result["metrics"]["edit_mode"] == "regions" and result["metrics"]["whole_file_over_budget"] is True and "region_patch" in result
+    assert result["metrics"]["edit_mode"] == "regions" and result["metrics"]["whole_file_fallback"] == "prompt_over_budget" and "region_patch" in result
+
+
+def test_a_whole_file_answer_cut_off_goes_again_as_its_regions(counted):
+    counted["counts"], counted["reasons"] = [900, 900], ["length", "stop"]
+    result = worker1.propose(propose(region_source=REGIONS))
+    assert [b["system"] for b in counted["bodies"]] == [worker1.SYSTEM, worker1.REGION_SYSTEM]
+    assert result["metrics"]["edit_mode"] == "regions" and result["metrics"]["whole_file_fallback"] == "answer_cut_off"
+
+
+def test_a_whole_file_answer_cut_off_without_regions_is_refused(counted):
+    counted["counts"], counted["reasons"] = [900], ["length"]
+    with pytest.raises(ValueError, match="Incomplete model generation"):
+        worker1.propose(propose())
 
 
 def test_a_whole_file_over_budget_without_regions_is_refused(counted):
@@ -194,7 +222,7 @@ def test_a_whole_file_over_budget_without_regions_is_refused(counted):
 def test_a_whole_file_within_budget_is_answered_once(counted):
     counted["counts"] = [worker1.input_limit()]
     result = worker1.propose(propose(region_source=REGIONS))
-    assert len(counted["bodies"]) == 1 and result["metrics"]["edit_mode"] == "whole_file" and result["metrics"]["whole_file_over_budget"] is False
+    assert len(counted["bodies"]) == 1 and result["metrics"]["edit_mode"] == "whole_file" and result["metrics"]["whole_file_fallback"] is None
 
 
 def test_a_measured_prompt_over_the_budget_is_refused(region_sent):

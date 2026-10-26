@@ -93,9 +93,17 @@ def input_limit():
     return int(setting("MODEL_CONTEXT", "8192")) - int(setting("MODEL_OUTPUT_TOKENS", "2048")) - 512
 
 
+def answer_fits(source):
+    """Whether a whole-file answer, which repeats the file, fits the output budget. On 98
+    recorded answers: 3.6 bytes per token or more once over 2 KB, and at most 1 116 bytes
+    besides the file (rationale, keys); a 6.8 KB file's answer took 1 892 of 2 048 tokens."""
+    text = sum(len(json.dumps(content, ensure_ascii=False).encode("utf-8")) for content in source.values())
+    return (text + 1200) // 3 <= int(setting("MODEL_OUTPUT_TOKENS", "2048"))
+
+
 def compose(req, tag):
-    """(system, prompt, dropped, mode): the whole file when it fits, else its regions."""
-    if req.source:
+    """(system, prompt, dropped, mode): the whole file when its prompt and its answer fit, else its regions."""
+    if req.source and (answer_fits(req.source) or not req.region_source):
         try:
             return (*compose_mode(req, tag, False), "whole_file")
         except ValueError:
@@ -177,23 +185,25 @@ def propose(req):
     def generate(system, prompt, answer):
         return request(endpoint + "/api/generate", "POST", body={"model": model, "system": system, "prompt": prompt, "format": answer.model_json_schema(), "stream": False, "keep_alive": setting("MODEL_KEEP_ALIVE", "5m"), "options": {"temperature": req.temperature, "seed": req.seed, "num_ctx": int(setting("MODEL_CONTEXT", "8192")), "num_predict": int(setting("MODEL_OUTPUT_TOKENS", "2048"))}}, timeout=remaining(req.deadline, int(setting("MODEL_TIMEOUT", "360"))))
 
+    over = lambda result: (result.get("prompt_eval_count") or 0) > input_limit()
+    cut = lambda result: not result.get("done") or result.get("done_reason") == "length"
     start = time.monotonic()
     result = generate(system, prompt, RegionPatch if mode == "regions" else Patch)
-    over = (result.get("prompt_eval_count") or 0) > input_limit()
-    # The model's own count decides: a whole file the estimate let through goes again as its regions.
-    fallback = over and mode == "whole_file" and region is not None
-    if fallback:
+    # The model's own counts decide: a whole file whose prompt or answer the estimates let
+    # through but did not fit goes again as its regions.
+    fallback = None
+    if mode == "whole_file" and region is not None and (over(result) or cut(result)):
+        fallback = "prompt_over_budget" if over(result) else "answer_cut_off"
         system, prompt, dropped = compose_mode(req, tag, True)
         mode = "regions"
         result = generate(system, prompt, RegionPatch)
-        over = (result.get("prompt_eval_count") or 0) > input_limit()
-    if over:
+    if over(result):
         raise ValueError("Model context exceeded")
-    if not result.get("done") or result.get("done_reason") == "length":
+    if cut(result):
         raise ValueError("Incomplete model generation")
     answer = RegionPatch if mode == "regions" else Patch
     parsed = answer.model_validate_json(result["response"])
-    return {"mode": "real-local-model", ("region_patch" if mode == "regions" else "patch"): parsed.model_dump(), "model": info, "metrics": {"edit_mode": mode, "whole_file_over_budget": fallback, "duration_seconds": round(time.monotonic() - start, 3), "prompt_tokens_measured": result.get("prompt_eval_count"), "output_tokens_measured": result.get("eval_count"), "context_chars": len(prompt), "prompt_sha256": digest(system + prompt), "system_prompt_sha256": digest(system), "seed": req.seed, "temperature": req.temperature, "dropped_optional_context": dropped, "note_tag": tag if req.guidance else None, "num_ctx": int(setting("MODEL_CONTEXT", "8192")), "num_predict": int(setting("MODEL_OUTPUT_TOKENS", "2048"))}}
+    return {"mode": "real-local-model", ("region_patch" if mode == "regions" else "patch"): parsed.model_dump(), "model": info, "metrics": {"edit_mode": mode, "whole_file_fallback": fallback, "duration_seconds": round(time.monotonic() - start, 3), "prompt_tokens_measured": result.get("prompt_eval_count"), "output_tokens_measured": result.get("eval_count"), "context_chars": len(prompt), "prompt_sha256": digest(system + prompt), "system_prompt_sha256": digest(system), "seed": req.seed, "temperature": req.temperature, "dropped_optional_context": dropped, "note_tag": tag if req.guidance else None, "num_ctx": int(setting("MODEL_CONTEXT", "8192")), "num_predict": int(setting("MODEL_OUTPUT_TOKENS", "2048"))}}
 
 
 @app.get("/health")
