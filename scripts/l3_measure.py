@@ -1,4 +1,4 @@
-"""First model measurement on the L3 evaluation set (ROADMAP.md week 6).
+"""Model measurement on the L3 set, evaluation or development side (ROADMAP.md week 6).
 
 Every ready evaluation case of l3/catalog.yml, one job each: the local model (region mode where
 the file is too large for it), guided+context, memory off, three attempts, experiment jobs (never
@@ -9,7 +9,10 @@ which the verifier never ran; a candidate that fails them was a false acceptance
 
 Needs worker1 (Ollama running), worker2 and the runner started with PROJECTS_DIR=.runtime/l3/projects
 SAFEPATCH_PROFILE=evaluation RUNNER_SANDBOX=docker SANDBOX_MAVEN_CACHE=<wsl path>; the same
-variables here. Resumable: run it again with the same EVIDENCE_DIR and --run, finished cases are
+variables here. `--split development` measures the owned development cases instead (lab profile,
+native runner; PROJECTS_DIR must register all of them): Semgrep findings where the descriptor
+has no answer key, no hidden tests. That side is for developing changes; the evaluation side
+is not tuned on. Resumable: run it again with the same EVIDENCE_DIR and --run, finished cases are
 skipped. Writes EVIDENCE_DIR/l3-model/: protocol.json (resume-*.json on later starts), one
 jobs/<case>.json per finished job and summary.json once every case is done. The model's answers
 touch third-party code, so they stay in .runtime/l3-measure/<run>/ (not in Git); the evidence
@@ -41,14 +44,14 @@ from vul4j_model import attempt_row
 SEED = 42
 
 
-def evaluation_cases():
-    return [c for c in load().cases if c.split == "evaluation" and c.status == "ready"]
+def ready_cases(split="evaluation"):
+    return [c for c in load().cases if c.split == split and c.status == "ready"]
 
 
-def run(store, case_id, commit, seed):
+def run(store, case_id, commit, seed, scanner="known"):
     now = time.time()
     job = {"id": uuid.uuid4().hex, "case_id": case_id, "base_commit": commit, "project": registry()[1][case_id]["project"],
-           "policy_version": POLICY, "scanner": "known", "mode": "real-local-model", "evaluation": True,
+           "policy_version": POLICY, "scanner": scanner, "mode": "real-local-model", "evaluation": True,
            "status": "queued", "owner": "EXPERIMENT-NOT-A-HUMAN", "started_at": now, "deadline": now + 1800, "max_attempts": 3,
            "attempt_count": 0, "attempts": [], "events": [], "approval": None, "memory_mode": "off", "strategy": "guided+context", "seed": seed}
     store.create(job, job["id"])
@@ -59,16 +62,17 @@ def run(store, case_id, commit, seed):
 
 def measure(case, store, private, seed):
     commit = registry()[1][case.id]["commit"]
-    labels = project(case.id, commit).labels
-    job, seconds = run(store, case.id, commit, seed)
+    spec = project(case.id, commit)
+    labels, scanner = spec.labels, "known" if spec.scan.known else "semgrep"
+    job, seconds = run(store, case.id, commit, seed, scanner)
     for attempt in job["attempts"]:
         for edit in (attempt["proposal"].get("patch") or {}).get("edits", []):
             (private / f"{case.id}-attempt{attempt['number']}-{Path(edit['path']).name}").write_text(edit["content"], encoding="utf-8", newline="")
-    row = {"case": case.id, "cwe": case.cwe, "project": case.project, "source": case.source,
+    row = {"case": case.id, "cwe": case.cwe, "project": case.project, "source": case.source, "scanner": scanner,
            "vulnerable": labels.get("benchmark_real", "true") == "true", "seed": seed, "job": job["id"],
            "status": job["status"], "reason": job.get("reason"), "wall_seconds": seconds,
            "attempts": [attempt_row(a) for a in job["attempts"]], "hidden": None, "false_acceptance": None}
-    if job["status"] in ACCEPTED:
+    if job["status"] in ACCEPTED and case.hidden is not None:
         edits, number = accepted_edits(job)
         row["accepted_attempt"] = number
         try:
@@ -98,19 +102,25 @@ def main():
     parser.add_argument("--run", required=True, help="name of this run; the same name resumes it")
     parser.add_argument("--seed", type=int, default=SEED)
     parser.add_argument("--cases", nargs="+", help="only these cases (a trial; no summary is written)")
+    parser.add_argument("--split", choices=("evaluation", "development"), default="evaluation")
     args = parser.parse_args()
-    for name, value in (("SAFEPATCH_PROFILE", "evaluation"), ("RUNNER_SANDBOX", "docker")):
-        if setting(name) != value:
-            raise SystemExit(f"set {name}={value} (and start the services with it)")
-    if Path(setting("PROJECTS_DIR", "")).resolve() != (L3 / "projects").resolve():
-        raise SystemExit("set PROJECTS_DIR=.runtime/l3/projects (and start the services with it)")
+    if args.split == "evaluation":
+        for name, value in (("SAFEPATCH_PROFILE", "evaluation"), ("RUNNER_SANDBOX", "docker")):
+            if setting(name) != value:
+                raise SystemExit(f"set {name}={value} (and start the services with it)")
+        if Path(setting("PROJECTS_DIR", "")).resolve() != (L3 / "projects").resolve():
+            raise SystemExit("set PROJECTS_DIR=.runtime/l3/projects (and start the services with it)")
+    else:
+        missing = [c.id for c in ready_cases("development") if c.id not in registry()[1]]
+        if setting("SAFEPATCH_PROFILE") != "lab" or missing:
+            raise SystemExit(f"set SAFEPATCH_PROFILE=lab and a PROJECTS_DIR registering every development case (missing: {missing})")
     for service, port in (("WORKER1", 8101), ("WORKER2", 8102)):
         os.environ.setdefault(service + "_URL", f"http://127.0.0.1:{port}")
         os.environ[service + "_TOKEN_FILE"] = str(ROOT / ".secrets" / (service.lower() + "_token"))
     out = evidence("l3-model")
     if (out / "summary.json").exists():
         raise SystemExit("Use a fresh EVIDENCE_DIR; evidence is never overwritten")
-    cases = evaluation_cases()
+    cases = ready_cases(args.split)
     if args.cases:
         cases = [c for c in cases if c.id in args.cases]
     private = ROOT / ".runtime/l3-measure" / args.run
@@ -119,7 +129,9 @@ def main():
     (out / "jobs").mkdir(parents=True, exist_ok=True)
     git = lambda *a: subprocess.run(["git", *a], cwd=ROOT, capture_output=True, text=True).stdout.strip()
     started = {"started_at": time.time(), "git_commit": git("rev-parse", "HEAD"),
-               "git_dirty": bool(git("status", "--porcelain", "--untracked-files=no")), "run": args.run,
+               "git_dirty": bool(git("status", "--porcelain", "--untracked-files=no")), "run": args.run, "split": args.split,
+               # the prompt composer that served this run (worker1 runs as its own service)
+               "worker1_sha256": digest((ROOT / "safepatch/worker1.py").read_bytes()),
                "cases": [c.id for c in cases if not (out / "jobs" / f"{c.id}.json").exists()]}
     first = not (out / "protocol.json").exists()
     record = out / "protocol.json" if first else out / f"resume-{int(started['started_at'])}.json"
@@ -140,7 +152,7 @@ def main():
         print(json.dumps({k: row[k] for k in ("case", "vulnerable", "status", "reason", "wall_seconds", "false_acceptance")}), flush=True)
     if args.cases:
         return
-    rows = [json.loads((out / "jobs" / f"{c.id}.json").read_text(encoding="utf-8")) for c in evaluation_cases()]
+    rows = [json.loads((out / "jobs" / f"{c.id}.json").read_text(encoding="utf-8")) for c in ready_cases(args.split)]
     summary = {"run": args.run, **summarize(rows), "rows": [{k: r[k] for k in ("case", "cwe", "vulnerable", "status", "reason", "false_acceptance")} for r in rows]}
     (out / "summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(json.dumps({k: summary[k] for k in ("jobs", "vulnerable", "safe")}, indent=2), "\nwritten:", out, "; model answers:", private)

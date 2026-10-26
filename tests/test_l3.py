@@ -114,10 +114,11 @@ def test_every_development_variant_has_one_sink_and_a_reference_fix():
         assert sink not in [line.strip() for line in fixed.splitlines()], case
 
 
-def test_the_measurement_takes_every_ready_evaluation_case():
-    cases = l3_measure.evaluation_cases()
-    assert all(c.split == "evaluation" and c.status == "ready" for c in cases)
-    assert len(cases) >= l3_catalog.load().targets["evaluation"]
+@pytest.mark.parametrize("split", ["evaluation", "development"])
+def test_the_measurement_takes_every_ready_case_of_its_side(split):
+    cases = l3_measure.ready_cases(split)
+    assert all(c.split == split and c.status == "ready" for c in cases)
+    assert len(cases) >= l3_catalog.load().targets[split]
 
 
 def measured(case, vulnerable=True, status="needs_human", false_acceptance=None, cwe="CWE-22", source="owasp-benchmark"):
@@ -144,8 +145,8 @@ def test_a_hidden_test_failure_is_recorded_on_the_row(monkeypatch, tmp_path):
     job = {"id": "j", "status": "awaiting_review", "reason": None,
            "attempts": [{"number": 1, "proposal": {"patch": {"edits": [{"path": "src/A.java", "content": "class A {}"}]}}, "verification": {"passed": True}}]}
     monkeypatch.setattr(l3_measure, "registry", lambda: ({}, {"x-1": {"commit": "c0", "project": "p"}}))
-    monkeypatch.setattr(l3_measure, "project", lambda case, commit: type("Spec", (), {"labels": {}})())
-    monkeypatch.setattr(l3_measure, "run", lambda store, case, commit, seed: (job, 1.0))
+    monkeypatch.setattr(l3_measure, "project", lambda case, commit: type("Spec", (), {"labels": {}, "scan": type("Scan", (), {"known": [1]})()})())
+    monkeypatch.setattr(l3_measure, "run", lambda store, case, commit, seed, scanner: (job, 1.0))
     monkeypatch.setattr(l3_measure, "attempt_row", lambda attempt: {"number": attempt["number"]})
 
     def broken(*args):
@@ -157,3 +158,16 @@ def test_a_hidden_test_failure_is_recorded_on_the_row(monkeypatch, tmp_path):
     assert row["status"] == "awaiting_review" and row["false_acceptance"] is None
     assert row["hidden"] == {"error": "RuntimeError: sandbox_stage_failed"} and row["accepted_attempt"] == 1
     assert (tmp_path / "x-1-attempt1-A.java").read_text(encoding="utf-8") == "class A {}"
+
+
+def test_a_development_case_uses_its_scanner_and_has_no_hidden_run(monkeypatch, tmp_path):
+    job = {"id": "j", "status": "awaiting_review", "reason": None,
+           "attempts": [{"number": 1, "proposal": {"patch": {"edits": [{"path": "src/A.java", "content": "class A {}"}]}}, "verification": {"passed": True}}]}
+    seen = {}
+    monkeypatch.setattr(l3_measure, "registry", lambda: ({}, {"own-1": {"commit": "c0", "project": "p"}}))
+    monkeypatch.setattr(l3_measure, "project", lambda case, commit: type("Spec", (), {"labels": {}, "scan": type("Scan", (), {"known": []})()})())
+    monkeypatch.setattr(l3_measure, "run", lambda store, case, commit, seed, scanner: (seen.update(scanner=scanner) or job, 1.0))
+    monkeypatch.setattr(l3_measure, "attempt_row", lambda attempt: {"number": attempt["number"]})
+    monkeypatch.setattr(l3_measure, "hidden_result", lambda *args: pytest.fail("development cases have no hidden tests"))
+    row = l3_measure.measure(l3_catalog.Case.model_validate(OWNED), None, tmp_path, 42)
+    assert seen["scanner"] == row["scanner"] == "semgrep" and (row["status"], row["hidden"], row["false_acceptance"]) == ("awaiting_review", None, None)
