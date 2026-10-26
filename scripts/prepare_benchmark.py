@@ -224,7 +224,7 @@ def record(drawn):
         shutil.rmtree(workspace, ignore_errors=True)
     data = {"snapshot": SNAPSHOT, "seed": SEED, "sample": {c: [[n, real] for n, real in cases] for c, cases in drawn.items()},
             "cases": {r.pop("case"): r for r in rows}}
-    RECORDED.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    RECORDED.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8", newline="\n")
     print("recorded", len(rows), "cases:", RECORDED)
 
 
