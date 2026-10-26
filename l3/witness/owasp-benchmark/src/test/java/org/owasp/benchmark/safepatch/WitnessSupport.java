@@ -354,4 +354,130 @@ public final class WitnessSupport {
     }
     return hex.toString();
   }
+
+  /** The answer with the input's echoes (raw, URL- and HTML-encoded) replaced: two inputs compare on their effect. */
+  static String normalized(String answer, String input) {
+    String html = org.owasp.esapi.ESAPI.encoder().encodeForHTML(input);
+    return answer.replace(html, "{INPUT}").replace(encoded(input), "{INPUT}").replace(input, "{INPUT}");
+  }
+
+  // ---- SQL injection (CWE-89) ----
+
+  private static boolean database;
+
+  /**
+   * Benchmark's database as Tomcat would provide it: an HSQLDB server on the loopback address
+   * (Spring's data source connects to hsql://localhost) and the JNDI name DatabaseHelper looks up.
+   */
+  static synchronized void database() throws Exception {
+    if (database) {
+      return;
+    }
+    // DatabaseHelper also starts Hibernate, which wants a Bean Validation provider an
+    // application server would supply; none is on the test classpath and none is needed here.
+    System.setProperty("javax.persistence.validation.mode", "none");
+    org.hsqldb.server.Server server = new org.hsqldb.server.Server();
+    server.setDatabaseName(0, "benchmarkDataBase");
+    server.setDatabasePath(0, "mem:benchmarkDataBase");
+    server.setAddress("127.0.0.1");
+    server.setSilent(true);
+    server.setLogWriter(null);
+    server.setErrWriter(null);
+    server.start();
+    System.setProperty("java.naming.factory.initial", Naming.class.getName());
+    database = true;
+  }
+
+  /** JNDI with the one name Benchmark needs, java:comp/env/jdbc/BenchmarkDB. */
+  public static final class Naming implements javax.naming.spi.InitialContextFactory {
+    public javax.naming.Context getInitialContext(java.util.Hashtable<?, ?> environment) {
+      final org.hsqldb.jdbc.JDBCDataSource source = new org.hsqldb.jdbc.JDBCDataSource();
+      source.setUrl("jdbc:hsqldb:hsql://127.0.0.1/benchmarkDataBase");
+      source.setUser("sa");
+      source.setPassword("");
+      return (javax.naming.Context) Proxy.newProxyInstance(WitnessSupport.class.getClassLoader(), new Class<?>[] { javax.naming.Context.class },
+          new InvocationHandler() {
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+              if (method.getName().equals("lookup") && String.valueOf(args[0]).equals("java:comp/env/jdbc/BenchmarkDB")) {
+                return source;
+              }
+              if (method.getName().equals("lookup")) {
+                throw new javax.naming.NameNotFoundException(String.valueOf(args[0]));
+              }
+              return fallback(method.getReturnType());
+            }
+          });
+    }
+  }
+
+  /** The servlet's answer to `value` on freshly initialised tables. */
+  static String sqlRun(Class<?> servlet, String name, String value) throws Exception {
+    database();
+    org.owasp.benchmark.helpers.DatabaseHelper.initDataBase();
+    return run(servlet, name, value);
+  }
+
+  static String differs(Class<?> servlet, String name, String probe, String first, String second) throws Exception {
+    String a = normalized(sqlRun(servlet, name, first), first);
+    String b = normalized(sqlRun(servlet, name, second), second);
+    return a.equals(b) ? "" : probe + ": answers differ; ";
+  }
+
+  /**
+   * What SQL text built from the input achieved, empty when nothing: a tautology answering
+   * otherwise than its false twin, a lone quote answering otherwise than a word, a row the
+   * input added, or a procedure call steered by the input. A parameterised query treats each
+   * input as a value and answers both twins alike.
+   */
+  public static String sqlInjection(Class<?> servlet, String name) throws Exception {
+    StringBuilder found = new StringBuilder();
+    found.append(differs(servlet, name, "tautology", "' OR 'a'='a", "' OR 'a'='b"));
+    // A distinctive input: blanking a lone quote would also blank the quotes of Benchmark's own SQL text.
+    found.append(differs(servlet, name, "quote", "safepatch'", "safepatch"));
+    found.append(differs(servlet, name, "call", "verifyUserPassword('foo','bar')", "verifyUserPassword('foo','nobody')"));
+    String user = "SPX" + UUID.randomUUID().toString().replace("-", "").substring(0, 12);
+    sqlRun(servlet, name, "x'),('" + user + "','x");
+    java.sql.ResultSet rows = org.owasp.benchmark.helpers.DatabaseHelper.getSqlStatement()
+        .executeQuery("SELECT COUNT(*) FROM USERS WHERE USERNAME = '" + user + "'");
+    if (rows.next() && rows.getInt(1) > 0) {
+      found.append("insert: the input added a row; ");
+    }
+    return found.toString();
+  }
+
+  /** A comment-terminated tautology; hidden tests only. */
+  public static String sqlHidden(Class<?> servlet, String name) throws Exception {
+    return differs(servlet, name, "comment tautology", "' OR 1=1 --", "' OR 1=2 --");
+  }
+
+  /** SHA-256 of the answer to a benign value on freshly initialised tables. */
+  public static String sqlAnswer(Class<?> servlet, String name, String value) throws Exception {
+    return sha256(sqlRun(servlet, name, value));
+  }
+
+  // ---- OS command injection (CWE-78) ----
+
+  /**
+   * Whether a shell ran a command of the input's: the input asks for an arithmetic expansion
+   * that only a shell turns into "42", either after a separator or as the variable Benchmark's
+   * script evaluates (insecureCmd.sh runs eval $FOO). Echoing the input literally shows "$((6*7))".
+   */
+  public static String commandInjection(Class<?> servlet, String name) throws Exception {
+    return command(servlet, name, "separator", "x; echo SPX$((6*7))") + command(servlet, name, "variable", "FOO=echo SPX$((6*7))");
+  }
+
+  /** A pipe instead of a separator; hidden tests only. */
+  public static String commandHidden(Class<?> servlet, String name) throws Exception {
+    return command(servlet, name, "pipe", "x | echo SPX$((6*7))");
+  }
+
+  static String command(Class<?> servlet, String name, String shape, String input) throws Exception {
+    String token = UUID.randomUUID().toString().replace("-", "").substring(0, 12);
+    return run(servlet, name, input + token).contains("SPX42" + token) ? shape + ": a shell ran the input; " : "";
+  }
+
+  /** SHA-256 of the answer to a benign value. */
+  public static String commandAnswer(Class<?> servlet, String name, String value) throws Exception {
+    return sha256(run(servlet, name, value));
+  }
 }

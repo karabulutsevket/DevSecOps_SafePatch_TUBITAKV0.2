@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 class SafePatchWitness01110 {
 
   @Test
-  void climbingOutOfTheFileAreaHasNoEffect() throws Exception {
+  void attackHasNoEffect() throws Exception {
     assertEquals("", WitnessSupport.traversal(org.owasp.benchmark.testcode.BenchmarkTest01110.class, "BenchmarkTest01110"), "PATH_TRAVERSAL_REGRESSION");
   }
 }

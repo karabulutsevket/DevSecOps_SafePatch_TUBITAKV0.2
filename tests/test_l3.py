@@ -86,6 +86,9 @@ def test_the_recording_decides_whether_a_sampled_benchmark_case_is_usable(real, 
     assert reason is None or reason in prepare_benchmark.verdict(real, row)[1]
 
 
-def test_generated_tests_name_the_case_and_carry_no_placeholder():
-    text = prepare_benchmark.java(prepare_benchmark.WITNESS_TEST, name="BenchmarkTest00011", n="00011", marker="PATH_TRAVERSAL_REGRESSION").decode()
-    assert "class SafePatchWitness00011" in text and "BenchmarkTest00011.class" in text and "{" + "name}" not in text and "{" + "marker}" not in text
+@pytest.mark.parametrize("category,method", [("pathtraver", "traversal"), ("sqli", "sqlInjection"), ("cmdi", "commandInjection")])
+def test_generated_tests_name_the_case_and_carry_no_placeholder(category, method):
+    call = prepare_benchmark.calls(category, "BenchmarkTest00011")
+    text = prepare_benchmark.java(prepare_benchmark.WITNESS_TEST, name="BenchmarkTest00011", n="00011", marker="X_REGRESSION", witness=call["witness"]).decode()
+    assert "class SafePatchWitness00011" in text and f"WitnessSupport.{method}(org.owasp.benchmark.testcode.BenchmarkTest00011.class" in text
+    assert "{" not in text.replace("Witness00011 {", "").replace("throws Exception {", "")

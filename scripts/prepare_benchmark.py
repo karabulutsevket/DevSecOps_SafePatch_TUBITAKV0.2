@@ -46,12 +46,26 @@ from prepare_vul4j import L3, git, maven_online
 
 SNAPSHOT = "acc50f20ec449e2b977a7c409fa8175491657cba"
 # Reproducible from the snapshot, the sample and recorded.json (the answers are deterministic).
-DERIVED = "5f2dadc54f742de9f7820ae6ec1dbc5a0f4fe470"
+DERIVED = "5b970a28b55652de33c47bf5f19d68c058dd439e"
 UPSTREAM = "benchmark-upstream"
 SEED = 20261026
-SAMPLE = {"pathtraver": {"true": 10, "false": 5}}
-CATEGORY = {"pathtraver": {"cwe": "CWE-22", "kind": "path", "marker": "PATH_TRAVERSAL_REGRESSION",
-                           "sink": r"java\.io\.File(Input|Output)Stream|java\.io\.File\(|new File\(|java\.nio\.file\.Files\.|FileReader|FileWriter|RandomAccessFile|Paths\.get"}}
+SAMPLE = {"pathtraver": {"true": 10, "false": 5}, "sqli": {"true": 10, "false": 5}, "cmdi": {"true": 10, "false": 5}}
+# Per category: the witness call, the hidden attack, two benign answers ({cls}, {name} filled in),
+# and the sink the known finding points at.
+CATEGORY = {
+    "pathtraver": {"cwe": "CWE-22", "kind": "path", "marker": "PATH_TRAVERSAL_REGRESSION",
+                   "witness": 'WitnessSupport.traversal({cls}, "{name}")', "attack": 'WitnessSupport.nested({cls}, "{name}")',
+                   "benign": 'WitnessSupport.benign({cls}, "{name}", WitnessSupport.BENIGN)', "benign2": 'WitnessSupport.benign({cls}, "{name}", WitnessSupport.DOTS)',
+                   "sink": r"java\.io\.File(Input|Output)Stream|java\.io\.File\(|new File\(|java\.nio\.file\.Files\.|FileReader|FileWriter|RandomAccessFile|Paths\.get"},
+    "sqli": {"cwe": "CWE-89", "kind": "sql", "marker": "SQL_INJECTION_REGRESSION",
+             "witness": 'WitnessSupport.sqlInjection({cls}, "{name}")', "attack": 'WitnessSupport.sqlHidden({cls}, "{name}")',
+             "benign": 'WitnessSupport.sqlAnswer({cls}, "{name}", "bar")', "benign2": 'WitnessSupport.sqlAnswer({cls}, "{name}", "User01")',
+             "sink": r"executeQuery|executeUpdate|\.execute\(|addBatch|prepareStatement|prepareCall|JDBCtemplate\.|createQuery|createSQLQuery"},
+    "cmdi": {"cwe": "CWE-78", "kind": "command", "marker": "COMMAND_INJECTION_REGRESSION",
+             "witness": 'WitnessSupport.commandInjection({cls}, "{name}")', "attack": 'WitnessSupport.commandHidden({cls}, "{name}")',
+             "benign": 'WitnessSupport.commandAnswer({cls}, "{name}", "safepatch")', "benign2": 'WitnessSupport.commandAnswer({cls}, "{name}", "hello world")',
+             "sink": r"\.exec\(|new ProcessBuilder|\.command\(|\.start\(\)"},
+}
 PACKAGE = "org/owasp/benchmark/safepatch"
 SUPPORT = ROOT / "l3/benchmark/src/test/java" / PACKAGE / "WitnessSupport.java"
 RECORDED = ROOT / "l3/benchmark/recorded.json"
@@ -98,34 +112,43 @@ import org.junit.jupiter.api.Test;
 /** SafePatch L3 recorder (MIT): effects and benign answers of the original Benchmark code. */
 class SafePatchRecorder {
 
+  interface Call {
+    String call() throws Exception;
+  }
+
+  static String safe(Call call) {
+    try {
+      return call.call();
+    }
+    catch (Throwable e) {
+      StringBuilder chain = new StringBuilder("error:");
+      for (Throwable t = e; t != null; t = t.getCause()) {
+        chain.append(' ').append(t.getClass().getName()).append(": ").append(t.getMessage());
+      }
+      return chain.toString().replace('\\n', ' ');
+    }
+  }
+
+  static void add(StringBuilder out, String name, String... values) {
+    String[] keys = { "visible", "nested", "benign_1", "benign_2", "dots_1", "dots_2" };
+    out.append(out.length() == 1 ? "" : ",").append("{\\"case\\":\\"").append(name).append("\\"");
+    for (int k = 0; k < keys.length; k++) {
+      out.append(",\\"").append(keys[k]).append("\\":\\"").append(values[k].replace("\\\\", "/").replace("\\"", "'")).append("\\"");
+    }
+    out.append("}");
+  }
+
   @Test
   void record() throws Exception {
-    String[] names = { {names} };
     StringBuilder out = new StringBuilder("[");
-    for (int i = 0; i < names.length; i++) {
-      Class<?> servlet = Class.forName("org.owasp.benchmark.testcode." + names[i]);
-      String[] keys = { "visible", "nested", "benign_1", "benign_2", "dots_1", "dots_2" };
-      String[] values = new String[keys.length];
-      try {
-        values[0] = WitnessSupport.traversal(servlet, names[i]);
-        values[1] = WitnessSupport.nested(servlet, names[i]);
-        values[2] = WitnessSupport.benign(servlet, names[i], WitnessSupport.BENIGN);
-        values[3] = WitnessSupport.benign(servlet, names[i], WitnessSupport.BENIGN);
-        values[4] = WitnessSupport.benign(servlet, names[i], WitnessSupport.DOTS);
-        values[5] = WitnessSupport.benign(servlet, names[i], WitnessSupport.DOTS);
-      }
-      catch (Throwable e) {
-        java.util.Arrays.fill(values, "error: " + e.getClass().getName());
-      }
-      out.append(i == 0 ? "" : ",").append("{\\"case\\":\\"").append(names[i]).append("\\"");
-      for (int k = 0; k < keys.length; k++) {
-        out.append(",\\"").append(keys[k]).append("\\":\\"").append(values[k].replace("\\\\", "/").replace("\\"", "'")).append("\\"");
-      }
-      out.append("}");
-    }
+{blocks}
     java.nio.file.Files.write(java.nio.file.Paths.get("target", "safepatch-record.json"), out.append("]").toString().getBytes("UTF-8"));
   }
 }
+"""
+
+RECORD_BLOCK = """    add(out, "{name}", safe(() -> {witness}), safe(() -> {attack}), safe(() -> {benign}), safe(() -> {benign}),
+        safe(() -> {benign2}), safe(() -> {benign2}));
 """
 
 WITNESS_TEST = """package org.owasp.benchmark.safepatch;
@@ -138,8 +161,8 @@ import org.junit.jupiter.api.Test;
 class SafePatchWitness{n} {
 
   @Test
-  void climbingOutOfTheFileAreaHasNoEffect() throws Exception {
-    assertEquals("", WitnessSupport.traversal(org.owasp.benchmark.testcode.{name}.class, "{name}"), "{marker}");
+  void attackHasNoEffect() throws Exception {
+    assertEquals("", {witness}, "{marker}");
   }
 }
 """
@@ -150,12 +173,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-/** SafePatch L3 behaviour test for OWASP Benchmark {name} (generated, MIT): a benign file answers as in the original code. */
+/** SafePatch L3 behaviour test for OWASP Benchmark {name} (generated, MIT): a benign input answers as in the original code. */
 class SafePatchBehavior{n} {
 
   @Test
-  void benignFileAnswersAsBefore() throws Exception {
-    assertEquals("{digest}", WitnessSupport.benign(org.owasp.benchmark.testcode.{name}.class, "{name}", WitnessSupport.BENIGN), "BEHAVIOR_REGRESSION");
+  void benignInputAnswersAsBefore() throws Exception {
+    assertEquals("{digest}", {benign}, "BEHAVIOR_REGRESSION");
   }
 }
 """
@@ -168,20 +191,26 @@ import org.junit.jupiter.api.Test;
 
 /** SafePatch L3 hidden evaluation test for OWASP Benchmark {name} (generated, MIT); the verifier never runs it. */
 class SafePatchHidden{n} {
-{nested_test}
+{attack_test}
   @Test
-  void benignNameWithDotsAnswersAsBefore() throws Exception {
-    assertEquals("{dots}", WitnessSupport.benign(org.owasp.benchmark.testcode.{name}.class, "{name}", WitnessSupport.DOTS), "HIDDEN_BEHAVIOR_DOTS");
+  void anotherBenignInputAnswersAsBefore() throws Exception {
+    assertEquals("{dots}", {benign2}, "HIDDEN_BEHAVIOR");
   }
 }
 """
 
-NESTED_TEST = """
+ATTACK_TEST = """
   @Test
-  void climbingFromASubdirectoryHasNoEffect() throws Exception {
-    assertEquals("", WitnessSupport.nested(org.owasp.benchmark.testcode.{name}.class, "{name}"), "HIDDEN_TRAVERSAL_NESTED");
+  void hiddenAttackHasNoEffect() throws Exception {
+    assertEquals("", {attack}, "HIDDEN_ATTACK");
   }
 """
+
+
+def calls(category, name):
+    """The category's Java calls for one case."""
+    cls = f"org.owasp.benchmark.testcode.{name}.class"
+    return {key: CATEGORY[category][key].replace("{cls}", cls).replace("{name}", name) for key in ("witness", "attack", "benign", "benign2")}
 
 
 def support_files():
@@ -204,13 +233,14 @@ def sandbox_run(repo, commit, goals, java_version="17", extra=None):
 
 
 def record(drawn):
-    names = [name for cases in drawn.values() for name, _ in cases]
-    recorder = java(RECORDER, names=", ".join(f'"{n}"' for n in names))
+    blocks = "".join(java(RECORD_BLOCK, name=name, **calls(category, name)).decode() for category, cases in drawn.items() for name, _ in cases)
+    recorder = java(RECORDER, blocks=blocks.rstrip("\n"))
     files = {**support_files(), "src/test/java/" + PACKAGE + "/SafePatchRecorder.java": recorder}
     repo, commit = derive("owasp-benchmark-record", {**SPEC, "message": "OWASP Benchmark recording: SafePatch recorder over the sample\n"}, files)
     workspace, result = sandbox_run(repo, commit, [*SKIPS, *SPOTLESS, "-Dtest=org.owasp.benchmark.safepatch.SafePatchRecorder", "test"])
     try:
         out = workspace / "ws/target/safepatch-record.json"
+        (L3 / "benchmark-record.log").write_text(result["output"], encoding="utf-8")   # Benchmark's own messages, for diagnosis
         if not out.exists():
             log = L3 / "benchmark-record-failure"
             shutil.rmtree(log, ignore_errors=True)
@@ -258,13 +288,14 @@ def generate(recorded):
             n = number(name)
             out = WITNESS / "src/test/java" / PACKAGE
             out.mkdir(parents=True, exist_ok=True)
-            (out / f"SafePatchWitness{n}.java").write_bytes(java(WITNESS_TEST, name=name, n=n, marker=marker))
-            (out / f"SafePatchBehavior{n}.java").write_bytes(java(BEHAVIOR_TEST, name=name, n=n, digest=row["benign_1"]))
+            call = calls(category, name)
+            (out / f"SafePatchWitness{n}.java").write_bytes(java(WITNESS_TEST, name=name, n=n, marker=marker, witness=call["witness"]))
+            (out / f"SafePatchBehavior{n}.java").write_bytes(java(BEHAVIOR_TEST, name=name, n=n, digest=row["benign_1"], benign=call["benign"]))
             # A hidden security test must fail on the original code to measure anything.
-            nested = java(NESTED_TEST, name=name).decode() if real and row["nested"] else ""
+            attack = java(ATTACK_TEST, attack=call["attack"]).decode() if real and row["nested"] else ""
             hidden = HIDDEN / "src/test/java" / PACKAGE
             hidden.mkdir(parents=True, exist_ok=True)
-            (hidden / f"SafePatchHidden{n}.java").write_bytes(java(HIDDEN_TEST, name=name, n=n, dots=row["dots_1"], nested_test=nested))
+            (hidden / f"SafePatchHidden{n}.java").write_bytes(java(HIDDEN_TEST, name=name, n=n, dots=row["dots_1"], benign2=call["benign2"], attack_test=attack))
     for path, data in support_files().items():
         (WITNESS / path).parent.mkdir(parents=True, exist_ok=True)
         (WITNESS / path).write_bytes(data)
@@ -339,7 +370,7 @@ def check(recorded):
         witness_fails = bool(witness) and witness["failures"] == 1 and witness["errors"] == 0
         behavior_passes = bool(behavior) and behavior["tests"] == 1 and behavior["failures"] + behavior["errors"] + behavior["skipped"] == 0
         # On the original code a hidden climb fails (that is why it was kept) and the dotted name passes.
-        climbs = int(b"climbingFromASubdirectory" in hidden[f"src/test/java/{PACKAGE}/SafePatchHidden{n}.java"])
+        climbs = int(b"hiddenAttackHasNoEffect" in hidden[f"src/test/java/{PACKAGE}/SafePatchHidden{n}.java"])
         hidden_as_expected = bool(secret) and secret["failures"] == climbs and secret["errors"] + secret["skipped"] == 0
         rows.append({"case": spec["id"], "benchmark_real": real, "witness": witness, "behavior": behavior, "hidden": secret,
                      "as_expected": behavior_passes and witness_fails == real and hidden_as_expected})

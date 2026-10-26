@@ -8,12 +8,12 @@ import org.junit.jupiter.api.Test;
 class SafePatchHidden02034 {
 
   @Test
-  void climbingFromASubdirectoryHasNoEffect() throws Exception {
-    assertEquals("", WitnessSupport.nested(org.owasp.benchmark.testcode.BenchmarkTest02034.class, "BenchmarkTest02034"), "HIDDEN_TRAVERSAL_NESTED");
+  void hiddenAttackHasNoEffect() throws Exception {
+    assertEquals("", WitnessSupport.nested(org.owasp.benchmark.testcode.BenchmarkTest02034.class, "BenchmarkTest02034"), "HIDDEN_ATTACK");
   }
 
   @Test
-  void benignNameWithDotsAnswersAsBefore() throws Exception {
-    assertEquals("0a220919173abef40f09e5c9eee2bf2fdb3e3df3aea1a2b69e35951da5b373bd", WitnessSupport.benign(org.owasp.benchmark.testcode.BenchmarkTest02034.class, "BenchmarkTest02034", WitnessSupport.DOTS), "HIDDEN_BEHAVIOR_DOTS");
+  void anotherBenignInputAnswersAsBefore() throws Exception {
+    assertEquals("0a220919173abef40f09e5c9eee2bf2fdb3e3df3aea1a2b69e35951da5b373bd", WitnessSupport.benign(org.owasp.benchmark.testcode.BenchmarkTest02034.class, "BenchmarkTest02034", WitnessSupport.DOTS), "HIDDEN_BEHAVIOR");
   }
 }

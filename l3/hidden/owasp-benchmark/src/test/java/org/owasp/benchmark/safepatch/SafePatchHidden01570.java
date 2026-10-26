@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 class SafePatchHidden01570 {
 
   @Test
-  void benignNameWithDotsAnswersAsBefore() throws Exception {
-    assertEquals("0b90acfb6406d310abcedb3cdeb3ec18c09877f2bd83dbb77f3a00be6be4a377", WitnessSupport.benign(org.owasp.benchmark.testcode.BenchmarkTest01570.class, "BenchmarkTest01570", WitnessSupport.DOTS), "HIDDEN_BEHAVIOR_DOTS");
+  void anotherBenignInputAnswersAsBefore() throws Exception {
+    assertEquals("0b90acfb6406d310abcedb3cdeb3ec18c09877f2bd83dbb77f3a00be6be4a377", WitnessSupport.benign(org.owasp.benchmark.testcode.BenchmarkTest01570.class, "BenchmarkTest01570", WitnessSupport.DOTS), "HIDDEN_BEHAVIOR");
   }
 }
