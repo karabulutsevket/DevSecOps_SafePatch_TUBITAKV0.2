@@ -4,6 +4,8 @@
 
 Modelin cevapları üçüncü taraf kodunu içerdiği için Git'e girmez (`.runtime/l3-measure/l3-model-1/`); kayıtlar yalnız özetlerini tutar.
 
+Ölçüm Benchmark'ın `5b970a2` değerlendirme commit'inde koştu; bu commit, SafePatch'in `55a549e` commit'indeki betiklerle aynen yeniden üretilir. Sonraki ölçümler, görünür SQL testi düzeltilmiş `8bd5841` commit'inde koşar ([aşağıda](#görünür-sql-davranış-testinin-düzeltilmesi-26-ekim)).
+
 ## Kurulum
 
 | Alan | Değer |
@@ -100,11 +102,29 @@ Model yalnız gerçek açıklarda çağrıldı: 78 deneme.
 
 Bunların hepsi geliştirme tarafında ele alınmalı. Değerlendirme seti ayar yapmak için kullanılmaz.
 
-1. **Görünür SQL davranış testinde de aynı açık var.** Gizli test düzeltildi (yukarıda), görünür test değişmedi. İki örneklenmiş servlet (01097 gerçek açık, 01315 güvenli kod), sorgu metnini her yanıta yazan `outputUpdateComplete` ile cevap veriyor. Bu servlet'lerde görünür test (`bar`) her doğru parametreleştirmeyi reddeder: doğrulayıcı doğru bir adayı geri çevirir. Bu ölçümü etkilemedi; 01097'nin üç denemesi testlere ulaşamadı (derleme hatası ve tekrarlanan yama). Düzeltmek değerlendirme deposunu, dolayısıyla sabitlenmiş commit'i değiştirir; ayrı bir karar.
-2. **vul4j-43'te görünür davranış testleri zayıf.** Testler yeni dosya çıkarmayı sınamıyor. CWE-22 notu "kontrol etmeden önce gerçek yolları `toRealPath()` ile çöz" diyor; model bunu henüz var olmayan çıkış yoluna uyguladı ve kök kontrolünü hiç yazmadı.
-3. **Küçük dosyalarda bölge kipi.** 78 denemenin 62'si bölge kipinde, ilk denemelerin bile yarısı (30'da 16). Tüm dosya bütçesi her baytı bir token sayıyor; 70 satırlık bir servlet, yeniden denemenin bağlamıyla birlikte bu bütçeye sığmıyor. Boş yamalar iki kipte de çıktı (bölge 9, tüm dosya 4).
-4. **Komut vakaları.** Model ya kodu değiştirmeden dönüyor (20 denemenin 9'u) ya da programı bir yer tutucuyla değiştiriyor. Benchmark'ın komut vakaları girdiyi bir betiğe ortam değişkeni olarak veriyor. CWE-78 notunun "sabit bir programa tek argüman" tarifi bu kalıba uymuyor olabilir; bu bir varsayım, sınanmadı.
-5. **En büyük kayıp derleme.** 78 denemenin 24'ü derlenmedi. Örnekler: var olmayan yardımcılar (`getSqlPreparedStatement`), `Path`/`File` tip karışıklığı.
+1. **vul4j-43'te görünür davranış testleri zayıf.** Testler yeni dosya çıkarmayı sınamıyor. CWE-22 notu "kontrol etmeden önce gerçek yolları `toRealPath()` ile çöz" diyor; model bunu henüz var olmayan çıkış yoluna uyguladı ve kök kontrolünü hiç yazmadı.
+2. **Küçük dosyalarda bölge kipi.** 78 denemenin 62'si bölge kipinde, ilk denemelerin bile yarısı (30'da 16). Tüm dosya bütçesi her baytı bir token sayıyor; 70 satırlık bir servlet, yeniden denemenin bağlamıyla birlikte bu bütçeye sığmıyor. Boş yamalar iki kipte de çıktı (bölge 9, tüm dosya 4).
+3. **Komut vakaları.** Model ya kodu değiştirmeden dönüyor (20 denemenin 9'u) ya da programı bir yer tutucuyla değiştiriyor. Benchmark'ın komut vakaları girdiyi bir betiğe ortam değişkeni olarak veriyor. CWE-78 notunun "sabit bir programa tek argüman" tarifi bu kalıba uymuyor olabilir; bu bir varsayım, sınanmadı.
+4. **En büyük kayıp derleme.** 78 denemenin 24'ü derlenmedi. Örnekler: var olmayan yardımcılar (`getSqlPreparedStatement`), `Path`/`File` tip karışıklığı.
+
+## Görünür SQL davranış testinin düzeltilmesi (26 Ekim)
+
+**Kayıtlar:** [evidence/v02-l3-gorunur-sql/](../evidence/v02-l3-gorunur-sql/) (kontrol, referans düzeltmeler, eski commit'te referans düzeltmeler), [evidence/v02-l3-model-sql/](../evidence/v02-l3-model-sql/l3-model/jobs/) (yeniden koşu). **Betik:** `scripts/benchmark_sql_reference.py`.
+
+Gizli testteki sorgu yankısı sorunu doğrulayıcının görünür davranış testinde de vardı. O da düzeltildi; etkilenen vakalar model ile yeniden koşuldu.
+
+- **Sorun.** Örneklenen 3 servlet (00196 ve 01097 gerçek açık, 01315 güvenli kod), davranış testinin girdisine (`bar`) verdiği yanıta sorgu metnini yazıyor. Bu vakalarda görünür test her doğru parametreleştirmeyi reddediyordu; doğrulayıcı doğru bir adayı geri çevirirdi.
+- **Düzeltme.** `WitnessSupport.sqlAnswer` da yanıtı karşılaştırmadan önce sorgu metnini ayıklıyor. Değerlendirme commit'i artık `8bd5841`; `5b970a2`'den yalnız `WitnessSupport` ve bu üç vakanın davranış testinde ayrılıyor. Yeniden kayıtta yalnız bu üç vakanın görünür özetleri değişti.
+- **Kontrol.** 42/42 beklendiği gibi.
+- **Referans düzeltmeler.** 00196 ve 01097 için düz birer parametreli sorgu yazıldı. Betik bu düzeltmeleri tek satırlık değişikliklerle kurar; Benchmark kodu depoya girmez.
+  - `8bd5841`'de ikisi de doğrulamadan (davranış, tanık) ve gizli testlerden geçiyor.
+  - `5b970a2`'de ikisini de davranış testi reddediyor; tanık ikisinde de geçiyor.
+- **Model ile yeniden koşu.** 00196, 01097 ve 01315 yeniden koşuldu; seed 42, aynı ayarlar. Sonuç değişmedi:
+  - 00196 ve 01097'de üç deneme de derlenmedi ya da önceki yamanın aynısıydı. Model var olmayan yardımcılar çağırıyor (`getSqlPreparedStatement`, `getConnection`) ya da `execute`'u yanlış imzayla kullanıyor. Hiçbir aday davranış testine ulaşamadı.
+  - 01315 modele gitmeden insana döndü.
+  - 01097'nin iki denemesi aynı seed'le ilk koşudan farklı bir yama üretti.
+
+Bu yüzden bu belgedeki sayılar değişmedi: görünür testteki hata bu ölçümün sonucunu etkilemedi.
 
 ## Sınırlar
 

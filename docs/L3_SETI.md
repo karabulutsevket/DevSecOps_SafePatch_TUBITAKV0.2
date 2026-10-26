@@ -112,10 +112,10 @@ Sonraki sınıf paketleri için de vaka var: zayıf rastgele 218/275, cookie 36/
 | Komut | Yalnız bir kabuğun hesaplayacağı bir ifade (`$((6*7))` → `42`). İki biçim: ayraçtan sonra, ya da Benchmark'ın betiğinin `eval` ettiği değişken olarak. Girdiyi olduğu gibi yazdırmak `42` üretmez. |
 
 Ortak kurallar:
-- **Davranış testi.** Zararsız bir girdiye verilen yanıtın SHA-256 özeti açık sürümdeki özetle aynı olmalı. Benchmark'ın çıktısı depoya girmez, yalnız özet girer.
+- **Davranış testi.** Zararsız bir girdiye verilen yanıtın SHA-256 özeti açık sürümdeki özetle aynı olmalı. Benchmark'ın çıktısı depoya girmez, yalnız özet girer. SQL'de yanıt karşılaştırılmadan önce, servlet'in yanıta yazdığı sorgu metni ayıklanır; parametreli bir sorgu bu metni zorunlu olarak değiştirir ([OLCUM_L3_MODEL.md](OLCUM_L3_MODEL.md)).
 - **Gizli testler.**
   - Saldırı çeşitleri: path'te alt klasörden tırmanma, SQL'de yorumla biten koşul, komutta `|`. Bir çeşit yalnız açık sürümde etkisi varsa eklenir.
-  - Bir zararsız girdi daha. SQL'de bu girdinin yanıtı karşılaştırılırken, servlet'in yanıta yazdığı sorgu metni ayıklanır (`HiddenSupport`, `l3/benchmark/hidden`). Parametreli bir sorgu bu metni zorunlu olarak değiştirir. `HiddenSupport` yalnız gizli testlerle gider; değerlendirme deposuna girmez ([OLCUM_L3_MODEL.md](OLCUM_L3_MODEL.md)).
+  - Bir zararsız girdi daha. SQL'de sorgu metni burada da ayıklanır. Bunu `HiddenSupport` yapar (`l3/benchmark/hidden`); yalnız gizli testlerle gider, değerlendirme deposuna girmez. Böylece gizli testler, düzeltmeden önceki değerlendirme commit'inde (`5b970a2`) de koşabilir.
 - **Veritabanı.** Test, Tomcat'in sağladığı ortamı kendi içinde kurar: loopback'te bir HSQLDB sunucusu ve `DatabaseHelper`'ın aradığı JNDI adı.
 
 **Sonuç**
@@ -189,6 +189,5 @@ Her vakanın bir referans düzeltmesi var: SQL'de parametreli sorgu, path'te ger
 
 Sonraki adımlar:
 - VUL4J-18 (jspwiki, JUnit 5).
-- Görünür SQL davranış testi: sorguyu her yanıta yazan servlet'lerde (`outputUpdateComplete`: 01097, 01315) doğru bir parametreleştirmeyi reddeder. Düzeltmek değerlendirme deposunu değiştirir ([OLCUM_L3_MODEL.md](OLCUM_L3_MODEL.md)).
 
 İlk model ölçümü: [OLCUM_L3_MODEL.md](OLCUM_L3_MODEL.md).
