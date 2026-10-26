@@ -23,6 +23,14 @@ cases:
   - {id: region-path-write, source: safepatch-synthetic, project: safepatch-region-dev, cwe: CWE-22, split: development, license: MIT, prepare: scripts/region_dev.py, status: ready}
   - {id: region-sql, source: safepatch-synthetic, project: safepatch-region-dev, cwe: CWE-89, split: development, license: MIT, prepare: scripts/region_dev.py, status: ready}
   - {id: region-command, source: safepatch-synthetic, project: safepatch-region-dev, cwe: CWE-78, split: development, license: MIT, prepare: scripts/region_dev.py, status: ready}
+  # Owned development variants: the lab's tests over other code shapes (scripts/variants_dev.py).
+  - {id: variant-sql-builder, source: safepatch-synthetic, project: safepatch-variants, cwe: CWE-89, split: development, license: MIT, prepare: scripts/variants_dev.py, status: ready}
+  - {id: variant-sql-format, source: safepatch-synthetic, project: safepatch-variants, cwe: CWE-89, split: development, license: MIT, prepare: scripts/variants_dev.py, status: ready}
+  - {id: variant-sql-helper, source: safepatch-synthetic, project: safepatch-variants, cwe: CWE-89, split: development, license: MIT, prepare: scripts/variants_dev.py, status: ready}
+  - {id: variant-path-file, source: safepatch-synthetic, project: safepatch-variants, cwe: CWE-22, split: development, license: MIT, prepare: scripts/variants_dev.py, status: ready}
+  - {id: variant-path-helper, source: safepatch-synthetic, project: safepatch-variants, cwe: CWE-22, split: development, license: MIT, prepare: scripts/variants_dev.py, status: ready}
+  - {id: variant-command-list, source: safepatch-synthetic, project: safepatch-variants, cwe: CWE-78, split: development, license: MIT, prepare: scripts/variants_dev.py, status: ready}
+  - {id: variant-command-format, source: safepatch-synthetic, project: safepatch-variants, cwe: CWE-78, split: development, license: MIT, prepare: scripts/variants_dev.py, status: ready}
   # Vul4J (tuhh-softsec/vul4j, GPL-3.0, used as a case list only).
   - id: vul4j-79
     source: vul4j

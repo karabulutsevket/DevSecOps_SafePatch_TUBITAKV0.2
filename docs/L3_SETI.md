@@ -140,17 +140,36 @@ Ortak kurallar:
 6. **Sıraya bağlı yanıt.** Bir güvenli path vakası, alanda sabit bir dosyanın var olup olmadığını söylüyor; önceki testlerin bıraktığı dosyalar yanıtını değiştirdi. Tanık yardımcısı artık her kontrolden önce dosya alanını boşaltıyor.
 7. **Derleme süresi.** 2 740 servlet'in çevrimdışı derlemesi sandbox'ta yaklaşık 6 dakika (ilk derleme indirmeyle 20 dakika). Her doğrulama bütün projeyi derlediği için model denemeleri bu vakalarda yavaş olacak. Çalışma kopyasının `/mnt/c` yerine WSL diskinde olması muhtemelen bunu kısaltır; ölçülmedi.
 
+## Geliştirme varyantları (26 Ekim)
+
+**Betik:** `scripts/variants_dev.py`. **Kaynaklar:** `samples/variants/`, referans düzeltmeler `samples/variants/fixed/`. **Kontrol:** [evidence/v02-l3-gelistirme/](../evidence/v02-l3-gelistirme/dev-variants-check.json).
+
+Geliştirme tarafına sahibi olduğumuz yeni bir projeden (`safepatch-variants`) 7 vaka eklendi. Vakalar laboratuvarın API'sini ve testlerini (`samples/tests/<aile>`) aynen kullanıyor; yalnız açığın kurulma biçimi farklı:
+
+| Vaka | Aile | Kalıp |
+|---|---|---|
+| `variant-sql-builder` | CWE-89 | `StringBuilder` |
+| `variant-sql-format` | CWE-89 | `String.format` |
+| `variant-sql-helper` | CWE-89 | sorgu bir yardımcı metotta |
+| `variant-path-file` | CWE-22 | `java.io.File` |
+| `variant-path-helper` | CWE-22 | yol bir yardımcı metotta |
+| `variant-command-list` | CWE-78 | argv listesi |
+| `variant-command-format` | CWE-78 | `String.format` |
+
+Bu kalıplar yapısal imzanın kurulma biçimini ayırt etmesini de sınar.
+
+Her vakanın bir referans düzeltmesi var: SQL'de parametreli sorgu, path'te gerçek yollarla kök kontrolü, komutta kabuk yerine yardımcı sınıfa ayrı argüman. Kontrol: 7 vakanın 7'sinde taban geçerli ve referans düzeltme doğrulanıyor (yerel runner).
+
 ## Sayılar ve sonraki adım
 
 `l3_catalog.py` çıktısı:
 
 | Taraf | Hazır | Hedef |
 |---|---|---|
-| Geliştirme | 13 | 20 |
+| Geliştirme | **20** (CWE-22: 7, CWE-89: 7, CWE-78: 6; 3 proje) | 20 |
 | Değerlendirme | **45** (30 gerçek açık + 15 güvenli kod; CWE-22: 18, CWE-89: 15, CWE-78: 12) | 40 |
 
 Sonraki adımlar:
-- Geliştirme tarafına 7 vaka daha. Ayrım kuralı gereği sahibi olduğumuz yeni projelerden gelmeli.
 - VUL4J-18 (jspwiki, JUnit 5).
 - Benchmark derlemesini hızlandırmak (çalışma kopyasını WSL diskine almak).
 - L3 üzerinde ilk model ölçümü: kabul edilen her aday gizli testlerle yanlış kabul açısından da ölçülür.

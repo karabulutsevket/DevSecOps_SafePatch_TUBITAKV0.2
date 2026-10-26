@@ -92,3 +92,12 @@ def test_generated_tests_name_the_case_and_carry_no_placeholder(category, method
     text = prepare_benchmark.java(prepare_benchmark.WITNESS_TEST, name="BenchmarkTest00011", n="00011", marker="X_REGRESSION", witness=call["witness"]).decode()
     assert "class SafePatchWitness00011" in text and f"WitnessSupport.{method}(org.owasp.benchmark.testcode.BenchmarkTest00011.class" in text
     assert "{" not in text.replace("Witness00011 {", "").replace("throws Exception {", "")
+
+
+def test_every_development_variant_has_one_sink_and_a_reference_fix():
+    import variants_dev
+    for case, (kind, sink, cwe) in variants_dev.CASES.items():
+        source = (variants_dev.SAMPLES / variants_dev.source_name(case)).read_text(encoding="utf-8")
+        fixed = (variants_dev.SAMPLES / "fixed" / variants_dev.source_name(case)).read_text(encoding="utf-8")
+        assert [line.strip() for line in source.splitlines()].count(sink) == 1, case
+        assert sink not in [line.strip() for line in fixed.splitlines()], case
