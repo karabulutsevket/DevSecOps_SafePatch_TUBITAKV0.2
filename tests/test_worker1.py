@@ -153,7 +153,7 @@ def test_a_file_that_fits_keeps_the_whole_file_prompt(sent):
 def test_a_servlet_sized_file_with_its_retry_context_goes_whole(sent):
     # The L3 run: 70-line servlets (~3.3 KB) with a previous diff, guidance and two sibling
     # files measured 1 050-2 617 prompt tokens of 5 632, yet counted one byte per token they
-    # went as regions and every attempt dropped its read-only context.
+    # went as regions and every attempt dropped some of its read-only context.
     siblings = {f"src/main/java/demo/Sibling{i}.java": "s" * 2500 for i in (1, 2)}
     result = worker1.propose(propose(source={SOURCE: "x" * 3300}, region_source=REGIONS, context_files=siblings, guidance="g" * 600,
                                      feedback={"category": "behavior_regression", "previous_patch_diff": "+d\n" * 500}))

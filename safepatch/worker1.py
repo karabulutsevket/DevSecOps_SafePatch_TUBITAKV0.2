@@ -122,7 +122,8 @@ def compose_mode(req, tag, regions):
     count after generation. Optional parts go largest context file first, then the failure
     warnings, then the previous patch diff. (Until 26 Oct 2026 whole files counted one byte
     per token: in the L3 run their prompts measured 3.3-4.0 bytes per token, so 70-line
-    files fell back to regions and every attempt dropped its read-only context.)
+    files fell back to regions and every attempt dropped some of its read-only context,
+    the whole-file ones all of it.)
     """
     limit = input_limit()
     schema = json.dumps((RegionPatch if regions else Patch).model_json_schema())

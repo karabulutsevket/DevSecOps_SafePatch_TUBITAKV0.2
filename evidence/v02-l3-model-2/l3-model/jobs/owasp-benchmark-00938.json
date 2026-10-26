@@ -1,0 +1,16 @@
+{
+  "case": "owasp-benchmark-00938",
+  "cwe": "CWE-89",
+  "project": "OWASP-Benchmark/BenchmarkJava",
+  "source": "owasp-benchmark",
+  "scanner": "known",
+  "vulnerable": false,
+  "seed": 42,
+  "job": "2e94e6451cb5487fa09c7d65eb597fce",
+  "status": "needs_human",
+  "reason": "baseline_missing_expected_failing_security_assertion_or_finding",
+  "wall_seconds": 30.2,
+  "attempts": [],
+  "hidden": null,
+  "false_acceptance": null
+}

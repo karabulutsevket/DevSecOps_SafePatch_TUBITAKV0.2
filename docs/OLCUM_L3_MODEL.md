@@ -126,6 +126,53 @@ Gizli testteki sorgu yankısı sorunu doğrulayıcının görünür davranış t
 
 Bu yüzden bu belgedeki sayılar değişmedi: görünür testteki hata bu ölçümün sonucunu etkilemedi.
 
+## İkinci koşu: düzeltilmiş kodla (27 Ekim)
+
+**Kayıtlar:** [evidence/v02-l3-model-2/l3-model/](../evidence/v02-l3-model-2/l3-model/). **Kod:** `hafta6-kok-neden` (`3cc5d50`).
+
+Aynı 45 vaka ve aynı ayarlarla koşuldu: seed 42, `guided+context`, hafıza kapalı, 3 deneme. İlk koşudan farklar:
+- **Bütçe.** İstem iki bayt bir token sayılıyor; tüm dosya kipi yalnız cevap da sığıyorsa seçiliyor ([KOK_NEDEN_UC_SORUN.md](KOK_NEDEN_UC_SORUN.md)). Bağlam artık modele gidiyor.
+- **Değerlendirme commit'i.** `8bd5841`: görünür SQL testi düzeltilmiş.
+- **Gizli SQL testi** düzeltilmiş.
+- **Bağlam seçimi** hızlandı; aynı dosyaları seçiyor.
+- **Politika aynı.**
+
+| | İlk koşu | İkinci koşu |
+|---|---|---|
+| Güvenli kod modele gitmeden insana döndü | 15 / 15 | 15 / 15 |
+| Doğrulayıcının kabul ettiği | 9 / 30 | 7 / 30 |
+| Yanlış kabul (düzeltilmiş gizli testlerle) | 1 / 9 (vul4j-43) | **0 / 7** |
+| Doğru onarım | 8 / 30 (%14–44) | 7 / 30 (%12–41) |
+| Denemelerin kipi (tüm dosya / bölge) | 16 / 62 | 67 / 7 |
+| En az bir bağlam dosyası giden deneme | 50 / 78 (hepsi bölge kipinde) | 55 / 74 |
+| Politika reddi (iş biter) | 2 | 3 |
+| Kodu değiştirmeyen cevap | 13 | 13 (hepsi gösterilen kodun tekrarı, hepsinde tanık başarısız) |
+| Toplam süre | 85 dk | 68 dk |
+
+İkinci koşuda doğru onarım SQL'de 5/10, path'te 2/13, komutta 0/7.
+
+**Sonucu değişen 4 vaka:**
+
+| Vaka | İlk koşu | İkinci koşu | Ne oldu |
+|---|---|---|---|
+| owasp-benchmark-02032 (path) | Deneme hakkı bitti (bölge kipi) | Doğru onarım (tüm dosya, ilk denemede) | — |
+| owasp-benchmark-02414 (komut) | Doğru onarım (3. denemede) | Deneme hakkı bitti | İlk deneme derlenmedi; sonra iki boş cevap |
+| owasp-benchmark-00306 (komut) | Doğru onarım (2. denemede) | Politika reddi, iş ilk denemede bitti | Aşağıda |
+| vul4j-43 (path) | Yanlış kabul | Deneme hakkı bitti | Yanlış kabul edilen aday bu kez çıkmadı |
+
+**Politika reddi (00306).** Model komut çalıştıran kodun tamamını yorum satırına aldı ve yerine girdiyi kaçırmadan yazan bir ileti koydu. Bu bir düzeltme değil; davranış testi de büyük olasılıkla reddederdi. Ama yorum satırı `Runtime.getRuntime` içerdiği için politika reddetti ve ret işi bitirdi. İlk koşuda aynı vaka ikinci denemede doğru onarılmıştı.
+
+**İki koşuda toplam beş politika reddi** var:
+- 01066 iki kez: gerçek bir yeni `exec` satırı.
+- 01643 iki kez ve 00306 bir kez: değişen satırda zaten var olan ifade.
+
+Beşi de işi ilk ret anında bitirdi. Önerilen kural (`hafta6-politika-onerisi`) 01066'yı yine reddeder, diğer üçünü doğrulamaya geçirir.
+
+**Okuma:**
+- **Fark gürültü içinde.** 8 → 7 doğru onarım, tek seed'li ölçümün ±1–2 vakalık gürültüsü içinde. Vakaların ikisi bir yöne, ikisi öteki yöne değişti; bütçe düzeltmesinin ya da bağlamın etkisi bu koşuyla ayırt edilemiyor. Paket şekilli geliştirme vakalarındaki sonuç da aynıydı.
+- **Kesin olan:** kip dağılımı tersine döndü ve süre 85 dakikadan 68 dakikaya indi. Bağlam seçiminin hızlanması iş başına yaklaşık 97 saniye kazandırdı; tüm dosya cevapları ise daha uzun.
+- **Yanlış kabul yok.** Bu koşuda kabul edilen 7 adayın hepsi gizli testleri geçti.
+
 ## Sınırlar
 
 - **Tek seed (42).** ROADMAP en az 3 seed istiyor.

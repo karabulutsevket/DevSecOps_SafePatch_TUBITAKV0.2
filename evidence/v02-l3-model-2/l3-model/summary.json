@@ -1,0 +1,473 @@
+{
+  "run": "l3-model-2",
+  "jobs": 45,
+  "vulnerable": {
+    "jobs": 30,
+    "statuses": {
+      "needs_human": 20,
+      "rejected": 3,
+      "awaiting_review": 7
+    },
+    "reasons": {
+      "attempt_budget_exhausted": 20,
+      "forbidden_capability_or_suppression": 3
+    },
+    "accepted": 7,
+    "false_acceptances": 0,
+    "accepted_and_hidden_passed": 7,
+    "model_attempts": 74
+  },
+  "safe": {
+    "jobs": 15,
+    "statuses": {
+      "needs_human": 15
+    },
+    "reasons": {
+      "baseline_missing_expected_failing_security_assertion_or_finding": 15
+    },
+    "accepted": 0,
+    "false_acceptances": 0,
+    "accepted_and_hidden_passed": 0,
+    "model_attempts": 0
+  },
+  "by_cwe": {
+    "CWE-22": {
+      "jobs": 13,
+      "statuses": {
+        "needs_human": 10,
+        "rejected": 1,
+        "awaiting_review": 2
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 10,
+        "forbidden_capability_or_suppression": 1
+      },
+      "accepted": 2,
+      "false_acceptances": 0,
+      "accepted_and_hidden_passed": 2,
+      "model_attempts": 35
+    },
+    "CWE-78": {
+      "jobs": 7,
+      "statuses": {
+        "rejected": 2,
+        "needs_human": 5
+      },
+      "reasons": {
+        "forbidden_capability_or_suppression": 2,
+        "attempt_budget_exhausted": 5
+      },
+      "accepted": 0,
+      "false_acceptances": 0,
+      "accepted_and_hidden_passed": 0,
+      "model_attempts": 19
+    },
+    "CWE-89": {
+      "jobs": 10,
+      "statuses": {
+        "needs_human": 5,
+        "awaiting_review": 5
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 5
+      },
+      "accepted": 5,
+      "false_acceptances": 0,
+      "accepted_and_hidden_passed": 5,
+      "model_attempts": 20
+    }
+  },
+  "by_source": {
+    "owasp-benchmark": {
+      "jobs": 27,
+      "statuses": {
+        "needs_human": 17,
+        "rejected": 3,
+        "awaiting_review": 7
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 17,
+        "forbidden_capability_or_suppression": 3
+      },
+      "accepted": 7,
+      "false_acceptances": 0,
+      "accepted_and_hidden_passed": 7,
+      "model_attempts": 65
+    },
+    "vul4j": {
+      "jobs": 3,
+      "statuses": {
+        "needs_human": 3
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 3
+      },
+      "accepted": 0,
+      "false_acceptances": 0,
+      "accepted_and_hidden_passed": 0,
+      "model_attempts": 9
+    }
+  },
+  "rows": [
+    {
+      "case": "vul4j-79",
+      "cwe": "CWE-22",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "vul4j-41",
+      "cwe": "CWE-22",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "vul4j-43",
+      "cwe": "CWE-22",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-00011",
+      "cwe": "CWE-22",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-00452",
+      "cwe": "CWE-22",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-00526",
+      "cwe": "CWE-22",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-00623",
+      "cwe": "CWE-22",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-01110",
+      "cwe": "CWE-22",
+      "vulnerable": false,
+      "status": "needs_human",
+      "reason": "baseline_missing_expected_failing_security_assertion_or_finding",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-01116",
+      "cwe": "CWE-22",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-01570",
+      "cwe": "CWE-22",
+      "vulnerable": false,
+      "status": "needs_human",
+      "reason": "baseline_missing_expected_failing_security_assertion_or_finding",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-01643",
+      "cwe": "CWE-22",
+      "vulnerable": true,
+      "status": "rejected",
+      "reason": "forbidden_capability_or_suppression",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-01839",
+      "cwe": "CWE-22",
+      "vulnerable": true,
+      "status": "awaiting_review",
+      "reason": null,
+      "false_acceptance": false
+    },
+    {
+      "case": "owasp-benchmark-01905",
+      "cwe": "CWE-22",
+      "vulnerable": false,
+      "status": "needs_human",
+      "reason": "baseline_missing_expected_failing_security_assertion_or_finding",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-02030",
+      "cwe": "CWE-22",
+      "vulnerable": false,
+      "status": "needs_human",
+      "reason": "baseline_missing_expected_failing_security_assertion_or_finding",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-02032",
+      "cwe": "CWE-22",
+      "vulnerable": true,
+      "status": "awaiting_review",
+      "reason": null,
+      "false_acceptance": false
+    },
+    {
+      "case": "owasp-benchmark-02034",
+      "cwe": "CWE-22",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-02556",
+      "cwe": "CWE-22",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-02568",
+      "cwe": "CWE-22",
+      "vulnerable": false,
+      "status": "needs_human",
+      "reason": "baseline_missing_expected_failing_security_assertion_or_finding",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-00196",
+      "cwe": "CWE-89",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-00331",
+      "cwe": "CWE-89",
+      "vulnerable": false,
+      "status": "needs_human",
+      "reason": "baseline_missing_expected_failing_security_assertion_or_finding",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-00678",
+      "cwe": "CWE-89",
+      "vulnerable": true,
+      "status": "awaiting_review",
+      "reason": null,
+      "false_acceptance": false
+    },
+    {
+      "case": "owasp-benchmark-00938",
+      "cwe": "CWE-89",
+      "vulnerable": false,
+      "status": "needs_human",
+      "reason": "baseline_missing_expected_failing_security_assertion_or_finding",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-01087",
+      "cwe": "CWE-89",
+      "vulnerable": true,
+      "status": "awaiting_review",
+      "reason": null,
+      "false_acceptance": false
+    },
+    {
+      "case": "owasp-benchmark-01092",
+      "cwe": "CWE-89",
+      "vulnerable": false,
+      "status": "needs_human",
+      "reason": "baseline_missing_expected_failing_security_assertion_or_finding",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-01097",
+      "cwe": "CWE-89",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-01315",
+      "cwe": "CWE-89",
+      "vulnerable": false,
+      "status": "needs_human",
+      "reason": "baseline_missing_expected_failing_security_assertion_or_finding",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-01461",
+      "cwe": "CWE-89",
+      "vulnerable": false,
+      "status": "needs_human",
+      "reason": "baseline_missing_expected_failing_security_assertion_or_finding",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-01620",
+      "cwe": "CWE-89",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-01964",
+      "cwe": "CWE-89",
+      "vulnerable": true,
+      "status": "awaiting_review",
+      "reason": null,
+      "false_acceptance": false
+    },
+    {
+      "case": "owasp-benchmark-02091",
+      "cwe": "CWE-89",
+      "vulnerable": true,
+      "status": "awaiting_review",
+      "reason": null,
+      "false_acceptance": false
+    },
+    {
+      "case": "owasp-benchmark-02181",
+      "cwe": "CWE-89",
+      "vulnerable": true,
+      "status": "awaiting_review",
+      "reason": null,
+      "false_acceptance": false
+    },
+    {
+      "case": "owasp-benchmark-02630",
+      "cwe": "CWE-89",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-02653",
+      "cwe": "CWE-89",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-00306",
+      "cwe": "CWE-78",
+      "vulnerable": true,
+      "status": "rejected",
+      "reason": "forbidden_capability_or_suppression",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-00823",
+      "cwe": "CWE-78",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-00825",
+      "cwe": "CWE-78",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-00979",
+      "cwe": "CWE-78",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-01066",
+      "cwe": "CWE-78",
+      "vulnerable": true,
+      "status": "rejected",
+      "reason": "forbidden_capability_or_suppression",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-01286",
+      "cwe": "CWE-78",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-01794",
+      "cwe": "CWE-78",
+      "vulnerable": false,
+      "status": "needs_human",
+      "reason": "baseline_missing_expected_failing_security_assertion_or_finding",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-02253",
+      "cwe": "CWE-78",
+      "vulnerable": false,
+      "status": "needs_human",
+      "reason": "baseline_missing_expected_failing_security_assertion_or_finding",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-02414",
+      "cwe": "CWE-78",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-02428",
+      "cwe": "CWE-78",
+      "vulnerable": false,
+      "status": "needs_human",
+      "reason": "baseline_missing_expected_failing_security_assertion_or_finding",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-02513",
+      "cwe": "CWE-78",
+      "vulnerable": false,
+      "status": "needs_human",
+      "reason": "baseline_missing_expected_failing_security_assertion_or_finding",
+      "false_acceptance": null
+    },
+    {
+      "case": "owasp-benchmark-02518",
+      "cwe": "CWE-78",
+      "vulnerable": false,
+      "status": "needs_human",
+      "reason": "baseline_missing_expected_failing_security_assertion_or_finding",
+      "false_acceptance": null
+    }
+  ]
+}

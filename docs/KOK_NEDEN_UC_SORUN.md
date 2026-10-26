@@ -75,17 +75,19 @@ Politika kodu değişmedi. `tests/test_policy.py` dosyasına eklenenler:
   - Bölge kipi iki baytı bir token sayıyor ve üretimden sonra modelin ölçtüğü sayıyı denetliyor. Tüm dosya kipinde bu denetim yoktu.
 - **L3 koşusunda ölçülen istem uzunlukları:**
 
-| Kip | Deneme | Ölçülen istem (token) | Bayt/token (alt sınır) | Bağlam dosyası düşen deneme |
-|---|---|---|---|---|
-| Tüm dosya | 16 | 1 050–1 284 | 3,3–4,0 | 16 / 16 |
-| Bölge | 62 | 1 695–2 617 | 3,5–4,4 | 62 / 62 |
+| Kip | Deneme | Ölçülen istem (token) | Bayt/token (alt sınır) | En az bir bağlam dosyası düşen | Bağlamın tamamı düşen |
+|---|---|---|---|---|---|
+| Tüm dosya | 16 | 1 050–1 284 | 3,3–4,0 | 16 / 16 | 16 / 16 |
+| Bölge | 62 | 1 695–2 617 | 3,5–4,4 | 62 / 62 | 12 / 62 |
+
+  **Düzeltme (27 Ekim).** Bu belgenin ilk sürümü, ayrıca bir commit mesajı ve kod yorumu, bağlamın "her denemede düştüğünü" yazıyordu. Doğrusu: her denemede en az bir bağlam dosyası düştü. Tüm dosya denemelerinde bağlamın tamamı düştü; bölge denemelerinin 50'si bağlamın bir kısmıyla gitti.
 
   En uzun istem 5 632'nin 2 617'siydi.
-- **Bağlamın düşmesi yalnız L3'te değil.** Önceki ölçümlerde de bağlam düştü: `v02-retry` 18/211, `v02-genel-talimat` 18/114, `v02-bolge-sentetik` 18/116, `v02-faz1` 6/28, `v02-w3-dogrulama` 6/36, VUL4J-79 9/9.
+- **Bağlamın düşmesi yalnız L3'te değil.** Önceki ölçümlerde de en az bir bağlam dosyası düşen denemeler var: `v02-retry` 18/211, `v02-genel-talimat` 18/114, `v02-bolge-sentetik` 18/116, `v02-faz1` 6/28, `v02-w3-dogrulama` 6/36, VUL4J-79 9/9.
 
 ### Kök neden
 
-Tüm dosya tahmini gerçeğin 3–4 katı. "Tüm dosya sığıyorsa tüm dosya" kuralı yanlış hesaplanan bir "sığıyor mu" sorusuyla çalışıyordu. Bu yüzden 70 satırlık servlet'ler bölge kipine düştü ve `guided+context`'in salt okunur bağlamı her denemede düştü. Sorun yapılandırmada değil, koddaki tahminde.
+Tüm dosya tahmini gerçeğin 3–4 katı. "Tüm dosya sığıyorsa tüm dosya" kuralı yanlış hesaplanan bir "sığıyor mu" sorusuyla çalışıyordu. Bu yüzden 70 satırlık servlet'ler bölge kipine düştü. `guided+context`'in salt okunur bağlamı tüm dosya denemelerinde tamamen düştü; bölge denemelerinde kısmen modele gitti. Sorun yapılandırmada değil, koddaki tahminde.
 
 ### Kip kararı neye dayanıyor
 
@@ -198,7 +200,7 @@ Eski bileşenle bu vakalar L3'teki koşulu aynen üretiyor: ilk denemede bağlam
 
 - **Önceki ölçümler bu commit'le aynen tekrarlanamaz.** Yukarıda sayılan denemelerde istem değişir; eski davranış önceki commit'le tekrarlanır.
 - **L3'te bağlam artık modele gidiyor.** Motorun seçtiği bağlam, aynı paketteki kardeş dosyalardır (alfabetik). Benchmark'ta bunlar ilgisiz ve kendileri de açık içeren servlet'ler (`BenchmarkTest00001`, `00004`).
-  - İlk L3 ölçümü fiilen bağlamsız koştu. Bir sonraki L3 koşusu onunla doğrudan karşılaştırılamaz.
+  - İlk L3 ölçümünde bağlam yalnız bölge denemelerinde, kısmen modele gitti (78 denemenin 50'si). Tüm dosya denemelerinde hiç gitmedi. Bir sonraki L3 koşusu bu yüzden onunla birebir karşılaştırılamaz.
   - Bağlam seçimi değiştirilmedi. Sentetik laboratuvarda kardeş dosya düzeltme için gerekiyor (komut vakasında `EchoMain`); "yalnız başvurulan dosyalar" gibi basit bir kural bunu bozar ve elimizde kanıt yok.
 
 ### Ek bulgu: bağlam seçimi 97 saniye sürüyordu
@@ -278,7 +280,7 @@ Değişiklikten sonraki ilk koşuda bir test başarısız oldu ([sonra/tests-all
 ## Karar bekleyenler
 
 1. **Politika önerisi** (`hafta6-politika-onerisi`): politika sahibi.
-2. **Politika reddinin işi bitirmesi** (alternatif B): politika sahibi.
+2. **Politika reddinin işi bitirmesi** (alternatif B): politika sahibi. İki L3 koşusunda beş ret işi ilk ret anında bitirdi. Bunlardan biri (00306) ilk koşuda ikinci denemede doğru onarılmıştı ([OLCUM_L3_MODEL.md](OLCUM_L3_MODEL.md), ikinci koşu).
 3. **Bütçe düzeltmesinin etkisi.** Geliştirme setinde (11/20 → 11/20) ve paket şekilli vakalarda (A 8/12, C 8/12) ölçülebilir bir etki yok.
 4. **L3'te bağlam seçimi.** Benchmark'ta ilgisiz kardeş dosyalar seçiliyor. Paket şekilli vakalarda bu bağlam yardımcı olmadı (B 6/12, C 8/12; fark gürültü içinde). Seçenekler:
    - (a) Strateji `guided+context` kalsın. Bu, ölçülmüş varsayılan; L3 koşusu böylece tek, önceden belirlenmiş stratejiyle koşar.
