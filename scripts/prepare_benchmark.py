@@ -14,7 +14,8 @@ Steps (sandbox: SANDBOX_MAVEN_CACHE set, Docker running):
              inputs, each twice. Writes l3/benchmark/recorded.json (digests and effects only).
   (default)  generates the witness, behaviour and hidden tests from the sample and the
              recording (l3/witness/owasp-benchmark, l3/hidden/owasp-benchmark), derives the
-             evaluation repository, writes the descriptors and the catalog block.
+             evaluation repository, writes the descriptors and the catalog block. HiddenSupport
+             (l3/benchmark/hidden) goes with the hidden tests only, never into that repository.
   --check    runs every generated witness and behaviour test once on the original code and
              writes owasp-benchmark-check.json to EVIDENCE_DIR.
 The sample is drawn once with a fixed seed; a sampled case that does not work is excluded
@@ -59,7 +60,7 @@ CATEGORY = {
                    "sink": r"java\.io\.File(Input|Output)Stream|java\.io\.File\(|new File\(|java\.nio\.file\.Files\.|FileReader|FileWriter|RandomAccessFile|Paths\.get"},
     "sqli": {"cwe": "CWE-89", "kind": "sql", "marker": "SQL_INJECTION_REGRESSION",
              "witness": 'WitnessSupport.sqlInjection({cls}, "{name}")', "attack": 'WitnessSupport.sqlHidden({cls}, "{name}")',
-             "benign": 'WitnessSupport.sqlAnswer({cls}, "{name}", "bar")', "benign2": 'WitnessSupport.sqlAnswer({cls}, "{name}", "User01")',
+             "benign": 'WitnessSupport.sqlAnswer({cls}, "{name}", "bar")', "benign2": 'HiddenSupport.sqlAnswer({cls}, "{name}", "User01")',
              "sink": r"executeQuery|executeUpdate|\.execute\(|addBatch|prepareStatement|prepareCall|JDBCtemplate\.|createQuery|createSQLQuery"},
     "cmdi": {"cwe": "CWE-78", "kind": "command", "marker": "COMMAND_INJECTION_REGRESSION",
              "witness": 'WitnessSupport.commandInjection({cls}, "{name}")', "attack": 'WitnessSupport.commandHidden({cls}, "{name}")',
@@ -219,6 +220,12 @@ def support_files():
     return {p.relative_to(base).as_posix(): p.read_bytes() for p in sorted((base / "src").rglob("*")) if p.is_file()}
 
 
+def hidden_support_files():
+    """HiddenSupport (l3/benchmark/hidden): with the hidden tests and the recorder, not the verifier's tests."""
+    base = ROOT / "l3/benchmark/hidden"
+    return {p.relative_to(base).as_posix(): p.read_bytes() for p in sorted(base.rglob("*")) if p.is_file()}
+
+
 def sandbox_run(repo, commit, goals, java_version="17", extra=None, outputs=("target/surefire-reports",)):
     """Clone, add `extra` files ({path: bytes}), run Maven offline in the sandbox from a WSL-disk
     stage and bring back `outputs`; returns (workspace, result) and the caller removes the workspace."""
@@ -243,7 +250,7 @@ def sandbox_run(repo, commit, goals, java_version="17", extra=None, outputs=("ta
 def record(drawn):
     blocks = "".join(java(RECORD_BLOCK, name=name, **calls(category, name)).decode() for category, cases in drawn.items() for name, _ in cases)
     recorder = java(RECORDER, blocks=blocks.rstrip("\n"))
-    files = {**support_files(), "src/test/java/" + PACKAGE + "/SafePatchRecorder.java": recorder}
+    files = {**support_files(), **hidden_support_files(), "src/test/java/" + PACKAGE + "/SafePatchRecorder.java": recorder}
     repo, commit = derive("owasp-benchmark-record", {**SPEC, "message": "OWASP Benchmark recording: SafePatch recorder over the sample\n"}, files)
     workspace, result = sandbox_run(repo, commit, [*SKIPS, *SPOTLESS, "-Dtest=org.owasp.benchmark.safepatch.SafePatchRecorder", "test"],
                                     outputs=("target/safepatch-record.json", "target/surefire-reports"))
@@ -305,9 +312,10 @@ def generate(recorded):
             hidden = HIDDEN / "src/test/java" / PACKAGE
             hidden.mkdir(parents=True, exist_ok=True)
             (hidden / f"SafePatchHidden{n}.java").write_bytes(java(HIDDEN_TEST, name=name, n=n, dots=row["dots_1"], benign2=call["benign2"], attack_test=attack))
-    for path, data in support_files().items():
-        (WITNESS / path).parent.mkdir(parents=True, exist_ok=True)
-        (WITNESS / path).write_bytes(data)
+    for folder, files in ((WITNESS, support_files()), (HIDDEN, hidden_support_files())):
+        for path, data in files.items():
+            (folder / path).parent.mkdir(parents=True, exist_ok=True)
+            (folder / path).write_bytes(data)
     return cases
 
 

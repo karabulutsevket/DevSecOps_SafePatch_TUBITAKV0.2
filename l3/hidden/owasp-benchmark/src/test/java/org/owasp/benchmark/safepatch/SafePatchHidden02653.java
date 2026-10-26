@@ -14,6 +14,6 @@ class SafePatchHidden02653 {
 
   @Test
   void anotherBenignInputAnswersAsBefore() throws Exception {
-    assertEquals("7a0e20f50a193782e179deb06dd3d27a6fda5fb96d4c98cd69eb7097eb67f867", WitnessSupport.sqlAnswer(org.owasp.benchmark.testcode.BenchmarkTest02653.class, "BenchmarkTest02653", "User01"), "HIDDEN_BEHAVIOR");
+    assertEquals("7a0e20f50a193782e179deb06dd3d27a6fda5fb96d4c98cd69eb7097eb67f867", HiddenSupport.sqlAnswer(org.owasp.benchmark.testcode.BenchmarkTest02653.class, "BenchmarkTest02653", "User01"), "HIDDEN_BEHAVIOR");
   }
 }

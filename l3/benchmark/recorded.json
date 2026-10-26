@@ -315,8 +315,8 @@
       "nested": "",
       "benign_1": "3f8f3ae53ee9c12dbe4ab3be2d309d96d4d388148ea256fb1bc5295df8ce92e0",
       "benign_2": "3f8f3ae53ee9c12dbe4ab3be2d309d96d4d388148ea256fb1bc5295df8ce92e0",
-      "dots_1": "be24dc59402db0531203fc6552034a0ae0a331eb836bddf1f5f44d1519c5da80",
-      "dots_2": "be24dc59402db0531203fc6552034a0ae0a331eb836bddf1f5f44d1519c5da80"
+      "dots_1": "1bc8042b44b6f246cbc911c90aa09ba01c4fa595ca4ab308594143088a2728cf",
+      "dots_2": "1bc8042b44b6f246cbc911c90aa09ba01c4fa595ca4ab308594143088a2728cf"
     },
     "BenchmarkTest00331": {
       "visible": "",
@@ -331,8 +331,8 @@
       "nested": "comment tautology: answers differ; ",
       "benign_1": "2d9218e22fa4786dd6f3b1ccdab341c73f378d88ab44668e8652f86169abbd0d",
       "benign_2": "2d9218e22fa4786dd6f3b1ccdab341c73f378d88ab44668e8652f86169abbd0d",
-      "dots_1": "a37cb5c6651f39e38e192d0c1b6c748b147e0e763e7f6e4d2b6f6755b4fe79c2",
-      "dots_2": "a37cb5c6651f39e38e192d0c1b6c748b147e0e763e7f6e4d2b6f6755b4fe79c2"
+      "dots_1": "816870c533007fe75ef14ccf3d87c4d561db6277ccfef93f2bc1d083be20cb84",
+      "dots_2": "816870c533007fe75ef14ccf3d87c4d561db6277ccfef93f2bc1d083be20cb84"
     },
     "BenchmarkTest00938": {
       "visible": "",
@@ -347,8 +347,8 @@
       "nested": "comment tautology: answers differ; ",
       "benign_1": "2d9218e22fa4786dd6f3b1ccdab341c73f378d88ab44668e8652f86169abbd0d",
       "benign_2": "2d9218e22fa4786dd6f3b1ccdab341c73f378d88ab44668e8652f86169abbd0d",
-      "dots_1": "a37cb5c6651f39e38e192d0c1b6c748b147e0e763e7f6e4d2b6f6755b4fe79c2",
-      "dots_2": "a37cb5c6651f39e38e192d0c1b6c748b147e0e763e7f6e4d2b6f6755b4fe79c2"
+      "dots_1": "816870c533007fe75ef14ccf3d87c4d561db6277ccfef93f2bc1d083be20cb84",
+      "dots_2": "816870c533007fe75ef14ccf3d87c4d561db6277ccfef93f2bc1d083be20cb84"
     },
     "BenchmarkTest01092": {
       "visible": "",
@@ -363,16 +363,16 @@
       "nested": "",
       "benign_1": "514134df76a24b47713f53714aef05dc4386a6c14cc06e431d204fc847554b87",
       "benign_2": "514134df76a24b47713f53714aef05dc4386a6c14cc06e431d204fc847554b87",
-      "dots_1": "bcbf690c9c63833f9ec5975d68a87b3f21ffb8dc1fcb0e9b7812d8113beb9c5b",
-      "dots_2": "bcbf690c9c63833f9ec5975d68a87b3f21ffb8dc1fcb0e9b7812d8113beb9c5b"
+      "dots_1": "a7d6a5b482d46ce516afed30d5021a27002c11a8d23a746bce857a3a8fd3c5d8",
+      "dots_2": "a7d6a5b482d46ce516afed30d5021a27002c11a8d23a746bce857a3a8fd3c5d8"
     },
     "BenchmarkTest01315": {
       "visible": "",
       "nested": "",
       "benign_1": "799b1aeb85d5ef8baedf4b8d61499bb223b6e1680ec6da33da76957d098c3fad",
       "benign_2": "799b1aeb85d5ef8baedf4b8d61499bb223b6e1680ec6da33da76957d098c3fad",
-      "dots_1": "799b1aeb85d5ef8baedf4b8d61499bb223b6e1680ec6da33da76957d098c3fad",
-      "dots_2": "799b1aeb85d5ef8baedf4b8d61499bb223b6e1680ec6da33da76957d098c3fad"
+      "dots_1": "a7d6a5b482d46ce516afed30d5021a27002c11a8d23a746bce857a3a8fd3c5d8",
+      "dots_2": "a7d6a5b482d46ce516afed30d5021a27002c11a8d23a746bce857a3a8fd3c5d8"
     },
     "BenchmarkTest01461": {
       "visible": "",
@@ -411,8 +411,8 @@
       "nested": "comment tautology: answers differ; ",
       "benign_1": "2014d4e524331c91efb7f9868a06fae9fa0d76dcb54e79200d6e6e61767be2ca",
       "benign_2": "2014d4e524331c91efb7f9868a06fae9fa0d76dcb54e79200d6e6e61767be2ca",
-      "dots_1": "a1c0938e158561af322ed89d1049fa0bd7d1fe7eb5e3dd34bebc586d478e5fef",
-      "dots_2": "a1c0938e158561af322ed89d1049fa0bd7d1fe7eb5e3dd34bebc586d478e5fef"
+      "dots_1": "816870c533007fe75ef14ccf3d87c4d561db6277ccfef93f2bc1d083be20cb84",
+      "dots_2": "816870c533007fe75ef14ccf3d87c4d561db6277ccfef93f2bc1d083be20cb84"
     },
     "BenchmarkTest02630": {
       "visible": "call: answers differ; ",

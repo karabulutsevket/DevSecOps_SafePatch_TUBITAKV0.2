@@ -95,6 +95,16 @@ def test_generated_tests_name_the_case_and_carry_no_placeholder(category, method
     assert "{" not in text.replace("Witness00011 {", "").replace("throws Exception {", "")
 
 
+def test_hidden_support_stays_out_of_the_evaluation_repository():
+    """The verifier's repository is derived from support_files(); HiddenSupport goes with the hidden tests only."""
+    hidden = prepare_benchmark.hidden_support_files()
+    assert list(hidden) == ["src/test/java/org/owasp/benchmark/safepatch/HiddenSupport.java"]
+    assert not any("HiddenSupport" in path for path in prepare_benchmark.support_files())
+    assert all((prepare_benchmark.HIDDEN / path).read_bytes() == data for path, data in hidden.items())
+    sql = prepare_benchmark.CATEGORY["sqli"]
+    assert sql["benign"].startswith("WitnessSupport.") and sql["benign2"].startswith("HiddenSupport.")
+
+
 def test_every_development_variant_has_one_sink_and_a_reference_fix():
     import variants_dev
     for case, (kind, sink, cwe) in variants_dev.CASES.items():
