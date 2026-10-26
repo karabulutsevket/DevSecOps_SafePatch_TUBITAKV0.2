@@ -115,7 +115,7 @@ Ortak kurallar:
 - **Davranış testi.** Zararsız bir girdiye verilen yanıtın SHA-256 özeti açık sürümdeki özetle aynı olmalı. Benchmark'ın çıktısı depoya girmez, yalnız özet girer.
 - **Gizli testler.**
   - Saldırı çeşitleri: path'te alt klasörden tırmanma, SQL'de yorumla biten koşul, komutta `|`. Bir çeşit yalnız açık sürümde etkisi varsa eklenir.
-  - Bir zararsız girdi daha.
+  - Bir zararsız girdi daha. SQL'de bu girdinin yanıtı karşılaştırılırken, servlet'in yanıta yazdığı sorgu metni ayıklanır (`HiddenSupport`, `l3/benchmark/hidden`). Parametreli bir sorgu bu metni zorunlu olarak değiştirir. `HiddenSupport` yalnız gizli testlerle gider; değerlendirme deposuna girmez ([OLCUM_L3_MODEL.md](OLCUM_L3_MODEL.md)).
 - **Veritabanı.** Test, Tomcat'in sağladığı ortamı kendi içinde kurar: loopback'te bir HSQLDB sunucusu ve `DatabaseHelper`'ın aradığı JNDI adı.
 
 **Sonuç**
@@ -189,6 +189,6 @@ Her vakanın bir referans düzeltmesi var: SQL'de parametreli sorgu, path'te ger
 
 Sonraki adımlar:
 - VUL4J-18 (jspwiki, JUnit 5).
-- Gizli SQL testindeki hatayı düzeltmek: zararsız girdi karşılaştırması, servlet'in yanıta yazdığı sorgu metnini ayıklamalı ([OLCUM_L3_MODEL.md](OLCUM_L3_MODEL.md)).
+- Görünür SQL davranış testi: sorguyu her yanıta yazan servlet'lerde (`outputUpdateComplete`: 01097, 01315) doğru bir parametreleştirmeyi reddeder. Düzeltmek değerlendirme deposunu değiştirir ([OLCUM_L3_MODEL.md](OLCUM_L3_MODEL.md)).
 
 İlk model ölçümü: [OLCUM_L3_MODEL.md](OLCUM_L3_MODEL.md).

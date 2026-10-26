@@ -40,14 +40,29 @@ Gizli testler kabul edilen 9 adaydan 4'ünü başarısız buldu. Dördünün de 
 | vul4j-43 | Çıkış yolunu `toRealPath()` ile çözüyor; kök kontrolü yok | İçinde nokta geçen zararsız bir adla çıkarma (hata) | **Gerçek yanlış kabul.** Henüz var olmayan bir dosyada `toRealPath()` hata atar. Saldırı engellenmiş görünüyor, çünkü artık hiçbir yeni dosya çıkarılamıyor. Görünür 108 davranış testinin hepsi geçti; demek ki hiçbiri bu yoldan yeni bir dosya çıkarmıyor. |
 | Benchmark 00678, 01087, 02181 | Parametreli sorgu: `PASSWORD=?`, girdi bağlı parametre olarak geçiyor | Başka bir zararsız girdiye verilen yanıt eskisiyle aynı mı | **Gizli testin hatası.** Sonuç boş dönünce servlet sorgu metnini yanıta yazıyor; parametreli sorguda bu metin `?` içeriyor. Gizli testin zararsız girdisi (`User01`) hiçbir satırla eşleşmediği için tam bu yola düşüyor. Test, bu servlet'lerdeki her doğru parametreleştirmeyi reddeder. Gizli saldırı testi üç adayda da geçti. |
 
-**İncelemeden sonra:**
+**Sayımlar:**
 
-| | Gizli testlerin ham sayımı | İncelemeden sonra |
-|---|---|---|
-| Yanlış kabul | 4 / 9 | 1 / 9 |
-| Doğru onarım | 5 / 30 | 8 / 30 |
+| | İlk gizli testler | Kod incelemesi | Düzeltilmiş gizli testler |
+|---|---|---|---|
+| Yanlış kabul | 4 / 9 | 1 / 9 | **1 / 9** |
+| Doğru onarım | 5 / 30 | 8 / 30 | **8 / 30** |
 
-Ham kayıt değiştirilmedi; iki sayım birlikte raporlanır.
+İlk gizli test kaydı değiştirilmedi; üç sayım birlikte raporlanır.
+
+### Düzeltilmiş gizli testlerle yeniden ölçüm (26 Ekim)
+
+**Kayıtlar:** [hidden/l3-model-1-gizli-sql.json](../evidence/v02-l3-model/hidden/l3-model-1-gizli-sql.json) (9 aday), [evidence/v02-l3-gizli-sql/](../evidence/v02-l3-gizli-sql/) (kontrol ve negatif kontrol).
+
+Gizli SQL testi düzeltildi. Kabul edilen 9 aday, kayıtlı cevaplarıyla yeniden sınandı; model yeniden çağrılmadı.
+
+- **Ne değişti.** Gizli testin ikinci zararsız girdisi karşılaştırılırken, servlet'in yanıta yazdığı sorgu metni (`... query: <sorgu>`) ayıklanıyor. Satırlar, iletiler ve reddetmeler karşılaştırmada kalıyor. Kod: `l3/benchmark/hidden` (`HiddenSupport`).
+- **Doğrulayıcının testleri değişmedi.** `HiddenSupport` yalnız gizli testlerle gidiyor. Değerlendirme deposunun sabitlenmiş commit'i aynı çıktı (`5b970a2`); vaka tanımları ve katalog değişmedi.
+- **Yeni kayıt.** Benchmark yeniden kaydedildi. Değişen tek değerler, `User01` yanıtında sorguyu yazan 6 SQL vakasının gizli test özetleri. Diğer bütün kayıtlı değerler aynı; yeni özetler de çalıştırmadan çalıştırmaya değişmiyor.
+- **Kontrol.** 42/42 beklendiği gibi: gizli testler açık sürümde, eskiden olduğu yerlerde başarısız oluyor ve geçiyor.
+- **Negatif kontrol.** 00678'in doğru adayına, küçük harf dışındaki her girdiyi reddeden bir koşul eklendi. Görünür girdi (`bar`) bundan geçiyor; düzeltilmiş gizli test bu adayı yine yakaladı.
+- **Sonuç.** 9 adaydan 8'i düzeltilmiş gizli testleri geçti. Tek yanlış kabul vul4j-43; değişmeyen gizli testi yine yakaladı.
+
+Düzeltme sonuçlar görüldükten sonra yapıldı. Yalnız sorgu yankısını ayıklıyor; doğrulayıcının testleri ve kabul kararları aynı kaldı.
 
 Gizli testleri geçen 5 aday da okundu:
 - **01964, 02091 (SQL):** Parametreli sorgu. 02091 ayrıca girdiyi olduğu gibi döndüren bir yardımcı çağrıyı kaldırıyor; davranış değişmiyor.
@@ -85,7 +100,7 @@ Model yalnız gerçek açıklarda çağrıldı: 78 deneme.
 
 Bunların hepsi geliştirme tarafında ele alınmalı. Değerlendirme seti ayar yapmak için kullanılmaz.
 
-1. **Gizli SQL testi düzeltilmeli.** Zararsız girdi karşılaştırması, yanıta yazılan sorgu metnini ayıklamalı. Düzeltmeden sonra kayıtlı 9 adayın gizli testleri yeniden koşulur; model yeniden çağrılmaz. Görünür davranış testi de aynı yardımcıyı kullanıyor, ama bu ölçümde 21 SQL denemesinin hiçbirini davranış yüzünden reddetmedi.
+1. **Görünür SQL davranış testinde de aynı açık var.** Gizli test düzeltildi (yukarıda), görünür test değişmedi. İki örneklenmiş servlet (01097 gerçek açık, 01315 güvenli kod), sorgu metnini her yanıta yazan `outputUpdateComplete` ile cevap veriyor. Bu servlet'lerde görünür test (`bar`) her doğru parametreleştirmeyi reddeder: doğrulayıcı doğru bir adayı geri çevirir. Bu ölçümü etkilemedi; 01097'nin üç denemesi testlere ulaşamadı (derleme hatası ve tekrarlanan yama). Düzeltmek değerlendirme deposunu, dolayısıyla sabitlenmiş commit'i değiştirir; ayrı bir karar.
 2. **vul4j-43'te görünür davranış testleri zayıf.** Testler yeni dosya çıkarmayı sınamıyor. CWE-22 notu "kontrol etmeden önce gerçek yolları `toRealPath()` ile çöz" diyor; model bunu henüz var olmayan çıkış yoluna uyguladı ve kök kontrolünü hiç yazmadı.
 3. **Küçük dosyalarda bölge kipi.** 78 denemenin 62'si bölge kipinde, ilk denemelerin bile yarısı (30'da 16). Tüm dosya bütçesi her baytı bir token sayıyor; 70 satırlık bir servlet, yeniden denemenin bağlamıyla birlikte bu bütçeye sığmıyor. Boş yamalar iki kipte de çıktı (bölge 9, tüm dosya 4).
 4. **Komut vakaları.** Model ya kodu değiştirmeden dönüyor (20 denemenin 9'u) ya da programı bir yer tutucuyla değiştiriyor. Benchmark'ın komut vakaları girdiyi bir betiğe ortam değişkeni olarak veriyor. CWE-78 notunun "sabit bir programa tek argüman" tarifi bu kalıba uymuyor olabilir; bu bir varsayım, sınanmadı.
@@ -99,7 +114,8 @@ Bunların hepsi geliştirme tarafında ele alınmalı. Değerlendirme seti ayar 
   - doğru onarım, incelemeden sonra 8/30: %14–44, ham sayımla 5/30: %7–34;
   - yanlış kabul, incelemeden sonra 1/9: %2–44.
 - **Tek proje ağırlığı.** 30 gerçek açığın 27'si tek bir projeden (Benchmark) geliyor; Benchmark servlet'leri kısa ve kalıplı.
-- **İnceleme tek kişinin.** Yukarıdaki inceleme Claude'un kod okuması; insan incelemesi yapılmadı.
+- **İnceleme tek kişinin.** Yukarıdaki kod incelemesi Claude'un; insan incelemesi yapılmadı. Düzeltilmiş gizli testler incelemeyle aynı sonucu verdi.
+- **Test sonradan düzeltildi.** Gizli SQL testi, sonuçlar görüldükten sonra düzeltildi. Değişiklik yalnız sorgu yankısını ayıklıyor ve bir negatif kontrolle sınandı.
 
 ## Tekrar
 

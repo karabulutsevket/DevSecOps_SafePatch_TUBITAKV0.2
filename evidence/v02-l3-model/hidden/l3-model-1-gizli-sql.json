@@ -1,0 +1,168 @@
+{
+  "label": "l3-model-1-gizli-sql",
+  "source": ".runtime/l3-measure/l3-model-1/jobs.db",
+  "accepted": 9,
+  "with_hidden_tests": 9,
+  "false_acceptances": 1,
+  "rows": [
+    {
+      "job": "0ccee59c045f4e56890daf681ee885e5",
+      "case": "owasp-benchmark-02414",
+      "seed": 42,
+      "attempt": 3,
+      "hidden": {
+        "passed": true,
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "duration_seconds": 10.875,
+        "reason": null
+      },
+      "false_acceptance": false
+    },
+    {
+      "job": "8218d57bbdb84738b529ce0c976861e7",
+      "case": "owasp-benchmark-00306",
+      "seed": 42,
+      "attempt": 2,
+      "hidden": {
+        "passed": true,
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "duration_seconds": 10.875,
+        "reason": null
+      },
+      "false_acceptance": false
+    },
+    {
+      "job": "6595ff026904449ea27e81c7a67e749a",
+      "case": "owasp-benchmark-02181",
+      "seed": 42,
+      "attempt": 1,
+      "hidden": {
+        "passed": true,
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "duration_seconds": 12.281,
+        "reason": null
+      },
+      "false_acceptance": false
+    },
+    {
+      "job": "5851d75e2b614f9bb52d1eaa8fd37d6c",
+      "case": "owasp-benchmark-02091",
+      "seed": 42,
+      "attempt": 2,
+      "hidden": {
+        "passed": true,
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "duration_seconds": 12.625,
+        "reason": null
+      },
+      "false_acceptance": false
+    },
+    {
+      "job": "eb9ab648443b4a8d9a3770e5a83beb97",
+      "case": "owasp-benchmark-01964",
+      "seed": 42,
+      "attempt": 1,
+      "hidden": {
+        "passed": true,
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "duration_seconds": 13.453,
+        "reason": null
+      },
+      "false_acceptance": false
+    },
+    {
+      "job": "e9715b2d235b44d9ba24c90e50174321",
+      "case": "owasp-benchmark-01087",
+      "seed": 42,
+      "attempt": 1,
+      "hidden": {
+        "passed": true,
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "duration_seconds": 14.078,
+        "reason": null
+      },
+      "false_acceptance": false
+    },
+    {
+      "job": "27895080897043669321b45413b5a615",
+      "case": "owasp-benchmark-00678",
+      "seed": 42,
+      "attempt": 1,
+      "hidden": {
+        "passed": true,
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "duration_seconds": 13.11,
+        "reason": null
+      },
+      "false_acceptance": false
+    },
+    {
+      "job": "af3b3896b05a419aa4111704e844507b",
+      "case": "owasp-benchmark-01839",
+      "seed": 42,
+      "attempt": 3,
+      "hidden": {
+        "passed": true,
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "duration_seconds": 11.313,
+        "reason": null
+      },
+      "false_acceptance": false
+    },
+    {
+      "job": "8030aaf8a92442be85f3ebfb9bbc12b5",
+      "case": "vul4j-43",
+      "seed": 42,
+      "attempt": 3,
+      "hidden": {
+        "passed": false,
+        "tests": 3,
+        "failures": 0,
+        "errors": 1,
+        "skipped": 0,
+        "details": [
+          {
+            "name": "namesWithDotsInsideTheDestinationStillExtract",
+            "type": "error",
+            "assertion": "BEHAVIOR_REGRESSION"
+          }
+        ],
+        "duration_seconds": 9.39,
+        "reason": null
+      },
+      "false_acceptance": true
+    }
+  ]
+}
