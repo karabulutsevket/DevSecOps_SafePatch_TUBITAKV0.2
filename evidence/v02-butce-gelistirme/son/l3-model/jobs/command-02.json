@@ -1,0 +1,117 @@
+{
+  "case": "command-02",
+  "cwe": "CWE-78",
+  "project": "safepatch-synthetic-lab",
+  "source": "safepatch-synthetic",
+  "scanner": "semgrep",
+  "vulnerable": true,
+  "seed": 42,
+  "job": "dcea9b64f84f4e87999c5d02e5420423",
+  "status": "needs_human",
+  "reason": "attempt_budget_exhausted",
+  "wall_seconds": 55.8,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 3,
+      "patch_sha256": "2f5892180ec755e3404a6eef3ecd12ed90b8a1d5755fc178bf6e50db1146c1a9",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/demo/DemoService.java:[15,106] incompatible types: java.lang.Process cannot be converted to java.lang.ProcessBuilder",
+          "[ERROR] src/main/java/demo/DemoService.java:[16,19] cannot find symbol: waitFor",
+          "[ERROR] src/main/java/demo/DemoService.java:[16,57] cannot find symbol: destroyForcibly",
+          "[ERROR] src/main/java/demo/DemoService.java:[17,18] cannot find symbol: exitValue"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 8.187,
+      "prompt_tokens": 963,
+      "output_tokens": 393,
+      "dropped": []
+    },
+    {
+      "number": 2,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 3,
+      "patch_sha256": "2f5892180ec755e3404a6eef3ecd12ed90b8a1d5755fc178bf6e50db1146c1a9",
+      "policy_error": null,
+      "stopped": "duplicate_patch",
+      "passed": null,
+      "failure": null,
+      "no_change": null,
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 8.359,
+      "prompt_tokens": 1301,
+      "output_tokens": 386,
+      "dropped": []
+    },
+    {
+      "number": 3,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 5,
+      "patch_sha256": "9f5dfb990944e7af05f089fc55d7f6d782f34d74c2ce9f9f66303e2736d28694",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/demo/DemoService.java:[15,106] incompatible types: java.lang.Process cannot be converted to java.lang.ProcessBuilder",
+          "[ERROR] src/main/java/demo/DemoService.java:[16,19] cannot find symbol: waitFor",
+          "[ERROR] src/main/java/demo/DemoService.java:[16,57] cannot find symbol: destroyForcibly",
+          "[ERROR] src/main/java/demo/DemoService.java:[17,18] cannot find symbol: exitValue"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 8.093,
+      "prompt_tokens": 1377,
+      "output_tokens": 387,
+      "dropped": []
+    }
+  ],
+  "hidden": null,
+  "false_acceptance": null
+}

@@ -97,9 +97,21 @@ Karar kuralı değiştirilmedi: kip, istemin sığıp sığmadığına göre se�
 ### Düzeltme
 
 - İki kip de iki baytı bir token sayıyor; şema hesaba dahil kalıyor.
-- Modelin ölçtüğü sayı iki kipte de denetleniyor.
-  - Tüm dosya sığmadıysa iş başarısız olmuyor; istem bölgeleriyle yeniden üretiliyor. Metrik: `whole_file_over_budget`.
+- Tüm dosya kipi yalnız **cevap da sığıyorsa** seçiliyor (`answer_fits`). Bu kural geliştirme ölçümünde ortaya çıktı (aşağıda). Tüm dosya cevabı dosyayı tekrarlar ve çıktı bütçesi 2 048 token. Tahmin: (JSON'a kaçırılmış dosya + 1 200 bayt) / 3.
+  - Kayıtlı 98 tüm dosya cevabında, 2 KB'ı geçen cevaplar token başına 3,6 bayttan az değil.
+  - Cevapta dosyanın dışında en çok 1 116 bayt var (gerekçe ve anahtarlar).
+  - Tahmin bu 98 cevabın hiçbirinde gerçeğin altında kalmıyor.
+- Modelin ölçtüğü sayılar iki kipte de denetleniyor.
+  - Tüm dosyanın istemi sınırı aşar ya da cevabı kesilirse iş başarısız olmuyor; istem bölgeleriyle yeniden üretiliyor. Metrik: `whole_file_fallback` (`prompt_over_budget` / `answer_cut_off`).
   - Bölge görünümü yoksa eskisi gibi hata.
+- **Kip seçiminin sonucu** (ilk deneme, motorun gerçek bağlamıyla):
+
+| Taraf | Tüm dosya | Bölge | Bölgeye düşenler |
+|---|---|---|---|
+| Geliştirme | 16 | 4 | Dört bölge vakası (5,6–6,4 KB) |
+| Değerlendirme | 40 | 5 | En büyük üç servlet (~5 KB), VUL4J-41, VUL4J-79 |
+
+  L3 ölçümünde ilk denemelerin 16'sı bölge, 14'ü tüm dosya kipindeydi.
 
 ### Canlı doğrulama
 
@@ -113,7 +125,7 @@ worker1'in kendi koduyla kurulmuş 112 istemin uzunluğunu model ölçtü. Onar�
 Sonuç:
 - Tahmini aşan istem yok, sınırı aşan istem yok.
 - En düşük oran 3,35 bayt/token, Türkçe dosyada. En uzun istem 5 632'nin 2 569'u.
-- İstemlerin hepsi tüm dosya olarak sığıyor.
+- İstemlerin hepsi tüm dosya olarak sığıyor. Bu ölçüm yalnız istemi sınıyor; kip kararı artık cevabın da sığmasına bakıyor (Düzeltme).
 
 Benchmark'ın ağır yeniden denemelerinde iki kardeş dosyadan biri ya da ikisi hâlâ düşüyor: tahmin gerçeğin en az 1,6 katı. Oran bilinçli olarak 2'de bırakıldı; 3 olsaydı Türkçe dosyada pay yalnız %10 kalırdı.
 
@@ -121,6 +133,32 @@ Benchmark'ın ağır yeniden denemelerinde iki kardeş dosyadan biri ya da ikisi
 
 - **Aynı kalan istemler.** Eski kuralla sığan ve hiçbir şey düşürmeyen bir istem aynen aynı kalır. Eski koşul (bayt ≤ sınır) yeni koşulu (bayt/2 ≤ sınır) zaten sağlar; istem metni de bütçeye bağlı değildir.
 - **Değişen istemler.** Eskiden bölgeye düşen dosyalar ve eskiden bağlamı düşen denemeler.
+
+### Geliştirme setinde önce/sonra ölçümü
+
+**Kayıtlar:** [evidence/v02-butce-gelistirme/](../evidence/v02-butce-gelistirme/): `once/`, `sonra/`, `son/`, her biri `protocol.json`, `summary.json` ve `jobs/`. **Betik:** `scripts/l3_measure.py --split development`.
+
+20 geliştirme vakası koşuldu: seed 42, `guided+context`, hafıza kapalı, 3 deneme, yerel runner. Koşular arasında değişen tek dosya `worker1.py`; her koşunun protokolü dosyanın özetini kaydediyor.
+
+| Koşu | worker1 | Doğrulanan | Model süresi | Toplam süre |
+|---|---|---|---|---|
+| `once` | Değişiklikten önce (`83076cf`, 1 bayt/token) | 11 / 20 | 332 sn | 1 143 sn |
+| `sonra` | Yalnız istem tahmini düzeltilmiş (`9293c09`) | 12 / 20 | 730 sn | 2 107 sn |
+| `son` | İstem ve cevap birlikte (`024338a`) | 11 / 20 | 327 sn | 1 089 sn |
+
+**Ara sürüm (`sonra`) neyi gösterdi:**
+- Dört bölge vakası (5,6–6,4 KB) tüm dosya kipine geçti. Cevaplar dosyayı yeniden yazdığı için iş başına çıktı ~800 token'dan ~5 000 token'a çıktı; bu vakalarda model süresi 11–21 sn'den 112–145 sn'ye yükseldi.
+- En büyük cevap, 2 048 token'lık çıktı bütçesinin 1 892'sini kullandı. Biraz daha büyük bir dosyanın cevabı kesilir ve iş hata ile biterdi. Eski 1 bayt/token sayımı bu riski tesadüfen saklıyordu.
+- Bu yüzden cevap kuralı eklendi.
+- Ara sürümdeki fazladan bir doğrulama (region-path-read) tek seed'de tek vaka; kanıt sayılmadı. Kip kararı sonuca göre değil, cevabın sığmasına göre verildi.
+- Toplam süredeki farkın geri kalanı (~570 sn), istemi ve model süresi aynı kalan vakalarda (path-01..03'te 118 sn'den 220–230 sn'ye). Bu, makinedeki doğrulama hızının değişmesi; düzeltmeyle ilgisi yok.
+
+**Son sürüm:**
+- 20 vakanın 20'sinde ilk istem önceki sürümle bayt bayt aynı. Bölge vakaları yine bölge kipinde.
+- Değişen tek şey command-01..03'ün yeniden denemelerinde bağlam dosyasının artık düşmemesi. Bu, sonucu değiştirmedi.
+- **Gürültü:** iki varyant komut vakası üçüncü denemede ters yönde sonuç değiştirdi (biri doğrulandı → başarısız, öteki tersi). Yeniden denemeler 0,4 sıcaklıkla koşuyor ve rehber notu her istekte rastgele bir etiket taşıyor; bu yüzden aynı ayarlarla bile cevap ayrışabiliyor.
+- **Sonuç:** tek seed'li bir koşu 20 vakada ±1–2 vaka oynuyor. Geliştirme setinde düzeltmenin sonuca ölçülebilir bir etkisi yok, gerileme de yok.
+- **Etki nerede beklenmeli:** düzeltmenin asıl etkisi, L3'teki küçük servlet'lerin tüm dosya ve bağlamla gitmesinde. Geliştirme setinde bu durumu sınayan bir vaka yok.
 
 ### Riskler
 
@@ -183,6 +221,7 @@ Modelin kodu kopyalaması çözülmedi. Denenecek iki öneri var; ikisi de model
 | | Önce | Sonra |
 |---|---|---|
 | Tam paket: birim, Java ve Docker sandbox testleri | **530 geçti** ([once/tests-all.xml](../evidence/v02-kok-neden/once/tests-all.xml)) | **543 geçti, 1 beklenen başarısızlık** (`xfail`, 1. sorun) ([sonra/tests-all.xml](../evidence/v02-kok-neden/sonra/tests-all.xml)) |
+| Cevap kuralından sonra (`024338a`) | | **551 geçti, 1 beklenen başarısızlık** ([son/tests-all.xml](../evidence/v02-kok-neden/son/tests-all.xml)) |
 
 Değişiklikten sonraki ilk koşuda bir test başarısız oldu ([sonra/tests-all-ilk.xml](../evidence/v02-kok-neden/sonra/tests-all-ilk.xml)). `test_ranking.py` içindeki bu test de eski eşiğe bağlıydı: sınanan davranış, başarısız aday uyarılarının önceki diff'ten önce düşmesi. Testin girdisi motorun gönderebileceği en büyük uyarılara (2 × 1 500 karakter) çıkarıldı; davranış aynı. Ardından paket yeniden koşuldu.
 
@@ -196,6 +235,9 @@ Değişiklikten sonraki ilk koşuda bir test başarısız oldu ([sonra/tests-all
   - Modelin ölçtüğü sayı sınırı aşarsa istem bölgeleriyle yeniden üretiliyor.
   - Bölge görünümü yoksa ret.
   - Sınırın tam altındaki istem tek çağrıyla cevaplanıyor.
+  - Cevabı çıktı bütçesine sığmayacak bir dosya bölge kipinde gidiyor; bölge görünümü yoksa tüm dosya deneniyor.
+  - Cevap tahmininin sınırları (3 500 / 4 900 karakter sığar, 5 000 sığmaz).
+  - Kesilen bir tüm dosya cevabı bölgeleriyle yeniden üretiliyor; bölge görünümü yoksa ret.
   - Eski eşiğe bağlı beş test (dördü `test_worker1.py`'de, biri `test_ranking.py`'de) bütçeden türetilen boyutlarla yeniden yazıldı: sınadıkları davranış aynı (düşürme sırası, ret, bölgeye geçiş).
 - **1. sorun, `tests/test_policy.py`:** 4 koruma testi ve 1 `xfail(strict=True)` yeniden üretme testi.
 
@@ -203,6 +245,6 @@ Değişiklikten sonraki ilk koşuda bir test başarısız oldu ([sonra/tests-all
 
 1. **Politika önerisi** (`hafta6-politika-onerisi`): politika sahibi.
 2. **Politika reddinin işi bitirmesi** (alternatif B): politika sahibi.
-3. **Bütçe düzeltmesinin önceki ölçümlere etkisi.** Düzeltme, önceki ölçümlerin bazı denemelerinde istemi değiştiriyor. Geliştirme setinde (sentetik vakalar ve varyantlar) yeniden ölçülsün mü?
+3. **Bütçe düzeltmesinin önceki ölçümlere etkisi.** Geliştirme setinde ölçüldü: 11/20 → 11/20 (yukarıda). Ama düzeltmenin asıl etkisi L3'te; bunu sınayacak bir geliştirme vakası yok. Küçük dosyayı geniş bir pakette tutan bir geliştirme vakası eklensin mi?
 4. **L3'te bağlam seçimi.** Benchmark'ta ilgisiz kardeş dosyalar seçiliyor. Bir sonraki L3 koşusundan önce karar verilmeli; seçenekler: bağlam kapalı, seçim kuralı değişsin ya da olduğu gibi kalsın.
 5. **Boş cevaplar için istem değişiklikleri** (a, b): geliştirme setinde ölçüm.

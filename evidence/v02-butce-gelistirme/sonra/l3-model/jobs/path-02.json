@@ -1,0 +1,138 @@
+{
+  "case": "path-02",
+  "cwe": "CWE-22",
+  "project": "safepatch-synthetic-lab",
+  "source": "safepatch-synthetic",
+  "scanner": "semgrep",
+  "vulnerable": true,
+  "seed": 42,
+  "job": "d196ddc7ad234d4a9ccf4ea5ea3aa0c2",
+  "status": "awaiting_review",
+  "reason": null,
+  "wall_seconds": 232.1,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 2,
+      "patch_sha256": "6253a0bbb9f1372795e2caa377077e2659c600c9003514ff383bee4715d4635a",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "security_witness_failed",
+        "failed_tests": [
+          {
+            "suite": "security",
+            "test": "cannotEscapeThroughLinkInsideRoot",
+            "marker": "PATH_TRAVERSAL_REGRESSION"
+          },
+          {
+            "suite": "security",
+            "test": "cannotReadParentSecret",
+            "marker": "PATH_TRAVERSAL_REGRESSION"
+          },
+          {
+            "suite": "security",
+            "test": "cannotReadAbsolutePathOutsideRoot",
+            "marker": "PATH_TRAVERSAL_REGRESSION"
+          }
+        ],
+        "remaining_rules": [
+          "bigg.java.path-resolution"
+        ]
+      },
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 3,
+        "failures": 3,
+        "errors": 0
+      },
+      "model_seconds": 6.094,
+      "prompt_tokens": 783,
+      "output_tokens": 222,
+      "dropped": []
+    },
+    {
+      "number": 2,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 5,
+      "patch_sha256": "259d6dc7412314fc54c5ecec1d0aa29d3db3527d53ff89450512c991f76191ce",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "security_witness_failed",
+        "failed_tests": [
+          {
+            "suite": "security",
+            "test": "cannotEscapeThroughLinkInsideRoot",
+            "marker": "PATH_TRAVERSAL_REGRESSION"
+          },
+          {
+            "suite": "security",
+            "test": "cannotReadParentSecret",
+            "marker": "PATH_TRAVERSAL_REGRESSION"
+          }
+        ],
+        "remaining_rules": []
+      },
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 3,
+        "failures": 2,
+        "errors": 0
+      },
+      "model_seconds": 7.735,
+      "prompt_tokens": 1085,
+      "output_tokens": 280,
+      "dropped": []
+    },
+    {
+      "number": 3,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 7,
+      "patch_sha256": "59a31f2b2e76952ccea031ac2dff05c2fac70a7178e8a9f08c391a5289d91240",
+      "policy_error": null,
+      "stopped": null,
+      "passed": true,
+      "failure": null,
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0
+      },
+      "model_seconds": 7.781,
+      "prompt_tokens": 1227,
+      "output_tokens": 273,
+      "dropped": []
+    }
+  ],
+  "hidden": null,
+  "false_acceptance": null
+}

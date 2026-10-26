@@ -1,0 +1,123 @@
+{
+  "case": "variant-command-format",
+  "cwe": "CWE-78",
+  "project": "safepatch-variants",
+  "source": "safepatch-synthetic",
+  "scanner": "known",
+  "vulnerable": true,
+  "seed": 42,
+  "job": "03e6bad72c784b91aa9aeefcf64e3c5c",
+  "status": "needs_human",
+  "reason": "attempt_budget_exhausted",
+  "wall_seconds": 49.4,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": null,
+      "patch_sha256": null,
+      "policy_error": "empty_patch",
+      "stopped": null,
+      "passed": null,
+      "failure": {
+        "category": "empty_patch"
+      },
+      "no_change": {
+        "answer": "repeats_shown_code",
+        "shown": "whole_file",
+        "change_required_by": "failing_security_witness"
+      },
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 9.125,
+      "prompt_tokens": 926,
+      "output_tokens": 436,
+      "dropped": []
+    },
+    {
+      "number": 2,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": null,
+      "patch_sha256": null,
+      "policy_error": "empty_patch",
+      "stopped": null,
+      "passed": null,
+      "failure": {
+        "category": "empty_patch"
+      },
+      "no_change": {
+        "answer": "repeats_shown_code",
+        "shown": "whole_file",
+        "change_required_by": "failing_security_witness"
+      },
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 7.906,
+      "prompt_tokens": 1032,
+      "output_tokens": 382,
+      "dropped": []
+    },
+    {
+      "number": 3,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 3,
+      "patch_sha256": "70920915b0426db62f674697f1d59d34d7132df5de3a008641f9d9d8e1330c1e",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "security_witness_failed",
+        "failed_tests": [
+          {
+            "suite": "security",
+            "test": "shellMetacharactersAreLiteral",
+            "marker": "COMMAND_INJECTION_REGRESSION"
+          }
+        ],
+        "remaining_rules": []
+      },
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0
+      },
+      "model_seconds": 8.375,
+      "prompt_tokens": 1112,
+      "output_tokens": 405,
+      "dropped": []
+    }
+  ],
+  "hidden": null,
+  "false_acceptance": null
+}

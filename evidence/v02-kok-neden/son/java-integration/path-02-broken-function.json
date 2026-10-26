@@ -1,0 +1,149 @@
+{
+  "model_mode": "mock-test-reference-patch",
+  "scanner_mode": "real-builtin-demo",
+  "result": {
+    "passed": false,
+    "baseline_valid": false,
+    "base_commit": "b10397dc95e1b77ddc1343d7578b622e0de7c13b",
+    "source_revision": "670e05e73eb5f95ed1d76efcdd520503739abc1e",
+    "build": {
+      "passed": true,
+      "duration_seconds": 3.86
+    },
+    "behavior": {
+      "passed": false,
+      "tests": 3,
+      "failures": 3,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "readsNestedFile",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        },
+        {
+          "name": "readsThroughLinkedRoot",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        },
+        {
+          "name": "readsAllowedFile",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        }
+      ],
+      "exit_code": 1,
+      "duration_seconds": 2.968,
+      "junit_sha256": "d2fb1238cbd7e2568542b23ab9718d33db1a92f3d73b475db4a3d5378bb05e20"
+    },
+    "security": {
+      "passed": false,
+      "tests": 3,
+      "failures": 3,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "cannotEscapeThroughLinkInsideRoot",
+          "type": "failure",
+          "assertion": "PATH_TRAVERSAL_REGRESSION"
+        },
+        {
+          "name": "cannotReadParentSecret",
+          "type": "failure",
+          "assertion": "PATH_TRAVERSAL_REGRESSION"
+        },
+        {
+          "name": "cannotReadAbsolutePathOutsideRoot",
+          "type": "failure",
+          "assertion": "PATH_TRAVERSAL_REGRESSION"
+        }
+      ],
+      "exit_code": 1,
+      "duration_seconds": 2.937,
+      "junit_sha256": "7b32e82a65ed6cd66a169310a5a7841479b872bdddfb7e9be7fa2c29e1b69ad6"
+    },
+    "scans": [
+      {
+        "tool": "builtin-demo",
+        "version": "1.0.0",
+        "coverage": "three owned synthetic patterns only",
+        "status": "ok",
+        "analysis_id": "b45a6464ba9d41c4bd4f81fc1a8a491d",
+        "commit": "670e05e73eb5f95ed1d76efcdd520503739abc1e",
+        "findings": []
+      }
+    ],
+    "tolerated": [],
+    "patch": {
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -1,13 +1,4 @@\n package demo;\n-\n-import java.nio.file.*;\n-\n-// Case path-02.\n-// Deliberately vulnerable synthetic example. Root is supplied by trusted runner.\n public class DemoService {\n-    public String lookup(String input) throws Exception {\n-        Path root = Path.of(System.getProperty(\"demo.root\"));\n-        Path target = root.resolve(input);\n-        return Files.readString(target);\n-    }\n+    public String lookup(String input) throws Exception { return \"\"; }\n }\n",
+      "patch_sha256": "b8684c848c7e2ee82c8b7d9469155a4eaa0c0cb81b4ac3c7411ce1cd9a1ac1d0",
+      "changed_lines": 11
+    },
+    "feedback": {
+      "code": "validation_failed",
+      "behavior": {
+        "passed": false,
+        "tests": 3,
+        "failures": 3,
+        "errors": 0,
+        "skipped": 0,
+        "details": [
+          {
+            "name": "readsNestedFile",
+            "type": "failure",
+            "assertion": "BEHAVIOR_REGRESSION"
+          },
+          {
+            "name": "readsThroughLinkedRoot",
+            "type": "failure",
+            "assertion": "BEHAVIOR_REGRESSION"
+          },
+          {
+            "name": "readsAllowedFile",
+            "type": "failure",
+            "assertion": "BEHAVIOR_REGRESSION"
+          }
+        ],
+        "exit_code": 1,
+        "duration_seconds": 2.968,
+        "junit_sha256": "d2fb1238cbd7e2568542b23ab9718d33db1a92f3d73b475db4a3d5378bb05e20"
+      },
+      "security": {
+        "passed": false,
+        "tests": 3,
+        "failures": 3,
+        "errors": 0,
+        "skipped": 0,
+        "details": [
+          {
+            "name": "cannotEscapeThroughLinkInsideRoot",
+            "type": "failure",
+            "assertion": "PATH_TRAVERSAL_REGRESSION"
+          },
+          {
+            "name": "cannotReadParentSecret",
+            "type": "failure",
+            "assertion": "PATH_TRAVERSAL_REGRESSION"
+          },
+          {
+            "name": "cannotReadAbsolutePathOutsideRoot",
+            "type": "failure",
+            "assertion": "PATH_TRAVERSAL_REGRESSION"
+          }
+        ],
+        "exit_code": 1,
+        "duration_seconds": 2.937,
+        "junit_sha256": "7b32e82a65ed6cd66a169310a5a7841479b872bdddfb7e9be7fa2c29e1b69ad6"
+      },
+      "remaining_rules": []
+    },
+    "duration_seconds": 10.36,
+    "runner_profile": "native-same-user",
+    "versions": {
+      "java": "17; inspect preparation evidence",
+      "maven": "3.9.16"
+    }
+  }
+}

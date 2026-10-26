@@ -1,0 +1,112 @@
+{
+  "case": "variant-path-helper",
+  "cwe": "CWE-22",
+  "project": "safepatch-variants",
+  "source": "safepatch-synthetic",
+  "scanner": "known",
+  "vulnerable": true,
+  "seed": 42,
+  "job": "602e199478a2455dad11353728cc2c89",
+  "status": "needs_human",
+  "reason": "attempt_budget_exhausted",
+  "wall_seconds": 37.7,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 3,
+      "patch_sha256": "254ed3b5df0fd80c38f31962b6d3b8718137f4a3f9db874469ca75e2f31238a5",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/demo/DemoService.java:[12,74] unreported exception java.io.IOException; must be caught or declared to be thrown"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 4.86,
+      "prompt_tokens": 764,
+      "output_tokens": 228,
+      "dropped": []
+    },
+    {
+      "number": 2,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 3,
+      "patch_sha256": "254ed3b5df0fd80c38f31962b6d3b8718137f4a3f9db874469ca75e2f31238a5",
+      "policy_error": null,
+      "stopped": "duplicate_patch",
+      "passed": null,
+      "failure": null,
+      "no_change": null,
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 5.484,
+      "prompt_tokens": 995,
+      "output_tokens": 247,
+      "dropped": []
+    },
+    {
+      "number": 3,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 7,
+      "patch_sha256": "df00b2b91fb172a28f6e64823f97ed299155cb9251682c6b1cd5703af23eae29",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/demo/DemoService.java:[12,74] unreported exception java.io.IOException; must be caught or declared to be thrown",
+          "[ERROR] src/main/java/demo/DemoService.java:[13,52] unreported exception java.io.IOException; must be caught or declared to be thrown"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 6.796,
+      "prompt_tokens": 1123,
+      "output_tokens": 323,
+      "dropped": []
+    }
+  ],
+  "hidden": null,
+  "false_acceptance": null
+}

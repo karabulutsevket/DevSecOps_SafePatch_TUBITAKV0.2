@@ -1,0 +1,119 @@
+{
+  "case": "region-path-read",
+  "cwe": "CWE-22",
+  "project": "safepatch-region-dev",
+  "source": "safepatch-synthetic",
+  "scanner": "known",
+  "vulnerable": true,
+  "seed": 42,
+  "job": "925e30de26db40a09bebffcedd864d43",
+  "status": "needs_human",
+  "reason": "attempt_budget_exhausted",
+  "wall_seconds": 30.1,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "regions",
+      "regions_changed": [
+        1
+      ],
+      "imports_added": [],
+      "changed_lines": 2,
+      "patch_sha256": "f7a32ae3059a0e514f1620059ce2f892f23795a11f2757df5a8815eaf236869b",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/demo/DemoService.java:[112,61] cannot find symbol: toRealPath"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 3.375,
+      "prompt_tokens": 869,
+      "output_tokens": 127,
+      "dropped": []
+    },
+    {
+      "number": 2,
+      "edit_mode": "regions",
+      "regions_changed": [
+        1
+      ],
+      "imports_added": [],
+      "changed_lines": 2,
+      "patch_sha256": "f7a32ae3059a0e514f1620059ce2f892f23795a11f2757df5a8815eaf236869b",
+      "policy_error": null,
+      "stopped": "duplicate_patch",
+      "passed": null,
+      "failure": null,
+      "no_change": null,
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 3.687,
+      "prompt_tokens": 1082,
+      "output_tokens": 152,
+      "dropped": []
+    },
+    {
+      "number": 3,
+      "edit_mode": "regions",
+      "regions_changed": [
+        1
+      ],
+      "imports_added": [],
+      "changed_lines": 7,
+      "patch_sha256": "aa4b9f26dce6be0496f191652d10c034c3527af36b2960b0fd8d15fe0fc47ddf",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/demo/DemoService.java:[112,62] cannot find symbol: toRealPath",
+          "[ERROR] src/main/java/demo/DemoService.java:[113,44] cannot find symbol: toRealPath",
+          "[ERROR] src/main/java/demo/DemoService.java:[114,20] cannot find symbol: startsWith"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 4.093,
+      "prompt_tokens": 1214,
+      "output_tokens": 183,
+      "dropped": []
+    }
+  ],
+  "hidden": null,
+  "false_acceptance": null
+}

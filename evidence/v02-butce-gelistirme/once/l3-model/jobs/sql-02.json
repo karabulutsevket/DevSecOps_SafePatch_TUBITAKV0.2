@@ -1,0 +1,45 @@
+{
+  "case": "sql-02",
+  "cwe": "CWE-89",
+  "project": "safepatch-synthetic-lab",
+  "source": "safepatch-synthetic",
+  "scanner": "semgrep",
+  "vulnerable": true,
+  "seed": 42,
+  "job": "c39249122754439ba2f1b0735ced8c81",
+  "status": "awaiting_review",
+  "reason": null,
+  "wall_seconds": 57.7,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 9,
+      "patch_sha256": "de1111c5a028136558debd08dc53bff7b69f531bc6535327595b7f691721c079",
+      "policy_error": null,
+      "stopped": null,
+      "passed": true,
+      "failure": null,
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "model_seconds": 8.359,
+      "prompt_tokens": 936,
+      "output_tokens": 389,
+      "dropped": []
+    }
+  ],
+  "hidden": null,
+  "false_acceptance": null
+}
