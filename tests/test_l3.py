@@ -8,6 +8,7 @@ from safepatch.common import ROOT
 sys.path.insert(0, str(ROOT / "scripts"))
 import l3_catalog
 import l3_hidden
+import prepare_benchmark
 
 READY_EVAL = {"id": "ext-1", "source": "vul4j", "project": "org/lib", "cwe": "CWE-22", "split": "evaluation", "license": "Apache-2.0",
               "hidden": {"path": "l3/hidden/ext-1", "selectors": ["org.lib.HiddenTest"]}, "status": "ready"}
@@ -67,3 +68,24 @@ def test_the_accepted_attempt_supplies_the_edits():
         {"number": 2, "verification": {"passed": True}, "proposal": {"patch": {"edits": [{"path": "A.java", "content": "second"}]}}},
     ]}
     assert l3_hidden.accepted_edits(job) == ({"A.java": "second"}, 2)
+
+
+ROW = {"visible": "climb: read the file outside; ", "nested": "", "benign_1": "a", "benign_2": "a", "dots_1": "b", "dots_2": "b"}
+
+
+@pytest.mark.parametrize("real,row,usable,reason", [
+    (True, ROW, True, None),
+    (False, {**ROW, "visible": ""}, True, None),                       # a safe case: nothing escapes, the job returns to a human
+    (True, {**ROW, "visible": ""}, False, "no input shape"),          # never redrawn, excluded with its reason
+    (False, ROW, False, "marks it safe"),
+    (True, {**ROW, "benign_2": "c"}, False, "changes from run to run"),
+    (True, {**ROW, "dots_1": "error: java.lang.NoClassDefFoundError", "visible": "error: x"}, False, "failed under the witness harness"),
+])
+def test_the_recording_decides_whether_a_sampled_benchmark_case_is_usable(real, row, usable, reason):
+    assert prepare_benchmark.verdict(real, row)[0] is usable
+    assert reason is None or reason in prepare_benchmark.verdict(real, row)[1]
+
+
+def test_generated_tests_name_the_case_and_carry_no_placeholder():
+    text = prepare_benchmark.java(prepare_benchmark.WITNESS_TEST, name="BenchmarkTest00011", n="00011", marker="PATH_TRAVERSAL_REGRESSION").decode()
+    assert "class SafePatchWitness00011" in text and "BenchmarkTest00011.class" in text and "{" + "name}" not in text and "{" + "marker}" not in text

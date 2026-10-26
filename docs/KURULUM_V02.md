@@ -160,6 +160,15 @@ $env:EVIDENCE_DIR = 'evidence/v02-vul4j'
 .venv/Scripts/python.exe scripts/vul4j_check.py
 ```
 
+Diğer L3 vakaları (ayrıntı: [L3_SETI.md](L3_SETI.md)):
+
+```powershell
+.venv/Scripts/python.exe scripts/prepare_l3.py vul4j-41 vul4j-43 --prefetch     # Vul4J vakaları (internet bir kez)
+.venv/Scripts/python.exe scripts/prepare_benchmark.py --prefetch                # OWASP Benchmark bağımlılıkları (internet bir kez, yaklaşık 134 MB)
+.venv/Scripts/python.exe scripts/prepare_benchmark.py                           # örneklem, tanıklar, proje tanımları
+.venv/Scripts/python.exe scripts/l3_catalog.py                                  # katalog kuralları ve sayılar
+```
+
 Bulgular tarayıcıdan değil, vakanın cevap anahtarından gelir ("bilinen bulgu" kipi, `scanner: known`). Bu kip yalnız `SAFEPATCH_PROFILE=lab` ya da `evaluation` iken açılır; ürün profilinde runner reddeder. Sonuç ve sınırlar: [OLCUM_VUL4J.md](OLCUM_VUL4J.md).
 
 Durdurma:

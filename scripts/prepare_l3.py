@@ -64,13 +64,15 @@ SKIPS = ["-Denforcer.skip=true", "-Drat.skip=true", "-Danimal.sniffer.skip=true"
          "-Dmaven.javadoc.skip=true", "-Dmaven.source.skip=true", "-Dgpg.skip=true"]
 
 
-def derive(case, spec):
+def derive(case, spec, files=None):
+    """`files`: {path: bytes} SafePatch adds; by default the case's l3/witness folder."""
     upstream, repo = L3 / "repos" / spec["upstream"], L3 / "repos" / case
     for commit in (spec["parent"], spec["fix"]):
         git(upstream, "cat-file", "-e", commit + "^{commit}")
     present = set(git(upstream, "ls-tree", "-r", "--name-only", spec["parent"]).decode().splitlines())
-    owned = ROOT / "l3/witness" / case
-    files = {p.relative_to(owned).as_posix(): p for p in sorted(owned.rglob("*")) if p.is_file()}
+    if files is None:
+        owned = ROOT / "l3/witness" / case
+        files = {p.relative_to(owned).as_posix(): p.read_bytes() for p in sorted(owned.rglob("*")) if p.is_file()}
     if present & (set(files) | set(spec["from_fix"])):
         raise SystemExit(f"{case}: the parent already has a file this case adds")
     if repo.exists():
@@ -84,11 +86,11 @@ def derive(case, spec):
         for path in spec["from_fix"]:
             mode, _, blob = git(repo, "ls-tree", spec["fix"], "--", path).decode().split("\t")[0].split()
             git(repo, "update-index", "--add", "--cacheinfo", f"{mode},{blob},{path}", env=env)
-        for path, source in files.items():
-            blob = git(repo, "hash-object", "-w", "--stdin", data=source.read_bytes()).decode().strip()
+        for path, data in sorted(files.items()):
+            blob = git(repo, "hash-object", "-w", "--stdin", data=data).decode().strip()
             git(repo, "update-index", "--add", "--cacheinfo", f"100644,{blob},{path}", env=env)
         tree = git(repo, "write-tree", env=env).decode().strip()
-        message = f"{case.upper()} evaluation baseline: {spec['parent']} plus test archives from {spec['fix']} and the SafePatch witness\n"
+        message = spec.get("message") or f"{case.upper()} evaluation baseline: {spec['parent']} plus test archives from {spec['fix']} and the SafePatch witness\n"
         commit = git(repo, "commit-tree", tree, env=env, data=message.encode()).decode().strip()
     git(repo, "update-ref", "refs/heads/main", commit)
     (repo / "FETCH_HEAD").unlink(missing_ok=True)

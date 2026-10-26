@@ -85,11 +85,11 @@ Bütün vakalarda kontroller beklendiği gibi sonuçlandı:
 
 Hepsinden yalnız düzeltme commit'i ve ebeveyni çekildi; Benchmark'tan yalnız son commit.
 
-## Sayılar ve sonraki adım
+## OWASP Benchmark: path traversal pilotu (26 Ekim)
 
-`l3_catalog.py` çıktısı: geliştirme tarafında 13 hazır vaka (hedef 20), değerlendirme tarafında hazır vakalar yukarıdaki tabloda (hedef 40).
+**Betik:** `scripts/prepare_benchmark.py` (`--prefetch`, `--record`, varsayılan üretim, `--check`). **Tanık yardımcısı:** [l3/benchmark/](../l3/benchmark/) (`WitnessSupport`, MIT). **Kayıt:** [l3/benchmark/recorded.json](../l3/benchmark/recorded.json) (yalnız etkiler ve özetler). **Kontrol:** [evidence/v02-l3-benchmark/](../evidence/v02-l3-benchmark/owasp-benchmark-check.json).
 
-**OWASP Benchmark** tek bir projedir (2 740 vaka), tamamı değerlendirme tarafına gider.
+OWASP Benchmark (GPL-2.0) tek bir projedir (2 740 vaka), tamamı değerlendirme tarafına gider. Bir vaka bir servlet'tir; bilinen bulgusu Benchmark'ın beklenen sonuçlarından gelir.
 
 | Kategori | Gerçek açık | Güvenli (yanlış pozitif) |
 |---|---|---|
@@ -99,4 +99,36 @@ Hepsinden yalnız düzeltme commit'i ve ebeveyni çekildi; Benchmark'tan yalnız
 
 Sonraki sınıf paketleri için de vaka var: zayıf rastgele 218/275, cookie 36/31, XPath 15/20, LDAP 27/32.
 
-Benchmark'ta saldırı testi yok. Her kategori için bir tanık şablonu gerekiyor: servlet sahte bir istekle doğru girdi kaynağından çağrılır ve etkiye bakılır (dışarıdaki dosyanın okunması, çalışan komutun bıraktığı iz, sorgunun döndürdüğü fazladan satır). Güvenli vakalarda tanık açık sürümde de geçer. Bu yüzden taban geçersiz sayılır ve iş modele gitmeden insana döner; bu, bu vakalarda istenen davranıştır.
+**Örneklem.** Sabit seed'le (20261026) path traversal'dan 10 gerçek ve 5 güvenli vaka çekildi. Çalışmayan bir vaka gerekçesiyle dışlanır, yerine yenisi çekilmez.
+
+**Tanık.** Benchmark'ın saldırı testi yok; tanığı SafePatch yazdı.
+- **Çağrı.** Servlet süreç içinde, sahte bir istekle çağrılır. Girdi aynı anda çerez, başlık, parametre, sorgu dizesi, başlık adı ve parametre adı olarak verilir (Benchmark bunların hepsini kaynak olarak kullanıyor).
+- **Girdi biçimleri.** Girdi üç biçimde denenir: dosya alanından yukarı tırmanma (`../x`), mutlak yol, ve sabit bir dosya adının (`Test.txt`) klasörü.
+- **Etki.** Dosya alanının dışına konan gizli bir dosya için üç etkiye bakılır: içeriği yanıta çıktı mı, dosya yazıldı mı, yanıt dosyanın varlığına göre değişti mi.
+- **Davranış testi.** Zararsız bir dosya adına verilen yanıtın SHA-256 özeti açık sürümdeki özetle aynı olmalı. Benchmark'ın çıktısı depoya girmez, yalnız özet girer.
+- **Gizli testler.** Alt klasörden tırmanma (yalnız açık sürümde etkisi olan vakalarda) ve noktalı zararsız bir dosya adı.
+
+| Sonuç | Sayı |
+|---|---|
+| Örneklenen | 15 (10 gerçek, 5 güvenli) |
+| Açık sürümde tanığı başarısız olan gerçek vaka | **10 / 10** |
+| Açık sürümde tanığı geçen güvenli vaka | **5 / 5** (iş modele gitmeden insana döner) |
+| Davranış testi kararlı ve açık sürümde geçen | 15 / 15 |
+| Gizli testler açık sürümde beklendiği gibi (tırmanma başarısız, noktalı ad geçer) | 15 / 15 |
+| Dışlanan | 0 |
+
+**Bulunan ve düzeltilen sorunlar:**
+1. **Kaynak dosyalarını yeniden yazan eklenti.** Benchmark'ın pom'u derlerken kaynakları biçimlendiriyor (`spotless:apply`, `origin/master`'a göre). Doğrulanan kodu yeniden yazan bir derleme kabul edilemez, bu yüzden biçimlendirici kapatıldı.
+2. **Eksik servlet ileti dosyaları.** `javaee-api` servlet sınıflarının ileti dosyalarını içermiyor, bu yüzden servlet sınıfları test içinde yüklenemiyordu. İki boş ileti dosyası test kaynağı olarak eklendi.
+3. **Girdi biçimlerinin ilk sürümü yetersizdi.** İlk sürüm yalnız `../x` ve değer kanallarını deniyordu: 10 gerçek vakanın 5'inde etki göremedi. Vakaların kodu incelenince eksik kanallar ve biçimler eklendi ve 10/10 oldu. Bu bir harness eksiğiydi; vakalar Benchmark'ın verdiği kaynak ve hedeflerle zaten açık.
+4. **Sıraya bağlı yanıt.** Bir güvenli vaka, alanda sabit bir dosyanın var olup olmadığını söylüyor. Önceki testlerin bıraktığı dosyalar yanıtını değiştirdi. Bu durum gerçek işlerde de olur, çünkü testler aynı çalışma kopyasında sırayla koşar. Tanık yardımcısı artık her kontrolden önce dosya alanını boşaltıyor.
+5. **Derleme süresi.** Benchmark'ın 2 740 servlet'i çevrimdışı derlemesi sandbox'ta yaklaşık 6 dakika (ilk derleme indirmeyle 20 dakika). Her doğrulama bütün projeyi derlediği için model denemeleri bu vakalarda yavaş olacak. Çalışma kopyasının `/mnt/c` yerine WSL diskinde olması muhtemelen bunu kısaltır; ölçülmedi.
+
+## Sayılar ve sonraki adım
+
+`l3_catalog.py` çıktısı: geliştirme tarafında 13 hazır vaka (hedef 20), değerlendirme tarafında **18** hazır vaka (hedef 40): 3 Vul4J ve 15 Benchmark, hepsi CWE-22.
+
+Sonraki adımlar:
+- Benchmark'ın SQL ve komut kategorilerine tanık şablonları. SQL için bağlantı JNDI'dan geliyor ve test içinde yeniden kurulması gerekiyor. Komut için etkiyi görmenin yolu, çalışan sürecin bıraktığı iz.
+- VUL4J-18 (jspwiki, JUnit 5).
+- Geliştirme tarafında 7 vaka daha.

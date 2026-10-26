@@ -1,0 +1,355 @@
+{
+  "snapshot": "acc50f20ec449e2b977a7c409fa8175491657cba",
+  "derived_commit": "5f2dadc54f742de9f7820ae6ec1dbc5a0f4fe470",
+  "seed": 20261026,
+  "exit_code": 1,
+  "cases": 15,
+  "as_expected": 15,
+  "rows": [
+    {
+      "case": "owasp-benchmark-00011",
+      "benchmark_real": true,
+      "witness": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "behavior": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hidden": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "as_expected": true
+    },
+    {
+      "case": "owasp-benchmark-00452",
+      "benchmark_real": true,
+      "witness": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "behavior": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hidden": {
+        "tests": 2,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "as_expected": true
+    },
+    {
+      "case": "owasp-benchmark-00526",
+      "benchmark_real": true,
+      "witness": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "behavior": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hidden": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "as_expected": true
+    },
+    {
+      "case": "owasp-benchmark-00623",
+      "benchmark_real": true,
+      "witness": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "behavior": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hidden": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "as_expected": true
+    },
+    {
+      "case": "owasp-benchmark-01110",
+      "benchmark_real": false,
+      "witness": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "behavior": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hidden": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "as_expected": true
+    },
+    {
+      "case": "owasp-benchmark-01116",
+      "benchmark_real": true,
+      "witness": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "behavior": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hidden": {
+        "tests": 2,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "as_expected": true
+    },
+    {
+      "case": "owasp-benchmark-01570",
+      "benchmark_real": false,
+      "witness": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "behavior": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hidden": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "as_expected": true
+    },
+    {
+      "case": "owasp-benchmark-01643",
+      "benchmark_real": true,
+      "witness": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "behavior": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hidden": {
+        "tests": 2,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "as_expected": true
+    },
+    {
+      "case": "owasp-benchmark-01839",
+      "benchmark_real": true,
+      "witness": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "behavior": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hidden": {
+        "tests": 2,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "as_expected": true
+    },
+    {
+      "case": "owasp-benchmark-01905",
+      "benchmark_real": false,
+      "witness": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "behavior": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hidden": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "as_expected": true
+    },
+    {
+      "case": "owasp-benchmark-02030",
+      "benchmark_real": false,
+      "witness": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "behavior": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hidden": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "as_expected": true
+    },
+    {
+      "case": "owasp-benchmark-02032",
+      "benchmark_real": true,
+      "witness": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "behavior": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hidden": {
+        "tests": 2,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "as_expected": true
+    },
+    {
+      "case": "owasp-benchmark-02034",
+      "benchmark_real": true,
+      "witness": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "behavior": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hidden": {
+        "tests": 2,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "as_expected": true
+    },
+    {
+      "case": "owasp-benchmark-02556",
+      "benchmark_real": true,
+      "witness": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "behavior": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hidden": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "as_expected": true
+    },
+    {
+      "case": "owasp-benchmark-02568",
+      "benchmark_real": false,
+      "witness": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "behavior": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hidden": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "as_expected": true
+    }
+  ]
+}

@@ -1,0 +1,190 @@
+{
+  "snapshot": "acc50f20ec449e2b977a7c409fa8175491657cba",
+  "seed": 20261026,
+  "sample": {
+    "pathtraver": [
+      [
+        "BenchmarkTest00011",
+        true
+      ],
+      [
+        "BenchmarkTest00452",
+        true
+      ],
+      [
+        "BenchmarkTest00526",
+        true
+      ],
+      [
+        "BenchmarkTest00623",
+        true
+      ],
+      [
+        "BenchmarkTest01110",
+        false
+      ],
+      [
+        "BenchmarkTest01116",
+        true
+      ],
+      [
+        "BenchmarkTest01570",
+        false
+      ],
+      [
+        "BenchmarkTest01643",
+        true
+      ],
+      [
+        "BenchmarkTest01839",
+        true
+      ],
+      [
+        "BenchmarkTest01905",
+        false
+      ],
+      [
+        "BenchmarkTest02030",
+        false
+      ],
+      [
+        "BenchmarkTest02032",
+        true
+      ],
+      [
+        "BenchmarkTest02034",
+        true
+      ],
+      [
+        "BenchmarkTest02556",
+        true
+      ],
+      [
+        "BenchmarkTest02568",
+        false
+      ]
+    ]
+  },
+  "cases": {
+    "BenchmarkTest00011": {
+      "visible": "directory: told whether the file outside exists; ",
+      "nested": "",
+      "benign_1": "a7690bc1b2dce6bdd026089acabcfd1027dd672fea5b29cffe2bd3b10ba4eacc",
+      "benign_2": "a7690bc1b2dce6bdd026089acabcfd1027dd672fea5b29cffe2bd3b10ba4eacc",
+      "dots_1": "f7fafe62c4fda8bb05e809c05548fa9c674f8180fddc7172dac50547f004b09b",
+      "dots_2": "f7fafe62c4fda8bb05e809c05548fa9c674f8180fddc7172dac50547f004b09b"
+    },
+    "BenchmarkTest00452": {
+      "visible": "climb: told whether the file outside exists; ",
+      "nested": "nested: told whether the file outside exists; ",
+      "benign_1": "1730b2e92703ee0db5ea6fa8f8312f4c25e74bc538eaa95967edb0dc5efd9c4d",
+      "benign_2": "1730b2e92703ee0db5ea6fa8f8312f4c25e74bc538eaa95967edb0dc5efd9c4d",
+      "dots_1": "5952062c8c4cc9a8e1ff98f17578fe6c378c0f8404ecf5afec8a1e0df3425b39",
+      "dots_2": "5952062c8c4cc9a8e1ff98f17578fe6c378c0f8404ecf5afec8a1e0df3425b39"
+    },
+    "BenchmarkTest00526": {
+      "visible": "directory: told whether the file outside exists; ",
+      "nested": "",
+      "benign_1": "a7690bc1b2dce6bdd026089acabcfd1027dd672fea5b29cffe2bd3b10ba4eacc",
+      "benign_2": "a7690bc1b2dce6bdd026089acabcfd1027dd672fea5b29cffe2bd3b10ba4eacc",
+      "dots_1": "f7fafe62c4fda8bb05e809c05548fa9c674f8180fddc7172dac50547f004b09b",
+      "dots_2": "f7fafe62c4fda8bb05e809c05548fa9c674f8180fddc7172dac50547f004b09b"
+    },
+    "BenchmarkTest00623": {
+      "visible": "directory: told whether the file outside exists; ",
+      "nested": "",
+      "benign_1": "a7690bc1b2dce6bdd026089acabcfd1027dd672fea5b29cffe2bd3b10ba4eacc",
+      "benign_2": "a7690bc1b2dce6bdd026089acabcfd1027dd672fea5b29cffe2bd3b10ba4eacc",
+      "dots_1": "f7fafe62c4fda8bb05e809c05548fa9c674f8180fddc7172dac50547f004b09b",
+      "dots_2": "f7fafe62c4fda8bb05e809c05548fa9c674f8180fddc7172dac50547f004b09b"
+    },
+    "BenchmarkTest01110": {
+      "visible": "",
+      "nested": "",
+      "benign_1": "bb937823271aedf623372b60f0ba7ac2ad3e6b7204a71b49fb0ddfaa9c70f30e",
+      "benign_2": "bb937823271aedf623372b60f0ba7ac2ad3e6b7204a71b49fb0ddfaa9c70f30e",
+      "dots_1": "bb937823271aedf623372b60f0ba7ac2ad3e6b7204a71b49fb0ddfaa9c70f30e",
+      "dots_2": "bb937823271aedf623372b60f0ba7ac2ad3e6b7204a71b49fb0ddfaa9c70f30e"
+    },
+    "BenchmarkTest01116": {
+      "visible": "climb: told whether the file outside exists; ",
+      "nested": "nested: told whether the file outside exists; ",
+      "benign_1": "413709504c7662945293033b5b49de9efe7847a0e84477e3a73ae9569d0fc612",
+      "benign_2": "413709504c7662945293033b5b49de9efe7847a0e84477e3a73ae9569d0fc612",
+      "dots_1": "0a220919173abef40f09e5c9eee2bf2fdb3e3df3aea1a2b69e35951da5b373bd",
+      "dots_2": "0a220919173abef40f09e5c9eee2bf2fdb3e3df3aea1a2b69e35951da5b373bd"
+    },
+    "BenchmarkTest01570": {
+      "visible": "",
+      "nested": "",
+      "benign_1": "0b90acfb6406d310abcedb3cdeb3ec18c09877f2bd83dbb77f3a00be6be4a377",
+      "benign_2": "0b90acfb6406d310abcedb3cdeb3ec18c09877f2bd83dbb77f3a00be6be4a377",
+      "dots_1": "0b90acfb6406d310abcedb3cdeb3ec18c09877f2bd83dbb77f3a00be6be4a377",
+      "dots_2": "0b90acfb6406d310abcedb3cdeb3ec18c09877f2bd83dbb77f3a00be6be4a377"
+    },
+    "BenchmarkTest01643": {
+      "visible": "climb: told whether the file outside exists; ",
+      "nested": "nested: told whether the file outside exists; ",
+      "benign_1": "1730b2e92703ee0db5ea6fa8f8312f4c25e74bc538eaa95967edb0dc5efd9c4d",
+      "benign_2": "1730b2e92703ee0db5ea6fa8f8312f4c25e74bc538eaa95967edb0dc5efd9c4d",
+      "dots_1": "5952062c8c4cc9a8e1ff98f17578fe6c378c0f8404ecf5afec8a1e0df3425b39",
+      "dots_2": "5952062c8c4cc9a8e1ff98f17578fe6c378c0f8404ecf5afec8a1e0df3425b39"
+    },
+    "BenchmarkTest01839": {
+      "visible": "climb: wrote the file outside; ",
+      "nested": "nested: wrote the file outside; ",
+      "benign_1": "413709504c7662945293033b5b49de9efe7847a0e84477e3a73ae9569d0fc612",
+      "benign_2": "413709504c7662945293033b5b49de9efe7847a0e84477e3a73ae9569d0fc612",
+      "dots_1": "0a220919173abef40f09e5c9eee2bf2fdb3e3df3aea1a2b69e35951da5b373bd",
+      "dots_2": "0a220919173abef40f09e5c9eee2bf2fdb3e3df3aea1a2b69e35951da5b373bd"
+    },
+    "BenchmarkTest01905": {
+      "visible": "",
+      "nested": "",
+      "benign_1": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "benign_2": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "dots_1": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "dots_2": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "BenchmarkTest02030": {
+      "visible": "",
+      "nested": "",
+      "benign_1": "13ed4970f475ea96470678e89900a95c16a5d32417da772106782ba4e2320b9d",
+      "benign_2": "13ed4970f475ea96470678e89900a95c16a5d32417da772106782ba4e2320b9d",
+      "dots_1": "13ed4970f475ea96470678e89900a95c16a5d32417da772106782ba4e2320b9d",
+      "dots_2": "13ed4970f475ea96470678e89900a95c16a5d32417da772106782ba4e2320b9d"
+    },
+    "BenchmarkTest02032": {
+      "visible": "climb: read the file outside; climb: told whether the file outside exists; ",
+      "nested": "nested: read the file outside; nested: told whether the file outside exists; ",
+      "benign_1": "31842c96cf58fed3edfdd37088ad04b38d646f93b2a4f9d27f60d46641be1a05",
+      "benign_2": "31842c96cf58fed3edfdd37088ad04b38d646f93b2a4f9d27f60d46641be1a05",
+      "dots_1": "a1a7e2e14ba0c50302dcbd4435bb58d7ea80ccc8f3cb98ea040de50d414d6ff8",
+      "dots_2": "a1a7e2e14ba0c50302dcbd4435bb58d7ea80ccc8f3cb98ea040de50d414d6ff8"
+    },
+    "BenchmarkTest02034": {
+      "visible": "climb: told whether the file outside exists; ",
+      "nested": "nested: told whether the file outside exists; ",
+      "benign_1": "413709504c7662945293033b5b49de9efe7847a0e84477e3a73ae9569d0fc612",
+      "benign_2": "413709504c7662945293033b5b49de9efe7847a0e84477e3a73ae9569d0fc612",
+      "dots_1": "0a220919173abef40f09e5c9eee2bf2fdb3e3df3aea1a2b69e35951da5b373bd",
+      "dots_2": "0a220919173abef40f09e5c9eee2bf2fdb3e3df3aea1a2b69e35951da5b373bd"
+    },
+    "BenchmarkTest02556": {
+      "visible": "absolute: told whether the file outside exists; ",
+      "nested": "",
+      "benign_1": "80bd067d1870cc3a93ab725dbc11866748f6da49ecd41a3bf9517848b473052b",
+      "benign_2": "80bd067d1870cc3a93ab725dbc11866748f6da49ecd41a3bf9517848b473052b",
+      "dots_1": "b022cf092d6430c668d406544c13d31a5033eb00a84ad1a2d36398d9f50f52b2",
+      "dots_2": "b022cf092d6430c668d406544c13d31a5033eb00a84ad1a2d36398d9f50f52b2"
+    },
+    "BenchmarkTest02568": {
+      "visible": "",
+      "nested": "",
+      "benign_1": "4cda68256b5f498fd3417c65774958e52fc48e326a44a364a03557022d7f0c8e",
+      "benign_2": "4cda68256b5f498fd3417c65774958e52fc48e326a44a364a03557022d7f0c8e",
+      "dots_1": "4cda68256b5f498fd3417c65774958e52fc48e326a44a364a03557022d7f0c8e",
+      "dots_2": "4cda68256b5f498fd3417c65774958e52fc48e326a44a364a03557022d7f0c8e"
+    }
+  }
+}
