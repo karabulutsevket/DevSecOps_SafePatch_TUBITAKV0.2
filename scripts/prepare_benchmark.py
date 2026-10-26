@@ -349,6 +349,8 @@ def catalog_block(cases):
 def check(recorded):
     """Every generated witness, behaviour and hidden test once on the original code, one build.
     The hidden tests are added to that checkout only, as l3_hidden.py does after acceptance."""
+    if evidence("owasp-benchmark-check.json").exists():
+        raise SystemExit("Use a fresh EVIDENCE_DIR; evidence is never overwritten")
     descriptors_ = sorted((L3 / "projects").glob("owasp-benchmark-*.yml"))
     specs = [yaml.safe_load(p.read_text(encoding="utf-8")) for p in descriptors_]
     hidden = {p.relative_to(HIDDEN).as_posix(): p.read_bytes() for p in sorted(HIDDEN.rglob("*")) if p.is_file()}
