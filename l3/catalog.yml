@@ -44,7 +44,7 @@ cases:
     prepare: scripts/prepare_l3.py
     witness: l3/witness/vul4j-41
     hidden: {path: l3/hidden/vul4j-41, selectors: [org.codehaus.plexus.archiver.SafePatchHiddenTraversalTest]}
-    status: planned
+    status: ready
   - id: vul4j-42
     source: vul4j
     project: codehaus-plexus/plexus-utils
@@ -64,5 +64,5 @@ cases:
     prepare: scripts/prepare_l3.py
     witness: l3/witness/vul4j-43
     hidden: {path: l3/hidden/vul4j-43, selectors: [org.eclipse.rdf4j.common.io.SafePatchHiddenTraversalTest]}
-    status: planned
+    status: ready
   - {id: vul4j-18, source: vul4j, project: apache/jspwiki, cwe: CWE-22, split: evaluation, license: Apache-2.0, upstream: {repo: "https://github.com/apache/jspwiki", cve: CVE-2019-0225}, status: planned}

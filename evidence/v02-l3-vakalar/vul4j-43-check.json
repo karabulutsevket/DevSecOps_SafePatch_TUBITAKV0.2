@@ -1,0 +1,242 @@
+{
+  "case": "VUL4J-43",
+  "cve": "CVE-2018-20227",
+  "cwe": "CWE-22",
+  "derived_commit": "7bff111bc5256f8d290597476e89cb9b610c8089",
+  "human_fix_commit": "df15a4d7a8f2789c043b27c9eafe1b30316cfa79",
+  "started_at": 1792970948.254287,
+  "baseline": {
+    "passed": false,
+    "baseline_valid": true,
+    "feedback": "validation_failed",
+    "build": {
+      "passed": true,
+      "duration_seconds": 17.078
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 108,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "duration_seconds": 10.797,
+      "reason": null
+    },
+    "security": {
+      "passed": false,
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "entryOutsideTheDestinationIsNotWritten",
+          "type": "failure",
+          "assertion": "PATH_TRAVERSAL_REGRESSION"
+        }
+      ],
+      "duration_seconds": 9.359,
+      "reason": null
+    },
+    "findings": [
+      "known:VUL4J-43.1 util/src/main/java/org/eclipse/rdf4j/common/io/ZipUtil.java:93"
+    ],
+    "patch": {
+      "patch_sha256": null,
+      "changed_lines": null
+    },
+    "source_revision": "7bff111bc5256f8d290597476e89cb9b610c8089",
+    "artifact_sha256": null,
+    "runner_profile": "docker:maven:3.9.16-eclipse-temurin-8@sha256:0f402712b7a469189cfea5ec69cdcadcb32b22aaf1ea62777ab925c3d8470175",
+    "duration_seconds": 38.063,
+    "hidden": {
+      "passed": false,
+      "tests": 3,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "directoryEntryOutsideTheDestinationIsNotCreated",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        },
+        {
+          "name": "deepEntryOutsideTheDestinationIsNotWritten",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        }
+      ],
+      "duration_seconds": 14.844,
+      "reason": null
+    }
+  },
+  "human_fix": {
+    "passed": true,
+    "baseline_valid": false,
+    "feedback": "verified",
+    "build": {
+      "passed": true,
+      "duration_seconds": 16.547
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 108,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "duration_seconds": 10.797,
+      "reason": null
+    },
+    "security": {
+      "passed": true,
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "duration_seconds": 9.735,
+      "reason": null
+    },
+    "findings": [],
+    "patch": {
+      "patch_sha256": "c99b2d981efdd1942b8d34122c32d1d911af3601854375c67751d10012063326",
+      "changed_lines": 32
+    },
+    "source_revision": "7bfcf03c38b3a3f0500e4d68ff1353c5ec79397f",
+    "artifact_sha256": "b4a2f87e4829cb32d605ce2050c2314ff26941c155c4418660de4c1657f61837",
+    "runner_profile": "docker:maven:3.9.16-eclipse-temurin-8@sha256:0f402712b7a469189cfea5ec69cdcadcb32b22aaf1ea62777ab925c3d8470175",
+    "duration_seconds": 38.14,
+    "hidden": {
+      "passed": true,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "duration_seconds": 15.109,
+      "reason": null
+    }
+  },
+  "control": {
+    "passed": false,
+    "baseline_valid": false,
+    "feedback": "validation_failed",
+    "build": {
+      "passed": true,
+      "duration_seconds": 16.406
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 108,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "duration_seconds": 11.11,
+      "reason": null
+    },
+    "security": {
+      "passed": false,
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "entryOutsideTheDestinationIsNotWritten",
+          "type": "failure",
+          "assertion": "PATH_TRAVERSAL_REGRESSION"
+        }
+      ],
+      "duration_seconds": 9.312,
+      "reason": null
+    },
+    "findings": [],
+    "patch": {
+      "patch_sha256": "27c02826f2b427db93c4eb9cfc8a4bcceaf3842dc5cd029b37e34fb6ffce1171",
+      "changed_lines": 1
+    },
+    "source_revision": "38231523b1270c8bc011a6b49f8f5d0f5253d98e",
+    "artifact_sha256": null,
+    "runner_profile": "docker:maven:3.9.16-eclipse-temurin-8@sha256:0f402712b7a469189cfea5ec69cdcadcb32b22aaf1ea62777ab925c3d8470175",
+    "duration_seconds": 38.078,
+    "hidden": {
+      "passed": false,
+      "tests": 3,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "directoryEntryOutsideTheDestinationIsNotCreated",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        },
+        {
+          "name": "deepEntryOutsideTheDestinationIsNotWritten",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        }
+      ],
+      "duration_seconds": 14.797,
+      "reason": null
+    }
+  },
+  "partial_fix": {
+    "passed": true,
+    "baseline_valid": false,
+    "feedback": "verified",
+    "build": {
+      "passed": true,
+      "duration_seconds": 16.188
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 108,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "duration_seconds": 10.781,
+      "reason": null
+    },
+    "security": {
+      "passed": true,
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "duration_seconds": 10.078,
+      "reason": null
+    },
+    "findings": [],
+    "patch": {
+      "patch_sha256": "f9ba332ca8ddc4c2519fc92c4f36a941e4775a00a8f3cbaf5c2d460a8a47c654",
+      "changed_lines": 3
+    },
+    "source_revision": "0b0a5f45898c89bd31e15cff375b33a8ff4e0a22",
+    "artifact_sha256": "03deb113e2b308eb59d420f0e977fb7ffc8cb713685f560c2c5197f47225cc67",
+    "runner_profile": "docker:maven:3.9.16-eclipse-temurin-8@sha256:0f402712b7a469189cfea5ec69cdcadcb32b22aaf1ea62777ab925c3d8470175",
+    "duration_seconds": 38.297,
+    "hidden": {
+      "passed": false,
+      "tests": 3,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "directoryEntryOutsideTheDestinationIsNotCreated",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        }
+      ],
+      "duration_seconds": 14.765,
+      "reason": null
+    }
+  }
+}
