@@ -63,7 +63,7 @@ def measure(case, store, private, seed):
     job, seconds = run(store, case.id, commit, seed)
     for attempt in job["attempts"]:
         for edit in (attempt["proposal"].get("patch") or {}).get("edits", []):
-            (private / f"{case.id}-attempt{attempt['number']}-{Path(edit['path']).name}").write_text(edit["content"], encoding="utf-8")
+            (private / f"{case.id}-attempt{attempt['number']}-{Path(edit['path']).name}").write_text(edit["content"], encoding="utf-8", newline="")
     row = {"case": case.id, "cwe": case.cwe, "project": case.project, "source": case.source,
            "vulnerable": labels.get("benchmark_real", "true") == "true", "seed": seed, "job": job["id"],
            "status": job["status"], "reason": job.get("reason"), "wall_seconds": seconds,
