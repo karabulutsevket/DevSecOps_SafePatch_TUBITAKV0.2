@@ -1,0 +1,86 @@
+{
+  "model_mode": "mock-test-reference-patch",
+  "scanner_mode": "real-builtin-demo",
+  "result": {
+    "passed": true,
+    "baseline_valid": false,
+    "base_commit": "00268862eb7cbd232b95ccf0fab24ec882ca32ee",
+    "source_revision": "9763123e22539377863ea16e6ffc353f8c14af6c",
+    "build": {
+      "passed": true,
+      "duration_seconds": 7.203
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "exit_code": 0,
+      "duration_seconds": 4.765,
+      "junit_sha256": "c434a9a677abfe4c219bbfca6fa7bcc14e41043ab5a73e2af35f35eca8364fb1"
+    },
+    "security": {
+      "passed": true,
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "exit_code": 0,
+      "duration_seconds": 4.734,
+      "junit_sha256": "6b54b73f1f22c0f44c4bf8363fafb02bdfb3338161891a0f0044dd65b8ae766d"
+    },
+    "scans": [
+      {
+        "tool": "builtin-demo",
+        "version": "1.0.0",
+        "coverage": "three owned synthetic patterns only",
+        "status": "ok",
+        "analysis_id": "cfddce5ba5cd4aba9aa5d823975b526f",
+        "commit": "9763123e22539377863ea16e6ffc353f8c14af6c",
+        "findings": []
+      }
+    ],
+    "tolerated": [],
+    "patch": {
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -13,7 +13,7 @@\n         String shell = windows ? \"cmd.exe\" : \"/bin/sh\";\n         String flag = windows ? \"/c\" : \"-c\";\n         String command = \"echo echo:\" + input;\n-        Process child = new ProcessBuilder(shell, flag, command).redirectErrorStream(true).start();\n+        Process child = new ProcessBuilder(java, \"-cp\", System.getProperty(\"java.class.path\"), \"demo.EchoMain\", input).redirectErrorStream(true).start();\n         if (!child.waitFor(5, TimeUnit.SECONDS)) { child.destroyForcibly(); throw new IllegalStateException(\"child timeout\"); }\n         if (child.exitValue() != 0) throw new IllegalStateException(\"child failed\");\n         return new String(child.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();\n",
+      "patch_sha256": "2905add5929e34eea8e8fa5f32fd8842b4697be7e6b747f3a05b839f837f6394",
+      "changed_lines": 2
+    },
+    "feedback": {
+      "code": "verified",
+      "behavior": {
+        "passed": true,
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 4.765,
+        "junit_sha256": "c434a9a677abfe4c219bbfca6fa7bcc14e41043ab5a73e2af35f35eca8364fb1"
+      },
+      "security": {
+        "passed": true,
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 4.734,
+        "junit_sha256": "6b54b73f1f22c0f44c4bf8363fafb02bdfb3338161891a0f0044dd65b8ae766d"
+      },
+      "remaining_rules": []
+    },
+    "duration_seconds": 17.562,
+    "runner_profile": "native-same-user",
+    "versions": {
+      "java": "17; inspect preparation evidence",
+      "maven": "3.9.16"
+    },
+    "artifact_sha256": "94ed900a685de0415a89eff6c9d788ae6c647a238013b37f31152b0a83792a86"
+  }
+}
