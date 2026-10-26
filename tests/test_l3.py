@@ -8,6 +8,7 @@ from safepatch.common import ROOT
 sys.path.insert(0, str(ROOT / "scripts"))
 import l3_catalog
 import l3_hidden
+import l3_measure
 import prepare_benchmark
 
 READY_EVAL = {"id": "ext-1", "source": "vul4j", "project": "org/lib", "cwe": "CWE-22", "split": "evaluation", "license": "Apache-2.0",
@@ -101,3 +102,48 @@ def test_every_development_variant_has_one_sink_and_a_reference_fix():
         fixed = (variants_dev.SAMPLES / "fixed" / variants_dev.source_name(case)).read_text(encoding="utf-8")
         assert [line.strip() for line in source.splitlines()].count(sink) == 1, case
         assert sink not in [line.strip() for line in fixed.splitlines()], case
+
+
+def test_the_measurement_takes_every_ready_evaluation_case():
+    cases = l3_measure.evaluation_cases()
+    assert all(c.split == "evaluation" and c.status == "ready" for c in cases)
+    assert len(cases) >= l3_catalog.load().targets["evaluation"]
+
+
+def measured(case, vulnerable=True, status="needs_human", false_acceptance=None, cwe="CWE-22", source="owasp-benchmark"):
+    return {"case": case, "cwe": cwe, "source": source, "vulnerable": vulnerable, "status": status,
+            "reason": None if status == "awaiting_review" else "attempt_budget_exhausted", "attempts": [{}] * (1 if status == "awaiting_review" else 3),
+            "false_acceptance": false_acceptance}
+
+
+def test_the_summary_keeps_failed_jobs_and_hidden_errors_in_view():
+    rows = [measured("a", status="awaiting_review", false_acceptance=True), measured("b", status="awaiting_review", false_acceptance=False),
+            measured("c", status="awaiting_review", cwe="CWE-89"), measured("d", source="vul4j"),
+            {**measured("e", vulnerable=False), "reason": "baseline_missing_expected_failing_security_assertion_or_finding", "attempts": []}]
+    summary = l3_measure.summarize(rows)
+    vulnerable = summary["vulnerable"]
+    assert (summary["jobs"], vulnerable["jobs"], vulnerable["accepted"]) == (5, 4, 3)
+    # c's hidden run failed: it is neither a false acceptance nor a confirmed one
+    assert (vulnerable["false_acceptances"], vulnerable["accepted_and_hidden_passed"]) == (1, 1)
+    assert summary["safe"]["reasons"] == {"baseline_missing_expected_failing_security_assertion_or_finding": 1}
+    assert summary["safe"]["model_attempts"] == 0 and vulnerable["model_attempts"] == 6
+    assert summary["by_cwe"]["CWE-89"]["accepted"] == 1 and summary["by_source"]["vul4j"]["jobs"] == 1
+
+
+def test_a_hidden_test_failure_is_recorded_on_the_row(monkeypatch, tmp_path):
+    job = {"id": "j", "status": "awaiting_review", "reason": None,
+           "attempts": [{"number": 1, "proposal": {"patch": {"edits": [{"path": "src/A.java", "content": "class A {}"}]}}, "verification": {"passed": True}}]}
+    monkeypatch.setattr(l3_measure, "registry", lambda: ({}, {"x-1": {"commit": "c0", "project": "p"}}))
+    monkeypatch.setattr(l3_measure, "project", lambda case, commit: type("Spec", (), {"labels": {}})())
+    monkeypatch.setattr(l3_measure, "run", lambda store, case, commit, seed: (job, 1.0))
+    monkeypatch.setattr(l3_measure, "attempt_row", lambda attempt: {"number": attempt["number"]})
+
+    def broken(*args):
+        raise RuntimeError("sandbox_stage_failed")
+
+    monkeypatch.setattr(l3_measure, "hidden_result", broken)
+    case = l3_catalog.Case.model_validate({**READY_EVAL, "id": "x-1"})
+    row = l3_measure.measure(case, None, tmp_path, 42)
+    assert row["status"] == "awaiting_review" and row["false_acceptance"] is None
+    assert row["hidden"] == {"error": "RuntimeError: sandbox_stage_failed"} and row["accepted_attempt"] == 1
+    assert (tmp_path / "x-1-attempt1-A.java").read_text(encoding="utf-8") == "class A {}"
