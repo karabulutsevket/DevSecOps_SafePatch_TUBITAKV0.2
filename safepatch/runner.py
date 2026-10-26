@@ -1,11 +1,15 @@
 import base64
 from collections import ChainMap
+import io
 import json
 import os
 from pathlib import Path
+import posixpath
 import re
+import shlex
 import shutil
 import subprocess
+import tarfile
 import threading
 import time
 import uuid
@@ -17,7 +21,7 @@ from safepatch.acceptance import untolerated
 from safepatch.common import ROOT, VerifyRequest, digest, known_findings_enabled, safe_path, remaining, require_service, runtime, secret, setting
 from safepatch.policy import PolicyError, validate_patch
 from safepatch.process import run
-from safepatch.repository import allowed_files, baseline, checkout, commit_candidate, tracked_changes
+from safepatch.repository import allowed_files, baseline, checkout, commit_candidate, git_command, run_git, tracked_changes
 from safepatch.scanner import SonarAdapter, builtin_scan, parse_semgrep
 
 app = FastAPI(title="SafePatch restricted runner")
@@ -60,8 +64,9 @@ def sandbox_image(java="17"):
     return image
 
 
-def sandboxed(argv, workspace, name, java="17"):
-    """The docker command running argv for this workspace inside the sandbox."""
+def sandboxed(argv, workspace, name, java="17", mount=None):
+    """The docker command running argv for this workspace inside the sandbox; `mount` is the
+    workspace's copy on the WSL disk (Stage), else the workspace itself over /mnt/c."""
     cache = setting("SANDBOX_MAVEN_CACHE")
     if not cache or not cache.startswith("/"):
         raise RuntimeError("sandbox_maven_cache_missing")
@@ -69,16 +74,132 @@ def sandboxed(argv, workspace, name, java="17"):
                "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--pids-limit", "1024",
                "--memory", setting("SANDBOX_MEMORY", "2g"), "--cpus", setting("SANDBOX_CPUS", "2"), "--user", setting("SANDBOX_USER", "1000:1000"),
                "-e", "HOME=/tmp", "-e", "MAVEN_OPTS=-Xmx512m -Dfile.encoding=UTF-8",
-               "-v", wsl_path(workspace) + ":/workspace", "-w", "/workspace", "-v", cache + ":/m2:ro",
+               "-v", (mount or wsl_path(workspace)) + ":/workspace", "-w", "/workspace", "-v", cache + ":/m2:ro",
                # The image's entrypoint script copies settings into a home it cannot write; skip it.
                "--entrypoint", argv[0], sandbox_image(java), *argv[1:])
+
+
+class Stage:
+    """A runner workspace copied to the WSL disk for its sandboxed builds and tests.
+
+    A build there takes seconds where over /mnt/c it takes minutes (OWASP Benchmark package: 17 s
+    against 48 min). The copy holds the working tree's files, not .git or build output, and file
+    modes follow Git, as in a Linux checkout. Only what the runner reads comes back (`pull`);
+    `changed` lists files a run altered, as tracked_changes does for a workspace built in place."""
+
+    def __init__(self, workspace):
+        cache = setting("SANDBOX_MAVEN_CACHE") or ""
+        if not cache.startswith("/"):
+            raise RuntimeError("sandbox_maven_cache_missing")
+        self.local = Path(workspace)
+        self.path = setting("SANDBOX_WORK", posixpath.dirname(cache.rstrip("/")) + "/work") + "/" + self.local.name
+        if not re.fullmatch(r"/[A-Za-z0-9._/-]+", self.path):
+            raise RuntimeError("sandbox_work_path_invalid")
+
+    def shell(self, script, **kwargs):
+        return subprocess.run(wsl("sh", "-c", script), capture_output=True, timeout=600, **kwargs)
+
+    def push(self):
+        """Committed files come from Git's object store (`git archive`): reading a fresh checkout
+        back from the Windows disk took 145-170 s for Benchmark's 214 MB, the archive 1-4 s. A
+        file whose bytes may differ from the archive (modified, untracked, written by SafePatch
+        with other line endings, not a regular file) is read from the disk instead."""
+        modes = {}
+        for entry in run_git(self.local, "ls-files", "-s", "-z").split(b"\0"):
+            if entry:
+                meta, name = entry.split(b"\t", 1)
+                modes[name.decode("utf-8")] = 0o755 if meta.startswith(b"100755") else 0o644
+        if run_git(self.local, "ls-files", "-z", "--deleted"):
+            raise RuntimeError("sandbox_stage_deleted_file")
+        disk = {name for name in run_git(self.local, "ls-files", "-z", "--modified", "--others").decode("utf-8").split("\0")
+                if name and not self.build_output(name, modes)}
+        # The archive must hold every file as checked out: no export-ignore, no export-subst.
+        attributes = self.local / run_git(self.local, "rev-parse", "--git-path", "info/attributes").decode().strip()
+        attributes.parent.mkdir(parents=True, exist_ok=True)
+        attributes.write_text("* -export-ignore -export-subst\n", encoding="utf-8")
+
+        def owned(info, mode):
+            info.mode, info.uid, info.gid, info.uname, info.gname = mode, 0, 0, "", ""
+            return info
+
+        path = shlex.quote(self.path)
+        script = (f"rm -rf {path} && mkdir -p {path} && tar -x -C {path} && cd {path} && "
+                  f"find . -type f -print0 | xargs -0 -r sha256sum > {path}.sha256")
+        git = subprocess.Popen(git_command(self.local, "archive", "--format=tar", "HEAD"), cwd=self.local, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+        process = subprocess.Popen(wsl("sh", "-c", script), stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        try:
+            # Large blocks: with tarfile's 10 KB default each write is a round trip into WSL.
+            with tarfile.open(fileobj=git.stdout, mode="r|", bufsize=1 << 20) as source, \
+                    tarfile.open(fileobj=process.stdin, mode="w|", bufsize=1 << 20) as archive:
+                for info in source:
+                    local = self.local / info.name
+                    if info.isdir():
+                        archive.addfile(owned(info, 0o755))
+                    elif info.isfile() and info.name not in disk and local.is_file() and local.stat().st_size == info.size:
+                        archive.addfile(owned(info, modes.get(info.name, 0o644)), source.extractfile(info))
+                    elif local.is_file():
+                        disk.add(info.name)
+                for name in sorted(disk):
+                    archive.add(str(self.local / name), arcname=name, recursive=False, filter=lambda info: owned(info, modes.get(info.name, 0o644)))
+        except BaseException:
+            git.kill()
+            process.kill()
+            raise
+        finally:
+            process.stdin.close()
+            git.wait(timeout=600)
+            process.wait(timeout=600)
+        if git.returncode or process.returncode:
+            raise RuntimeError("sandbox_stage_failed")
+
+    @staticmethod
+    def build_output(name, modes):
+        """An untracked file under a `target` directory that holds no tracked file."""
+        parts = name.split("/")
+        return any(part == "target" and not any(n.startswith("/".join(parts[:i + 1]) + "/") for n in modes)
+                   for i, part in enumerate(parts[:-1]))
+
+    def clear(self, relative):
+        self.shell(f"rm -rf {shlex.quote(self.path + '/' + relative)}")
+
+    def pull(self, relative):
+        """Replace the local `relative` (a directory or file) with the stage's."""
+        if not safe_path(relative):
+            raise RuntimeError("sandbox_stage_path_invalid")
+        local = self.local / relative
+        if local.is_dir():
+            shutil.rmtree(local)
+        elif local.exists():
+            local.unlink()
+        quoted = shlex.quote(relative)
+        result = self.shell(f"cd {shlex.quote(self.path)} && if [ -e {quoted} ]; then tar -c {quoted}; fi")
+        if result.returncode:
+            raise RuntimeError("sandbox_stage_pull_failed")
+        if not result.stdout:
+            return
+        try:
+            with tarfile.open(fileobj=io.BytesIO(result.stdout)) as archive:
+                wanted = [m for m in archive.getmembers() if m.name == relative or m.name.startswith(relative + "/")]
+                archive.extractall(self.local, members=wanted, filter="data")
+        except tarfile.TarError as exc:
+            raise RuntimeError("sandbox_stage_output_refused") from exc
+
+    def changed(self):
+        """Staged files (Git metadata aside) that differ from what was pushed."""
+        path = shlex.quote(self.path)
+        result = self.shell(f"cd {path} && sha256sum --quiet -c {path}.sha256 2>/dev/null; true", text=True)
+        return [line.rsplit(":", 1)[0].removeprefix("./") for line in result.stdout.splitlines() if line.strip()]
+
+    def remove(self):
+        path = shlex.quote(self.path)
+        self.shell(f"rm -rf {path} {path}.sha256")
 
 
 def profile(sandbox, java="17"):
     return "docker:" + sandbox_image(java) if sandbox == "docker" else setting("RUNNER_PROFILE", "native-same-user")
 
 
-def maven(workspace, args, deadline, extra=None, online=False, limit=240, sandbox="native", java="17"):
+def maven(workspace, args, deadline, extra=None, online=False, limit=240, sandbox="native", java="17", stage=None):
     if sandbox == "docker":
         if online or extra:
             raise PolicyError("sandbox_runs_offline_without_secrets")
@@ -86,7 +207,7 @@ def maven(workspace, args, deadline, extra=None, online=False, limit=240, sandbo
         flags = [f for f in MAVEN_FLAGS if not f.startswith("-DargLine=")] + [f"-DargLine={ARG_LINE} -Djava.io.tmpdir={TEST_TMP}"]
         argv = ["mvn", *flags, "-o", "-Dmaven.repo.local=/tmp/m2", "-Dmaven.repo.local.tail=/m2", *args]
         try:
-            return run(sandboxed(argv, workspace, name, java), workspace, remaining(deadline, limit))
+            return run(sandboxed(argv, workspace, name, java, stage.path if stage else None), workspace, remaining(deadline, limit))
         except TimeoutError:
             # Stopping the wsl client does not stop the container.
             subprocess.run(wsl("docker", "kill", name), capture_output=True, timeout=30)
@@ -105,14 +226,19 @@ def maven(workspace, args, deadline, extra=None, online=False, limit=240, sandbo
 MISSING_WITNESS = {"passed": False, "missing": True, "tests": 0, "failures": 0, "errors": 0, "skipped": 0, "details": []}
 
 
-def tests(workspace, selection, deadline, limit=240, sandbox="native", java="17", build=None):
+def tests(workspace, selection, deadline, limit=240, sandbox="native", java="17", build=None, stage=None):
     """Run one descriptor test selection and read every Surefire report it produced (the
     descriptor's module only, when it names one)."""
-    reports_dir = workspace / ((build.module + "/") if build and build.module else "") / "target/surefire-reports"
+    relative = ((build.module + "/") if build and build.module else "") + "target/surefire-reports"
+    reports_dir = workspace / relative
     shutil.rmtree(reports_dir, ignore_errors=True)
+    if stage:
+        stage.clear(relative)
     # A plugin the build skips (animal-sniffer, enforcer...) is skipped in the test run too.
     options = [*build.reactor(), *build.properties()] if build else []
-    result = maven(workspace, [*options, "-Dtest=" + ",".join(selection.selectors), "test"], deadline, limit=limit, sandbox=sandbox, java=java)
+    result = maven(workspace, [*options, "-Dtest=" + ",".join(selection.selectors), "test"], deadline, limit=limit, sandbox=sandbox, java=java, stage=stage)
+    if stage:
+        stage.pull(relative)
     reports = sorted(reports_dir.glob("TEST-*.xml")) if reports_dir.exists() else []
     if not reports:
         return {"passed": False, "infrastructure_error": True, "reason": "missing_junit_report", "exit_code": result["exit_code"], "duration_seconds": result["duration_seconds"]}
@@ -249,14 +375,26 @@ def execute(req: VerifyRequest):
         # This source revision is the exact patched content; never label it as base HEAD.
         revision = commit_candidate(workspace, req.base_commit, req.patch.edits, patch_meta["diff"])
         view = ChainMap({edit.path: edit.content for edit in req.patch.edits}, files)
-    compile_result = maven(workspace, [*spec.build.reactor(), *spec.build.package_goals], req.deadline, limit=spec.limits.build_seconds, sandbox=sandbox, java=spec.java)
+    stage = Stage(workspace) if sandbox == "docker" else None
+    try:
+        if stage:
+            stage.push()
+        return outcome(req, spec, workspace, stage, sandbox, patch_meta, view, revision, started)
+    finally:
+        if stage:
+            stage.remove()
+
+
+def outcome(req, spec, workspace, stage, sandbox, patch_meta, view, revision, started):
+    """Build, behaviour, witness and scan of one checked-out revision; `stage` is its WSL copy."""
+    compile_result = maven(workspace, [*spec.build.reactor(), *spec.build.package_goals], req.deadline, limit=spec.limits.build_seconds, sandbox=sandbox, java=spec.java, stage=stage)
     if compile_result["exit_code"]:
         return {"passed": False, "feedback": {"code": "compilation_failed", "diagnostics": diagnostics(compile_result["output"], workspace)}, "patch": patch_meta, "build": {"passed": False, "duration_seconds": compile_result["duration_seconds"]}}
     witness = spec.tests.security
-    behavior = tests(workspace, spec.tests.behavior, req.deadline, spec.limits.test_seconds, sandbox, spec.java, spec.build)
-    security = tests(workspace, witness, req.deadline, spec.limits.test_seconds, sandbox, spec.java, spec.build) if witness else dict(MISSING_WITNESS)
+    behavior = tests(workspace, spec.tests.behavior, req.deadline, spec.limits.test_seconds, sandbox, spec.java, spec.build, stage)
+    security = tests(workspace, witness, req.deadline, spec.limits.test_seconds, sandbox, spec.java, spec.build, stage) if witness else dict(MISSING_WITNESS)
     reports = scan(workspace, spec, view, revision, req.scanner, req.job_id, req.attempt, req.deadline, patched=bool(req.patch))
-    if tracked_changes(workspace):
+    if stage.changed() if stage else tracked_changes(workspace):
         raise PolicyError("tracked_file_changed_during_execution")
     findings = [f for report in reports for f in report["findings"]]
     # Baseline findings in other files may stay (only the target file changed); the rest must be gone.
@@ -270,6 +408,8 @@ def execute(req: VerifyRequest):
     if passed:
         if not spec.build.artifact:
             raise PolicyError("artifact_not_configured")
+        if stage:
+            stage.pull(spec.build.artifact)
         artifact = (workspace / spec.build.artifact).read_bytes()
         if len(artifact) > 64 * 1024**2:
             raise PolicyError("artifact_size_budget")

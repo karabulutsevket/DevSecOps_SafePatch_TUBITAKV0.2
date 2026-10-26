@@ -51,7 +51,15 @@ def hidden_result(case_id, commit, edits, deadline=None):
                 raise ValueError(f"hidden test would replace a project file: {target.relative_to(workspace)}")
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(file, target)
-        result = runner.tests(workspace, hidden.selection(), deadline, spec.limits.test_seconds, runner.sandbox_mode(spec), spec.java, spec.build)
+        sandbox = runner.sandbox_mode(spec)
+        stage = runner.Stage(workspace) if sandbox == "docker" else None
+        try:
+            if stage:
+                stage.push()
+            result = runner.tests(workspace, hidden.selection(), deadline, spec.limits.test_seconds, sandbox, spec.java, spec.build, stage)
+        finally:
+            if stage:
+                stage.remove()
         return {k: result.get(k) for k in ("passed", "tests", "failures", "errors", "skipped", "details", "duration_seconds", "reason")}
     finally:
         shutil.rmtree(workspace, ignore_errors=True)

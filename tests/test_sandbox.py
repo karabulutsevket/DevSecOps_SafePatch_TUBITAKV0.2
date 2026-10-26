@@ -206,3 +206,125 @@ def test_the_builds_plugin_skips_apply_to_the_test_runs(monkeypatch, tmp_path):
     build = Build(package_goals=["-DskipTests", "-Danimal.sniffer.skip=true", "package"], module="util")
     runner.tests(tmp_path, SuiteSelection(selectors=["x.YTest"]), time.time() + 60, build=build)
     assert seen["args"] == ["-pl", "util", "-Danimal.sniffer.skip=true", "-Dtest=x.YTest", "test"]
+
+
+def staged_repo(tmp_path):
+    """A committed git workspace as the runner leaves it before a build: an executable script, a
+    package named target, an export-ignore attribute, a candidate SafePatch wrote with LF line
+    endings where the checkout converts to CRLF, an uncommitted edit, an untracked hidden test
+    and leftover build output."""
+    def git(*args):
+        subprocess.run(["git", "-C", str(ws), "-c", "core.autocrlf=false", *args], check=True, capture_output=True)
+
+    ws = tmp_path / "ws-1"
+    files = {".gitattributes": "docs/** export-ignore\n*.txt text eol=crlf\n", "src/run.sh": "echo hi\n",
+             "src/A.java": "class A {}\n", "src/target/T.java": "class T {}\n", "docs/notes.md": "kept\n",
+             "src/Candidate.txt": "fixed\nline\n", "src/Edited.java": "class Edited {}\n"}
+    for name, content in files.items():
+        (ws / name).parent.mkdir(parents=True, exist_ok=True)
+        (ws / name).write_text(content, encoding="utf-8", newline="\n")
+    git("init", "-q")
+    git("add", ".")
+    git("update-index", "--chmod=+x", "src/run.sh")
+    git("-c", "user.name=t", "-c", "user.email=t@localhost", "commit", "-qm", "base")
+    (ws / "src/Edited.java").write_text("class Edited { int x; }\n", encoding="utf-8")
+    (ws / "src/test").mkdir()
+    (ws / "src/test/HiddenTest.java").write_text("class HiddenTest {}\n", encoding="utf-8")
+    for out in ("target/classes", "util/target/x"):
+        (ws / out).mkdir(parents=True)
+        (ws / out / "B.class").write_bytes(b"\0")
+    return ws
+
+
+def test_a_stage_carries_the_working_tree_with_git_modes_and_without_build_output(monkeypatch, tmp_path):
+    import io, tarfile
+    monkeypatch.setenv("SANDBOX_MAVEN_CACHE", CACHE)
+    sent, real = {}, subprocess.Popen
+
+    class Pipe(io.BytesIO):
+        def close(self):
+            sent["tar"] = self.getvalue()
+
+    class Process:
+        """Stands in for the WSL tar process; git still runs for real."""
+
+        def __new__(cls, argv, **kwargs):
+            return super().__new__(cls) if argv[0] == "wsl" else real(argv, **kwargs)
+
+        def __init__(self, argv, **kwargs):
+            sent["argv"], self.stdin, self.returncode = argv, Pipe(), 0
+
+        def wait(self, timeout=None):
+            return 0
+
+    workspace = staged_repo(tmp_path)
+    monkeypatch.setattr(runner.subprocess, "Popen", Process)
+    stage = runner.Stage(workspace)
+    assert stage.path == "/home/test/.safepatch/work/ws-1"
+    stage.push()
+    archive = tarfile.open(fileobj=io.BytesIO(sent["tar"]))
+    files = {m.name: m for m in archive.getmembers() if m.isfile()}
+    assert files["src/run.sh"].mode == 0o755 and files["src/A.java"].mode == 0o644
+    for name, member in files.items():
+        assert archive.extractfile(member).read() == (workspace / name).read_bytes(), name
+    assert set(files) == {".gitattributes", "src/run.sh", "src/A.java", "src/target/T.java", "docs/notes.md",
+                          "src/Candidate.txt", "src/Edited.java", "src/test/HiddenTest.java"}
+    assert "tar -x -C /home/test/.safepatch/work/ws-1" in sent["argv"][-1]
+
+
+def test_a_deleted_tracked_file_is_refused(monkeypatch, tmp_path):
+    monkeypatch.setenv("SANDBOX_MAVEN_CACHE", CACHE)
+    workspace = staged_repo(tmp_path)
+    (workspace / "src/A.java").unlink()
+    with pytest.raises(RuntimeError, match="sandbox_stage_deleted_file"):
+        runner.Stage(workspace).push()
+
+
+def tar_of(entries):
+    import io, tarfile
+    buffer = io.BytesIO()
+    with tarfile.open(fileobj=buffer, mode="w") as archive:
+        for name, target in entries:
+            info = tarfile.TarInfo(name)
+            if target is None:
+                info.size = 3
+                archive.addfile(info, io.BytesIO(b"<x>"))
+            else:
+                info.type, info.linkname = tarfile.SYMTYPE, target
+                archive.addfile(info)
+    return buffer.getvalue()
+
+
+def test_pulling_takes_only_the_requested_path(monkeypatch, tmp_path):
+    monkeypatch.setenv("SANDBOX_MAVEN_CACHE", CACHE)
+    stage = runner.Stage(tmp_path / "ws-2")
+    output = tar_of([("target/surefire-reports/TEST-a.xml", None), ("src/A.java", None)])
+    monkeypatch.setattr(stage, "shell", lambda script, **kw: subprocess.CompletedProcess(script, 0, output, b""))
+    stage.pull("target/surefire-reports")
+    assert (tmp_path / "ws-2/target/surefire-reports/TEST-a.xml").read_bytes() == b"<x>"
+    assert not (tmp_path / "ws-2/src").exists()
+
+
+@pytest.mark.parametrize("entries", [[("target/surefire-reports/x", "/etc/passwd")], [("target/surefire-reports/x", "../../../outside")]])
+def test_pulled_output_cannot_point_outside_the_workspace(monkeypatch, tmp_path, entries):
+    monkeypatch.setenv("SANDBOX_MAVEN_CACHE", CACHE)
+    stage = runner.Stage(tmp_path / "ws-3")
+    monkeypatch.setattr(stage, "shell", lambda script, **kw: subprocess.CompletedProcess(script, 0, tar_of(entries), b""))
+    with pytest.raises(RuntimeError, match="sandbox_stage_output_refused"):
+        stage.pull("target/surefire-reports")
+
+
+def test_changed_files_are_read_from_the_checksum_report(monkeypatch, tmp_path):
+    monkeypatch.setenv("SANDBOX_MAVEN_CACHE", CACHE)
+    stage = runner.Stage(tmp_path / "ws-4")
+    report = "./src/A.java: FAILED\n./pom.xml: FAILED open or read\n"
+    monkeypatch.setattr(stage, "shell", lambda script, **kw: subprocess.CompletedProcess(script, 0, report, ""))
+    assert stage.changed() == ["src/A.java", "pom.xml"]
+
+
+@pytest.mark.parametrize("work", ["relative/work", "/home/x/work dir", "/home/x/$(id)"])
+def test_the_stage_location_must_be_a_plain_absolute_path(monkeypatch, tmp_path, work):
+    monkeypatch.setenv("SANDBOX_MAVEN_CACHE", CACHE)
+    monkeypatch.setenv("SANDBOX_WORK", work)
+    with pytest.raises(RuntimeError, match="sandbox_work_path_invalid"):
+        runner.Stage(tmp_path / "ws-5")

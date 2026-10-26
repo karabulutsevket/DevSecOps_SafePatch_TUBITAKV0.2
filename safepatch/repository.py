@@ -19,10 +19,14 @@ CANDIDATE_ENV = {"GIT_AUTHOR_NAME": "SafePatch", "GIT_AUTHOR_EMAIL": "safepatch@
                  "GIT_AUTHOR_DATE": "2026-09-11T00:00:00Z", "GIT_COMMITTER_DATE": "2026-09-11T00:00:00Z"}
 
 
-def run_git(repo, *args, env=None, timeout=60):
+def git_command(repo, *args):
     """Git without hooks, fsmonitor, signing or line-ending conversion; trusts only `repo`."""
-    command = ["git", "-c", "safe.directory=" + Path(repo).resolve().as_posix(), "-c", "core.hooksPath=/dev/null",
-               "-c", "core.fsmonitor=false", "-c", "core.autocrlf=false", "-c", "commit.gpgsign=false", *args]
+    return ["git", "-c", "safe.directory=" + Path(repo).resolve().as_posix(), "-c", "core.hooksPath=/dev/null",
+            "-c", "core.fsmonitor=false", "-c", "core.autocrlf=false", "-c", "commit.gpgsign=false", *args]
+
+
+def run_git(repo, *args, env=None, timeout=60):
+    command = git_command(repo, *args)
     result = subprocess.run(command, cwd=repo, env=env, timeout=timeout, capture_output=True)
     if result.returncode:
         raise RuntimeError("git_failed:" + args[0] + ":" + result.stderr.decode(errors="replace")[:200])

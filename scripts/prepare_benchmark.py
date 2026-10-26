@@ -219,9 +219,9 @@ def support_files():
     return {p.relative_to(base).as_posix(): p.read_bytes() for p in sorted((base / "src").rglob("*")) if p.is_file()}
 
 
-def sandbox_run(repo, commit, goals, java_version="17", extra=None):
-    """Clone, add `extra` files ({path: bytes}), run Maven offline in the sandbox; returns
-    (workspace, result) and the caller removes the workspace."""
+def sandbox_run(repo, commit, goals, java_version="17", extra=None, outputs=("target/surefire-reports",)):
+    """Clone, add `extra` files ({path: bytes}), run Maven offline in the sandbox from a WSL-disk
+    stage and bring back `outputs`; returns (workspace, result) and the caller removes the workspace."""
     workspace = Path(tempfile.mkdtemp(dir=L3))
     work = workspace / "ws"
     git(L3, "clone", "--quiet", "--no-checkout", str(repo), str(work))
@@ -229,7 +229,15 @@ def sandbox_run(repo, commit, goals, java_version="17", extra=None):
     for path, data in (extra or {}).items():
         (work / path).parent.mkdir(parents=True, exist_ok=True)
         (work / path).write_bytes(data)
-    return workspace, runner.maven(work, goals, time.time() + 3600, limit=3600, sandbox="docker", java=java_version)
+    stage = runner.Stage(work)
+    try:
+        stage.push()
+        result = runner.maven(work, goals, time.time() + 3600, limit=3600, sandbox="docker", java=java_version, stage=stage)
+        for output in outputs:
+            stage.pull(output)
+    finally:
+        stage.remove()
+    return workspace, result
 
 
 def record(drawn):
@@ -237,7 +245,8 @@ def record(drawn):
     recorder = java(RECORDER, blocks=blocks.rstrip("\n"))
     files = {**support_files(), "src/test/java/" + PACKAGE + "/SafePatchRecorder.java": recorder}
     repo, commit = derive("owasp-benchmark-record", {**SPEC, "message": "OWASP Benchmark recording: SafePatch recorder over the sample\n"}, files)
-    workspace, result = sandbox_run(repo, commit, [*SKIPS, *SPOTLESS, "-Dtest=org.owasp.benchmark.safepatch.SafePatchRecorder", "test"])
+    workspace, result = sandbox_run(repo, commit, [*SKIPS, *SPOTLESS, "-Dtest=org.owasp.benchmark.safepatch.SafePatchRecorder", "test"],
+                                    outputs=("target/safepatch-record.json", "target/surefire-reports"))
     try:
         out = workspace / "ws/target/safepatch-record.json"
         (L3 / "benchmark-record.log").write_text(result["output"], encoding="utf-8")   # Benchmark's own messages, for diagnosis
