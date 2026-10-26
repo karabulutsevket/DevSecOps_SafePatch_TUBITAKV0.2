@@ -138,7 +138,25 @@ Ortak kurallar:
 4. **Girdi kanalları ve biçimleri.** Path tanığının ilk sürümü yalnız `../x` ve değer kanallarını deniyordu ve 10 gerçek vakanın 5'inde etki göremedi. Vakaların kodu incelenince eksik kanallar ve biçimler eklendi, 10/10 oldu. Bu bir harness eksiğiydi; vakalar Benchmark'ın verdiği kaynak ve hedeflerle zaten açık.
 5. **Yanıt karşılaştırmasında girdiyi silmek.** Yanıtlar karşılaştırılırken girdinin yansımaları siliniyor. İlk sürümde tırnak denemesinin girdisi tek bir `'` idi; onu silmek Benchmark'ın kendi SQL metnindeki tırnakları da sildi ve güvenli bir vaka açık göründü. Girdi artık ayırt edici (`safepatch'`).
 6. **Sıraya bağlı yanıt.** Bir güvenli path vakası, alanda sabit bir dosyanın var olup olmadığını söylüyor; önceki testlerin bıraktığı dosyalar yanıtını değiştirdi. Tanık yardımcısı artık her kontrolden önce dosya alanını boşaltıyor.
-7. **Derleme süresi.** 2 740 servlet'in çevrimdışı derlemesi sandbox'ta yaklaşık 6 dakika (ilk derleme indirmeyle 20 dakika). Her doğrulama bütün projeyi derlediği için model denemeleri bu vakalarda yavaş olacak. Çalışma kopyasının `/mnt/c` yerine WSL diskinde olması muhtemelen bunu kısaltır; ölçülmedi.
+7. **Derleme süresi.** Çalışma kopyası `/mnt/c` üzerinden bağlandığında Benchmark'ın sandbox derlemesi 48 dakika sürdü; aynı derleme WSL diskinde 17 saniye. Runner artık her sandbox derlemesini çalışma kopyasının WSL diskindeki bir kopyasında yapıyor (aşağıda "Sandbox çalışma kopyası").
+
+## Sandbox çalışma kopyası (26 Ekim)
+
+**Kod:** `safepatch/runner.py` (`Stage`). **Kontrol:** [evidence/v02-l3-stage/](../evidence/v02-l3-stage/).
+
+Sandbox derlemesi ve testleri artık çalışma kopyasının WSL diskindeki bir kopyasında çalışıyor:
+- **Kopyalama.** Commit'lenmiş dosyalar Git'in nesne deposundan gelir (`git archive`). Diskten farklı olabilecek dosyalar (değişmiş, izlenmeyen, SafePatch'in başka satır sonuyla yazdığı, düz dosya olmayan) diskten okunur; kopya çalışma kopyasıyla bayt bayt aynıdır. `.git` ve derleme çıktısı kopyalanmaz.
+- **Geri dönen.** Runner'ın okuduğu yalnız iki şey geri gelir: test raporları ve paket dosyası. Geri gelen arşiv çalışma kopyasının dışına yazamaz.
+- **Değişiklik denetimi.** Kopyanın özeti alınır; derleme ya da test izlenen bir dosyayı değiştirirse iş reddedilir (yerinde derlemedeki `tracked_changes` denetiminin karşılığı).
+
+Neden `git archive`: Windows'ta yeni yazılmış 214 MB'lık bir Benchmark kopyasını diskten okumak 145–170 saniye sürdü, aynı içeriği Git'ten akıtmak 1–4 saniye.
+
+| Doğrulama (taban, sandbox) | Önce | Sonra |
+|---|---|---|
+| OWASP Benchmark vakası | ~48 dk | 39–44 sn |
+| VUL4J-79 / 41 / 43 | — | 26 / 44 / 35 sn |
+
+Aynı kontroller kopya üzerinden yeniden koşuldu: Benchmark 42/42; VUL4J-79, 41 ve 43'te bütün test sonuçları önceki kayıtlarla aynı. Değişen tek alan paket dosyasının özeti. Bunun nedeni jar'daki zaman damgaları: yerinde ve kopyada derlenen jar'lar 94 girdinin hepsinde ad, CRC ve boyutça aynı. Kopyada art arda iki derlemenin özetleri de birbirinden farklı.
 
 ## Geliştirme varyantları (26 Ekim)
 
@@ -171,5 +189,4 @@ Her vakanın bir referans düzeltmesi var: SQL'de parametreli sorgu, path'te ger
 
 Sonraki adımlar:
 - VUL4J-18 (jspwiki, JUnit 5).
-- Benchmark derlemesini hızlandırmak (çalışma kopyasını WSL diskine almak).
 - L3 üzerinde ilk model ölçümü: kabul edilen her aday gizli testlerle yanlış kabul açısından da ölçülür.
