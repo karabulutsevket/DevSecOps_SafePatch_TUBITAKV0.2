@@ -189,4 +189,6 @@ Her vakanın bir referans düzeltmesi var: SQL'de parametreli sorgu, path'te ger
 
 Sonraki adımlar:
 - VUL4J-18 (jspwiki, JUnit 5).
-- L3 üzerinde ilk model ölçümü: kabul edilen her aday gizli testlerle yanlış kabul açısından da ölçülür.
+- Gizli SQL testindeki hatayı düzeltmek: zararsız girdi karşılaştırması, servlet'in yanıta yazdığı sorgu metnini ayıklamalı ([OLCUM_L3_MODEL.md](OLCUM_L3_MODEL.md)).
+
+İlk model ölçümü: [OLCUM_L3_MODEL.md](OLCUM_L3_MODEL.md).

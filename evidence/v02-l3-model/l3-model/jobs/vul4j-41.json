@@ -1,0 +1,126 @@
+{
+  "case": "vul4j-41",
+  "cwe": "CWE-22",
+  "project": "codehaus-plexus/plexus-archiver",
+  "source": "vul4j",
+  "vulnerable": true,
+  "seed": 42,
+  "job": "9eeb927205944fdd932399a1646c8007",
+  "status": "needs_human",
+  "reason": "attempt_budget_exhausted",
+  "wall_seconds": 89.3,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "regions",
+      "regions_changed": [
+        1
+      ],
+      "imports_added": [],
+      "changed_lines": 2,
+      "patch_sha256": "7a6c36d113ac429ecc6a48469156bda9497cd1842bee7261515ef78aac04259b",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/org/codehaus/plexus/archiver/AbstractUnArchiver.java:[327,83] cannot find symbol: toRealPath"
+        ]
+      },
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 11.563,
+      "prompt_tokens": 2522,
+      "output_tokens": 506,
+      "dropped": [
+        "src/main/java/org/codehaus/plexus/archiver/UnixStat.java",
+        "src/main/java/org/codehaus/plexus/archiver/BaseFileSet.java"
+      ]
+    },
+    {
+      "number": 2,
+      "edit_mode": "regions",
+      "regions_changed": [
+        1
+      ],
+      "imports_added": [],
+      "changed_lines": 2,
+      "patch_sha256": "7a6c36d113ac429ecc6a48469156bda9497cd1842bee7261515ef78aac04259b",
+      "policy_error": null,
+      "stopped": "duplicate_patch",
+      "passed": null,
+      "failure": null,
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 11.75,
+      "prompt_tokens": 2491,
+      "output_tokens": 516,
+      "dropped": [
+        "src/main/java/org/codehaus/plexus/archiver/UnixStat.java",
+        "src/main/java/org/codehaus/plexus/archiver/BaseFileSet.java",
+        "src/main/java/org/codehaus/plexus/archiver/ArchiverException.java"
+      ]
+    },
+    {
+      "number": 3,
+      "edit_mode": "regions",
+      "regions_changed": [
+        1
+      ],
+      "imports_added": [],
+      "changed_lines": 6,
+      "patch_sha256": "d5ad363b0b228a9332674f1b2a92630b2ec16adf747caa96900094e82ec1fb60",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/org/codehaus/plexus/archiver/AbstractUnArchiver.java:[327,65] cannot find symbol: toRealPath",
+          "[ERROR] src/main/java/org/codehaus/plexus/archiver/AbstractUnArchiver.java:[328,47] cannot find symbol: toRealPath"
+        ]
+      },
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 12.687,
+      "prompt_tokens": 2407,
+      "output_tokens": 582,
+      "dropped": [
+        "src/main/java/org/codehaus/plexus/archiver/UnixStat.java",
+        "src/main/java/org/codehaus/plexus/archiver/BaseFileSet.java",
+        "src/main/java/org/codehaus/plexus/archiver/ArchiverException.java",
+        "src/main/java/org/codehaus/plexus/archiver/ArchiveFile.java"
+      ]
+    }
+  ],
+  "hidden": null,
+  "false_acceptance": null
+}

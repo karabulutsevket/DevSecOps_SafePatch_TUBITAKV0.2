@@ -1,0 +1,93 @@
+{
+  "case": "owasp-benchmark-02091",
+  "cwe": "CWE-89",
+  "project": "OWASP-Benchmark/BenchmarkJava",
+  "source": "owasp-benchmark",
+  "vulnerable": true,
+  "seed": 42,
+  "job": "5851d75e2b614f9bb52d1eaa8fd37d6c",
+  "status": "awaiting_review",
+  "reason": null,
+  "wall_seconds": 166.5,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "regions",
+      "regions_changed": [
+        1
+      ],
+      "imports_added": [],
+      "changed_lines": 5,
+      "patch_sha256": "17752f2bc00de3b1f34694027de02b12771391bda9236f1bf39d19a015d31745",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/org/owasp/benchmark/testcode/BenchmarkTest02091.java:[58,42] cannot find symbol: bar"
+        ]
+      },
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 12.109,
+      "prompt_tokens": 1831,
+      "output_tokens": 570,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java"
+      ]
+    },
+    {
+      "number": 2,
+      "edit_mode": "regions",
+      "regions_changed": [
+        1
+      ],
+      "imports_added": [],
+      "changed_lines": 5,
+      "patch_sha256": "09a6bcfe43ba6111072af5f172373052be413b62041fcf59f0561a2ebdabb957",
+      "policy_error": null,
+      "stopped": null,
+      "passed": true,
+      "failure": null,
+      "build": true,
+      "behavior": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "model_seconds": 12.032,
+      "prompt_tokens": 2100,
+      "output_tokens": 560,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java"
+      ]
+    }
+  ],
+  "hidden": {
+    "passed": true,
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "details": [],
+    "duration_seconds": 12.594,
+    "reason": null
+  },
+  "false_acceptance": false,
+  "accepted_attempt": 2
+}

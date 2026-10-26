@@ -1,0 +1,123 @@
+{
+  "case": "owasp-benchmark-00623",
+  "cwe": "CWE-22",
+  "project": "OWASP-Benchmark/BenchmarkJava",
+  "source": "owasp-benchmark",
+  "vulnerable": true,
+  "seed": 42,
+  "job": "4d11887cc4b740bbaffa96d0d6a67d8c",
+  "status": "needs_human",
+  "reason": "attempt_budget_exhausted",
+  "wall_seconds": 177.8,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 4,
+      "patch_sha256": "dc76efdc136049885ad8f1a168d6a6e728dae84876bb07267907b89073b74c36",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00623.java:[58,48] method encodeForOS in interface Encoder cannot be applied to given types;"
+        ]
+      },
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 17.563,
+      "prompt_tokens": 1068,
+      "output_tokens": 843,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java",
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00004.java"
+      ]
+    },
+    {
+      "number": 2,
+      "edit_mode": "regions",
+      "regions_changed": [
+        1
+      ],
+      "imports_added": [],
+      "changed_lines": 4,
+      "patch_sha256": "dc76efdc136049885ad8f1a168d6a6e728dae84876bb07267907b89073b74c36",
+      "policy_error": null,
+      "stopped": "duplicate_patch",
+      "passed": null,
+      "failure": null,
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 9.172,
+      "prompt_tokens": 1898,
+      "output_tokens": 405,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java"
+      ]
+    },
+    {
+      "number": 3,
+      "edit_mode": "regions",
+      "regions_changed": [
+        1
+      ],
+      "imports_added": [],
+      "changed_lines": 10,
+      "patch_sha256": "ca20b25d6554bf6e937bec6656289a739f9db6bf06336a71f9cf94b5eeac50ec",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "behavior_regression",
+        "failed_tests": [
+          {
+            "suite": "behavior",
+            "test": "benignInputAnswersAsBefore",
+            "marker": "BEHAVIOR_REGRESSION"
+          }
+        ],
+        "remaining_rules": []
+      },
+      "build": true,
+      "behavior": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "model_seconds": 10.203,
+      "prompt_tokens": 2034,
+      "output_tokens": 465,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java"
+      ]
+    }
+  ],
+  "hidden": null,
+  "false_acceptance": null
+}
