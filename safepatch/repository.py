@@ -59,13 +59,19 @@ class GitFiles(Mapping):
 
     def __init__(self, repo, commit):
         self.repo, self.commit, self._text = Path(repo), commit, {}
-        self._modes = {}
-        for entry in run_git(self.repo, "ls-tree", "-r", "-z", commit).split(b"\0"):
+        self._modes, self._sizes = {}, {}
+        for entry in run_git(self.repo, "ls-tree", "-r", "-l", "-z", commit).split(b"\0"):
             if entry:
                 meta, name = entry.split(b"\t", 1)
                 path = name.decode("utf-8", errors="replace")
                 if safe_path(path):
-                    self._modes[path] = meta.split()[0].decode()
+                    mode, _, _, size = meta.split()
+                    self._modes[path] = mode.decode()
+                    self._sizes[path] = int(size) if size.isdigit() else None
+
+    def size(self, path):
+        """The file's size in bytes without reading it (None for a submodule)."""
+        return self._sizes[path]
 
     def raw(self, path):
         if path not in self._modes:

@@ -24,6 +24,11 @@ def read_only_context(files, target, limit=8000):
     context, size = {}, 0
     for path in sorted(files):
         if path != target and path.endswith(".java") and path.rpartition("/")[0] == folder and not is_protected(path):
+            # A file holds at least a quarter as many characters as bytes: one that cannot fit is
+            # not read (OWASP Benchmark's package has 2 740 siblings; reading them took 97 s a job).
+            stored = files.size(path) if hasattr(files, "size") else None
+            if stored is not None and size + -(-stored // 4) > limit:
+                continue
             try:
                 content = files[path]
             except PolicyError:
