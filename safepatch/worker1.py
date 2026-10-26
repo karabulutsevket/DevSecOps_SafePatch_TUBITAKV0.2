@@ -109,11 +109,12 @@ def compose(req, tag):
 def compose_mode(req, tag, regions):
     """Build system prompt and data; drop optional context instead of exceeding the budget.
 
-    UTF-8 bytes are a conservative upper bound for this byte-level tokenizer. The
-    system prompt and schema are included; output and template overhead are reserved.
-    Optional parts go largest context file first, then the failure warnings, then the
-    previous patch diff. Region mode counts two bytes per token (Java runs near three)
-    and checks the measured prompt count after generation instead.
+    Both modes estimate two UTF-8 bytes per token, the system prompt and schema included;
+    output and template overhead are reserved, and propose() checks the measured prompt
+    count after generation. Optional parts go largest context file first, then the failure
+    warnings, then the previous patch diff. (Until 26 Oct 2026 whole files counted one byte
+    per token: in the L3 run their prompts measured 3.3-4.0 bytes per token, so 70-line
+    files fell back to regions and every attempt dropped its read-only context.)
     """
     limit = input_limit()
     schema = json.dumps((RegionPatch if regions else Patch).model_json_schema())
@@ -136,7 +137,7 @@ def compose_mode(req, tag, regions):
             system += TAG_NOTE.format(tag=tag)
             prompt += RETRY_NOTE.format(tag=tag) + req.guidance
         size = len((system + prompt + schema).encode("utf-8"))
-        if ((size + 1) // 2 if regions else size) <= limit:
+        if (size + 1) // 2 <= limit:
             return system, prompt, dropped
         if files:
             largest = max(files, key=lambda p: len(files[p]))
@@ -172,15 +173,27 @@ def propose(req):
     info = model_info(endpoint, model)
     tag = secrets.token_hex(6)
     system, prompt, dropped, mode = compose(req, tag)
-    answer = RegionPatch if mode == "regions" else Patch
+
+    def generate(system, prompt, answer):
+        return request(endpoint + "/api/generate", "POST", body={"model": model, "system": system, "prompt": prompt, "format": answer.model_json_schema(), "stream": False, "keep_alive": setting("MODEL_KEEP_ALIVE", "5m"), "options": {"temperature": req.temperature, "seed": req.seed, "num_ctx": int(setting("MODEL_CONTEXT", "8192")), "num_predict": int(setting("MODEL_OUTPUT_TOKENS", "2048"))}}, timeout=remaining(req.deadline, int(setting("MODEL_TIMEOUT", "360"))))
+
     start = time.monotonic()
-    result = request(endpoint + "/api/generate", "POST", body={"model": model, "system": system, "prompt": prompt, "format": answer.model_json_schema(), "stream": False, "keep_alive": setting("MODEL_KEEP_ALIVE", "5m"), "options": {"temperature": req.temperature, "seed": req.seed, "num_ctx": int(setting("MODEL_CONTEXT", "8192")), "num_predict": int(setting("MODEL_OUTPUT_TOKENS", "2048"))}}, timeout=remaining(req.deadline, int(setting("MODEL_TIMEOUT", "360"))))
+    result = generate(system, prompt, RegionPatch if mode == "regions" else Patch)
+    over = (result.get("prompt_eval_count") or 0) > input_limit()
+    # The model's own count decides: a whole file the estimate let through goes again as its regions.
+    fallback = over and mode == "whole_file" and region is not None
+    if fallback:
+        system, prompt, dropped = compose_mode(req, tag, True)
+        mode = "regions"
+        result = generate(system, prompt, RegionPatch)
+        over = (result.get("prompt_eval_count") or 0) > input_limit()
+    if over:
+        raise ValueError("Model context exceeded")
     if not result.get("done") or result.get("done_reason") == "length":
         raise ValueError("Incomplete model generation")
-    if mode == "regions" and (result.get("prompt_eval_count") or 0) > input_limit():
-        raise ValueError("Model context exceeded")
+    answer = RegionPatch if mode == "regions" else Patch
     parsed = answer.model_validate_json(result["response"])
-    return {"mode": "real-local-model", ("region_patch" if mode == "regions" else "patch"): parsed.model_dump(), "model": info, "metrics": {"edit_mode": mode, "duration_seconds": round(time.monotonic() - start, 3), "prompt_tokens_measured": result.get("prompt_eval_count"), "output_tokens_measured": result.get("eval_count"), "context_chars": len(prompt), "prompt_sha256": digest(system + prompt), "system_prompt_sha256": digest(system), "seed": req.seed, "temperature": req.temperature, "dropped_optional_context": dropped, "note_tag": tag if req.guidance else None, "num_ctx": int(setting("MODEL_CONTEXT", "8192")), "num_predict": int(setting("MODEL_OUTPUT_TOKENS", "2048"))}}
+    return {"mode": "real-local-model", ("region_patch" if mode == "regions" else "patch"): parsed.model_dump(), "model": info, "metrics": {"edit_mode": mode, "whole_file_over_budget": fallback, "duration_seconds": round(time.monotonic() - start, 3), "prompt_tokens_measured": result.get("prompt_eval_count"), "output_tokens_measured": result.get("eval_count"), "context_chars": len(prompt), "prompt_sha256": digest(system + prompt), "system_prompt_sha256": digest(system), "seed": req.seed, "temperature": req.temperature, "dropped_optional_context": dropped, "note_tag": tag if req.guidance else None, "num_ctx": int(setting("MODEL_CONTEXT", "8192")), "num_predict": int(setting("MODEL_OUTPUT_TOKENS", "2048"))}}
 
 
 @app.get("/health")

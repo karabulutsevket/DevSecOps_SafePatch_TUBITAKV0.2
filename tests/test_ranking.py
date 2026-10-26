@@ -150,7 +150,8 @@ def test_worker1_puts_failures_in_the_data_with_a_note(sent):
 
 def test_worker1_drops_failures_before_the_previous_diff(sent, monkeypatch):
     monkeypatch.setenv("MODEL_CONTEXT", "4200")
-    failures = [{"relation": "same_source", "failure": "compilation_failed", "changed_lines": "x" * 1200}]
+    # The most the engine sends: two warnings of 1 500 characters (engine.changed_lines).
+    failures = [{"relation": "same_source", "failure": "compilation_failed", "changed_lines": "x" * 1500}] * 2
     result = worker1.propose(propose(failure_data=failures, feedback={"category": "compilation_failed", "previous_patch_diff": "+y\n"}))
     assert result["metrics"]["dropped_optional_context"] == ["failed_repair_data"]
     assert "failed_repair_data" not in json.loads(sent["prompt"]) and json.loads(sent["prompt"])["feedback_data"]["previous_patch_diff"] == "+y\n"
