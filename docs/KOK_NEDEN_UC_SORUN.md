@@ -160,6 +160,40 @@ Benchmark'ın ağır yeniden denemelerinde iki kardeş dosyadan biri ya da ikisi
 - **Sonuç:** tek seed'li bir koşu 20 vakada ±1–2 vaka oynuyor. Geliştirme setinde düzeltmenin sonuca ölçülebilir bir etkisi yok, gerileme de yok.
 - **Etki nerede beklenmeli:** düzeltmenin asıl etkisi, L3'teki küçük servlet'lerin tüm dosya ve bağlamla gitmesinde. Geliştirme setinde bu durumu sınayan bir vaka yok.
 
+### Paket şekilli geliştirme vakaları: bütçe ve bağlam (27 Ekim)
+
+**Betik:** `scripts/package_dev.py`. **Kaynaklar:** `samples/package/`, referans düzeltmeler `fixed/`. **Kayıtlar:** [evidence/v02-paket-gelistirme/](../evidence/v02-paket-gelistirme/).
+
+Benchmark'taki durum geliştirme tarafında, sahibi olduğumuz kodla kuruldu: büyük bir pakette küçük bir dosya. Benchmark kodu kullanılmadı.
+
+**Vakalar:**
+- **Hedef.** Altı vaka: SQL, path ve komut, her biri iki kod biçimiyle. `DemoService` 2,6–3,3 KB:
+  - bir başlık;
+  - HTML yanıt yazan bir giriş noktası;
+  - yardımcı bir metottan geçen girdi;
+  - tek bir açık çağrı.
+- **Paket.** Hedef, 40 üretilmiş ve ilgisiz işleyicinin (`Case001`–`Case040`) arasında; her işleyicide kendi açığı var.
+- **Bağlam.** Motorun seçtiği bağlam: uygulama sınıfı ve iki ilgisiz işleyici. Komut düzeltmesinin yardımcısı `EchoMain` bağlama girmiyor; Benchmark'ın yardımcıları da başka bir pakette.
+- **Testler.** Laboratuvarın API'si ve testleri aynen kullanıldı.
+- **Kontrol.** 6/6:
+  - taban geçerli;
+  - referans düzeltme doğrulanıyor;
+  - bağlam amaçlanan.
+- **İlk kontrolün başarısızlığı.** İlk kontrol iki komut düzeltmesinde başarısız oldu: düzeltmedeki `java` adlı yerel değişken `java` paketini gölgeliyordu. Kayıt `ilk-kontrol/` altında duruyor.
+
+Eski bileşenle bu vakalar L3'teki koşulu aynen üretiyor: ilk denemede bağlamın tamamı düşüyor; SQL ve komut vakalarının yeniden denemeleri bölge kipine geçiyor. Yeni bileşenle her deneme tüm dosya olarak gidiyor.
+
+| Kol | worker1 | Strateji | Doğrulanan (6 vaka × seed 42, 43) |
+|---|---|---|---|
+| A | Eski (`83076cf`): L3'teki koşul | `guided+context` | 8 / 12 |
+| B | Yeni | `guided+context`: ilgisiz işleyiciler bağlamda | 6 / 12 |
+| C | Yeni | `guided`: bağlam yok | 8 / 12 |
+
+- **Bütçe ve kip (A ile C): fark yok.** İlk denemelerin sonuçları üç kolda da aynı.
+- **Bağlam (B ile C): B'de 2 doğrulama eksik.** İkisi de yeniden denemelerde: command-1 seed 43'te iki boş cevap, path-1 seed 42'de son denemede derleme hatası. Bu fark, ölçülen ±1–2 vakalık gürültünün içinde. İlgisiz bağlamın zararlı olduğu kanıtlanmadı, ama yararına dair bir işaret de yok.
+- **Kopyalama yok.** Modelin cevaplarının hiçbiri işleyicilere özgü bir tanımlayıcı kullanmadı (`case0..`, `notes` tablosu, `java.io.tmpdir`): model ilgisiz kodu kopyalamıyor.
+- **Ortak başarısızlıklar.** path-2 ve command-2 hiçbir kolda çözülemedi. command-2, girdiyi ortam değişkeniyle bir kabuğa veriyor; Benchmark'ın komut vakalarındaki kalıbın aynısı.
+
 ### Riskler
 
 - **Önceki ölçümler bu commit'le aynen tekrarlanamaz.** Yukarıda sayılan denemelerde istem değişir; eski davranış önceki commit'le tekrarlanır.
@@ -245,6 +279,11 @@ Değişiklikten sonraki ilk koşuda bir test başarısız oldu ([sonra/tests-all
 
 1. **Politika önerisi** (`hafta6-politika-onerisi`): politika sahibi.
 2. **Politika reddinin işi bitirmesi** (alternatif B): politika sahibi.
-3. **Bütçe düzeltmesinin önceki ölçümlere etkisi.** Geliştirme setinde ölçüldü: 11/20 → 11/20 (yukarıda). Ama düzeltmenin asıl etkisi L3'te; bunu sınayacak bir geliştirme vakası yok. Küçük dosyayı geniş bir pakette tutan bir geliştirme vakası eklensin mi?
-4. **L3'te bağlam seçimi.** Benchmark'ta ilgisiz kardeş dosyalar seçiliyor. Bir sonraki L3 koşusundan önce karar verilmeli; seçenekler: bağlam kapalı, seçim kuralı değişsin ya da olduğu gibi kalsın.
+3. **Bütçe düzeltmesinin etkisi.** Geliştirme setinde (11/20 → 11/20) ve paket şekilli vakalarda (A 8/12, C 8/12) ölçülebilir bir etki yok.
+4. **L3'te bağlam seçimi.** Benchmark'ta ilgisiz kardeş dosyalar seçiliyor. Paket şekilli vakalarda bu bağlam yardımcı olmadı (B 6/12, C 8/12; fark gürültü içinde). Seçenekler:
+   - (a) Strateji `guided+context` kalsın. Bu, ölçülmüş varsayılan; L3 koşusu böylece tek, önceden belirlenmiş stratejiyle koşar.
+   - (b) L3 için `guided`, yani bağlam kapalı.
+   - (c) Seçim kuralı değişsin. Bunun için geliştirme kanıtı yok: laboratuvarda gereken yardımcı (`EchoMain`) hedef dosyada geçmiyor, bu yüzden "yalnız başvurulan dosyalar" kuralı onu da dışarıda bırakır.
+
+   Önerim (a): seçimi L3 sonuçlarına göre yapmak değerlendirme setinde ayar yapmak olur. Bağlam dosyaları her denemede kayıtlı; etkisi sonradan incelenebilir.
 5. **Boş cevaplar için istem değişiklikleri** (a, b): geliştirme setinde ölçüm.

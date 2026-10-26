@@ -1,0 +1,45 @@
+{
+  "case": "package-sql-2",
+  "cwe": "CWE-89",
+  "project": "safepatch-package-dev",
+  "source": "safepatch-synthetic",
+  "scanner": "known",
+  "vulnerable": true,
+  "seed": 42,
+  "job": "1b607e6bd2a84fe08319d5ca963ab4ba",
+  "status": "awaiting_review",
+  "reason": null,
+  "wall_seconds": 43.6,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 6,
+      "patch_sha256": "7803f30bb2b80f1de1ee4c0c54195751407830595d74ce43a461fc1bf9d6a8ae",
+      "policy_error": null,
+      "stopped": null,
+      "passed": true,
+      "failure": null,
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "model_seconds": 18.938,
+      "prompt_tokens": 1179,
+      "output_tokens": 937,
+      "dropped": []
+    }
+  ],
+  "hidden": null,
+  "false_acceptance": null
+}

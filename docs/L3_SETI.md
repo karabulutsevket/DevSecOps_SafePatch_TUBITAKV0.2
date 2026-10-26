@@ -178,13 +178,21 @@ Bu kalıplar yapısal imzanın kurulma biçimini ayırt etmesini de sınar.
 
 Her vakanın bir referans düzeltmesi var: SQL'de parametreli sorgu, path'te gerçek yollarla kök kontrolü, komutta kabuk yerine yardımcı sınıfa ayrı argüman. Kontrol: 7 vakanın 7'sinde taban geçerli ve referans düzeltme doğrulanıyor (yerel runner).
 
+## Paket şekilli geliştirme vakaları (27 Ekim)
+
+**Betik:** `scripts/package_dev.py`. **Kaynaklar:** `samples/package/`. **Kontrol:** [evidence/v02-paket-gelistirme/](../evidence/v02-paket-gelistirme/package-dev-check.json).
+
+Sahibi olduğumuz yeni bir projeden (`safepatch-package-dev`) geliştirme tarafına altı vaka eklendi: SQL, path ve komut, her biri iki kod biçimiyle. Benchmark'taki durumu kuruyorlar: 3 KB'lık bir dosya, 40 ilgisiz işleyicinin bulunduğu bir pakette. Motorun seçtiği bağlam bu yüzden iki ilgisiz işleyici oluyor.
+
+Laboratuvarın API'si ve testleri aynen kullanılıyor. Kontrol 6/6: taban geçerli, referans düzeltme doğrulanıyor, bağlam amaçlanan. Bütçe ve bağlam üzerine ölçüm: [KOK_NEDEN_UC_SORUN.md](KOK_NEDEN_UC_SORUN.md).
+
 ## Sayılar ve sonraki adım
 
 `l3_catalog.py` çıktısı:
 
 | Taraf | Hazır | Hedef |
 |---|---|---|
-| Geliştirme | **20** (CWE-22: 7, CWE-89: 7, CWE-78: 6; 3 proje) | 20 |
+| Geliştirme | **26** (CWE-22: 9, CWE-89: 9, CWE-78: 8; 4 proje) | 20 |
 | Değerlendirme | **45** (30 gerçek açık + 15 güvenli kod; CWE-22: 18, CWE-89: 15, CWE-78: 12) | 40 |
 
 Sonraki adımlar:
