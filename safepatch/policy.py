@@ -13,18 +13,28 @@ class PolicyError(ValueError):
 
 # Tight scope. Deny external network, reflection, process exit, test/CI suppression and
 # repository-supplied instructions to alter policy.
-FORBIDDEN = re.compile(r"(?i)(NOSONAR|nosemgrep|SuppressWarnings|System\s*\.\s*exit|Runtime\s*\.\s*getRuntime|java\.net|java\.lang\.reflect|Class\.forName|ProcessHandle|System\.getenv|setSecurityManager|Unsafe|\.m2|surefire|org\.junit|\.github|sonar\.exclusions)")
+# Suppressions and test/build markers: none on an added line.
+STRICT = re.compile(r"(?i)(NOSONAR|nosemgrep|SuppressWarnings|\.m2|surefire|org\.junit|\.github|sonar\.exclusions)")
+# Capabilities, each reference with what follows it: java.net.URISyntaxException is not java.net.URL.
+CAPABILITY = re.compile(r"(?i)(System\s*\.\s*exit|Runtime\s*\.\s*getRuntime(?:\s*\(\s*\)\s*\.\s*\w+)?|java\.net(?:\s*\.\s*[\w*]+)*"
+                        r"|java\.lang\.reflect(?:\s*\.\s*[\w*]+)*|Class\.forName|ProcessHandle(?:\s*\.\s*\w+)*|System\.getenv|setSecurityManager|Unsafe)")
+
+
+def references(pattern, text):
+    return Counter(re.sub(r"\s+", "", m.group(0)).lower() for m in pattern.finditer(text))
 
 
 def introduces_forbidden(original, content, diff):
-    """A patch may not add a forbidden token: none on an added line, and no token more often in
-    the file than before (catches one split across lines). Tokens the project file already had
-    in untouched code stay; real files carry them (zt-zip's ZipUtil.java has three NOSONAR)."""
+    """A patch may not add a suppression or test/build marker on any line, nor make any
+    capability reference more frequent than the file had it (counted over the whole file, so
+    one split across lines is caught). An edited line may keep a reference the file already
+    had (L3 run, owasp-benchmark-01643: a catch clause naming java.net.URISyntaxException);
+    a new reference, also behind the same package token, is refused."""
     added = "".join(line[1:] for line in diff if line.startswith("+") and not line.startswith("+++"))
-    if FORBIDDEN.search(added):
+    if STRICT.search(added):
         return True
-    before, after = Counter(m.lower() for m in FORBIDDEN.findall(original)), Counter(m.lower() for m in FORBIDDEN.findall(content))
-    return any(after[token] > before[token] for token in after)
+    return any(after[r] > before[r] for pattern in (STRICT, CAPABILITY)
+               for before, after in [(references(pattern, original), references(pattern, content))] for r in after)
 
 
 def validate_patch(base, patch, workspace: Path | None = None, allowed=()):
