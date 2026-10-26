@@ -1,7 +1,7 @@
 """Model measurement on the L3 set, evaluation or development side (ROADMAP.md week 6).
 
 Every ready evaluation case of l3/catalog.yml, one job each: the local model (region mode where
-the file is too large for it), guided+context, memory off, three attempts, experiment jobs (never
+the file is too large for it), guided+context (or --strategy), memory off, three attempts, experiment jobs (never
 approved, never in memory). OWASP Benchmark's safe cases stay in the denominator: the witness
 passes on their original code, so the baseline is not valid and the job must return to a human
 before any model call. Every accepted candidate then gets the case's hidden tests (l3_hidden.py),
@@ -32,7 +32,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 from safepatch.common import POLICY, digest, evidence, setting
-from safepatch.engine import Engine
+from safepatch.engine import STRATEGIES, Engine
 from safepatch.repository import project, registry
 from safepatch.store import Store
 from safepatch.worker1 import REGION_SYSTEM, SYSTEM, WEAKNESS_NOTES
@@ -48,23 +48,23 @@ def ready_cases(split="evaluation"):
     return [c for c in load().cases if c.split == split and c.status == "ready"]
 
 
-def run(store, case_id, commit, seed, scanner="known"):
+def run(store, case_id, commit, seed, scanner="known", strategy="guided+context"):
     now = time.time()
     job = {"id": uuid.uuid4().hex, "case_id": case_id, "base_commit": commit, "project": registry()[1][case_id]["project"],
            "policy_version": POLICY, "scanner": scanner, "mode": "real-local-model", "evaluation": True,
            "status": "queued", "owner": "EXPERIMENT-NOT-A-HUMAN", "started_at": now, "deadline": now + 1800, "max_attempts": 3,
-           "attempt_count": 0, "attempts": [], "events": [], "approval": None, "memory_mode": "off", "strategy": "guided+context", "seed": seed}
+           "attempt_count": 0, "attempts": [], "events": [], "approval": None, "memory_mode": "off", "strategy": strategy, "seed": seed}
     store.create(job, job["id"])
     start = time.perf_counter()
     Engine(store).run(job["id"])
     return store.get(job["id"]), round(time.perf_counter() - start, 1)
 
 
-def measure(case, store, private, seed):
+def measure(case, store, private, seed, strategy="guided+context"):
     commit = registry()[1][case.id]["commit"]
     spec = project(case.id, commit)
     labels, scanner = spec.labels, "known" if spec.scan.known else "semgrep"
-    job, seconds = run(store, case.id, commit, seed, scanner)
+    job, seconds = run(store, case.id, commit, seed, scanner, strategy)
     for attempt in job["attempts"]:
         for edit in (attempt["proposal"].get("patch") or {}).get("edits", []):
             (private / f"{case.id}-attempt{attempt['number']}-{Path(edit['path']).name}").write_text(edit["content"], encoding="utf-8", newline="")
@@ -103,6 +103,7 @@ def main():
     parser.add_argument("--seed", type=int, default=SEED)
     parser.add_argument("--cases", nargs="+", help="only these cases (a trial; no summary is written)")
     parser.add_argument("--split", choices=("evaluation", "development"), default="evaluation")
+    parser.add_argument("--strategy", choices=STRATEGIES, default="guided+context")
     args = parser.parse_args()
     if args.split == "evaluation":
         for name, value in (("SAFEPATCH_PROFILE", "evaluation"), ("RUNNER_SANDBOX", "docker")):
@@ -138,7 +139,7 @@ def main():
     record.write_text(json.dumps({
         "schema": 1, **started, **({
             "what": "L3 evaluation set repaired by the local model, verified in the Docker sandbox; accepted candidates given the hidden tests",
-            "catalog_sha256": digest(CATALOG.read_bytes()), "seed": args.seed, "strategy": "guided+context",
+            "catalog_sha256": digest(CATALOG.read_bytes()), "seed": args.seed, "strategy": args.strategy,
             "memory_mode": "off", "max_attempts": 3, "job_deadline_seconds": 1800, "scanner": "known (answer key; the witness decides)",
             "model": setting("OLLAMA_MODEL", "qwen2.5-coder:7b-instruct-q4_K_M"), "system_sha256": digest(SYSTEM),
             "region_system_sha256": digest(REGION_SYSTEM), "weakness_notes_sha256": {k: digest(v) for k, v in sorted(WEAKNESS_NOTES.items())},
@@ -147,7 +148,7 @@ def main():
         path = out / "jobs" / f"{case.id}.json"
         if path.exists():
             continue
-        row = measure(case, store, private, args.seed)
+        row = measure(case, store, private, args.seed, args.strategy)
         path.write_text(json.dumps(row, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         print(json.dumps({k: row[k] for k in ("case", "vulnerable", "status", "reason", "wall_seconds", "false_acceptance")}), flush=True)
     if args.cases:

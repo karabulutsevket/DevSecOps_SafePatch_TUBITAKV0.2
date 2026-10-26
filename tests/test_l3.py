@@ -146,7 +146,7 @@ def test_a_hidden_test_failure_is_recorded_on_the_row(monkeypatch, tmp_path):
            "attempts": [{"number": 1, "proposal": {"patch": {"edits": [{"path": "src/A.java", "content": "class A {}"}]}}, "verification": {"passed": True}}]}
     monkeypatch.setattr(l3_measure, "registry", lambda: ({}, {"x-1": {"commit": "c0", "project": "p"}}))
     monkeypatch.setattr(l3_measure, "project", lambda case, commit: type("Spec", (), {"labels": {}, "scan": type("Scan", (), {"known": [1]})()})())
-    monkeypatch.setattr(l3_measure, "run", lambda store, case, commit, seed, scanner: (job, 1.0))
+    monkeypatch.setattr(l3_measure, "run", lambda store, case, commit, seed, scanner, strategy: (job, 1.0))
     monkeypatch.setattr(l3_measure, "attempt_row", lambda attempt: {"number": attempt["number"]})
 
     def broken(*args):
@@ -166,8 +166,22 @@ def test_a_development_case_uses_its_scanner_and_has_no_hidden_run(monkeypatch, 
     seen = {}
     monkeypatch.setattr(l3_measure, "registry", lambda: ({}, {"own-1": {"commit": "c0", "project": "p"}}))
     monkeypatch.setattr(l3_measure, "project", lambda case, commit: type("Spec", (), {"labels": {}, "scan": type("Scan", (), {"known": []})()})())
-    monkeypatch.setattr(l3_measure, "run", lambda store, case, commit, seed, scanner: (seen.update(scanner=scanner) or job, 1.0))
+    monkeypatch.setattr(l3_measure, "run", lambda store, case, commit, seed, scanner, strategy: (seen.update(scanner=scanner, strategy=strategy) or job, 1.0))
     monkeypatch.setattr(l3_measure, "attempt_row", lambda attempt: {"number": attempt["number"]})
     monkeypatch.setattr(l3_measure, "hidden_result", lambda *args: pytest.fail("development cases have no hidden tests"))
-    row = l3_measure.measure(l3_catalog.Case.model_validate(OWNED), None, tmp_path, 42)
-    assert seen["scanner"] == row["scanner"] == "semgrep" and (row["status"], row["hidden"], row["false_acceptance"]) == ("awaiting_review", None, None)
+    row = l3_measure.measure(l3_catalog.Case.model_validate(OWNED), None, tmp_path, 42, "guided")
+    assert seen["strategy"] == "guided" and seen["scanner"] == row["scanner"] == "semgrep" and (row["status"], row["hidden"], row["false_acceptance"]) == ("awaiting_review", None, None)
+
+
+def test_package_cases_have_one_sink_a_fix_and_the_benchmark_like_context():
+    import package_dev
+    from safepatch.common import SOURCE
+    from safepatch.engine import read_only_context
+    assert {len(package_dev.sibling(n)) for n in range(1, package_dev.SIBLINGS + 1)} == {package_dev.SIBLING_CHARS}
+    for case, (kind, sink, cwe) in package_dev.CASES.items():
+        files = {path: data.decode("utf-8") for path, data in package_dev.files(case).items()}
+        assert [line.strip() for line in files[SOURCE].splitlines()].count(sink) == 1, case
+        assert (package_dev.SAMPLES / "fixed" / package_dev.source_name(case)).read_text(encoding="utf-8") != files[SOURCE]
+        # Two unrelated handlers and the application class; the EchoMain helper stays out, as Benchmark's helpers do.
+        assert sorted(read_only_context(files, SOURCE)) == package_dev.CONTEXT
+    assert {c.id for c in l3_catalog.load().cases if c.project == package_dev.PROJECT} == set(package_dev.CASES)

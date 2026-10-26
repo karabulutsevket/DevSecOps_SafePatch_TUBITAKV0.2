@@ -31,6 +31,13 @@ cases:
   - {id: variant-path-helper, source: safepatch-synthetic, project: safepatch-variants, cwe: CWE-22, split: development, license: MIT, prepare: scripts/variants_dev.py, status: ready}
   - {id: variant-command-list, source: safepatch-synthetic, project: safepatch-variants, cwe: CWE-78, split: development, license: MIT, prepare: scripts/variants_dev.py, status: ready}
   - {id: variant-command-format, source: safepatch-synthetic, project: safepatch-variants, cwe: CWE-78, split: development, license: MIT, prepare: scripts/variants_dev.py, status: ready}
+  # Owned package-shaped cases: a small file among 40 unrelated handlers, as in OWASP Benchmark (scripts/package_dev.py).
+  - {id: package-sql-1, source: safepatch-synthetic, project: safepatch-package-dev, cwe: CWE-89, split: development, license: MIT, prepare: scripts/package_dev.py, status: ready}
+  - {id: package-sql-2, source: safepatch-synthetic, project: safepatch-package-dev, cwe: CWE-89, split: development, license: MIT, prepare: scripts/package_dev.py, status: ready}
+  - {id: package-path-1, source: safepatch-synthetic, project: safepatch-package-dev, cwe: CWE-22, split: development, license: MIT, prepare: scripts/package_dev.py, status: ready}
+  - {id: package-path-2, source: safepatch-synthetic, project: safepatch-package-dev, cwe: CWE-22, split: development, license: MIT, prepare: scripts/package_dev.py, status: ready}
+  - {id: package-command-1, source: safepatch-synthetic, project: safepatch-package-dev, cwe: CWE-78, split: development, license: MIT, prepare: scripts/package_dev.py, status: ready}
+  - {id: package-command-2, source: safepatch-synthetic, project: safepatch-package-dev, cwe: CWE-78, split: development, license: MIT, prepare: scripts/package_dev.py, status: ready}
   # Vul4J (tuhh-softsec/vul4j, GPL-3.0, used as a case list only).
   - id: vul4j-79
     source: vul4j
