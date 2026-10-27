@@ -78,6 +78,17 @@ Bir ek bulgu daha düzeltildi: bağlam dosyası seçimi Benchmark'ta iş başın
 - Değişen karar 3, üçü de "reddedildi" iken "geçti" oldu: 01643 iki koşuda, 00306 ikinci koşuda.
 - Yeni ret yok. 01066'nın gerçek ihlali yine reddediliyor.
 
+**Kilidi açılan üç aday doğrulamadan geçirildi** (`scripts/l3_candidates.py`, [kayıt](../evidence/v02-kok-neden/politika-a-adaylar/l3-candidates.json)). Saklanan cevaplar bugünkü doğrulamaya verildi; model çağrılmadı.
+
+| Aday | Sonuç |
+|---|---|
+| 01643, ilk koşu, 1. deneme | Derlenmiyor: `String` olan `Utils.TESTFILES_DIR` üzerinde `toRealPath()` çağırıyor |
+| 01643, ikinci koşu, 1. deneme | Aynı derleme hatası |
+| 00306, ikinci koşu, 1. deneme | Davranış testi başarısız (komut çalıştırmayı kapatıp çıktıyı değiştiriyor); tanık geçiyor |
+
+- **O denemede kabul yok.** Üçünden hiçbiri o denemede kabul edilmezdi.
+- **Öneri A'nın asıl etkisi işin sürmesi.** Bu işler artık ilk denemede bitmiyor; derleyici ya da davranış geri bildirimiyle iki deneme daha alıyor. Bunun sonuca etkisi ancak model yeniden koşulunca görülür.
+
 **`tests/test_policy.py` dosyasına eklenenler:**
 - **Dört koruma testi:** aynı sayıyla `URL`'ye geçiş, joker `import`, `.exec` kazanan `Runtime.getRuntime`, var olan satıra `NOSONAR`. Bugün de, öneriyle de ret.
 - **01643 kalıbı.** Önce `xfail(strict=True)` ile işaretli bir yeniden üretme testiydi. Öneri A ile işaret kaldırıldı; artık normal bir test olarak geçiyor.
