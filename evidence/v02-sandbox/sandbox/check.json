@@ -1,0 +1,123 @@
+{
+  "schema": 1,
+  "git_commit": "5817f4b61f34ce94b311915de00d9df3a29d5825",
+  "git_dirty": false,
+  "image": "maven:3.9.16-eclipse-temurin-17@sha256:1a352420f7aba21f5ad08df31bab55f74c013fb491f1ae8ab1dd7ff9ed698584",
+  "ulimits": [
+    "nofile=8192:8192",
+    "core=0",
+    "fsize=1073741824"
+  ],
+  "python": "3.12.14",
+  "settings": {
+    "exit_code": 0,
+    "facts": {
+      "uid": "1000",
+      "gid": "1000",
+      "CapEff": "0000000000000000",
+      "CapBnd": "0000000000000000",
+      "NoNewPrivs": "1",
+      "Seccomp": "2",
+      "interfaces": "lo",
+      "memory.max": "2147483648",
+      "memory.swap.max": "0",
+      "cpu.max": "200000 100000",
+      "pids.max": "1024",
+      "write:/": "no",
+      "write:/m2": "no",
+      "write:/workspace": "yes",
+      "write:/tmp": "yes",
+      "write:/jvmtmp": "yes",
+      "exec:/tmp": "no",
+      "ulimit:nofile": "8192",
+      "ulimit:core": "0",
+      "ulimit:fsize_kib": "1048576",
+      "workspace_free_kib": "71390748",
+      "tmp_size_kib": "1048576",
+      "docker_socket": "absent",
+      "environment": "_ HOME HOSTNAME JAVA_HOME JAVA_VERSION LANG LANGUAGE LC_ALL MAVEN_CONFIG MAVEN_HOME MAVEN_OPTS PATH PWD SHLVL"
+    }
+  },
+  "cases": [
+    {
+      "case": "hostile",
+      "outcome": "completed",
+      "behavior": {
+        "passed": true,
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "details": []
+      },
+      "build": {
+        "passed": true,
+        "duration_seconds": 3.703
+      },
+      "runner_profile": "docker:maven:3.9.16-eclipse-temurin-17@sha256:1a352420f7aba21f5ad08df31bab55f74c013fb491f1ae8ab1dd7ff9ed698584",
+      "seconds": 13.5,
+      "containers_left": []
+    },
+    {
+      "case": "tamper",
+      "outcome": "refused",
+      "error": "PolicyError",
+      "reason": "tracked_file_changed_during_execution",
+      "seconds": 9.3,
+      "containers_left": []
+    },
+    {
+      "case": "link",
+      "outcome": "refused",
+      "error": "RuntimeError",
+      "reason": "sandbox_stage_link_refused",
+      "seconds": 6.3,
+      "containers_left": []
+    },
+    {
+      "case": "hang",
+      "outcome": "refused",
+      "error": "TimeoutError",
+      "reason": "child_timeout",
+      "seconds": 34.2,
+      "containers_left": []
+    }
+  ],
+  "control": {
+    "build_exit_code": 0,
+    "tests": 10,
+    "failures": 6,
+    "errors": 0,
+    "failed": [
+      "noMountNoChrootNoNewNamespace",
+      "noNameResolution",
+      "noOutboundConnection",
+      "noWritesOutsideTheWorkspace",
+      "notRootAndWithoutPrivileges",
+      "onlyTheLoopbackInterface"
+    ]
+  },
+  "work_filesystem": {
+    "work": "/home/mirror/.safepatch/work",
+    "mount": "/",
+    "size_bytes": 1081101176832,
+    "available_kib": 999002660
+  },
+  "checks": {
+    "user_1000_no_capabilities": true,
+    "no_new_privileges_and_seccomp": true,
+    "loopback_only": true,
+    "memory_2g_no_swap": true,
+    "cpu_2_pids_1024": true,
+    "read_only_root_and_cache": true,
+    "tmp_noexec": true,
+    "no_docker_socket": true,
+    "hostile_build_contained": true,
+    "tampering_refused_quickly": true,
+    "link_refused": true,
+    "hang_stopped": true,
+    "no_container_left": true,
+    "control_fails_without_isolation": true,
+    "workspace_disk_bounded": false
+  },
+  "all_held": false
+}

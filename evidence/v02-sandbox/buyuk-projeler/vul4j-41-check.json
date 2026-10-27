@@ -1,0 +1,247 @@
+{
+  "case": "VUL4J-41",
+  "cve": "CVE-2018-1002200",
+  "cwe": "CWE-22",
+  "derived_commit": "75078789042d2cd09685c8acc6a05f279e8a9441",
+  "human_fix_commit": "58bc24e465c0842981692adbf6d75680298989de",
+  "started_at": 1793118880.2999809,
+  "baseline": {
+    "passed": false,
+    "baseline_valid": true,
+    "feedback": "validation_failed",
+    "build": {
+      "passed": true,
+      "duration_seconds": 10.344
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 140,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "duration_seconds": 13.297,
+      "reason": null
+    },
+    "security": {
+      "passed": false,
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "testZipEntryOutsideTheDestinationIsNotWritten",
+          "type": "failure",
+          "assertion": "PATH_TRAVERSAL_REGRESSION"
+        }
+      ],
+      "duration_seconds": 5.687,
+      "reason": null
+    },
+    "findings": [
+      "known:VUL4J-41.1 src/main/java/org/codehaus/plexus/archiver/AbstractUnArchiver.java:309"
+    ],
+    "patch": {
+      "patch_sha256": null,
+      "changed_lines": null
+    },
+    "source_revision": "75078789042d2cd09685c8acc6a05f279e8a9441",
+    "artifact_sha256": null,
+    "runner_profile": "docker:maven:3.9.16-eclipse-temurin-8@sha256:0f402712b7a469189cfea5ec69cdcadcb32b22aaf1ea62777ab925c3d8470175",
+    "duration_seconds": 32.0,
+    "hidden": {
+      "passed": false,
+      "tests": 3,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "testAbsoluteZipEntryOutsideTheDestinationIsNotWritten",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        },
+        {
+          "name": "testNestedZipEntryOutsideTheDestinationIsNotWritten",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        }
+      ],
+      "duration_seconds": 10.0,
+      "reason": null
+    }
+  },
+  "human_fix": {
+    "passed": true,
+    "baseline_valid": false,
+    "feedback": "verified",
+    "build": {
+      "passed": true,
+      "duration_seconds": 9.344
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 140,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "duration_seconds": 13.485,
+      "reason": null
+    },
+    "security": {
+      "passed": true,
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "duration_seconds": 6.062,
+      "reason": null
+    },
+    "findings": [],
+    "patch": {
+      "patch_sha256": "56b62322c46cc26bc744f6a944381322fc35102c1671a9da89da150bdbbc18af",
+      "changed_lines": 9
+    },
+    "source_revision": "a38bee601c0963157de11b89ea3daa0886e684c2",
+    "artifact_sha256": "6909ef08436d79a776ae001c3285e07e5fa7fec35797503d3e255468d7b278c6",
+    "runner_profile": "docker:maven:3.9.16-eclipse-temurin-8@sha256:0f402712b7a469189cfea5ec69cdcadcb32b22aaf1ea62777ab925c3d8470175",
+    "duration_seconds": 31.594,
+    "hidden": {
+      "passed": true,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "duration_seconds": 9.515,
+      "reason": null
+    }
+  },
+  "control": {
+    "passed": false,
+    "baseline_valid": false,
+    "feedback": "validation_failed",
+    "build": {
+      "passed": true,
+      "duration_seconds": 9.453
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 140,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "duration_seconds": 13.485,
+      "reason": null
+    },
+    "security": {
+      "passed": false,
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "testZipEntryOutsideTheDestinationIsNotWritten",
+          "type": "failure",
+          "assertion": "PATH_TRAVERSAL_REGRESSION"
+        }
+      ],
+      "duration_seconds": 5.984,
+      "reason": null
+    },
+    "findings": [],
+    "patch": {
+      "patch_sha256": "831e2874719ff6bd355ee86e74071334d814c2decd8227f2b10f55ff831580ab",
+      "changed_lines": 1
+    },
+    "source_revision": "bca0c01440f555cf9f02da16a2f9525e386bdde7",
+    "artifact_sha256": null,
+    "runner_profile": "docker:maven:3.9.16-eclipse-temurin-8@sha256:0f402712b7a469189cfea5ec69cdcadcb32b22aaf1ea62777ab925c3d8470175",
+    "duration_seconds": 31.625,
+    "hidden": {
+      "passed": false,
+      "tests": 3,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "testAbsoluteZipEntryOutsideTheDestinationIsNotWritten",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        },
+        {
+          "name": "testNestedZipEntryOutsideTheDestinationIsNotWritten",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        }
+      ],
+      "duration_seconds": 9.922,
+      "reason": null
+    }
+  },
+  "partial_fix": {
+    "passed": true,
+    "baseline_valid": false,
+    "feedback": "verified",
+    "build": {
+      "passed": true,
+      "duration_seconds": 10.016
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 140,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "duration_seconds": 13.484,
+      "reason": null
+    },
+    "security": {
+      "passed": true,
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "duration_seconds": 6.094,
+      "reason": null
+    },
+    "findings": [],
+    "patch": {
+      "patch_sha256": "8cd65c5c630a159b80637054726ca708dee5165740ee75e30f732b1ca9caa9e0",
+      "changed_lines": 4
+    },
+    "source_revision": "43b6e4df34dcdf43f9d6183633b10508584c67f6",
+    "artifact_sha256": "77e21de442fc501058baeba32f72e12e5a5c1b2d9b00d76e757114edb7962159",
+    "runner_profile": "docker:maven:3.9.16-eclipse-temurin-8@sha256:0f402712b7a469189cfea5ec69cdcadcb32b22aaf1ea62777ab925c3d8470175",
+    "duration_seconds": 32.141,
+    "hidden": {
+      "passed": false,
+      "tests": 3,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "testAbsoluteZipEntryOutsideTheDestinationIsNotWritten",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        },
+        {
+          "name": "testNestedZipEntryOutsideTheDestinationIsNotWritten",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        }
+      ],
+      "duration_seconds": 9.859,
+      "reason": null
+    }
+  }
+}

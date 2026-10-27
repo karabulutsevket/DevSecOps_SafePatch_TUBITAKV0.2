@@ -1,0 +1,8 @@
+{
+  "model_mode": "mock-test-reference-patch",
+  "scanner_mode": "real-builtin-demo",
+  "result": {
+    "passed": false,
+    "reason": "policy_rejected_before_execution"
+  }
+}

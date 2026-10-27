@@ -23,4 +23,8 @@ foreach ($taskName in @('runner','worker2','worker1','deployer','orchestrator'))
     $taskProcesses += @{service=$taskName; pid=$taskProc.Id; started=$taskProc.StartTime.ToUniversalTime().ToString('o')}
 }
 $taskProcesses | ConvertTo-Json | Set-Content -LiteralPath '.runtime/services.json' -Encoding utf8
+# Week 8: outside the lab profile the runner builds only in the Docker sandbox.
+if ($env:RUNNER_SANDBOX -ne 'docker' -and $env:SAFEPATCH_PROFILE -ne 'lab') {
+    Write-Warning "Runner yerel kipte ve profil 'lab' degil: her is reddedilecek (native_runner_outside_lab_profile). Gelistirme icin `$env:SAFEPATCH_PROFILE='lab', urun icin `$env:RUNNER_SANDBOX='docker' verin."
+}
 Write-Output "Services starting: http://127.0.0.1:$PortBase . Credentials are in .secrets (do not share them)."

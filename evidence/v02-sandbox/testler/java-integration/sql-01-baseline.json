@@ -1,0 +1,106 @@
+{
+  "model_mode": "mock-test-reference-patch",
+  "scanner_mode": "real-builtin-demo",
+  "result": {
+    "passed": false,
+    "baseline_valid": true,
+    "base_commit": "bac9cf9a007e5ad2ca6203822409991b4fbe4c1c",
+    "source_revision": "bac9cf9a007e5ad2ca6203822409991b4fbe4c1c",
+    "build": {
+      "passed": true,
+      "duration_seconds": 3.782
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "exit_code": 0,
+      "duration_seconds": 3.078,
+      "junit_sha256": "b2127b00af230ea4c894256aba8456e179640232558b32b1c8919b684d5d54ee"
+    },
+    "security": {
+      "passed": false,
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "injectionMustNotReturnAccounts",
+          "type": "failure",
+          "assertion": "SQL_INJECTION_REGRESSION"
+        }
+      ],
+      "exit_code": 1,
+      "duration_seconds": 3.078,
+      "junit_sha256": "e894c09df40a9731caad7b4a2572588990a27bb893185567c4851637677a822d"
+    },
+    "scans": [
+      {
+        "tool": "builtin-demo",
+        "version": "1.0.0",
+        "coverage": "three owned synthetic patterns only",
+        "status": "ok",
+        "analysis_id": "f42e0dc209bc45db9e21753ae6547221",
+        "commit": "bac9cf9a007e5ad2ca6203822409991b4fbe4c1c",
+        "findings": [
+          {
+            "tool": "builtin-demo",
+            "rule_id": "bigg.java.sql-concatenation",
+            "cwe": "CWE-89",
+            "type": "VULNERABILITY",
+            "file": "src/main/java/demo/DemoService.java",
+            "line": 15,
+            "fingerprint": "719a83006189db99032fddd095ec2863cacff0367343a60e7f9ec5ed8e488657",
+            "severity": "HIGH"
+          }
+        ]
+      }
+    ],
+    "tolerated": [],
+    "patch": null,
+    "feedback": {
+      "code": "validation_failed",
+      "behavior": {
+        "passed": true,
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 3.078,
+        "junit_sha256": "b2127b00af230ea4c894256aba8456e179640232558b32b1c8919b684d5d54ee"
+      },
+      "security": {
+        "passed": false,
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "details": [
+          {
+            "name": "injectionMustNotReturnAccounts",
+            "type": "failure",
+            "assertion": "SQL_INJECTION_REGRESSION"
+          }
+        ],
+        "exit_code": 1,
+        "duration_seconds": 3.078,
+        "junit_sha256": "e894c09df40a9731caad7b4a2572588990a27bb893185567c4851637677a822d"
+      },
+      "remaining_rules": [
+        "bigg.java.sql-concatenation"
+      ]
+    },
+    "duration_seconds": 10.344,
+    "runner_profile": "native-same-user",
+    "versions": {
+      "java": "17; inspect preparation evidence",
+      "maven": "3.9.16"
+    }
+  }
+}
