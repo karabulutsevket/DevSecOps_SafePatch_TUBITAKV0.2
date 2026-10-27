@@ -1,0 +1,73 @@
+{
+  "scope": "synthetic Faz 2 exit check (signed L2 import); one seed, one pair of cases; not a measurement of L2's effect",
+  "elapsed_seconds": 324.732,
+  "condition": "L2 paketi imzalı olarak içeri alınabiliyor",
+  "condition_met": true,
+  "import": {
+    "v1": "installed",
+    "v2": "installed",
+    "signer": "SHA256:T1X+mEIe0gRfzPTFfXM6EehBa1axJ3u0pkfIfNd2b8w",
+    "records": [
+      "l2:path-01-a073ee200d38"
+    ]
+  },
+  "refusals": {
+    "changed_record": "record_sha256_mismatch:l2:path-01-a073ee200d38",
+    "unknown_key": "signature_invalid",
+    "no_trust_file": "l2_trust_not_configured",
+    "older_version": "package_downgrade"
+  },
+  "use": {
+    "case_id": "package-path-1",
+    "project": "safepatch-package-dev",
+    "memory_tier": "L2",
+    "memory_use": "example",
+    "memory_selected": "l2:path-01-a073ee200d38",
+    "accepted": true,
+    "reason": null,
+    "attempts": 1,
+    "proposal_modes": [
+      "real-local-model"
+    ]
+  },
+  "promotion": {
+    "l1_id": "8565934e812942c3930e998fdb7ab165",
+    "l2_origin": [
+      {
+        "id": "l2:path-01-a073ee200d38",
+        "record_sha256": "63fa733f3a912c626134619895c75cc6b0c833dcf019bfe6c517dfe387e9b097",
+        "publisher": "safepatch-lab",
+        "version": 1
+      }
+    ]
+  },
+  "after_promotion": {
+    "memory_tier": "L1",
+    "memory_use": "replay",
+    "memory_selected": "8565934e812942c3930e998fdb7ab165",
+    "accepted": true,
+    "proposal_modes": [
+      "approved-memory-replay"
+    ]
+  },
+  "l2_records": [
+    {
+      "id": "l2:path-01-a073ee200d38",
+      "state": "available",
+      "trust": "external_not_verified_here",
+      "uses": [
+        "b1d97a3468c14da2a83d0526fca3d730"
+      ],
+      "validated_here": [
+        {
+          "memory_id": "8565934e812942c3930e998fdb7ab165",
+          "job_id": "b1d97a3468c14da2a83d0526fca3d730",
+          "at": 1793115736.8603573
+        }
+      ],
+      "version": 2
+    }
+  ],
+  "human_approval": "SIMULATED",
+  "customer_validation": "not performed"
+}

@@ -7,7 +7,7 @@
 | Koşul | Durum | Kanıt |
 |---|---|---|
 | L3'te en az 30 vaka çalışır durumda: derleniyor, başlangıçta güvenlik tanığı başarısız | **Sağlandı:** değerlendirmede 30 gerçek açık (45 vakanın 30'u) | [L3_SETI.md](L3_SETI.md) |
-| L2 paketi imzalı olarak içeri alınabiliyor | **Henüz yok:** Hafta 7'nin L2 maddeleri açık | ROADMAP.md, Hafta 7 |
+| L2 paketi imzalı olarak içeri alınabiliyor | **Sağlandı** (27 Ekim, deney paketiyle; simüle onaylar) | [OLCUM_L2.md](OLCUM_L2.md) |
 | Sandbox'ta uçtan uca bir iş tamamlandı | **Sağlandı:** L3 model koşuları sandbox'ta, işler kabul ve gizli testlerle | [OLCUM_L3_MODEL.md](OLCUM_L3_MODEL.md) |
 | Semgrep bulgusundan öğrenilmiş bir hafıza kaydı, aynı zafiyetin FindSecBugs bulgusunda seçildi ve doğrulamadan geçti | **Sağlandı** | bu ölçüm |
 
@@ -47,4 +47,4 @@ FindSecBugs bulgusunun CWE'si SARIF'ten geliyor (CWE-89), ve iki tarayıcı da a
 - **Sentetik ve tek seed.** Bu, bir koşulun gösterimi; bağımsız bir benchmark değil. Tek aile (SQL), tek seed.
 - **Simüle edilmiş onay.** Hafızaya alma onayı gerçek bir insan onayı değil.
 - **Kapsam SQL ailesiyle sınırlı.** Komut ailesinde FindSecBugs, doğru bir düzeltmeden sonra da `COMMAND_INJECTION` raporluyor ([FINDSECBUGS.md](FINDSECBUGS.md)); bugünkü kabul kuralıyla orada doğrulama geçmez. Path ailesinde FindSecBugs laboratuvarın kalıbını hiç görmüyor.
-- **Faz 2 henüz tamamlanmadı.** L2 paketi koşulu açık.
+- **L2 paketi koşulu** ayrı bir ölçümle sağlandı ([OLCUM_L2.md](OLCUM_L2.md)). Böylece Faz 2'nin dört geçiş koşulu da sağlanmış oldu. Hafta 8'in sandbox sertleştirme maddeleri ayrı iş olarak açık.

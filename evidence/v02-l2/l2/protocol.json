@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "question": "Faz 2 exit: a signed L2 package is imported offline and its record is used at its own trust level",
+  "started_at": 1793115449.6604328,
+  "git_commit": "1815387f0dadcd4a8f43726f0e47ad7fbb48f407",
+  "git_dirty": false,
+  "model": "qwen2.5-coder:7b-instruct-q4_K_M",
+  "system_prompt_sha256": "5875a8dbf3d87fcae41a555b8f264de0e742bfa73e91b7f9dd24aa422b373757",
+  "weakness_notes_sha256": "beeed9e84791259fa24345ce3c887a162e94fc91f9e13f0ad9e0e7ae1dd2456f",
+  "strategy": "guided+context",
+  "max_attempts": 3,
+  "seed": 42,
+  "lab": {
+    "case": "path-01",
+    "scanner": "semgrep",
+    "memory_mode": "off"
+  },
+  "use": {
+    "case": "package-path-1",
+    "scanner": "known",
+    "memory_mode": "guarded"
+  },
+  "signature": {
+    "tool": "ssh-keygen -Y sign/verify",
+    "algorithm": "ed25519",
+    "namespace": "safepatch-l2",
+    "key": "generated for this run, no passphrase, experiment only; the private key stays under .runtime"
+  },
+  "human_approval": "SIMULATED: SIMULATED-EXPERIMENT-REVIEWER in the lab database, SIMULATED-CUSTOMER-REVIEWER in the installation database",
+  "python": "3.12.14"
+}

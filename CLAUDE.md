@@ -15,6 +15,7 @@ SafePatch, Java güvenlik bulguları için yerel modelle düzeltme adayı üreti
 - Modele giden sistem talimatı geneldir; projeye özgü bilgi talimata yazılmaz, yalnız bağlam verisi olarak gider (`worker1.SYSTEM`, `WEAKNESS_NOTES`; ölçüm: [docs/OLCUM_GENEL_TALIMAT.md](docs/OLCUM_GENEL_TALIMAT.md)).
 - Yeni işlerin varsayılan yeniden deneme stratejisi `guided+context` (ölçüm: [docs/OLCUM_V02_YENIDEN_DENEME.md](docs/OLCUM_V02_YENIDEN_DENEME.md)). Rehber metinleri `safepatch/feedback.py` içindeki güvenilir statik metindir; model ya da depo içeriği oraya girmez.
 - FindSecBugs adaptörü Hafta 7'de eklendi (tarayıcı `findsecbugs` ya da `semgrep+findsecbugs`; [docs/FINDSECBUGS.md](docs/FINDSECBUGS.md)). Hafıza hiçbir tarayıcının kural kimliğine bağımlı olmamalı: eşleştirme CWE ailesi ve koddan çıkarılan yapısal imza ile yapılır (ROADMAP.md Hafta 4).
+- L2 ortak bilgi paketi Hafta 7'de eklendi (`safepatch/l2.py`; [docs/L2_PAKETI.md](docs/L2_PAKETI.md)). Paket OpenSSH Ed25519 ile imzalı, çevrimdışı içeri alınır. L2 kayıtları L1'den ayrı durur ve yalnız örnek olarak kullanılır; birebir tekrar edilmez. L1'e yalnız kurumda doğrulanıp insan onayıyla hafızaya alınarak girer. Pakete yalnız sahibi olduğumuz geliştirme vakaları girer.
 
 ## Yerleşim
 

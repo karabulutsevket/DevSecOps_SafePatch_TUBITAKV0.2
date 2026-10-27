@@ -1,0 +1,201 @@
+{
+  "L1": [
+    {
+      "id": "8565934e812942c3930e998fdb7ab165",
+      "state": "approved",
+      "version": 1,
+      "created_at": 1793115736.8416045,
+      "context": {
+        "project": "safepatch-package-dev",
+        "cwe_family": "CWE-22",
+        "rule_id": "known:package-path-1.1",
+        "jdk": "17",
+        "source_path": "src/main/java/demo/DemoService.java",
+        "build_sha256": "26e043fae58e551912409518b9d20e281bf34a51d8980781ee6c3c299fec6819",
+        "contract_sha256": "e154b3c293b96bd61f254dcc6c39a5a527ea08de65b6d38497f9f767b39372d5",
+        "source_sha256": "b6dfc6a9d54917df26a136128aeb14db15c729a7560dafc2fbc0bbfe7bf9db38",
+        "signature": {
+          "schema": "safepatch-signature/1",
+          "sink": "java.nio.file.Files.readString",
+          "construction": "resolve",
+          "source": "system_property",
+          "library": "java-io",
+          "library_version": null
+        }
+      },
+      "before": "/*\n * SafePatch development case (MIT).\n *\n * One handler among the many generated handlers of the demo package. The value\n * arrives through lookup(), passes a small helper and reaches one call of the\n * kind this class stands for. Everything here is synthetic: no real data, no\n * network, no real targets. The root folder is supplied by the trusted runner.\n *\n * @created 2026 for the SafePatch L3 development set\n */\npackage demo;\n\nimport java.nio.file.Files;\nimport java.nio.file.Path;\nimport java.util.Map;\n\npublic class DemoService {\n\n    private static final String ROOT_PROPERTY = \"demo.root\";\n\n    public String lookup(String input) throws Exception {\n        // some code\n        String param = \"\";\n        if (input != null) {\n            param = input; // just take the value\n        }\n\n        String bar = doSomething(param);\n\n        Path root = Path.of(System.getProperty(ROOT_PROPERTY));\n        Path target = root.resolve(bar);\n        String text = Files.readString(target);\n        return text;\n    }\n\n    /** Entry point the package's dispatcher calls with the request's values; lookup() holds the work. */\n    public void serve(Map<String, String> request, StringBuilder response) {\n        response.append(\"<!DOCTYPE html>\\n<html>\\n<body>\\n<p>\");\n        String value = request.getOrDefault(\"DemoService\", \"\");\n        try {\n            response.append(\"Result: \").append(escape(lookup(value)));\n        } catch (Exception e) {\n            response.append(\"Error processing request.\");\n        }\n        response.append(\"</p>\\n</body>\\n</html>\");\n    }\n\n    private static String escape(String text) {\n        StringBuilder out = new StringBuilder();\n        for (char c : text.toCharArray()) {\n            switch (c) {\n                case '<':\n                    out.append(\"&lt;\");\n                    break;\n                case '>':\n                    out.append(\"&gt;\");\n                    break;\n                case '&':\n                    out.append(\"&amp;\");\n                    break;\n                case '\"':\n                    out.append(\"&quot;\");\n                    break;\n                default:\n                    out.append(c);\n            }\n        }\n        return out.toString();\n    }\n\n    private static String doSomething(String param) {\n        String bar;\n\n        // Simple if statement that assigns a constant to bar on a true condition\n        int num = 86;\n        if ((7 * 18) - num > 200) {\n            bar = \"This_should_never_happen\";\n        } else {\n            bar = param;\n        }\n\n        return bar;\n    }\n}\n",
+      "patch": {
+        "edits": [
+          {
+            "path": "src/main/java/demo/DemoService.java",
+            "old_sha256": "b6dfc6a9d54917df26a136128aeb14db15c729a7560dafc2fbc0bbfe7bf9db38",
+            "content": "/*\n * SafePatch development case (MIT).\n *\n * One handler among the many generated handlers of the demo package. The value\n * arrives through lookup(), passes a small helper and reaches one call of the\n * kind this class stands for. Everything here is synthetic: no real data, no\n * network, no real targets. The root folder is supplied by the trusted runner.\n *\n * @created 2026 for the SafePatch L3 development set\n */\npackage demo;\n\nimport java.nio.file.Files;\nimport java.nio.file.Path;\nimport java.util.Map;\n\npublic class DemoService {\n\n    private static final String ROOT_PROPERTY = \"demo.root\";\n\n    public String lookup(String input) throws Exception {\n        // some code\n        String param = \"\";\n        if (input != null) {\n            param = input; // just take the value\n        }\n\n        String bar = doSomething(param);\n\n        Path root = Path.of(System.getProperty(ROOT_PROPERTY)).toRealPath();\n        Path target = root.resolve(bar).toRealPath();\n        if (!target.startsWith(root)) {\n            throw new SecurityException(\"Input path escapes root\");\n        }\n        return Files.readString(target);\n    }\n\n    /** Entry point the package's dispatcher calls with the request's values; lookup() holds the work. */\n    public void serve(Map<String, String> request, StringBuilder response) {\n        response.append(\"<!DOCTYPE html>\\n<html>\\n<body>\\n<p>\");\n        String value = request.getOrDefault(\"DemoService\", \"\");\n        try {\n            response.append(\"Result: \").append(escape(lookup(value)));\n        } catch (Exception e) {\n            response.append(\"Error processing request.\");\n        }\n        response.append(\"</p>\\n</body>\\n</html>\");\n    }\n\n    private static String escape(String text) {\n        StringBuilder out = new StringBuilder();\n        for (char c : text.toCharArray()) {\n            switch (c) {\n                case '<':\n                    out.append(\"&lt;\");\n                    break;\n                case '>':\n                    out.append(\"&gt;\");\n                    break;\n                case '&':\n                    out.append(\"&amp;\");\n                    break;\n                case '\"':\n                    out.append(\"&quot;\");\n                    break;\n                default:\n                    out.append(c);\n            }\n        }\n        return out.toString();\n    }\n\n    private static String doSomething(String param) {\n        String bar;\n\n        // Simple if statement that assigns a constant to bar on a true condition\n        int num = 86;\n        if ((7 * 18) - num > 200) {\n            bar = \"This_should_never_happen\";\n        } else {\n            bar = param;\n        }\n\n        return bar;\n    }\n}\n"
+          }
+        ],
+        "rationale": "The vulnerability in the original code was due to the lack of path validation, which could allow an attacker to traverse the file system by providing a malicious input. The fix ensures that the resolved path starts with the root directory, preventing path traversal attacks."
+      },
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -27,10 +27,12 @@\n \n         String bar = doSomething(param);\n \n-        Path root = Path.of(System.getProperty(ROOT_PROPERTY));\n-        Path target = root.resolve(bar);\n-        String text = Files.readString(target);\n-        return text;\n+        Path root = Path.of(System.getProperty(ROOT_PROPERTY)).toRealPath();\n+        Path target = root.resolve(bar).toRealPath();\n+        if (!target.startsWith(root)) {\n+            throw new SecurityException(\"Input path escapes root\");\n+        }\n+        return Files.readString(target);\n     }\n \n     /** Entry point the package's dispatcher calls with the request's values; lookup() holds the work. */\n",
+      "source_job": "b1d97a3468c14da2a83d0526fca3d730",
+      "model": {
+        "runtime": "ollama",
+        "runtime_version": "0.34.0",
+        "model": "qwen2.5-coder:7b-instruct-q4_K_M",
+        "model_digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+        "quantization": "Q4_K_M",
+        "license_sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e"
+      },
+      "author": null,
+      "provenance": "human-approved-local-repair",
+      "evidence_sha256": "e3f243aa481fb114264c6741fd50c11fb6c2313135363fee66975eb3ab1eb2ec",
+      "evidence": {
+        "build": true,
+        "behavior": {
+          "passed": true,
+          "tests": 3
+        },
+        "security": {
+          "passed": true,
+          "tests": 3
+        },
+        "rescan": {
+          "tools": [
+            "known-finding"
+          ],
+          "remaining": null,
+          "tolerated": 0
+        },
+        "approval": {
+          "reviewer": "SIMULATED-CUSTOMER-REVIEWER",
+          "at": 1793115736.4535646
+        },
+        "reuse": {
+          "verified": 1,
+          "failed": 0,
+          "inconclusive": 0,
+          "approved_by_reviewer": 0,
+          "rejected_by_reviewer": 0
+        }
+      },
+      "rule_sha256": null,
+      "approval": {
+        "decision": "approve",
+        "candidate_commit": "5405a7a3b2d31c68a36b694640d46eb2167aeb06",
+        "artifact_sha256": "54472e76817868b2621bd21338c8fc47d799891e4a0ac7eaea8abb59bc5e7405",
+        "policy_version": "java-synthetic-v1",
+        "reviewer": "SIMULATED-CUSTOMER-REVIEWER",
+        "approved_at": 1793115736.4535646,
+        "expires_at": 1793202136.4535646
+      },
+      "uses": [
+        "74b02589ec1d4d20b47c97effd812317"
+      ],
+      "reuse": [
+        {
+          "job_id": "74b02589ec1d4d20b47c97effd812317",
+          "use": "replay",
+          "result": "verified",
+          "review": null,
+          "at": 1793115774.2745152
+        }
+      ],
+      "events": [
+        {
+          "state": "approved",
+          "actor": "SIMULATED-CUSTOMER-REVIEWER",
+          "reason": "Experiment-only: a repair built from an L2 example, verified and approved in this installation",
+          "at": 1793115736.8416045
+        }
+      ],
+      "l2_origin": [
+        {
+          "id": "l2:path-01-a073ee200d38",
+          "record_sha256": "63fa733f3a912c626134619895c75cc6b0c833dcf019bfe6c517dfe387e9b097",
+          "publisher": "safepatch-lab",
+          "version": 1
+        }
+      ]
+    }
+  ],
+  "L2": [
+    {
+      "cwe_family": "CWE-22",
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -6,8 +6,11 @@\n // Deliberately vulnerable synthetic example. Root is supplied by trusted runner.\n public class DemoService {\n     public String lookup(String input) throws Exception {\n-        Path root = Path.of(System.getProperty(\"demo.root\"));\n-        Path target = root.resolve(input);\n+        Path root = Path.of(System.getProperty(\"demo.root\")).toRealPath();\n+        Path target = root.resolve(input).toRealPath();\n+        if (!target.startsWith(root)) {\n+            throw new SecurityException(\"Input path escapes root\");\n+        }\n         return Files.readString(target);\n     }\n }\n",
+      "evidence": {
+        "behavior": {
+          "passed": true,
+          "tests": 3
+        },
+        "build": true,
+        "rescan": {
+          "remaining": 0,
+          "tolerated": 0,
+          "tools": [
+            "semgrep"
+          ]
+        },
+        "security": {
+          "passed": true,
+          "tests": 3
+        }
+      },
+      "id": "l2:path-01-a073ee200d38",
+      "jdk": "17",
+      "kind": "repair",
+      "origin": {
+        "case": "path-01",
+        "kind": "safepatch-lab-verified",
+        "lab_record": "a073ee200d384f5db55489023e31b4b2",
+        "license": "MIT",
+        "project": "safepatch-synthetic-lab"
+      },
+      "review": {
+        "approved_at": 1793115676.172781,
+        "author": null,
+        "reviewer": "SIMULATED-EXPERIMENT-REVIEWER",
+        "simulated": true
+      },
+      "schema": "safepatch-l2-record/1",
+      "signature": {
+        "construction": "resolve",
+        "library": "java-io",
+        "library_version": null,
+        "schema": "safepatch-signature/1",
+        "sink": "java.nio.file.Files.readString",
+        "source": "method_parameter"
+      },
+      "source_path": "src/main/java/demo/DemoService.java",
+      "uses": [
+        "b1d97a3468c14da2a83d0526fca3d730"
+      ],
+      "reuse": [
+        {
+          "job_id": "b1d97a3468c14da2a83d0526fca3d730",
+          "use": "example",
+          "result": "verified",
+          "review": null,
+          "at": 1793115736.4245627
+        }
+      ],
+      "validated_here": [
+        {
+          "memory_id": "8565934e812942c3930e998fdb7ab165",
+          "job_id": "b1d97a3468c14da2a83d0526fca3d730",
+          "at": 1793115736.8603573
+        }
+      ],
+      "imported_at": 1793115677.0504687,
+      "tier": "L2",
+      "trust": "external_not_verified_here",
+      "state": "available",
+      "updated_at": 1793115774.3369057,
+      "package": {
+        "publisher": "safepatch-lab",
+        "version": 2,
+        "manifest_sha256": "52a79ec05d1bfb6b6d16c41f477b9030fd6542f9af0dbd8181acb69202a6ca0e",
+        "signer": "SHA256:T1X+mEIe0gRfzPTFfXM6EehBa1axJ3u0pkfIfNd2b8w",
+        "experiment": true
+      },
+      "record_sha256": "63fa733f3a912c626134619895c75cc6b0c833dcf019bfe6c517dfe387e9b097"
+    }
+  ]
+}

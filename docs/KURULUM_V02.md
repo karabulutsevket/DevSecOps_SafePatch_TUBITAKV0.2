@@ -186,6 +186,19 @@ Durdurma:
 taskkill /PID (Get-Content .runtime/ollama.pid) /T /F         # Ollama (yukarıdaki gibi başlatıldıysa)
 ```
 
+### L2 ortak bilgi paketi (Hafta 7)
+
+İmzalı paket, internet olmadan içeri alınır. Gerekenler iki tane:
+- OpenSSH'nin `ssh-keygen` aracı. Windows 10/11'de yerleşik geliyor; Linux'ta `openssh-client` paketi.
+- Kurulumla gelen yayıncı anahtarı dosyası (`allowed_signers`).
+
+```powershell
+.venv/Scripts/python.exe -m safepatch.l2 verify safepatch-l2-v1.zip --trusted <allowed_signers>
+.venv/Scripts/python.exe -m safepatch.l2 import safepatch-l2-v1.zip --trusted <allowed_signers>
+```
+
+Komut, kurulumun veritabanını (`DATABASE_URL`, varsayılan `.runtime/jobs.db`) kullanır. Paket biçimi, ret durumları ve güven seviyesi: [L2_PAKETI.md](L2_PAKETI.md).
+
 ## 5. Çalıştığını doğrulama
 
 **Arayüz:** `http://127.0.0.1:8100` adresini açın, `.secrets/developer.token` dosyasındaki anahtarla girin, `sql-01` vakasını başlatın.
