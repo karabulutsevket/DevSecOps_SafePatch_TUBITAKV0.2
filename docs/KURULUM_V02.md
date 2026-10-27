@@ -118,7 +118,16 @@ $env:MAVEN_CACHE = '<maven önbelleği>'
 .venv/Scripts/python.exe scripts/prepare_sandbox.py
 ```
 
-Betik şunları yapar:
+Ardından, bir kez, çalışma alanları için ayrı ve sınırlı bir dosya sistemi kurun (Hafta 8; WSL'de root ile, parola istemez):
+
+```powershell
+$env:SANDBOX_MAVEN_CACHE = '/home/<wsl-kullanıcısı>/.safepatch/m2'
+.venv/Scripts/python.exe scripts/prepare_sandbox.py --bound-work-gb 20
+```
+
+Bu komut 20 GB'lık bir disk görüntüsünü `~/.safepatch/work` üzerine bağlar ve `/etc/fstab`'a yazar. Runner, çalışma alanını başka bir yere koymayı reddeder (`sandbox_work_not_bounded`). Böylece bir build Windows diskini dolduramaz ([SANDBOX.md](SANDBOX.md)).
+
+`prepare_sandbox.py` (parametresiz) şunları yapar:
 1. Sabit imajları yoksa indirir: JDK 17 (yaklaşık 233 MB) ve eski projeler için JDK 8 (yaklaşık 150 MB, sıkıştırılmış).
 2. Çevrimdışı Maven önbelleğini WSL diskine kopyalar. `/mnt/c` üzerinden derleme yaklaşık 8 kat yavaştır. Kopya mevcut içeriğe eklenir; değerlendirme vakaları için önceden indirilen bağımlılıklar silinmez.
 3. Bir kapsayıcıda ağın kapalı, önbellek ile kök dosya sisteminin salt okunur ve yalnız çalışma klasörünün yazılabilir olduğunu sınar. Biri tutmazsa durur.
@@ -138,7 +147,8 @@ $env:SANDBOX_MAVEN_CACHE = '/home/<wsl-kullanıcısı>/.safepatch/m2'   # betiğ
 - tüm Linux yetkileri düşürülmüş, ayrıcalık yükseltme kapalı;
 - root olmayan kullanıcı (`1000:1000`);
 - 2 GB bellek ve takas yok (`--memory-swap` belleğe eşit), 2 işlemci, en çok 1024 süreç;
-- tek bir dosya en çok 1 GiB, en çok 8192 açık dosya, çekirdek dökümü yok (Hafta 8).
+- tek bir dosya en çok 1 GiB, en çok 8192 açık dosya, çekirdek dökümü yok (Hafta 8);
+- çalışma alanı 20 GB'lık ayrı bir dosya sisteminde (Hafta 8).
 
 Bu ayarların çalışan bir kapsayıcının içinden doğrulanması ve kötü niyetli build denemeleri: [SANDBOX.md](SANDBOX.md).
 

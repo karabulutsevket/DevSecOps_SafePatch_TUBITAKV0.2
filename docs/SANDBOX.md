@@ -15,6 +15,7 @@ Derleme ve testler projenin kodunu çalıştırır. Kötü niyetli ya da bozuk b
 3. **Çalışma alanının WSL kopyası** (`Stage`). Runner bu kopyayı WSL kullanıcısının yetkisiyle okuyup siliyor; build ise kopyanın içine istediği sembolik bağı bırakabiliyordu. Artık:
    - Rapor ve artifact çekme (`pull`) ve temizleme (`clear`), yolunda sembolik bağ olan bir yolu reddediyor (`sandbox_stage_link_refused`). Önceden `target` bir bağa çevrilirse runner, bağın gösterdiği WSL klasöründen okuyup silebilirdi.
    - "Kaynak değişti mi" denetimi (`changed`) yalnız hâlâ düzenli dosya olan ve bağ üzerinden ulaşılmayan dosyaları okuyor. Bir dosyanın yerine bağ ya da adlandırılmış boru (pipe) konmuşsa açmadan "değişti" sayıyor. Önceden bağın gösterdiği WSL dosyası okunuyordu; boru ise denetimi 10 dakikalık zaman aşımına kadar kilitlerdi.
+4. **Çalışma alanları 20 GB'lık ayrı bir dosya sisteminde.** Runner başka yere çalışma alanı koymuyor (aşağıda "Çalışma alanının disk kullanımı").
 
 ## Ayarlar, çalışan kapsayıcının içinden
 
@@ -31,6 +32,7 @@ Derleme ve testler projenin kodunu çalıştırır. Kötü niyetli ya da bozuk b
 | Salt okunur kök ve önbellek | `--read-only`, `-v …:/m2:ro` | `/` ve `/m2`'ye yazılamıyor; yalnız `/workspace` yazılabilir |
 | Geçici bellek | `--tmpfs /tmp` ve `/jvmtmp` | 1 GiB, `noexec`: oraya konan program çalışmıyor |
 | Dosya sınırları | `--ulimit` | `nofile` 8192, `core` 0, `fsize` 1 GiB |
+| Disk | çalışma alanı ayrı bir dosya sisteminde | `/workspace` 20 GB'lık kendi dosya sistemi |
 | Sırlar | yalnız `HOME` ve `MAVEN_OPTS` verilir | ortamda imajın kendi değişkenlerinden başkası yok; Docker soketi yok |
 | Süre | runner'ın zaman aşımı + `docker kill` | aşağıda "Sonsuz bekleme" |
 | Çevrimdışı Maven | `mvn -o`, önbellek salt okunur | ağ zaten yok |
@@ -71,19 +73,25 @@ Her vakadan sonra `safepatch-` adlı hiçbir kapsayıcı kalmadı.
 
 Kayıtlar `buyuk-projeler/` altında.
 
-## Açık: çalışma alanının disk kullanımı (karar gerekiyor)
+## Çalışma alanının disk kullanımı: ayrı, 20 GB'lık dosya sistemi
 
-Kapsayıcının çalışma alanı (`/workspace`), WSL diskindeki kopyaya bağlı ve yazılabilir. Bu disk 1 TB'lık seyrek bir sanal disk (VHDX); fiilen Windows'un C: sürücüsündeki boş alanla sınırlı (bu makinede yaklaşık 70 GB). Kötü niyetli ya da bozuk bir build, çok sayıda büyük dosya yazarak **C: sürücüsünü doldurabilir**.
+**Sorun.** Kapsayıcının çalışma alanı (`/workspace`) WSL diskindeki kopyaya bağlı ve yazılabilir. İlk denetimde bu kopya WSL'in kök dosya sistemindeydi. O disk 1 TB'lık seyrek bir sanal disk (VHDX); fiilen Windows'un C: sürücüsündeki boş alanla sınırlı (bu makinede yaklaşık 70 GB). Kötü niyetli ya da bozuk bir build, çok sayıda büyük dosya yazarak C: sürücüsünü doldurabilirdi. Tek dosya sınırı (1 GiB) bunu durdurmaz. İlk kayıt bu açığı `workspace_disk_bounded: false` olarak gösteriyor (`sandbox/check.json`).
 
-Tek dosya sınırı (1 GiB) bunu durdurmaz. `/tmp` ise sınırlı (1 GiB). Denetim bu açığı `workspace_disk_bounded: false` olarak kaydediyor.
+**Karar** (27 Ekim, proje lideri): seçenek A. Diğer seçenekler:
+- B, iş başına boyutu sınırlı Docker hacmi: kodun büyük ölçüde yeniden yazılması gerekirdi, her doğrulamaya birkaç saniye eklenirdi;
+- C, klasör boyutunu izleyip durdurmak: yarışlı, hızlı bir yazma sınırı aşabilir.
 
-| Seçenek | Ne gerekir | Etkisi |
-|---|---|---|
-| **A (önerim)** Çalışma klasörü için sabit boyutlu ayrı bir dosya sistemi | WSL'de bir kez root ile kurulum: örneğin 20 GB'lık bir disk görüntüsü `/home/mirror/.safepatch/work` üzerine bağlanır, `/etc/fstab`'a yazılır. Runner kodu değişmez; denetim klasörün ayrı bir bağlama noktasında olduğunu doğrular | Bir build en çok o 20 GB'ı doldurur. Linux sunucuda karşılığı ayrı bir bölüm ya da XFS proje kotası |
-| B. İş başına boyutu sınırlı Docker hacmi | Kopyalama ve geri okumanın yardımcı kapsayıcılarla yeniden yazılması | Kurulum gerekmez; kod değişikliği büyük, her doğrulamaya birkaç saniye eklenir |
-| C. Klasör boyutunu izleyip kapsayıcıyı durdurmak | Küçük kod | Yarışlı: hızlı bir yazma sınırı aşabilir. Önermiyorum |
+**Kurulum** (WSL'de bir kez, root ile; `scripts/prepare_sandbox.py --bound-work-gb 20`):
+- `/var/lib/safepatch/work.img`: 20 GB'lık seyrek ext4 görüntüsü. Bugün diskte yaklaşık 135 MB yer kaplıyor.
+- Görüntü `/home/mirror/.safepatch/work` üzerine `loop,nosuid,nodev` ile bağlanıyor. Kökün sahibi runner'ın kullanıcısı.
+- Satır `/etc/fstab`'a yazıldı (`nofail`); önceki dosya `/etc/fstab.before-safepatch` olarak saklandı. systemd bağlamayı fstab'dan tanıyor; WSL yeniden başlatılarak denenmedi.
+- Betik tekrar çalıştırılırsa hiçbir şey değiştirmiyor.
 
-A bir sistem ayarı değişikliği (WSL'de root ile bağlama). Sizin onayınız olmadan yapmadım.
+**Runner artık bunu şart koşuyor.** Çalışma klasörü kendi bağlama noktası değilse çalışma alanını kopyalamıyor; iş `sandbox_work_not_bounded` ile duruyor. Bağlama bir açılışta kurulmazsa da güvenli tarafta kalınıyor.
+
+**Doğrulama** (`disk-sinirli/sandbox/check.json`, ürün kodu `77615b6`; kayıttaki `git_dirty` yalnız henüz commit'lenmemiş belgelerden): yoklama artık gerçek bir çalışma alanı klasöründe çalışıyor. Kapsayıcının gördüğü `/workspace` 20 GB'lık bu dosya sistemi; denetimlerin 15'i de tutuyor. Kötü niyetli vakaların ve kontrolün sonuçları ilk kayıtla aynı. Bir build en çok bu 20 GB'ı doldurabilir. Testler: `-Sandbox` ile 619 geçti (`disk-sinirli/testler/`).
+
+**Linux sunucuda** aynı şart, ayrı bir bölüm ya da mantıksal birimle karşılanır; XFS proje kotası da olur, ama runner bugün ayrı bağlama noktası arıyor.
 
 ## Sınırlar
 
