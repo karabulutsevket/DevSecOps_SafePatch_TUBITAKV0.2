@@ -28,7 +28,6 @@ import platform
 import shutil
 import subprocess
 import sys
-import tempfile
 import time
 import uuid
 
@@ -56,7 +55,7 @@ cp /bin/true /tmp/.probe-exec && chmod +x /tmp/.probe-exec && { /tmp/.probe-exec
 echo "ulimit:nofile=$(ulimit -n)"
 echo "ulimit:core=$(ulimit -c)"
 echo "ulimit:fsize_kib=$(ulimit -f)"
-echo "workspace_free_kib=$(df -k /workspace | awk 'NR==2 {print $4}')"
+echo "workspace_size_kib=$(df -k /workspace | awk 'NR==2 {print $2}')"
 echo "tmp_size_kib=$(df -k /tmp | awk 'NR==2 {print $2}')"
 echo "docker_socket=$(test -e /var/run/docker.sock && echo present || echo absent)"
 echo "environment=$(env | cut -d= -f1 | sort | tr '\n' ' ' | sed 's/ $//')"
@@ -64,18 +63,27 @@ echo "environment=$(env | cut -d= -f1 | sort | tr '\n' ' ' | sed 's/ $//')"
 
 
 def settings():
-    """What a running sandbox container reports about itself, one `name=value` per line."""
-    with tempfile.TemporaryDirectory(dir=ROOT / ".runtime") as folder:
-        result = subprocess.run(runner.sandboxed(["bash", "-c", PROBE], Path(folder), "safepatch-probe-" + uuid.uuid4().hex[:8]),
+    """What a running sandbox container reports about itself, one `name=value` per line. Its
+    workspace is a folder where the runner stages real ones."""
+    path = work_dir() + "/probe-" + uuid.uuid4().hex[:8]
+    subprocess.run(runner.wsl("mkdir", "-p", path), check=True, capture_output=True, timeout=60)
+    try:
+        result = subprocess.run(runner.sandboxed(["bash", "-c", PROBE], ROOT / ".runtime", "safepatch-probe-" + uuid.uuid4().hex[:8], mount=path),
                                 capture_output=True, text=True, timeout=300)
+    finally:
+        subprocess.run(runner.wsl("rm", "-rf", path), capture_output=True, timeout=60)
     facts = dict(line.partition("=")[::2] for line in result.stdout.splitlines() if "=" in line)
     return {"exit_code": result.returncode, "facts": facts}
+
+
+def work_dir():
+    return runner.Stage(ROOT / ".runtime" / "probe").path.rsplit("/", 1)[0]
 
 
 def work_filesystem():
     """The WSL filesystem holding the sandbox workspaces (Stage): its mount point and size. The
     workspace is mounted read-write, so this is all a build can fill."""
-    work = runner.Stage(ROOT / ".runtime" / "probe").path.rsplit("/", 1)[0]
+    work = work_dir()
     result = subprocess.run(runner.wsl("sh", "-c", f"mkdir -p {work} && findmnt -n -b -o TARGET,SIZE -T {work} && df -k --output=avail {work} | tail -1"),
                             capture_output=True, text=True, timeout=60)
     lines = result.stdout.split()
@@ -154,7 +162,12 @@ def control():
         stage.push()
         build = runner.maven(workspace, list(spec.build.package_goals), time.time() + 600, sandbox="docker", stage=stage)
         runner.sandboxed = lambda *a, **k: weakened(original(*a, **k))
-        result = runner.tests(workspace, SuiteSelection(selectors=["demo.HostileTest"]), time.time() + 600, 240, "docker", "17", spec.build, stage)
+        try:
+            result = runner.tests(workspace, SuiteSelection(selectors=["demo.HostileTest"]), time.time() + 600, 240, "docker", "17", spec.build, stage)
+        finally:
+            # The control ran as root: give what it wrote back to the runner's user before removing it.
+            subprocess.run(runner.sandboxed(["chown", "-R", "1000:1000", "/workspace"], workspace, "safepatch-chown-" + uuid.uuid4().hex[:8], mount=stage.path),
+                           capture_output=True, timeout=300)
     finally:
         runner.sandboxed = original
         stage.remove()
@@ -206,8 +219,9 @@ def expected(rows, facts, weak, disk):
         "no_container_left": not any(r["containers_left"] for r in rows),
         # Without isolation the suite must fail where isolation is what it tests.
         "control_fails_without_isolation": {"onlyTheLoopbackInterface", "noWritesOutsideTheWorkspace", "notRootAndWithoutPrivileges"} <= set(weak["failed"]),
-        # Open until decided (docs/SANDBOX.md): the workspaces must live on their own bounded filesystem.
-        "workspace_disk_bounded": disk["mount"] not in (None, "/"),
+        # The workspaces live on their own, size-limited filesystem (docs/SANDBOX.md).
+        "workspace_disk_bounded": disk["mount"] == disk["work"] and facts.get("workspace_size_kib", "").isdigit()
+                                  and int(facts["workspace_size_kib"]) * 1024 <= disk["size_bytes"],
     }
 
 

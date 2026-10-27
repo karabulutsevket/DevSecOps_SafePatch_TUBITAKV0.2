@@ -289,6 +289,24 @@ def staged_repo(tmp_path):
     return ws
 
 
+def bounded(self, script, **kwargs):
+    """Stands in for WSL where the work folder is its own mount (scripts/prepare_sandbox.py --bound-work-gb)."""
+    assert script == "mountpoint -q /home/test/.safepatch/work", script
+    return subprocess.CompletedProcess(script, 0, b"", b"")
+
+
+def test_a_workspace_is_never_staged_on_an_unbounded_filesystem(monkeypatch, tmp_path):
+    # Week 8: on the WSL root a build could fill the Windows drive behind it.
+    monkeypatch.setenv("SANDBOX_MAVEN_CACHE", CACHE)
+    scripts = []
+    stage = runner.Stage(staged_repo(tmp_path))
+    monkeypatch.setattr(runner.Stage, "shell", lambda self, script, **kw: scripts.append(script) or subprocess.CompletedProcess(script, 1, b"", b""))
+    monkeypatch.setattr(runner.subprocess, "Popen", lambda *a, **k: pytest.fail("nothing is copied"))
+    with pytest.raises(RuntimeError, match="sandbox_work_not_bounded"):
+        stage.push()
+    assert scripts == ["mountpoint -q /home/test/.safepatch/work"]
+
+
 def test_a_stage_carries_the_working_tree_with_git_modes_and_without_build_output(monkeypatch, tmp_path):
     import io, tarfile
     monkeypatch.setenv("SANDBOX_MAVEN_CACHE", CACHE)
@@ -312,6 +330,7 @@ def test_a_stage_carries_the_working_tree_with_git_modes_and_without_build_outpu
 
     workspace = staged_repo(tmp_path)
     monkeypatch.setattr(runner.subprocess, "Popen", Process)
+    monkeypatch.setattr(runner.Stage, "shell", bounded)
     stage = runner.Stage(workspace)
     assert stage.path == "/home/test/.safepatch/work/ws-1"
     stage.push()
@@ -327,6 +346,7 @@ def test_a_stage_carries_the_working_tree_with_git_modes_and_without_build_outpu
 
 def test_a_deleted_tracked_file_is_refused(monkeypatch, tmp_path):
     monkeypatch.setenv("SANDBOX_MAVEN_CACHE", CACHE)
+    monkeypatch.setattr(runner.Stage, "shell", bounded)
     workspace = staged_repo(tmp_path)
     (workspace / "src/A.java").unlink()
     with pytest.raises(RuntimeError, match="sandbox_stage_deleted_file"):
@@ -490,6 +510,9 @@ def hostile(monkeypatch, hostile_projects):
 @docker
 def test_the_settings_hold_inside_a_running_container():
     facts = sandbox_check.settings()["facts"]
+    disk = sandbox_check.work_filesystem()
+    # The staged workspace is its own filesystem, and the container sees only that one.
+    assert disk["mount"] == disk["work"] and int(facts["workspace_size_kib"]) * 1024 <= disk["size_bytes"]
     assert (facts["uid"], facts["gid"], facts["CapEff"], facts["CapBnd"], facts["NoNewPrivs"], facts["Seccomp"]) == ("1000", "1000", "0" * 16, "0" * 16, "1", "2")
     assert facts["interfaces"] == "lo" and facts["docker_socket"] == "absent"
     assert (facts["memory.max"], facts["memory.swap.max"], facts["cpu.max"], facts["pids.max"]) == (str(2 * 2**30), "0", "200000 100000", "1024")

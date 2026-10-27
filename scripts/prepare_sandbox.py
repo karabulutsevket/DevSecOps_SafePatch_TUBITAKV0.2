@@ -7,7 +7,14 @@
    to what is there: dependencies prefetched for evaluation cases (prepare_vul4j.py) stay.
 3. Starts a sandboxed container and requires: no network, read-only cache, read-only root.
 Prints the runner settings. Docker must run in WSL (`service docker start`).
+
+`--bound-work-gb N` (week 8) puts the sandbox workspaces on their own N GB filesystem: an ext4
+image under /var/lib/safepatch, loop-mounted over <home>/.safepatch/work and listed in
+/etc/fstab (previous file kept as /etc/fstab.before-safepatch). It runs as root in WSL, once;
+the runner refuses to stage a workspace anywhere else (`sandbox_work_not_bounded`). Without
+it, a build could fill the Windows drive that holds the WSL disk.
 """
+import argparse
 import os
 from pathlib import Path
 import subprocess
@@ -30,7 +37,46 @@ def check(*argv):
     return subprocess.run(wsl(*argv), capture_output=True, text=True, timeout=900)
 
 
+BOUND_WORK = r"""
+set -e
+work="$1"; size="$2"; owner="$3"; image=/var/lib/safepatch/work.img
+if mountpoint -q "$work"; then findmnt -n -o TARGET,SIZE "$work"; exit 0; fi
+mkdir -p "$work" /var/lib/safepatch
+if [ -n "$(ls -A "$work")" ]; then echo "$work is not empty" >&2; exit 3; fi
+if [ ! -e "$image" ]; then
+  truncate -s "${size}G" "$image"; chmod 600 "$image"
+  mkfs.ext4 -q -F -m 0 -L safepatch-work -E root_owner="$owner" "$image"
+fi
+if ! grep -qF " $work " /etc/fstab; then
+  cp /etc/fstab /etc/fstab.before-safepatch
+  echo "$image $work ext4 loop,nosuid,nodev,nofail 0 0" >> /etc/fstab
+  systemctl daemon-reload 2>/dev/null || true
+fi
+mount "$work"
+findmnt -n -o TARGET,SIZE "$work"
+"""
+
+
+def bound_work(size_gb):
+    """Mount the bounded work filesystem (root in WSL, idempotent); returns its mount line."""
+    home = check("sh", "-c", 'printf %s "$HOME"').stdout.strip()
+    cache = setting("SANDBOX_MAVEN_CACHE") or home + "/.safepatch/m2"
+    work = setting("SANDBOX_WORK", cache.rstrip("/").rsplit("/", 1)[0] + "/work")
+    owner = setting("SANDBOX_USER", "1000:1000")
+    result = subprocess.run(["wsl", "-d", setting("WSL_DISTRO", "Debian"), "-u", "root", "--exec", "sh", "-c", BOUND_WORK, "sh", work, str(size_gb), owner],
+                            capture_output=True, text=True, timeout=600)
+    if result.returncode:
+        raise SystemExit("bounded work filesystem failed: " + (result.stderr or result.stdout)[-300:])
+    return result.stdout.strip()
+
+
 def main():
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--bound-work-gb", type=int, help="only set up the bounded work filesystem of this size (GB)")
+    args = parser.parse_args()
+    if args.bound_work_gb:
+        print("work filesystem:", bound_work(args.bound_work_gb))
+        return
     cache = setting("MAVEN_CACHE")
     if not cache or not Path(cache).is_dir():
         raise SystemExit("Set MAVEN_CACHE to the prepared offline Maven cache (docs/KURULUM_V02.md, section 3)")

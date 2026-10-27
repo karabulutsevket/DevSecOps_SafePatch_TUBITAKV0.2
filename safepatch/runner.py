@@ -130,7 +130,13 @@ class Stage:
         """Committed files come from Git's object store (`git archive`): reading a fresh checkout
         back from the Windows disk took 145-170 s for Benchmark's 214 MB, the archive 1-4 s. A
         file whose bytes may differ from the archive (modified, untracked, written by SafePatch
-        with other line endings, not a regular file) is read from the disk instead."""
+        with other line endings, not a regular file) is read from the disk instead.
+
+        The workspace is mounted read-write into the container, so it must sit on its own,
+        size-limited filesystem (week 8, scripts/prepare_sandbox.py --bound-work-gb): on the
+        WSL root a build could fill the Windows drive behind it."""
+        if self.shell(f"mountpoint -q {shlex.quote(posixpath.dirname(self.path))}").returncode:
+            raise RuntimeError("sandbox_work_not_bounded")
         modes = {}
         for entry in run_git(self.local, "ls-files", "-s", "-z").split(b"\0"):
             if entry:
