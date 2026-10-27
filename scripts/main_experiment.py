@@ -115,7 +115,9 @@ def build_l2(out, private):
         lab.mutate(job_id, lambda j: j.update(status="needs_human", pending_expert_patch={"patch": patch.model_dump(), "author": AUTHOR, "submitted_at": time.time()}))
         Engine(lab).run(job_id)
         job = lab.get(job_id)
-        row = {"case": case_id, "accepted": job["status"] == "awaiting_review", "reason": job.get("reason")}
+        accepted = job["status"] == "awaiting_review"
+        # The reason left by the first run (no model attempt) means nothing once the fix is accepted.
+        row = {"case": case_id, "accepted": accepted, "reason": None if accepted else job.get("reason")}
         if row["accepted"]:
             row["memory_id"] = approve(lab, job, REVIEWER, "Experiment-only: SafePatch lab reference fix, verified")["id"]
         rows.append(row)

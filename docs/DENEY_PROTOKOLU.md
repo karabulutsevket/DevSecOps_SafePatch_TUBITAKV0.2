@@ -1,6 +1,10 @@
-# Ana deney protokolü: A / B / C / C+L2 (taslak, 27 Ekim 2026, Hafta 9)
+# Ana deney protokolü: A / B / C / C+L2 (27 Ekim 2026, Hafta 9)
 
-**Durum: taslak, karar bekliyor.** Bu belge deney koşulmadan önce sabitlenir (ROADMAP.md Hafta 9). Koşu başladıktan sonra protokol de ürün kodu da değişmez. Değişirse koşu baştan alınır ve iki kayıt birlikte raporlanır.
+**Durum: kararlar verildi (27 Ekim, proje lideri), asıl koşu bekliyor.** Bu belge deney koşulmadan önce sabitlenir (ROADMAP.md Hafta 9). Koşu başladıktan sonra protokol de ürün kodu da değişmez. Değişirse koşu baştan alınır ve iki kayıt birlikte raporlanır. Betik bunu denetler: `safepatch/` değişmişse devam reddedilir.
+
+**Betik:** `scripts/main_experiment.py`:
+- `l2` alt komutu L2 paketini üretir;
+- `run` alt komutu kolları koşar.
 
 **Ön analiz:** [`evidence/v02-benchmark/kapsam/coverage.json`](../evidence/v02-benchmark/kapsam/coverage.json) (`scripts/experiment_coverage.py`). Bu analiz statiktir: model çağrısı, doğrulama ya da gizli test kullanmaz.
 
@@ -72,25 +76,21 @@ Düzeltmeler uzman yaması yoluyla doğrulanır, simüle onayla laboratuvar L1'i
 
 Önceki L3 koşusu 45 vakada 68 dakika sürdü. 4 kol × 3 seed = 12 koşu, yaklaşık 14 saat GPU; birkaç geceye bölünür. Koşu kaldığı yerden devam edebilir.
 
-## Karar bekleyenler
+## Kararlar (27 Ekim 2026, proje lideri)
 
-1. **B kolunun embedding modeli (indirme onayı gerekiyor).** `nomic-embed-text:v1.5`:
+1. **B kolunun embedding modeli:** `nomic-embed-text:v1.5`. Onayla indirildi:
    - kaynak: Ollama kütüphanesi;
    - boyut: 274 MB;
-   - özet: `0a109f422b47`;
    - lisans: Apache-2.0;
-   - bağlam: 2K.
+   - tam özet `0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f`; özet `worker1.EMBED_MODEL`'de sabit.
 
-   Mevcut Ollama ile çalışır; yeni Python bağımlılığı gerekmez. Model kartı, görev öneklerinin (`search_query:`, `search_document:`) kullanılmasını istiyor.
-2. **Deneyde L1'e alma kuralı.**
-   - **(a) önerim:** doğrulayıcının kabul ettiği her aday simüle onayla alınır. Gerçekçi; yanlış kabuller de hafızaya girebilir ve bu ölçülür.
-   - **(b):** yalnız gizli testleri de geçenler alınır. Gizli testler değerlendirme kâhinidir; C'ye gerçek kurumda olmayan bir avantaj verir.
-3. **L2 içeriği:** yukarıdaki 16 doğrulanmış referans düzeltmesi, simüle onaylı deney paketi.
+   **Kullanım:**
+   - Sorgu: bulgunun bulunduğu metot (`search_query:` önekiyle). Metot bulunamazsa bulgunun çevresindeki 50 satır kullanılır.
+   - Belge: kaydın farkındaki özgün kod, yani bağlam ve silinen satırlar (`search_document:` önekiyle).
+   - Benzerlik ölçüsü kosinüs; en yüksek benzerlik seçilir, eşitlikte en yeni kayıt.
+2. **L1'e alma kuralı: (a).** Doğrulayıcının kabul ettiği her aday, gizli testlerin sonucundan bağımsız olarak simüle onayla kolun hafızasına girer. (b) seçilmedi: gizli testleri onay kapısı yapmak C'ye gerçek kurumda olmayan bir bilgi verirdi.
+3. **L2 içeriği:** geliştirme tarafındaki 16 referans düzeltmesi. Her biri uzman yaması yoluyla doğrulanır, `SIMULATED-EXPERIMENT-REVIEWER` onaylar, deneye özel anahtarla imzalı deney paketine girer.
 
-## Henüz yazılmayanlar
+## Değerlendirme setinden önce
 
-- B kolu: embedding ile seçim (karar 1'e bağlı).
-- Deney betiği: kollar, sıra, öğrenme, devam edebilme.
-- L2 deney paketinin üretimi.
-
-Protokol onaylanınca yazılır, geliştirme vakalarında denenir; değerlendirme setinde yalnız asıl koşu yapılır.
+Betik, geliştirme vakalarında bir mekanik denemeden geçer. Bu deneme bir ölçüm değildir; değerlendirme setinde yalnız asıl koşu yapılır.
