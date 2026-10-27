@@ -166,7 +166,7 @@ Aynı 45 vaka ve aynı ayarlarla koşuldu: seed 42, `guided+context`, hafıza ka
 - 01066 iki kez: gerçek bir yeni `exec` satırı.
 - 01643 iki kez ve 00306 bir kez: değişen satırda zaten var olan ifade.
 
-Beşi de işi ilk ret anında bitirdi. Önerilen kural (`hafta6-politika-onerisi`) 01066'yı yine reddeder, diğer üçünü doğrulamaya geçirir.
+Beşi de işi ilk ret anında bitirdi. Önerilen kural (`hafta6-politika-onerisi`) 01066'yı yine reddeder, diğer üçünü doğrulamaya geçirir. Bu kural (öneri A) 27 Ekim'de uygulandı.
 
 **Okuma:**
 - **Fark gürültü içinde.** 8 → 7 doğru onarım, tek seed'li ölçümün ±1–2 vakalık gürültüsü içinde. Vakaların ikisi bir yöne, ikisi öteki yöne değişti; bütçe düzeltmesinin ya da bağlamın etkisi bu koşuyla ayırt edilemiyor. Paket şekilli geliştirme vakalarındaki sonuç da aynıydı.

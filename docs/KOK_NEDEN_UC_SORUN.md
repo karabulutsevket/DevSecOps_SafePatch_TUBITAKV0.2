@@ -9,14 +9,14 @@
 
 **Dallar:**
 - `hafta6-kok-neden`: düzeltmeler.
-- `hafta6-politika-onerisi`: politika önerisi A (yetenek ifadeleri tam başvurularıyla sayılır).
-- `hafta6-politika-onerisi-b`: politika önerisi B (yasak yetenek reddi işi değil, denemeyi başarısız sayar).
+- `hafta6-politika-onerisi`: politika önerisi A (yetenek ifadeleri tam başvurularıyla sayılır). **27 Ekim'de proje liderinin kararıyla `hafta6-kok-neden`'e birleştirildi.**
+- `hafta6-politika-onerisi-b`: politika önerisi B (yasak yetenek reddi işi değil, denemeyi başarısız sayar). Uygulanmadı; ayrı dalda duruyor ve onaysız birleştirilmemeli.
 
-İki öneri de ayrı tutuldu ve politika sahibinin onayı olmadan birleştirilmemeli. Birbirinden bağımsızlar; ikisi birlikte de çakışmasız birleşiyor ve politika, motor, geri bildirim ve uzman yaması testlerinin 127'si birlikte geçiyor.
+İki öneri birbirinden bağımsız. İkisi birlikte de çakışmasız birleşiyor; politika, motor, geri bildirim ve uzman yaması testlerinin 127'si birlikte geçiyor.
 
 | Sorun | Kök neden | Nereden kaynaklanıyor | Durum |
 |---|---|---|---|
-| 1. Politika reddi (01643) | Değiştirilen bir satırda dosyada zaten olan bir yasak ifade "eklenmiş" sayılıyor | Politika motoru | Öneri hazır, uygulanmadı (politika sahibinin kararı) |
+| 1. Politika reddi (01643) | Değiştirilen bir satırda dosyada zaten olan bir yasak ifade "eklenmiş" sayılıyor | Politika motoru | Öneri A uygulandı (27 Ekim, proje lideri kararı); öneri B ayrı dalda |
 | 2. Küçük dosyalarda bölge kipi | Tüm dosya bütçesi her baytı bir token sayıyor; gerçekte bir token 3,3 bayttan fazla | worker1'in bütçe hesabı (kod) | Düzeltildi |
 | 3. Kodu değiştirmeyen cevaplar | Model gösterilen kodu harfi harfine geri döndürüyor; uygulama katmanında kayıp yok | Model | Nedeni artık her denemede kayıtlı; modelin davranışı değişmedi |
 
@@ -41,7 +41,7 @@ Bir ek bulgu daha düzeltildi: bağlam dosyası seçimi Benchmark'ta iş başın
 
 `java.net` bir paket önekidir. `java.net.URISyntaxException` (bir istisna tipi) ile `java.net.URL` (ağ bağlantısı) aynı ifadeye eşleşir. "Sayı artmadıysa geçir" kuralıyla bir aday `URISyntaxException`'ı silip yerine `new java.net.URL(...).openStream()` yazabilir; sayım aynı kalır, ağ yeteneği eklenmiş olur.
 
-### Öneri (uygulanmadı, `hafta6-politika-onerisi` dalında)
+### Öneri A (27 Ekim'de uygulandı)
 
 - Bastırma ve test/derleme işaretleri (`NOSONAR`, `nosemgrep`, `SuppressWarnings`, `surefire`, `org.junit`, `.m2`, `.github`, `sonar.exclusions`) bugünkü gibi katı kalır: hiçbir eklenen satırda geçemez.
 - Yetenek ifadeleri **tam başvurularıyla** sayılır: `java.net.URISyntaxException`, `java.net.URL`, `Runtime.getRuntime().exec` ayrı başvurulardır.
@@ -68,11 +68,20 @@ Bir ek bulgu daha düzeltildi: bağlam dosyası seçimi Benchmark'ta iş başın
 - **Bedeli.** Motorun davranışı ve modele giden metin değişir.
 - **Testler.** Bugünkü davranışı sabitleyen iki motor testi bu dala eklendi (yasak yetenek işi bitiriyor; korunan dosya işi bitiriyor). Öneri dalı yalnız birincisini değiştiriyor. Dalda birim paketi 539 geçti, 1 beklenen başarısızlık.
 
-### Bu dalda değişen
+### Değişen
 
-Politika kodu değişmedi. `tests/test_policy.py` dosyasına eklenenler:
+**Politika kodu** (`safepatch/policy.py`, 27 Ekim): öneri A uygulandı.
+- Bastırma ve test/derleme işaretleri katı kaldı.
+- Yetenek ifadeleri tam başvurularıyla sayılıyor.
+
+**Tekrar oynatma** (`scripts/policy_replay.py`, [kayıt](../evidence/v02-kok-neden/politika-a-yeniden/policy-replay.json)). Saklanan 381 model cevabının tamamına önceki ve yeni kural uygulandı (iki L3 koşusu, geliştirme ve paket koşuları). Model çağrılmadı, derleme yapılmadı.
+- Değişen karar 3, üçü de "reddedildi" iken "geçti" oldu: 01643 iki koşuda, 00306 ikinci koşuda.
+- Yeni ret yok. 01066'nın gerçek ihlali yine reddediliyor.
+
+**`tests/test_policy.py` dosyasına eklenenler:**
 - **Dört koruma testi:** aynı sayıyla `URL`'ye geçiş, joker `import`, `.exec` kazanan `Runtime.getRuntime`, var olan satıra `NOSONAR`. Bugün de, öneriyle de ret.
-- **Bir yeniden üretme testi:** 01643 kalıbı. Beklenen davranışı (geçmesi) sınıyor ve `xfail(strict=True)` ile işaretli. Bugün başarısız oluyor. Politika gevşetilirse test geçmeye başlar ve işaret kaldırılmadan paket kırmızıya döner; böylece değişiklik fark edilmeden olamaz.
+- **01643 kalıbı.** Önce `xfail(strict=True)` ile işaretli bir yeniden üretme testiydi. Öneri A ile işaret kaldırıldı; artık normal bir test olarak geçiyor.
+- **Önerinin ikinci sonucu.** Var olan bir `Runtime.getRuntime()` değişmeden taşınabilir. Bunu gösteren bir test eklendi.
 
 ## 2. Küçük dosyalarda bölge kipi
 
@@ -266,6 +275,7 @@ Modelin kodu kopyalaması çözülmedi. Denenecek iki öneri var; ikisi de model
 |---|---|---|
 | Tam paket: birim, Java ve Docker sandbox testleri | **530 geçti** ([once/tests-all.xml](../evidence/v02-kok-neden/once/tests-all.xml)) | **543 geçti, 1 beklenen başarısızlık** (`xfail`, 1. sorun) ([sonra/tests-all.xml](../evidence/v02-kok-neden/sonra/tests-all.xml)) |
 | Cevap kuralından sonra (`024338a`) | | **551 geçti, 1 beklenen başarısızlık** ([son/tests-all.xml](../evidence/v02-kok-neden/son/tests-all.xml)) |
+| Öneri A uygulandıktan sonra (`81a2039`) | | **556 geçti**, beklenen başarısızlık kalmadı ([politika-a/tests-all.xml](../evidence/v02-kok-neden/politika-a/tests-all.xml)) |
 
 Değişiklikten sonraki ilk koşuda bir test başarısız oldu ([sonra/tests-all-ilk.xml](../evidence/v02-kok-neden/sonra/tests-all-ilk.xml)). `test_ranking.py` içindeki bu test de eski eşiğe bağlıydı: sınanan davranış, başarısız aday uyarılarının önceki diff'ten önce düşmesi. Testin girdisi motorun gönderebileceği en büyük uyarılara (2 × 1 500 karakter) çıkarıldı; davranış aynı. Ardından paket yeniden koşuldu.
 
@@ -283,11 +293,11 @@ Değişiklikten sonraki ilk koşuda bir test başarısız oldu ([sonra/tests-all
   - Cevap tahmininin sınırları (3 500 / 4 900 karakter sığar, 5 000 sığmaz).
   - Kesilen bir tüm dosya cevabı bölgeleriyle yeniden üretiliyor; bölge görünümü yoksa ret.
   - Eski eşiğe bağlı beş test (dördü `test_worker1.py`'de, biri `test_ranking.py`'de) bütçeden türetilen boyutlarla yeniden yazıldı: sınadıkları davranış aynı (düşürme sırası, ret, bölgeye geçiş).
-- **1. sorun, `tests/test_policy.py`:** 4 koruma testi ve 1 `xfail(strict=True)` yeniden üretme testi.
+- **1. sorun, `tests/test_policy.py`:** 4 koruma testi ve 01643 kalıbı (önce `xfail`, öneri A ile normal test). Öneri A ile bir test daha eklendi: var olan bir başvuru değişmeden taşınabilir.
 
 ## Karar bekleyenler
 
-1. **Politika önerisi** (`hafta6-politika-onerisi`): politika sahibi.
+1. ~~**Politika önerisi A**~~: 27 Ekim'de uygulandı.
 2. **Politika reddinin işi bitirmesi** (alternatif B, `hafta6-politika-onerisi-b`): politika sahibi. İki L3 koşusunda beş ret işi ilk ret anında bitirdi. Bunlardan biri (00306) ilk koşuda ikinci denemede doğru onarılmıştı ([OLCUM_L3_MODEL.md](OLCUM_L3_MODEL.md), ikinci koşu).
 3. **Bütçe düzeltmesinin etkisi.** Geliştirme setinde (11/20 → 11/20) ve paket şekilli vakalarda (A 8/12, C 8/12) ölçülebilir bir etki yok.
 4. **L3'te bağlam seçimi.** Benchmark'ta ilgisiz kardeş dosyalar seçiliyor. Paket şekilli vakalarda bu bağlam yardımcı olmadı (B 6/12, C 8/12; fark gürültü içinde). Seçenekler:

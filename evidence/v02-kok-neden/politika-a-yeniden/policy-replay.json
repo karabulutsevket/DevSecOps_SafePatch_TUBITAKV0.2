@@ -1,0 +1,48 @@
+{
+  "base": "6bbad5f",
+  "runs": [
+    "dev-butce-once",
+    "dev-butce-son",
+    "dev-butce-sonra",
+    "l3-model-1",
+    "l3-model-1-sql",
+    "l3-model-2",
+    "paket-eski-baglamli-s42",
+    "paket-eski-baglamli-s43",
+    "paket-yeni-baglamli-s42",
+    "paket-yeni-baglamli-s43",
+    "paket-yeni-baglamsiz-s42",
+    "paket-yeni-baglamsiz-s43",
+    "trial-1"
+  ],
+  "answers": 381,
+  "changed": [
+    {
+      "run": "l3-model-1",
+      "case": "owasp-benchmark-01643",
+      "attempt": 1,
+      "before": "refused",
+      "now": "passed",
+      "job_status": "rejected",
+      "source_commit": "8bd5841cf9c0a8d0f8ce85c2649c497bc0b70e6e"
+    },
+    {
+      "run": "l3-model-2",
+      "case": "owasp-benchmark-00306",
+      "attempt": 1,
+      "before": "refused",
+      "now": "passed",
+      "job_status": "rejected",
+      "source_commit": "8bd5841cf9c0a8d0f8ce85c2649c497bc0b70e6e"
+    },
+    {
+      "run": "l3-model-2",
+      "case": "owasp-benchmark-01643",
+      "attempt": 1,
+      "before": "refused",
+      "now": "passed",
+      "job_status": "rejected",
+      "source_commit": "8bd5841cf9c0a8d0f8ce85c2649c497bc0b70e6e"
+    }
+  ]
+}
