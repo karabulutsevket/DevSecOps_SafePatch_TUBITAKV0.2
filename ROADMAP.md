@@ -229,9 +229,9 @@ Sorumlular: kurallar ve tanıklar *Yiğithan*, vakalar ve L2 kayıtları *Kadir*
 #### Hafta 8 · 14 – 20 Aralık
 **Hedef:** Sandbox sertleştirme ve L3 tamponu. *(Docker sandbox'ın kurulumu Hafta 5–6'ya alındı.)*
 
-- [ ] Sandbox ayarlarının doğrulanması: `--network=none`, salt okunur kök dosya sistemi, `--cap-drop=ALL`, ayrı kullanıcı, CPU/bellek/süre sınırı, çevrimdışı Maven önbelleği — *Şevket*
-- [ ] Native runner yalnız geliştirme profilinde kalır — *Şevket*
-- [ ] Kötü niyetli build testleri: ağ erişimi, dosya sisteminden kaçış, süreç bombası — *Yiğithan*
+- [x] Sandbox ayarlarının doğrulanması: `--network=none`, salt okunur kök dosya sistemi, `--cap-drop=ALL`, ayrı kullanıcı, CPU/bellek/süre sınırı, çevrimdışı Maven önbelleği — *Şevket*. **27 Ekim:** her ayar çalışan bir kapsayıcının içinden okunarak doğrulandı (`scripts/sandbox_check.py`). Eklenenler: takas yok (`--memory-swap` belleğe eşit), `nofile`/`core`/`fsize` sınırları. WSL kopyasının okunması ve silinmesi sembolik bağlara karşı korundu. **Açık:** çalışma alanının toplam disk kullanımı sınırsız (C: sürücüsünü doldurabilir); çözüm seçeneği karar bekliyor ([docs/SANDBOX.md](docs/SANDBOX.md))
+- [x] Native runner yalnız geliştirme profilinde kalır — *Şevket*. **27 Ekim:** yerel derleme yalnız `SAFEPATCH_PROFILE=lab` ve yalnız sentetik laboratuvar için; ürün ve değerlendirme profillerinde reddediliyor (`native_runner_outside_lab_profile`). `/health` ve `start-native.ps1` durumu gösteriyor
+- [x] Kötü niyetli build testleri: ağ erişimi, dosya sisteminden kaçış, süreç bombası — *Yiğithan*. **27 Ekim:** `samples/hostile/` içindeki kötü niyetli JUnit sınıfları gerçek runner yoluyla sandbox'ta çalıştı. Ağ, dosya sistemi, yetki, mount/chroot/namespace, süreç, bellek, `/tmp` ve dosya boyutu: 10 denemenin 10'u engellendi. Dosya değiştirme, sembolik bağ ve sonsuz bekleme reddedildi ya da durduruldu. Yalıtım bayrakları kaldırılınca yalıtım testlerinin 6'sı da başarısız (kontrol) ([docs/SANDBOX.md](docs/SANDBOX.md))
 - [ ] Gecikmiş L3 vakalarını ve sınıf paketlerini tamamlama tamponu — *Yiğithan, Kadir*
 - [ ] Toplam 10 müşteri görüşmesi; 2 pilot adayı belirle — *Şevket, Reşat*
 
