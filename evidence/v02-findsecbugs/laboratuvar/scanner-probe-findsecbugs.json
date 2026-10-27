@@ -1,0 +1,58 @@
+{
+  "scanner": "findsecbugs",
+  "rows": [
+    {
+      "case": "sql-01",
+      "baseline_valid": true,
+      "seconds": 22.2,
+      "tools": [
+        "findsecbugs spotbugs-4.9.8+findsecbugs-1.14.0"
+      ],
+      "findings": [
+        {
+          "rule_id": "SQL_INJECTION_JDBC",
+          "cwe": "CWE-89",
+          "file": "src/main/java/demo/DemoService.java",
+          "line": 17
+        },
+        {
+          "rule_id": "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+          "cwe": "CWE-89",
+          "file": "src/main/java/demo/DemoService.java",
+          "line": 17
+        }
+      ],
+      "other_findings": [],
+      "unmapped_results": 0
+    },
+    {
+      "case": "command-01",
+      "baseline_valid": true,
+      "seconds": 25.0,
+      "tools": [
+        "findsecbugs spotbugs-4.9.8+findsecbugs-1.14.0"
+      ],
+      "findings": [
+        {
+          "rule_id": "COMMAND_INJECTION",
+          "cwe": "CWE-78",
+          "file": "src/main/java/demo/DemoService.java",
+          "line": 16
+        }
+      ],
+      "other_findings": [],
+      "unmapped_results": 0
+    },
+    {
+      "case": "path-01",
+      "baseline_valid": false,
+      "seconds": 23.3,
+      "tools": [
+        "findsecbugs spotbugs-4.9.8+findsecbugs-1.14.0"
+      ],
+      "findings": [],
+      "other_findings": [],
+      "unmapped_results": 0
+    }
+  ]
+}
