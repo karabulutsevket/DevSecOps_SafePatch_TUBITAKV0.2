@@ -16,6 +16,12 @@ from mock_patches import correct_patch
 pytestmark = [pytest.mark.integration, pytest.mark.skipif(os.environ.get("RUN_JAVA_INTEGRATION") != "1", reason="Set RUN_JAVA_INTEGRATION=1 after Java/Maven preparation")]
 
 
+@pytest.fixture(autouse=True)
+def lab_profile(monkeypatch):
+    # These tests build the synthetic labs natively, which only the lab profile allows (week 8).
+    monkeypatch.setenv("SAFEPATCH_PROFILE", "lab")
+
+
 def run_case(case_id, patch=None, attempt=None, scanner="builtin"):
     spec = registry()[1][case_id]
     attempt = attempt if attempt is not None else (1 if patch else 0)

@@ -87,9 +87,12 @@ $env:MAVEN_CACHE = 'C:\mutlak\yol\m2'
 
 ## 4. Servisleri başlatma ve durdurma
 
+Proje kodu (derleme ve testler) ürün profilinde **yalnız Docker sandbox'ında** çalışır (Hafta 8). Yerel derleme yalnız geliştirme profilinde (`SAFEPATCH_PROFILE=lab`) ve yalnız SafePatch'in kendi sentetik laboratuvarı için açıktır. Aşağıdaki yerel başlatma bir geliştirme kurulumudur; ürün kurulumu için sonraki "Docker sandbox" bölümüne bakın.
+
 ```powershell
 $env:MAVEN_CACHE = '<maven önbelleği>'                       # ör. C:\...\.runtime\m2
 $env:SEMGREP_WSL = '/mnt/c/.../semgrep-venv/bin/semgrep'      # WSL içindeki yol
+$env:SAFEPATCH_PROFILE = 'lab'                                # yerel derleme yalnız bu profilde
 ./scripts/start-native.ps1 -Restart
 foreach ($port in 8100..8104) { Invoke-RestMethod "http://127.0.0.1:$port/health" }
 ```
@@ -106,7 +109,7 @@ Ortam değişkenleri yalnız o PowerShell oturumunda geçerlidir. Servisleri yen
 
 ### Docker sandbox (Hafta 5)
 
-Derleme ve testler projenin kodunu çalıştırır. Bu yüzden gerçek (sentetik olmayan) bir proje **yalnız Docker sandbox'ında** derlenir; runner yerel kipte bunu reddeder (`sandbox_required_for_real_projects`). Sentetik laboratuvar vakaları iki kipte de çalışır.
+Derleme ve testler projenin kodunu çalıştırır. Bu yüzden gerçek (sentetik olmayan) bir proje **yalnız Docker sandbox'ında** derlenir; runner yerel kipte bunu reddeder (`sandbox_required_for_real_projects`). Sentetik laboratuvar vakaları yerel kipte yalnız geliştirme profilinde (`SAFEPATCH_PROFILE=lab`) çalışır; ürün ve değerlendirme profillerinde runner yerel derlemeyi reddeder (`native_runner_outside_lab_profile`, Hafta 8). Runner'ın `/health` yanıtı bunu `native_allowed` ve `usable` alanlarıyla gösterir.
 
 Bir kez hazırlık (Docker WSL Debian'da çalışırken: `wsl -d Debian -u root -- service docker start`):
 
@@ -120,7 +123,7 @@ Betik şunları yapar:
 2. Çevrimdışı Maven önbelleğini WSL diskine kopyalar. `/mnt/c` üzerinden derleme yaklaşık 8 kat yavaştır. Kopya mevcut içeriğe eklenir; değerlendirme vakaları için önceden indirilen bağımlılıklar silinmez.
 3. Bir kapsayıcıda ağın kapalı, önbellek ile kök dosya sisteminin salt okunur ve yalnız çalışma klasörünün yazılabilir olduğunu sınar. Biri tutmazsa durur.
 
-Sonra servisleri sandbox'la başlatın:
+Sonra servisleri sandbox'la başlatın. Ürün profilinde runner yalnız bu kipte iş çalıştırır:
 
 ```powershell
 $env:RUNNER_SANDBOX = 'docker'
@@ -128,13 +131,16 @@ $env:SANDBOX_MAVEN_CACHE = '/home/<wsl-kullanıcısı>/.safepatch/m2'   # betiğ
 ./scripts/start-native.ps1 -Restart
 ```
 
-**Kapsayıcının kısıtları:**
+**Kapsayıcının kısıtları** (çalışırken doğrulandı, [SANDBOX.md](SANDBOX.md)):
 - ağ yok (`--network none`);
 - salt okunur kök dosya sistemi, `/tmp` geçici bellekte;
 - test JVM'inin geçici klasörü ayrı (`/jvmtmp`); `/tmp` gibi geçici bellekte ve orada program çalıştırılamaz (`noexec`). Ayrı olmasının nedeni: `/tmp`'yi hedefleyen bir dizin aşma testi, açma klasörü `/tmp`'nin kendisiyken düzeltmeyi ayırt edemez (VUL4J-79);
 - tüm Linux yetkileri düşürülmüş, ayrıcalık yükseltme kapalı;
 - root olmayan kullanıcı (`1000:1000`);
-- 2 GB bellek, 2 işlemci, en çok 1024 süreç.
+- 2 GB bellek ve takas yok (`--memory-swap` belleğe eşit), 2 işlemci, en çok 1024 süreç;
+- tek bir dosya en çok 1 GiB, en çok 8192 açık dosya, çekirdek dökümü yok (Hafta 8).
+
+Bu ayarların çalışan bir kapsayıcının içinden doğrulanması ve kötü niyetli build denemeleri: [SANDBOX.md](SANDBOX.md).
 
 **Dosya ve ayarlar:**
 - Maven önbelleği salt okunur bağlanır; yazmalar kapsayıcının geçici belleğine gider (`maven.repo.local.tail`).

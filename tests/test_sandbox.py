@@ -5,6 +5,8 @@ import os
 from pathlib import Path
 import subprocess
 import time
+import shutil
+import sys
 import types
 import uuid
 
@@ -26,7 +28,33 @@ def spec(source):
 ])
 def test_sandbox_mode(monkeypatch, mode, source, expected):
     monkeypatch.setenv("RUNNER_SANDBOX", mode)
+    monkeypatch.setenv("SAFEPATCH_PROFILE", "lab")
     assert runner.sandbox_mode(spec(source)) == expected
+
+
+@pytest.mark.parametrize("profile", [None, "product", "evaluation", "demo"])
+def test_native_builds_are_for_the_lab_profile_only(monkeypatch, profile):
+    # Week 8: outside the lab (development) profile even the owned synthetic labs build in the sandbox.
+    monkeypatch.setenv("RUNNER_SANDBOX", "native")
+    if profile:
+        monkeypatch.setenv("SAFEPATCH_PROFILE", profile)
+    else:
+        monkeypatch.delenv("SAFEPATCH_PROFILE", raising=False)
+    with pytest.raises(PolicyError, match="native_runner_outside_lab_profile"):
+        runner.sandbox_mode(spec("safepatch-synthetic"))
+    monkeypatch.setenv("RUNNER_SANDBOX", "docker")
+    assert runner.sandbox_mode(spec("safepatch-synthetic")) == "docker"
+
+
+@pytest.mark.parametrize("mode,profile,usable", [("native", "lab", True), ("native", None, False), ("docker", None, True)])
+def test_health_says_whether_the_runner_can_build_at_all(monkeypatch, mode, profile, usable):
+    monkeypatch.setenv("RUNNER_SANDBOX", mode)
+    if profile:
+        monkeypatch.setenv("SAFEPATCH_PROFILE", profile)
+    else:
+        monkeypatch.delenv("SAFEPATCH_PROFILE", raising=False)
+    status = runner.health()
+    assert (status["native_allowed"], status["usable"]) == (profile == "lab", usable)
 
 
 @pytest.mark.parametrize("mode", ["native", None])
@@ -35,6 +63,9 @@ def test_a_real_project_never_builds_natively(monkeypatch, mode):
         monkeypatch.setenv("RUNNER_SANDBOX", mode)
     else:
         monkeypatch.delenv("RUNNER_SANDBOX", raising=False)
+    with pytest.raises(PolicyError, match="sandbox_required_for_real_projects"):
+        runner.sandbox_mode(spec(None))
+    monkeypatch.setenv("SAFEPATCH_PROFILE", "lab")
     with pytest.raises(PolicyError, match="sandbox_required_for_real_projects"):
         runner.sandbox_mode(spec(None))
     monkeypatch.setenv("RUNNER_SANDBOX", "podman")
@@ -49,7 +80,8 @@ def test_the_container_command_carries_every_restriction(monkeypatch, tmp_path):
     assert argv[:5] == ["wsl", "-d", "Debian", "--exec", "docker"]
     joined = " ".join(argv)
     for flag in ("--network none", "--read-only", "--cap-drop ALL", "--security-opt no-new-privileges", "--pids-limit 1024",
-                 "--memory 2g", "--cpus 2", "--user 1000:1000", "--tmpfs /tmp:rw,size=1g", "--tmpfs /jvmtmp:rw,size=512m", "--rm", "--name safepatch-x",
+                 "--memory 2g --memory-swap 2g", "--cpus 2", "--user 1000:1000",
+                 "--ulimit nofile=8192:8192", "--ulimit core=0", f"--ulimit fsize={2**30}", "--tmpfs /tmp:rw,size=1g", "--tmpfs /jvmtmp:rw,size=512m", "--rm", "--name safepatch-x",
                  f"-v {CACHE}:/m2:ro", "-v /mnt/c/ws:/workspace", "--entrypoint mvn"):
         assert flag in joined, flag
     assert argv[-3:] == [runner.SANDBOX_IMAGE, "-o", "test"] and "@sha256:" in runner.SANDBOX_IMAGE
@@ -196,6 +228,8 @@ def test_known_findings_come_from_the_answer_key_and_a_patch_is_judged_by_the_wi
 def test_known_mode_is_refused_before_any_checkout_in_the_product_profile(monkeypatch):
     from safepatch.repository import registry
     monkeypatch.delenv("SAFEPATCH_PROFILE", raising=False)
+    # The product profile builds only in the sandbox (week 8); the known-mode check comes next.
+    monkeypatch.setenv("RUNNER_SANDBOX", "docker")
     monkeypatch.setattr(runner, "checkout", lambda *a: pytest.fail("refused before any checkout or build"))
     request = VerifyRequest(job_id="a" * 32, case_id="sql-01", base_commit=registry()[1]["sql-01"]["commit"], attempt=0,
                             deadline=time.time() + 60, scanner="known")
@@ -333,12 +367,76 @@ def test_pulled_output_cannot_point_outside_the_workspace(monkeypatch, tmp_path,
         stage.pull("target/surefire-reports")
 
 
-def test_changed_files_are_read_from_the_checksum_report(monkeypatch, tmp_path):
+def test_changed_files_are_hashed_only_while_still_regular_files(monkeypatch, tmp_path):
     monkeypatch.setenv("SANDBOX_MAVEN_CACHE", CACHE)
     stage = runner.Stage(tmp_path / "ws-4")
-    report = "./src/A.java: FAILED\n./pom.xml: FAILED open or read\n"
-    monkeypatch.setattr(stage, "shell", lambda script, **kw: subprocess.CompletedProcess(script, 0, report, ""))
-    assert stage.changed() == ["src/A.java", "pom.xml"]
+    pushed = {"./src/A.java": "a", "./pom.xml": "b", "./src/B.java": "c", "./src/C.java": "d"}
+    manifest = "".join(f"{value * 64}  {name}\n" for name, value in pushed.items()).encode()
+    hashed = []
+
+    def shell(script, **kwargs):
+        if script.startswith("cat "):
+            return subprocess.CompletedProcess(script, 0, manifest, b"")
+        if "find . -type f" in script:
+            # pom.xml became a link or a pipe, C.java was replaced the same way, build output appeared.
+            return subprocess.CompletedProcess(script, 0, b"./src/A.java\0./src/B.java\0./target/x.class\0", b"")
+        hashed.append(kwargs["input"])
+        return subprocess.CompletedProcess(script, 0, f"{'a' * 64}  ./src/A.java\n{'e' * 64}  ./src/B.java\n".encode(), b"")
+    monkeypatch.setattr(stage, "shell", shell)
+    assert stage.changed() == ["pom.xml", "src/B.java", "src/C.java"]
+    # Only pushed files that are still regular files are read; a link or a pipe never is.
+    assert hashed == [b"./src/A.java\0./src/B.java"]
+
+
+def test_checksum_lines_with_escaped_names_are_read_back():
+    output = b"a" * 64 + b"  ./plain.txt\n" + b"\\" + b"b" * 64 + b"  ./two\\nlines\\\\x\n"
+    assert runner.sums(output) == {b"./plain.txt": b"a" * 64, b"./two\nlines\\x": b"b" * 64}
+
+
+@pytest.mark.parametrize("operation", ["pull", "clear"])
+def test_a_path_through_a_link_is_refused_before_anything_is_read_or_removed(monkeypatch, tmp_path, operation):
+    monkeypatch.setenv("SANDBOX_MAVEN_CACHE", CACHE)
+    stage = runner.Stage(tmp_path / "ws-6")
+    scripts = []
+    monkeypatch.setattr(stage, "shell", lambda script, **kw: scripts.append(script) or subprocess.CompletedProcess(script, 3, b"", b""))
+    with pytest.raises(RuntimeError, match="sandbox_stage_link_refused"):
+        getattr(stage, operation)("target/surefire-reports")
+    check, _, command = scripts[0].partition(" || exit 3; ")
+    assert '"$(realpath -m -- target/surefire-reports)" = "$(pwd -P)/"target/surefire-reports' in check
+    assert command.startswith("rm -rf -- " if operation == "clear" else "if [ -e ")
+
+
+posix_shell = pytest.mark.skipif(os.name != "posix" or not shutil.which("realpath"), reason="runs the stage's shell commands locally (Linux)")
+
+
+@posix_shell
+def test_a_build_cannot_lead_the_runner_through_links_or_pipes(monkeypatch, tmp_path):
+    """The stage's own shell commands, run locally on what a hostile build leaves behind."""
+    monkeypatch.setenv("SANDBOX_MAVEN_CACHE", CACHE)
+    monkeypatch.setenv("SANDBOX_WORK", str(tmp_path / "work"))
+    monkeypatch.setattr(runner, "wsl", lambda *argv: list(argv))
+    stage = runner.Stage(tmp_path / "ws-7")
+    root = Path(stage.path)
+    outside = tmp_path / "host"
+    (outside / "surefire-reports").mkdir(parents=True)
+    (outside / "surefire-reports" / "TEST-secret.xml").write_text("<host/>")
+    (outside / "secret.txt").write_text("host file")
+    for name in ("src/A.java", "src/B.java", "pom.xml"):
+        (root / name).parent.mkdir(parents=True, exist_ok=True)
+        (root / name).write_text(name)
+    subprocess.run(["sh", "-c", f"cd {root} && find . -type f -print0 | xargs -0 sha256sum > {root}.sha256"], check=True)
+    (root / "src/A.java").unlink()
+    (root / "src/A.java").symlink_to(outside / "secret.txt")
+    (root / "pom.xml").unlink()
+    os.mkfifo(root / "pom.xml")
+    (root / "target").symlink_to(outside)
+    started = time.time()
+    assert stage.changed() == ["pom.xml", "src/A.java"] and time.time() - started < 30
+    for operation in (stage.pull, stage.clear):
+        with pytest.raises(RuntimeError, match="sandbox_stage_link_refused"):
+            operation("target/surefire-reports")
+    assert (outside / "surefire-reports" / "TEST-secret.xml").exists()
+    assert not (tmp_path / "ws-7" / "target").exists()
 
 
 @pytest.mark.parametrize("work", ["relative/work", "/home/x/work dir", "/home/x/$(id)"])
@@ -347,3 +445,82 @@ def test_the_stage_location_must_be_a_plain_absolute_path(monkeypatch, tmp_path,
     monkeypatch.setenv("SANDBOX_WORK", work)
     with pytest.raises(RuntimeError, match="sandbox_work_path_invalid"):
         runner.Stage(tmp_path / "ws-5")
+
+
+# Week 8: the sandbox's settings read from a running container, and hostile builds through the
+# real runner (scripts/sandbox_check.py, samples/hostile).
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+import sandbox_check
+
+
+@pytest.fixture(scope="module")
+def hostile_projects(tmp_path_factory):
+    return sandbox_check.prepare(tmp_path_factory.mktemp("hostile"))
+
+
+def test_hostile_cases_never_build_natively(monkeypatch, hostile_projects):
+    from safepatch.repository import project, registry
+    monkeypatch.setenv("PROJECTS_DIR", str(hostile_projects))
+    monkeypatch.setenv("RUNNER_SANDBOX", "native")
+    monkeypatch.setenv("SAFEPATCH_PROFILE", "lab")
+    for case in sandbox_check.CASES:
+        case_id = "hostile-" + case
+        with pytest.raises(PolicyError, match="sandbox_required_for_real_projects"):
+            runner.sandbox_mode(project(case_id, registry()[1][case_id]["commit"]))
+
+
+def test_the_control_run_drops_only_the_isolating_flags(monkeypatch, tmp_path):
+    monkeypatch.setenv("SANDBOX_MAVEN_CACHE", CACHE)
+    monkeypatch.setattr(runner, "wsl_path", lambda path: "/mnt/c/ws")
+    weak = " ".join(sandbox_check.weakened(runner.sandboxed(["mvn", "test"], tmp_path, "safepatch-x")))
+    for gone in ("--network none", "--read-only", "--cap-drop ALL", "no-new-privileges", "--user 1000:1000"):
+        assert gone not in weak, gone
+    for kept in ("--user 0:0", "--memory 2g --memory-swap 2g", "--pids-limit 1024", "--ulimit nofile=8192:8192", f"-v {CACHE}:/m2:ro"):
+        assert kept in weak, kept
+
+
+@pytest.fixture
+def hostile(monkeypatch, hostile_projects):
+    monkeypatch.setenv("PROJECTS_DIR", str(hostile_projects))
+    monkeypatch.setenv("RUNNER_SANDBOX", "docker")
+    return sandbox_check
+
+
+@pytest.mark.integration
+@docker
+def test_the_settings_hold_inside_a_running_container():
+    facts = sandbox_check.settings()["facts"]
+    assert (facts["uid"], facts["gid"], facts["CapEff"], facts["CapBnd"], facts["NoNewPrivs"], facts["Seccomp"]) == ("1000", "1000", "0" * 16, "0" * 16, "1", "2")
+    assert facts["interfaces"] == "lo" and facts["docker_socket"] == "absent"
+    assert (facts["memory.max"], facts["memory.swap.max"], facts["cpu.max"], facts["pids.max"]) == (str(2 * 2**30), "0", "200000 100000", "1024")
+    assert (facts["write:/"], facts["write:/m2"], facts["write:/workspace"], facts["exec:/tmp"]) == ("no", "no", "yes", "no")
+    assert (facts["ulimit:nofile"], facts["ulimit:core"], facts["ulimit:fsize_kib"]) == ("8192", "0", str(2**20))
+    # Nothing secret reaches the build: only the image's own variables, HOME and MAVEN_OPTS.
+    assert not any(word in facts["environment"] for word in ("TOKEN", "SECRET", "KEY", "PASSWORD"))
+
+
+@pytest.mark.integration
+@docker
+def test_a_hostile_build_is_contained(hostile):
+    row = hostile.run_case("hostile")
+    assert row["outcome"] == "completed" and row["behavior"]["passed"] and row["behavior"]["tests"] == 10, row
+    assert row["containers_left"] == []
+
+
+@pytest.mark.integration
+@docker
+def test_the_hostile_suite_fails_without_isolation(hostile):
+    # Without this, a passing hostile suite would prove nothing.
+    weak = hostile.control()
+    assert {"onlyTheLoopbackInterface", "noWritesOutsideTheWorkspace", "notRootAndWithoutPrivileges"} <= set(weak["failed"]), weak
+
+
+@pytest.mark.integration
+@docker
+@pytest.mark.parametrize("case,error,reason", [("tamper", "PolicyError", "tracked_file_changed_during_execution"),
+                                               ("link", "RuntimeError", "sandbox_stage_link_refused"),
+                                               ("hang", "TimeoutError", "child_timeout")])
+def test_a_hostile_build_is_refused_or_stopped(hostile, case, error, reason):
+    row = hostile.run_case(case)
+    assert (row["outcome"], row["error"], row["reason"]) == ("refused", error, reason), row
+    assert row["seconds"] < 300 and row["containers_left"] == []

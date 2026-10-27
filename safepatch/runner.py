@@ -41,15 +41,20 @@ MAVEN_FLAGS = ["-B", "-ntp", "-Dstyle.color=never", "-DargLine=" + ARG_LINE]
 # /tmp cannot tell a fix apart when the extraction dir is /tmp itself (VUL4J-79). Like /tmp it
 # is a noexec tmpfs; Maven's local repository and HOME stay in /tmp.
 TEST_TMP = "/jvmtmp"
+# Week 8: no single file above 1 GiB (RLIMIT_FSIZE), no core dumps, a bounded descriptor table.
+SANDBOX_ULIMITS = ("nofile=8192:8192", "core=0", f"fsize={2**30}")
 
 
 def sandbox_mode(spec):
-    """'docker' or 'native'. Only the owned synthetic labs may still build natively."""
+    """'docker' or 'native'. Only the owned synthetic labs may still build natively, and only in
+    the lab (development) profile (roadmap week 8): the product builds nothing outside the sandbox."""
     mode = setting("RUNNER_SANDBOX", "native")
     if mode not in ("docker", "native"):
         raise PolicyError("unknown_runner_sandbox")
     if mode != "docker" and spec.labels.get("source") != "safepatch-synthetic":
         raise PolicyError("sandbox_required_for_real_projects")
+    if mode != "docker" and setting("SAFEPATCH_PROFILE", "product") != "lab":
+        raise PolicyError("native_runner_outside_lab_profile")
     return mode
 
 
@@ -71,14 +76,34 @@ def sandboxed(argv, workspace, name, java="17", mount=None, tools=None):
     cache = setting("SANDBOX_MAVEN_CACHE")
     if not cache or not cache.startswith("/"):
         raise RuntimeError("sandbox_maven_cache_missing")
+    memory = setting("SANDBOX_MEMORY", "2g")
     return wsl("docker", "run", "--rm", "--name", name, "--network", "none", "--read-only", "--tmpfs", "/tmp:rw,size=1g", "--tmpfs", TEST_TMP + ":rw,size=512m",
                "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--pids-limit", "1024",
-               "--memory", setting("SANDBOX_MEMORY", "2g"), "--cpus", setting("SANDBOX_CPUS", "2"), "--user", setting("SANDBOX_USER", "1000:1000"),
+               # Swap equal to memory: no swap on top of the limit (Docker's default doubles it).
+               "--memory", memory, "--memory-swap", memory, "--cpus", setting("SANDBOX_CPUS", "2"), "--user", setting("SANDBOX_USER", "1000:1000"),
+               *[flag for limit in SANDBOX_ULIMITS for flag in ("--ulimit", limit)],
                "-e", "HOME=/tmp", "-e", "MAVEN_OPTS=-Xmx512m -Dfile.encoding=UTF-8",
                "-v", (mount or wsl_path(workspace)) + ":/workspace", "-w", "/workspace", "-v", cache + ":/m2:ro",
                *(["-v", tools + ":" + TOOLS_IN_SANDBOX + ":ro"] if tools else []),
                # The image's entrypoint script copies settings into a home it cannot write; skip it.
                "--entrypoint", argv[0], sandbox_image(java), *argv[1:])
+
+
+def sums(output):
+    """{file name: digest} from `sha256sum` output; a name holding a backslash or a newline is
+    written escaped, with a leading backslash on its line."""
+    found = {}
+    for line in output.split(b"\n"):
+        escaped = line.startswith(b"\\")
+        value, name = line[escaped:escaped + 64], line[escaped + 66:]
+        if len(value) == 64 and name:
+            found[unescape(name) if escaped else name] = value
+    return found
+
+
+def unescape(name):
+    """sha256sum's escaping: backslash-n for a newline, two backslashes for one."""
+    return re.sub(rb"\\(.)", lambda m: b"\n" if m.group(1) == b"n" else m.group(1), name)
 
 
 class Stage:
@@ -161,8 +186,20 @@ class Stage:
         return any(part == "target" and not any(n.startswith("/".join(parts[:i + 1]) + "/") for n in modes)
                    for i, part in enumerate(parts[:-1]))
 
+    def guarded(self, relative, command):
+        """Run `command` in the stage only if `relative` resolves inside it with no symbolic link on
+        the way (week 8). The runner acts as the WSL user, and a build may leave links pointing to
+        anything that user can read or delete."""
+        if not safe_path(relative):
+            raise RuntimeError("sandbox_stage_path_invalid")
+        quoted = shlex.quote(posixpath.normpath(relative))
+        result = self.shell(f'cd {shlex.quote(self.path)} && [ "$(realpath -m -- {quoted})" = "$(pwd -P)/"{quoted} ] || exit 3; {command(quoted)}')
+        if result.returncode == 3:
+            raise RuntimeError("sandbox_stage_link_refused")
+        return result
+
     def clear(self, relative):
-        self.shell(f"rm -rf {shlex.quote(self.path + '/' + relative)}")
+        self.guarded(relative, lambda quoted: f"rm -rf -- {quoted}")
 
     def pull(self, relative):
         """Replace the local `relative` (a directory or file) with the stage's."""
@@ -173,8 +210,7 @@ class Stage:
             shutil.rmtree(local)
         elif local.exists():
             local.unlink()
-        quoted = shlex.quote(relative)
-        result = self.shell(f"cd {shlex.quote(self.path)} && if [ -e {quoted} ]; then tar -c {quoted}; fi")
+        result = self.guarded(relative, lambda quoted: f"if [ -e {quoted} ]; then tar -c -- {quoted}; fi")
         if result.returncode:
             raise RuntimeError("sandbox_stage_pull_failed")
         if not result.stdout:
@@ -187,10 +223,16 @@ class Stage:
             raise RuntimeError("sandbox_stage_output_refused") from exc
 
     def changed(self):
-        """Staged files (Git metadata aside) that differ from what was pushed."""
+        """Staged files (Git metadata aside) that differ from what was pushed. Only files that are
+        still regular files, reached without a symbolic link, are read (`find` follows none); a
+        pushed file a run replaced by a link, a pipe or a device counts as changed, unopened."""
         path = shlex.quote(self.path)
-        result = self.shell(f"cd {path} && sha256sum --quiet -c {path}.sha256 2>/dev/null; true", text=True)
-        return [line.rsplit(":", 1)[0].removeprefix("./") for line in result.stdout.splitlines() if line.strip()]
+        manifest = self.shell(f"cat {path}.sha256").stdout
+        regular = set(self.shell(f"cd {path} && find . -type f -print0").stdout.split(b"\0"))
+        pushed = sums(manifest)
+        present = sorted(name for name in pushed if name in regular)
+        current = sums(self.shell(f"cd {path} && xargs -0 -r sha256sum --", input=b"\0".join(present)).stdout) if present else {}
+        return sorted(name.decode("utf-8", "replace").removeprefix("./") for name, value in pushed.items() if current.get(name) != value)
 
     def remove(self):
         path = shlex.quote(self.path)
@@ -498,7 +540,11 @@ def outcome(req, spec, workspace, stage, sandbox, patch_meta, view, revision, st
 
 @app.get("/health")
 def health():
-    return {"service": "runner", "status": "ok", "profile": profile(setting("RUNNER_SANDBOX", "native"))}
+    mode = setting("RUNNER_SANDBOX", "native")
+    # Week 8: native builds run only in the lab profile; anywhere else every job would be refused.
+    native_allowed = setting("SAFEPATCH_PROFILE", "product") == "lab"
+    return {"service": "runner", "status": "ok", "profile": profile(mode), "native_allowed": native_allowed,
+            "usable": mode == "docker" or native_allowed}
 
 
 @app.post("/execute", dependencies=[Depends(require_service("RUNNER_TOKEN"))])
