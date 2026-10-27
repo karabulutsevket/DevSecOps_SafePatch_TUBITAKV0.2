@@ -18,7 +18,7 @@ def main():
     sub.add_parser("cases")
     create = sub.add_parser("start")
     create.add_argument("case_id")
-    create.add_argument("--scanner", choices=["builtin", "semgrep", "sonarqube+semgrep"], default="semgrep")
+    create.add_argument("--scanner", choices=["builtin", "semgrep", "sonarqube+semgrep", "findsecbugs", "semgrep+findsecbugs"], default="semgrep")
     create.add_argument("--key", default=None)
     create.add_argument("--attempts", type=int, default=3, choices=[1, 2, 3])
     create.add_argument("--second-review", action="store_true")

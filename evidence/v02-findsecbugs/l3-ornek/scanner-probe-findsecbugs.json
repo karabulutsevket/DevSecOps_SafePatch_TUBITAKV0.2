@@ -1,0 +1,409 @@
+{
+  "scanner": "findsecbugs",
+  "rows": [
+    {
+      "case": "owasp-benchmark-00011",
+      "baseline_valid": true,
+      "seconds": 54.3,
+      "tools": [
+        "findsecbugs spotbugs-4.9.8+findsecbugs-1.14.0"
+      ],
+      "findings": [
+        {
+          "rule_id": "PATH_TRAVERSAL_IN",
+          "cwe": "CWE-22",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00011.java",
+          "line": 54
+        }
+      ],
+      "other_findings": [],
+      "unmapped_results": 0
+    },
+    {
+      "case": "owasp-benchmark-00196",
+      "baseline_valid": true,
+      "seconds": 51.5,
+      "tools": [
+        "findsecbugs spotbugs-4.9.8+findsecbugs-1.14.0"
+      ],
+      "findings": [
+        {
+          "rule_id": "SQL_INJECTION_SPRING_JDBC",
+          "cwe": "CWE-89",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00196.java",
+          "line": 61
+        }
+      ],
+      "other_findings": [
+        {
+          "rule_id": "SERVLET_HEADER",
+          "cwe": "CWE-807",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00196.java",
+          "line": 44
+        },
+        {
+          "rule_id": "SERVLET_HEADER",
+          "cwe": "CWE-807",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00196.java",
+          "line": 45
+        }
+      ],
+      "unmapped_results": 0
+    },
+    {
+      "case": "owasp-benchmark-00306",
+      "baseline_valid": true,
+      "seconds": 49.2,
+      "tools": [
+        "findsecbugs spotbugs-4.9.8+findsecbugs-1.14.0"
+      ],
+      "findings": [
+        {
+          "rule_id": "COMMAND_INJECTION",
+          "cwe": "CWE-78",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00306.java",
+          "line": 69
+        }
+      ],
+      "other_findings": [],
+      "unmapped_results": 0
+    },
+    {
+      "case": "vul4j-79",
+      "baseline_valid": true,
+      "seconds": 35.9,
+      "tools": [
+        "findsecbugs spotbugs-4.9.8+findsecbugs-1.14.0"
+      ],
+      "findings": [
+        {
+          "rule_id": "PATH_TRAVERSAL_IN",
+          "cwe": "CWE-22",
+          "file": "src/main/java/org/zeroturnaround/zip/ZTFileUtil.java",
+          "line": 57
+        },
+        {
+          "rule_id": "PATH_TRAVERSAL_IN",
+          "cwe": "CWE-22",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 1730
+        },
+        {
+          "rule_id": "PATH_TRAVERSAL_IN",
+          "cwe": "CWE-22",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 1214
+        },
+        {
+          "rule_id": "PATH_TRAVERSAL_IN",
+          "cwe": "CWE-22",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 1220
+        },
+        {
+          "rule_id": "PATH_TRAVERSAL_IN",
+          "cwe": "CWE-22",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 1225
+        },
+        {
+          "rule_id": "PATH_TRAVERSAL_IN",
+          "cwe": "CWE-22",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 1152
+        },
+        {
+          "rule_id": "PATH_TRAVERSAL_IN",
+          "cwe": "CWE-22",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 1260
+        },
+        {
+          "rule_id": "PATH_TRAVERSAL_IN",
+          "cwe": "CWE-22",
+          "file": "src/main/java/org/zeroturnaround/zip/Zips.java",
+          "line": 399
+        },
+        {
+          "rule_id": "PATH_TRAVERSAL_IN",
+          "cwe": "CWE-22",
+          "file": "src/main/java/org/zeroturnaround/zip/Zips.java",
+          "line": 415
+        },
+        {
+          "rule_id": "PATH_TRAVERSAL_IN",
+          "cwe": "CWE-22",
+          "file": "src/main/java/org/zeroturnaround/zip/Zips.java",
+          "line": 683
+        },
+        {
+          "rule_id": "PATH_TRAVERSAL_IN",
+          "cwe": "CWE-22",
+          "file": "src/main/java/org/zeroturnaround/zip/commons/FileUtils.java",
+          "line": 75
+        },
+        {
+          "rule_id": "PATH_TRAVERSAL_IN",
+          "cwe": "CWE-22",
+          "file": "src/main/java/org/zeroturnaround/zip/commons/FileUtilsV2_2.java",
+          "line": 584
+        },
+        {
+          "rule_id": "PATH_TRAVERSAL_IN",
+          "cwe": "CWE-22",
+          "file": "src/main/java/org/zeroturnaround/zip/commons/FileUtilsV2_2.java",
+          "line": 327
+        },
+        {
+          "rule_id": "PATH_TRAVERSAL_IN",
+          "cwe": "CWE-22",
+          "file": "src/main/java/org/zeroturnaround/zip/commons/FileUtilsV2_2.java",
+          "line": 623
+        },
+        {
+          "rule_id": "PATH_TRAVERSAL_IN",
+          "cwe": "CWE-22",
+          "file": "src/main/java/org/zeroturnaround/zip/commons/FileUtilsV2_2.java",
+          "line": 1081
+        }
+      ],
+      "other_findings": [
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 2126
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 2154
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 2185
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 2627
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 2989
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 3000
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 3047
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 391
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 3089
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 3099
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 3104
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 3112
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 3120
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 3129
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 1584
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 1671
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 1958
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 1926
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 1526
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 1331
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 2265
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 1772
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 1797
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 2562
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 2781
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 2861
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 995
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 976
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 1095
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 1030
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 1130
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 2317
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 2341
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 2377
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 2583
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 2649
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 2901
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 1160
+        },
+        {
+          "rule_id": "CRLF_INJECTION_LOGS",
+          "cwe": "CWE-117",
+          "file": "src/main/java/org/zeroturnaround/zip/ZipUtil.java",
+          "line": 1268
+        }
+      ],
+      "unmapped_results": 0
+    }
+  ]
+}

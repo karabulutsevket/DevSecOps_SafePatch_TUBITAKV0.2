@@ -110,6 +110,25 @@ docker = pytest.mark.skipif(os.environ.get("RUN_DOCKER_INTEGRATION") != "1" or n
 
 @pytest.mark.integration
 @docker
+def test_findsecbugs_analyses_inside_the_sandbox(monkeypatch):
+    # SpotBugs runs in the JDK 17 image with the tools mounted read-only; classes and classpath are the sandbox build's.
+    from mock_patches import correct_patch
+    from safepatch.repository import baseline, registry
+    if not (runner.tools_dir() / "downloads" / runner.FINDSECBUGS_PLUGIN[0]).is_file():
+        pytest.skip("Run scripts/prepare_findsecbugs.py first")
+    monkeypatch.setenv("RUNNER_SANDBOX", "docker")
+    commit = registry()[1]["sql-01"]["commit"]
+    def verify(patch=None):
+        return runner.execute(VerifyRequest(job_id=uuid.uuid4().hex, case_id="sql-01", base_commit=commit, attempt=1 if patch else 0,
+                                            deadline=time.time() + 600, scanner="findsecbugs", patch=patch, target_file=SOURCE if patch else None))
+    initial = verify()
+    assert initial["baseline_valid"] and {f["rule_id"] for s in initial["scans"] for f in s["findings"]} >= {"SQL_INJECTION_JDBC"}
+    _, files = baseline("sql-01", commit)
+    assert verify(correct_patch("sql", files))["passed"]
+
+
+@pytest.mark.integration
+@docker
 @pytest.mark.parametrize("kind", ["sql", "path", "command"])
 def test_real_cases_build_and_verify_inside_the_sandbox(monkeypatch, kind):
     from mock_patches import correct_patch

@@ -16,10 +16,10 @@ from mock_patches import correct_patch
 pytestmark = [pytest.mark.integration, pytest.mark.skipif(os.environ.get("RUN_JAVA_INTEGRATION") != "1", reason="Set RUN_JAVA_INTEGRATION=1 after Java/Maven preparation")]
 
 
-def run_case(case_id, patch=None, attempt=None):
+def run_case(case_id, patch=None, attempt=None, scanner="builtin"):
     spec = registry()[1][case_id]
     attempt = attempt if attempt is not None else (1 if patch else 0)
-    return execute(VerifyRequest(job_id=uuid.uuid4().hex, case_id=case_id, base_commit=spec["commit"], attempt=attempt, deadline=time.time() + 180, scanner="builtin", patch=patch, target_file=SOURCE if patch else None))
+    return execute(VerifyRequest(job_id=uuid.uuid4().hex, case_id=case_id, base_commit=spec["commit"], attempt=attempt, deadline=time.time() + 300, scanner=scanner, patch=patch, target_file=SOURCE if patch else None))
 
 
 def record(name, result):
@@ -120,3 +120,41 @@ def test_protected_test_deletion_rejected_before_execution(kind):
     with pytest.raises(PolicyError):
         run_case(case_id, patch)
     record(case_id + "-protected-test", {"passed": False, "reason": "policy_rejected_before_execution"})
+
+
+def findsecbugs_prepared():
+    from safepatch.runner import FINDSECBUGS_PLUGIN, tools_dir
+    return (tools_dir() / "downloads" / FINDSECBUGS_PLUGIN[0]).is_file()
+
+
+findsecbugs = pytest.mark.skipif(not findsecbugs_prepared(), reason="Run scripts/prepare_findsecbugs.py first")
+
+
+def rules(result):
+    return {f["rule_id"] for scan in result["scans"] for f in scan["findings"]}
+
+
+@findsecbugs
+@pytest.mark.parametrize("kind,rule", [("sql", "SQL_INJECTION_JDBC"), ("command", "COMMAND_INJECTION")])
+def test_findsecbugs_reports_the_lab_weakness_on_the_baseline(kind, rule):
+    initial = run_case(kind + "-01", scanner="findsecbugs")
+    assert initial["baseline_valid"] and rule in rules(initial), initial["scans"]
+
+
+@findsecbugs
+def test_findsecbugs_does_not_see_the_lab_path_pattern():
+    # Path.resolve(input) then Files.readString: not a FindSecBugs 1.14 sink, so no finding and no job.
+    assert not run_case("path-01", scanner="findsecbugs")["baseline_valid"]
+
+
+@findsecbugs
+@pytest.mark.parametrize("kind,passes", [("sql", True), ("command", False)])
+def test_findsecbugs_after_the_reference_fix(kind, passes):
+    # The command fix runs a fixed program with the input as one argv element, no shell; FindSecBugs
+    # still reports the request data reaching ProcessBuilder, so under today's acceptance rule the
+    # correct fix stays a remaining finding (docs/FINDSECBUGS.md).
+    _, files = baseline(kind + "-01", registry()[1][kind + "-01"]["commit"])
+    fixed = run_case(kind + "-01", correct_patch(kind, files), scanner="findsecbugs")
+    assert fixed["passed"] is passes and (fixed["security"]["passed"] if not passes else True)
+    if not passes:
+        assert fixed["feedback"]["remaining_rules"] == ["COMMAND_INJECTION"]

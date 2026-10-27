@@ -143,7 +143,7 @@ class VerifyRequest(Strict):
     attempt: int = Field(ge=0, le=6)   # 0 baseline; up to 3 model and then 3 expert attempts
     deadline: float
     patch: Patch | None = None
-    scanner: str = Field(default="builtin", pattern=r"^(builtin|semgrep|sonarqube\+semgrep|known)$")
+    scanner: str = Field(default="builtin", pattern=r"^(builtin|semgrep|sonarqube\+semgrep|known|findsecbugs|semgrep\+findsecbugs)$")
     # The finding's file: the only file a patch may change (decision 5, 25 Oct 2026).
     target_file: str | None = Field(default=None, max_length=300)
     # Fingerprints of baseline findings in other files. Only the target file changes, so they

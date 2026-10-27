@@ -14,11 +14,17 @@ from safepatch.common import ROOT, canonical, digest, setting
 
 # Child CWE -> family, from the CWE "ChildOf" relations of the supported classes.
 FAMILY = {"CWE-564": "CWE-89", "CWE-23": "CWE-22", "CWE-36": "CWE-22", "CWE-338": "CWE-330"}
+# Families whose class package (witness, tests, guidance, rules, development cases) is complete:
+# only these become jobs. A scanner that reports more (FindSecBugs: log injection, trust
+# boundary) keeps the rest as other findings, which would otherwise block every fix in the file.
+SUPPORTED = frozenset({"CWE-89", "CWE-22", "CWE-78"})
 
 # Rules whose findings carry no CWE of their own. The Sonar keys are those the runner
 # already requires; the FindSecBugs names follow its bug pattern list. Each entry is
 # confirmed when its adapter first runs against the live tool. A missing entry only
-# means `unknown`, never a wrong match.
+# means `unknown`, never a wrong match. FindSecBugs 1.14.0 (27 Oct 2026) names the CWE in its
+# SARIF itself, which the adapter reads first; SQL_INJECTION_JDBC, SQL_INJECTION_SPRING_JDBC,
+# PATH_TRAVERSAL_IN and COMMAND_INJECTION were seen there with the CWEs below.
 TOOL_RULES = {
     "javasecurity:S3649": "CWE-89", "javasecurity:S2083": "CWE-22", "javasecurity:S2076": "CWE-78",
     "SQL_INJECTION_JDBC": "CWE-89", "SQL_INJECTION_SPRING_JDBC": "CWE-89", "SQL_INJECTION_JPA": "CWE-89",

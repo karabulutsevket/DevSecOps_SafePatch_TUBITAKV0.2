@@ -223,7 +223,7 @@ Sorumlular: kurallar ve tanıklar *Yiğithan*, vakalar ve L2 kayıtları *Kadir*
 - [ ] Paket formatı: manifest, her kayıt için SHA-256, paket imzası, sürüm; içeri alma komutu çevrimdışı çalışır — *Şevket*
 - [ ] L2 kayıtları L1'den ayrı güven seviyesinde durur: "dış kaynak, bu kurumda doğrulanmadı". Kurumda bir kez doğrulanınca L1'e terfi eder — *Reşat*
 - [ ] Lisans kontrolü: kaynak kodun ve veri setlerinin lisansı `docs/LISANSLAR.md`'de — *Şevket*
-- [ ] **FindSecBugs adaptörü:** SpotBugs + FindSecBugs'ı çevrimdışı kur (sürüm ve özet sabit, lisans teyidi), derlenmiş kod üzerinde çalıştır, SARIF çıktısını ortak bulgu modeline çevir; desen adı → CWE eşlemesi Hafta 4 tablosuna eklenir — *Yiğithan*
+- [x] **FindSecBugs adaptörü:** SpotBugs + FindSecBugs'ı çevrimdışı kur (sürüm ve özet sabit, lisans teyidi), derlenmiş kod üzerinde çalıştır, SARIF çıktısını ortak bulgu modeline çevir; desen adı → CWE eşlemesi Hafta 4 tablosuna eklenir — *Yiğithan* **27 Ekim:** SpotBugs 4.9.8 + FindSecBugs 1.14.0, Maven Central'dan sabit özetle (`scripts/prepare_findsecbugs.py`); tarayıcı `findsecbugs` ve `semgrep+findsecbugs`. Gerçek projelerde sandbox içinde çalışıyor. CWE, SARIF'in kendisinden okunuyor; Hafta 4 tablosu yedek olarak doğrulandı. Desteklenen aileler dışındaki bulgular iş açmıyor. Açık karar: doğru bir komut düzeltmesinden sonra da kalan `COMMAND_INJECTION` bulgusu ([docs/FINDSECBUGS.md](docs/FINDSECBUGS.md))
 - [ ] **Karşılaştırmalı tespit ölçümü:** L3 setinde Semgrep, FindSecBugs ve ikisi birlikte; sınıf bazında tespit oranı ve yanlış pozitif oranı. Sonuç `evidence/v02-detection/` altında — *Yiğithan, Kadir*
 
 #### Hafta 8 · 14 – 20 Aralık

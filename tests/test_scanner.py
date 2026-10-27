@@ -3,7 +3,7 @@ import time
 
 import pytest
 
-from safepatch.scanner import SonarAdapter, parse_semgrep
+from safepatch.scanner import SonarAdapter, parse_semgrep, parse_spotbugs
 
 
 @pytest.mark.parametrize("response", [{}, {"results": [], "errors": [{"type": "parse"}]}, {"results": [], "paths": {"scanned": []}}])
@@ -95,3 +95,59 @@ def test_builtin_scanner_uses_descriptor_paths_and_lab_kind():
     found = builtin_scan(files, ["src/main/java/a"], "sql", "a" * 40)["findings"]
     assert [f["file"] for f in found] == ["src/main/java/a/A.java"]
     assert builtin_scan(files, ["src/main/java"], None, "a" * 40)["findings"] == []
+
+
+SPOTBUGS = {name: json.loads(open(f"tests/fixtures/spotbugs/{name}.sarif", encoding="utf-8").read()) for name in ("sql-01", "command-01", "path-01")}
+LAB = {"src/main/java/demo/DemoService.java": "", "src/main/java/demo/Application.java": "", "src/main/java/demo/EchoMain.java": ""}
+
+
+@pytest.mark.parametrize("case,expected", [
+    # SpotBugs 4.9.8 + FindSecBugs 1.14.0 on the synthetic lab (recorded 27 Oct 2026). Path-01 reads
+    # through Path.resolve and Files.readString, which FindSecBugs does not treat as sinks: no finding.
+    ("sql-01", {("SQL_INJECTION_JDBC", "CWE-89", 17), ("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE", "CWE-89", 17)}),
+    ("command-01", {("COMMAND_INJECTION", "CWE-78", 16)}),
+    ("path-01", set()),
+])
+def test_spotbugs_findings_are_security_results_with_a_cwe(case, expected):
+    report = parse_spotbugs(SPOTBUGS[case], "a" * 40, LAB, ["src/main/java/demo/DemoService.java"])
+    assert {(f["rule_id"], f["cwe"], f["line"]) for f in report["findings"]} == expected
+    assert all(f["file"] == "src/main/java/demo/DemoService.java" and f["tool"] == "findsecbugs" for f in report["findings"])
+
+
+def test_spotbugs_notes_and_style_results_are_not_findings():
+    # SPRING_ENDPOINT is tagged SECURITY but names no CWE; THROWS_METHOD... names CWE-397 but is BAD_PRACTICE.
+    report = parse_spotbugs(SPOTBUGS["command-01"], "a" * 40, LAB, ["src/main/java/demo"])
+    assert {f["rule_id"] for f in report["findings"]} == {"COMMAND_INJECTION"}
+
+
+def test_spotbugs_results_outside_the_scan_paths_or_ambiguous_are_unmapped():
+    two = {**LAB, "other/src/main/java/demo/DemoService.java": ""}
+    report = parse_spotbugs(SPOTBUGS["sql-01"], "a" * 40, two, ["src/main/java", "other/src/main/java"])
+    assert report["findings"] == [] and report["unmapped_results"] == 2
+
+
+@pytest.mark.parametrize("change", [
+    lambda d: d["runs"][0]["tool"]["driver"].update(version="4.10.5"),
+    lambda d: d["runs"][0]["invocations"][0].update(executionSuccessful=False),
+])
+def test_spotbugs_other_versions_and_failed_runs_are_refused(change):
+    data = json.loads(json.dumps(SPOTBUGS["sql-01"]))
+    change(data)
+    with pytest.raises(RuntimeError):
+        parse_spotbugs(data, "a" * 40, LAB, ["src/main/java"])
+
+
+def test_spotbugs_findings_of_unsupported_families_are_kept_apart():
+    # VUL4J-79 and OWASP Benchmark: log injection (CWE-117) and trust boundary (CWE-807) results
+    # would stay after any fix of the supported weakness in the same file.
+    data = json.loads(json.dumps(SPOTBUGS["sql-01"]))
+    run = data["runs"][0]
+    extension = run["tool"]["extensions"][-1]
+    for rule_id, cwe in (("CRLF_INJECTION_LOGS", "117"), ("SERVLET_HEADER", "807")):
+        extension.setdefault("rules", []).append({"id": rule_id, "properties": {"tags": ["SECURITY"]},
+                                                  "relationships": [{"target": {"id": cwe, "toolComponent": {"name": "CWE"}}}]})
+        run["results"].append({"ruleId": rule_id, "level": "warning", "message": {"text": rule_id},
+                               "locations": [{"physicalLocation": {"artifactLocation": {"uri": "demo/DemoService.java"}, "region": {"startLine": 12}}}]})
+    report = parse_spotbugs(data, "a" * 40, LAB, ["src/main/java"])
+    assert {f["cwe"] for f in report["findings"]} == {"CWE-89"}
+    assert {(f["rule_id"], f["cwe"]) for f in report["other_findings"]} == {("CRLF_INJECTION_LOGS", "CWE-117"), ("SERVLET_HEADER", "CWE-807")}

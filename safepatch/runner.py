@@ -22,7 +22,7 @@ from safepatch.common import ROOT, VerifyRequest, digest, known_findings_enabled
 from safepatch.policy import PolicyError, validate_patch
 from safepatch.process import run
 from safepatch.repository import allowed_files, baseline, checkout, commit_candidate, git_command, run_git, tracked_changes
-from safepatch.scanner import SonarAdapter, builtin_scan, parse_semgrep
+from safepatch.scanner import SPOTBUGS_VERSION, SonarAdapter, builtin_scan, parse_semgrep, parse_spotbugs
 
 app = FastAPI(title="SafePatch restricted runner")
 lock = threading.Lock()
@@ -64,9 +64,10 @@ def sandbox_image(java="17"):
     return image
 
 
-def sandboxed(argv, workspace, name, java="17", mount=None):
+def sandboxed(argv, workspace, name, java="17", mount=None, tools=None):
     """The docker command running argv for this workspace inside the sandbox; `mount` is the
-    workspace's copy on the WSL disk (Stage), else the workspace itself over /mnt/c."""
+    workspace's copy on the WSL disk (Stage), else the workspace itself over /mnt/c; `tools`
+    (SpotBugs) is mounted read-only at TOOLS_IN_SANDBOX."""
     cache = setting("SANDBOX_MAVEN_CACHE")
     if not cache or not cache.startswith("/"):
         raise RuntimeError("sandbox_maven_cache_missing")
@@ -75,6 +76,7 @@ def sandboxed(argv, workspace, name, java="17", mount=None):
                "--memory", setting("SANDBOX_MEMORY", "2g"), "--cpus", setting("SANDBOX_CPUS", "2"), "--user", setting("SANDBOX_USER", "1000:1000"),
                "-e", "HOME=/tmp", "-e", "MAVEN_OPTS=-Xmx512m -Dfile.encoding=UTF-8",
                "-v", (mount or wsl_path(workspace)) + ":/workspace", "-w", "/workspace", "-v", cache + ":/m2:ro",
+               *(["-v", tools + ":" + TOOLS_IN_SANDBOX + ":ro"] if tools else []),
                # The image's entrypoint script copies settings into a home it cannot write; skip it.
                "--entrypoint", argv[0], sandbox_image(java), *argv[1:])
 
@@ -223,6 +225,10 @@ def maven(workspace, args, deadline, extra=None, online=False, limit=240, sandbo
 
 
 # A project without a security witness never passes (decision 3, 25 Oct 2026).
+# SpotBugs + FindSecBugs (week 7): prepared by scripts/prepare_findsecbugs.py, the plugin pinned by digest.
+FINDSECBUGS_PLUGIN = ("findsecbugs-plugin-1.14.0.jar", "6fa340344fa433ff46c2985dab1010e8bc739f9395c983594a5240095e92abc8")
+DEPENDENCY_PLUGIN = "org.apache.maven.plugins:maven-dependency-plugin:3.8.1"
+TOOLS_IN_SANDBOX = "/opt/safepatch-tools"
 MISSING_WITNESS = {"passed": False, "missing": True, "tests": 0, "failures": 0, "errors": 0, "skipped": 0, "details": []}
 
 
@@ -312,12 +318,82 @@ def known_findings(spec, commit, patched):
              "coverage": "answer key; a patched revision is not rescanned, the security witness decides"}]
 
 
-def scan(workspace, spec, files, commit, scanner, job_id, attempt, deadline, patched=False):
+def tools_dir():
+    return Path(setting("TOOLS_DIR", str(ROOT / ".runtime/tools")))
+
+
+def analysed_classes(spec, workspace, stage, classes):
+    """Class names for -onlyAnalyze: each scan path's class and its inner classes, so scanning one
+    file does not analyse its whole package (OWASP Benchmark: 2 740 servlets). None, meaning
+    every class, when a scan path is a directory or lies outside src/main/java."""
+    names = []
+    for path in spec.scan.paths:
+        _, marker, tail = path.partition("src/main/java/")
+        if not marker or not tail.endswith(".java"):
+            return None
+        folder, _, name = tail[:-len(".java")].rpartition("/")
+        if stage:
+            where = shlex.quote(f"{stage.path}/{classes}/{folder}")
+            found = stage.shell(f"cd {where} 2>/dev/null && find . -maxdepth 1 -name {shlex.quote(name + '.class')} -o -maxdepth 1 -name {shlex.quote(name + '$*.class')}; true", text=True).stdout.split()
+        else:
+            base = workspace / classes / folder
+            found = [p.name for p in [base / (name + ".class"), *base.glob(name + "$*.class")] if p.is_file()]
+        names += [f"{folder}/{Path(f).name[:-len('.class')]}".strip("/").replace("/", ".") for f in found]
+    return names
+
+
+def findsecbugs_scan(workspace, spec, files, commit, deadline, sandbox="native", stage=None):
+    """SpotBugs with the FindSecBugs plugin on the compiled classes of the descriptor's module
+    (the build has run). The project's classpath comes from maven-dependency-plugin, offline; a
+    real project is analysed in the sandbox like its build, the tools mounted read-only."""
+    tools = tools_dir()
+    plugin = tools / "downloads" / FINDSECBUGS_PLUGIN[0]
+    if not plugin.is_file() or digest(plugin.read_bytes()) != FINDSECBUGS_PLUGIN[1]:
+        raise RuntimeError("findsecbugs_plugin_missing_or_changed")
+    module = (spec.build.module + "/") if spec.build.module else ""
+    cp_file, sarif, classes = module + "target/safepatch-classpath.txt", module + "target/safepatch-spotbugs.sarif", module + "target/classes"
+    result = maven(workspace, [*spec.build.reactor(), DEPENDENCY_PLUGIN + ":build-classpath", "-Dmdep.outputFile=target/safepatch-classpath.txt"],
+                   deadline, limit=300, sandbox=sandbox, java=spec.java, stage=stage)
+    if result["exit_code"]:
+        raise RuntimeError("findsecbugs_classpath_failed")
+    if stage:
+        stage.pull(cp_file)
+    classpath = (workspace / cp_file).read_text(encoding="utf-8").strip()
+    only = analysed_classes(spec, workspace, stage, classes)
+    if only == []:
+        raise RuntimeError("findsecbugs_classes_missing")
+    docker = sandbox == "docker"
+    home = TOOLS_IN_SANDBOX if docker else tools.as_posix()
+    place = (lambda relative: "/workspace/" + relative) if docker else (lambda relative: str(workspace / relative))
+    argv = ["java", "-Xmx" + setting("SPOTBUGS_HEAP", "1g"), "-jar", f"{home}/spotbugs-{SPOTBUGS_VERSION}/lib/spotbugs.jar", "-textui", "-quiet",
+            "-effort:max", "-low", "-pluginList", f"{home}/downloads/{FINDSECBUGS_PLUGIN[0]}", *(["-auxclasspath", classpath] if classpath else []),
+            *(["-onlyAnalyze", ",".join(only)] if only else []), "-sarif=" + place(sarif), place(classes)]
+    if docker:
+        name = "safepatch-" + uuid.uuid4().hex[:12]
+        try:
+            # SpotBugs needs Java 11 or later: the JDK 17 image analyses Java 8 classes too.
+            result = run(sandboxed(argv, workspace, name, "17", stage.path if stage else None, wsl_path(tools)), workspace, remaining(deadline, 600))
+        except TimeoutError:
+            subprocess.run(wsl("docker", "kill", name), capture_output=True, timeout=30)
+            raise
+        if stage:
+            stage.pull(sarif)
+    else:
+        argv[0] = shutil.which("java") or "java"
+        result = run(argv, workspace, remaining(deadline, 600))
+    if result["exit_code"] or not (workspace / sarif).is_file():
+        raise RuntimeError("findsecbugs_scan_failed")
+    return parse_spotbugs(json.loads((workspace / sarif).read_text(encoding="utf-8")), commit, files, spec.scan.paths)
+
+
+def scan(workspace, spec, files, commit, scanner, job_id, attempt, deadline, patched=False, sandbox="native", stage=None):
     paths, kind = spec.scan.paths, spec.labels.get("kind")
     if scanner == "known":
         return known_findings(spec, commit, patched)
     if scanner == "builtin":
         return [builtin_scan(files, paths, kind, commit)]
+    if scanner == "findsecbugs":
+        return [findsecbugs_scan(workspace, spec, files, commit, deadline, sandbox, stage)]
     output = workspace / "semgrep.json"
     rules = Path(setting("RULES_FILE", str(ROOT / "rules/java.yml")))
     if os.name == "nt":
@@ -336,6 +412,8 @@ def scan(workspace, spec, files, commit, scanner, job_id, attempt, deadline, pat
     if version != "1.136.0":
         raise RuntimeError("semgrep_version_mismatch")
     reports = [parse_semgrep(data, commit, version, prefixes)]
+    if scanner == "semgrep+findsecbugs":
+        reports.append(findsecbugs_scan(workspace, spec, files, commit, deadline, sandbox, stage))
     if scanner == "sonarqube+semgrep":
         rule = {"sql": "javasecurity:S3649", "path": "javasecurity:S2083", "command": "javasecurity:S2076"}.get(kind)
         if rule is None:
@@ -393,7 +471,7 @@ def outcome(req, spec, workspace, stage, sandbox, patch_meta, view, revision, st
     witness = spec.tests.security
     behavior = tests(workspace, spec.tests.behavior, req.deadline, spec.limits.test_seconds, sandbox, spec.java, spec.build, stage)
     security = tests(workspace, witness, req.deadline, spec.limits.test_seconds, sandbox, spec.java, spec.build, stage) if witness else dict(MISSING_WITNESS)
-    reports = scan(workspace, spec, view, revision, req.scanner, req.job_id, req.attempt, req.deadline, patched=bool(req.patch))
+    reports = scan(workspace, spec, view, revision, req.scanner, req.job_id, req.attempt, req.deadline, patched=bool(req.patch), sandbox=sandbox, stage=stage)
     if stage.changed() if stage else tracked_changes(workspace):
         raise PolicyError("tracked_file_changed_during_execution")
     findings = [f for report in reports for f in report["findings"]]
