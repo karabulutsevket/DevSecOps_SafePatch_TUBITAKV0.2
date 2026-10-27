@@ -1,0 +1,35 @@
+{
+  "case": "owasp-benchmark-02034",
+  "cwe": "CWE-22",
+  "vulnerable": true,
+  "known": [
+    {
+      "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest02034.java",
+      "line": 64
+    }
+  ],
+  "semgrep": {
+    "found": false,
+    "on_line": false,
+    "version": "1.136.0",
+    "findings": [],
+    "other_findings": 0,
+    "unmapped_results": 0
+  },
+  "findsecbugs": {
+    "found": true,
+    "on_line": false,
+    "version": "spotbugs-4.9.8+findsecbugs-1.14.0",
+    "findings": [
+      {
+        "rule_id": "PATH_TRAVERSAL_IN",
+        "cwe": "CWE-22",
+        "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest02034.java",
+        "line": 66
+      }
+    ],
+    "other_findings": 0,
+    "unmapped_results": 0
+  },
+  "seconds": 79.5
+}

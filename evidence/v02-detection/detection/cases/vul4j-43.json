@@ -1,0 +1,53 @@
+{
+  "case": "vul4j-43",
+  "cwe": "CWE-22",
+  "vulnerable": true,
+  "known": [
+    {
+      "file": "util/src/main/java/org/eclipse/rdf4j/common/io/ZipUtil.java",
+      "line": 93
+    }
+  ],
+  "semgrep": {
+    "found": false,
+    "on_line": false,
+    "version": "1.136.0",
+    "findings": [],
+    "other_findings": 0,
+    "unmapped_results": 0
+  },
+  "findsecbugs": {
+    "found": true,
+    "on_line": true,
+    "version": "spotbugs-4.9.8+findsecbugs-1.14.0",
+    "findings": [
+      {
+        "rule_id": "PATH_TRAVERSAL_IN",
+        "cwe": "CWE-22",
+        "file": "util/src/main/java/org/eclipse/rdf4j/common/io/FileUtil.java",
+        "line": 332
+      },
+      {
+        "rule_id": "PATH_TRAVERSAL_IN",
+        "cwe": "CWE-22",
+        "file": "util/src/main/java/org/eclipse/rdf4j/common/io/FileUtil.java",
+        "line": 109
+      },
+      {
+        "rule_id": "PATH_TRAVERSAL_IN",
+        "cwe": "CWE-22",
+        "file": "util/src/main/java/org/eclipse/rdf4j/common/io/FileUtil.java",
+        "line": 301
+      },
+      {
+        "rule_id": "PATH_TRAVERSAL_IN",
+        "cwe": "CWE-22",
+        "file": "util/src/main/java/org/eclipse/rdf4j/common/io/ZipUtil.java",
+        "line": 93
+      }
+    ],
+    "other_findings": 25,
+    "unmapped_results": 0
+  },
+  "seconds": 80.7
+}

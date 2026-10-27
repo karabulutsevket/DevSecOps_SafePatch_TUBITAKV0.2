@@ -1,0 +1,41 @@
+{
+  "case": "owasp-benchmark-02653",
+  "cwe": "CWE-89",
+  "vulnerable": true,
+  "known": [
+    {
+      "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest02653.java",
+      "line": 77
+    }
+  ],
+  "semgrep": {
+    "found": false,
+    "on_line": false,
+    "version": "1.136.0",
+    "findings": [],
+    "other_findings": 0,
+    "unmapped_results": 0
+  },
+  "findsecbugs": {
+    "found": true,
+    "on_line": true,
+    "version": "spotbugs-4.9.8+findsecbugs-1.14.0",
+    "findings": [
+      {
+        "rule_id": "SQL_INJECTION_JDBC",
+        "cwe": "CWE-89",
+        "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest02653.java",
+        "line": 77
+      },
+      {
+        "rule_id": "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+        "cwe": "CWE-89",
+        "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest02653.java",
+        "line": 77
+      }
+    ],
+    "other_findings": 1,
+    "unmapped_results": 0
+  },
+  "seconds": 73.5
+}
