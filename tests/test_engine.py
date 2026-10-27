@@ -363,6 +363,37 @@ def test_an_unchanged_region_answer_is_reported_as_repeating_the_region(job_stor
     assert job["attempts"][0]["no_change"] == {"answer": "repeats_shown_code", "shown": "regions", "change_required_by": None}
 
 
+def answered(job_store, patch_factory, source, answers, strategy="guided"):
+    """(job, attempts sent to verification, worker1 request bodies) for `answers`: (path, content) per attempt."""
+    db, job = job_store
+    db.mutate(job["id"], lambda j: j.update(strategy=strategy))
+    proposals, verified, bodies = iter(answers), [], []
+    def call(url, method="GET", **kwargs):
+        body = kwargs.get("body", {})
+        if url.endswith("/propose"):
+            bodies.append(body)
+            path, content = next(proposals)
+            return {"mode": "mock-test", "patch": patch_factory(content, path=path).model_dump()}
+        if body.get("attempt") == 0:
+            return fake_initial()
+        verified.append(body["attempt"])
+        return {"passed": False, "feedback": {"code": "compile"}}
+    Engine(db, call).run(job["id"])
+    return db.get(job["id"]), verified, bodies
+
+
+def test_a_forbidden_capability_ends_the_job(job_store, patch_factory, source):
+    # Today's policy: a patch adding a forbidden call or suppression rejects the whole job
+    # (two L3 runs, five jobs; docs/KOK_NEDEN_UC_SORUN.md).
+    job, verified, _ = answered(job_store, patch_factory, source, [(SOURCE, source[SOURCE] + "class Exit { void x() { System.exit(0); } }\n"), (SOURCE, source[SOURCE] + "// fixed\n")])
+    assert (job["status"], job["reason"], verified, len(job["attempts"])) == ("rejected", "forbidden_capability_or_suppression", [], 1)
+
+
+def test_a_patch_to_a_protected_file_ends_the_job(job_store, patch_factory, source):
+    job, verified, _ = answered(job_store, patch_factory, source, [("src/test/java/demo/SecurityTest.java", "class SecurityTest {}\n"), (SOURCE, source[SOURCE] + "// fixed\n")])
+    assert (job["status"], job["reason"], verified) == ("rejected", "protected_or_unauthorized_path", [])
+
+
 def test_repeated_empty_answers_stop_as_no_progress(job_store, patch_factory, source):
     job, verified = unchanged_then(job_store, patch_factory, source, [None, None, None])
     assert (job["status"], job["reason"], verified) == ("needs_human", "no_progress", [])
