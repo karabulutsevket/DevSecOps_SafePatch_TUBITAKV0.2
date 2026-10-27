@@ -77,6 +77,14 @@ python3 -m venv /mutlak/yol/semgrep-venv
 wsl -d Debian -- /mutlak/yol/semgrep-venv/bin/semgrep --version    # 1.136.0 görünmeli
 ```
 
+**SpotBugs + FindSecBugs (Hafta 7, tarayıcı `findsecbugs`):** Maven Central'dan SpotBugs 4.9.8 dağıtımını ve FindSecBugs 1.14.0 eklentisini `.runtime/tools` altına indirir ve sabit SHA-256 özetleriyle doğrular. `maven-dependency-plugin` 3.8.1'i çevrimdışı Maven önbelleğine ekler. Yaklaşık 34 MB. Ardından sandbox önbelleği güncellenir.
+
+```powershell
+$env:MAVEN_CACHE = 'C:\mutlak\yol\m2'
+.venv/Scripts/python.exe scripts/prepare_findsecbugs.py
+.venv/Scripts/python.exe scripts/prepare_sandbox.py      # Docker sandbox kullanılıyorsa
+```
+
 ## 4. Servisleri başlatma ve durdurma
 
 ```powershell

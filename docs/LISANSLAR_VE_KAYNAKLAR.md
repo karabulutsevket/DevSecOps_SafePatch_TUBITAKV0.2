@@ -8,6 +8,9 @@
 | Qwen2.5-Coder-7B-Instruct | Model kartı Apache-2.0; ağırlık özeti sabitlenir | İsim ailesi yerine seçilen model/sürüm lisansı doğrulanır; ağırlıklar bu depoda dağıtılmaz |
 | Semgrep CE motoru | LGPL-2.1; ayrı süreç olarak çağrılır | Dağıtım yükümlülükleri ayrıca ele alınır |
 | Semgrep'in yayımladığı kural koleksiyonları | Bu depoda kullanılmıyor; kendi üç MIT kuralı var | Motor lisansıyla karıştırılmaz; Semgrep Rules License ayrı kısıtlar içerir |
+| SpotBugs 4.9.8 | LGPL-2.1; ayrı süreç olarak çağrılır, depoda yok (`.runtime/tools`) | Dağıtım yükümlülükleri ayrıca ele alınır |
+| FindSecBugs eklentisi 1.14.0 | LGPL-3.0; SpotBugs eklentisi olarak yüklenir, depoda yok | Dağıtım yükümlülükleri ayrıca ele alınır |
+| maven-dependency-plugin 3.8.1 | Apache-2.0; çevrimdışı Maven önbelleğinde, projenin sınıf yolu için | Dağıtılmaz |
 | SonarQube Community Build | Zorunlu değil | Ticari sürümlerdeki bütün güvenlik kuralları yoktur |
 | SonarQube ticari / CodeFix | V0.1 için alınmadı | Müşteri lisansı veya açık OEM/yeniden satış anlaşması gerekir; bizim tek lisansımızın bütün müşterileri kapsadığı varsayılmaz |
 | Snyk ve diğer ticari servisler | Kullanılmadı | Offline destek, veri akışı, kullanım ve yeniden dağıtım hakları sağlayıcıyla doğrulanır |
@@ -25,6 +28,8 @@ Sonar, Community Build'in taint analizini desteklemediğini ve güvenlik kapsam�
 4. [Qwen model kartı](https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct): seçilen model ve Apache-2.0 lisansı.
 5. [Semgrep CE](https://semgrep.dev/products/community-edition/): motor lisansı.
 6. [Semgrep kural lisansı](https://semgrep.dev/legal/rules-license/): motor dışında ayrı kural lisansı.
+8. [SpotBugs](https://github.com/spotbugs/spotbugs): motor ve LGPL-2.1 lisansı; dağıtım paketi Maven Central `com.github.spotbugs:spotbugs:4.9.8` (zip).
+9. [Find Security Bugs](https://find-sec-bugs.github.io/): eklenti, hata desenleri ve LGPL-3.0 lisansı; Maven Central `com.h3xstream.findsecbugs:findsecbugs-plugin:1.14.0`.
 7. [Sonar plan ve fiyatlandırma](https://www.sonarsource.com/plans-and-pricing/sonarqube/): paket/sözleşme değerlendirmesi; V0.1 için ücretli satın alma yapılmadı.
 
 Rakiplerle lisanslı başa baş benchmark, müşteri satın alma görüşmesi veya gerçek kurumda pilot yapılmış gibi bir iddia yoktur. Bu depodaki ölçümler SafePatch'in kendi yerel koşularıdır.
