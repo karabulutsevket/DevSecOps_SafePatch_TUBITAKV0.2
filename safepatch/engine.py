@@ -176,6 +176,25 @@ class Engine:
             job["events"].append({"time": time.time(), "status": status})
         return self.store.mutate(job_id, change)
 
+    def similar(self, job, context, target, source, finding):
+        """Arm B of the main experiment (memory_mode "similar", never offered by the API): the
+        record most similar to the finding's method, or to the lines around the finding."""
+        line = finding.get("line") or 1
+        view = region_view(target, source, [line])
+        query = "".join(r["content"] for r in view["regions"]) if view else "\n".join(source.splitlines()[max(0, line - 26):line + 25])
+        used = {}
+
+        def embed(texts):
+            vectors = []
+            for start in range(0, len(texts), 64):
+                answer = self.worker("worker1", "/embed", {"texts": texts[start:start + 64], "deadline": job["deadline"]}, job["deadline"])
+                used.update(model=answer["model"], model_digest=answer["model_digest"])
+                vectors += answer["embeddings"]
+            return vectors
+        lookup = self.memory.similar(context, query, embed)
+        lookup["embedding"] = used or None
+        return lookup
+
     def worker(self, name, path, body, deadline):
         port = {"worker1": 8101, "worker2": 8102}[name]
         return self.call(setting(name.upper() + "_URL", f"http://127.0.0.1:{port}") + path, "POST", token=secret(name.upper() + "_TOKEN"), body=body, timeout=remaining(deadline, 1200))
@@ -284,7 +303,10 @@ class Engine:
             self.set(job_id, "needs_human", reason="suspected_prompt_injection")
             return
         context = context_for(case, files, finding)
-        lookup = self.memory.search(context, job.get("memory_mode", "guarded"))
+        if job.get("memory_mode") == "similar":
+            lookup = self.similar(job, context, target, source, finding)
+        else:
+            lookup = self.memory.search(context, job.get("memory_mode", "guarded"))
         selected = lookup.pop("selected")
         lookup["selected_id"] = selected["id"] if selected else None
         # Week 5: the closest failed candidates go to the model as "did not work here" data.

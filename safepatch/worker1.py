@@ -222,6 +222,32 @@ def propose_route(req: Propose):
         raise HTTPException(503, str(exc)[:120]) from exc
 
 
+# Arm B of the main experiment (ROADMAP.md week 9, docs/DENEY_PROTOKOLU.md): a local embedding
+# model ranks memory records by similarity. Its vectors only order examples; it writes no code.
+EMBED_MODEL = ("nomic-embed-text:v1.5", "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f")
+
+
+class Embed(Strict):
+    texts: list[str] = Field(min_length=1, max_length=64)
+    deadline: float
+
+
+@app.post("/embed", dependencies=[Depends(require_service("WORKER1_TOKEN"))])
+def embed(req: Embed):
+    if any(len(text) > 8000 for text in req.texts):
+        raise HTTPException(422, "embedding_text_too_long")
+    endpoint = setting("OLLAMA_URL", "http://127.0.0.1:11434")
+    model, pinned = EMBED_MODEL
+    found = next((m for m in request(endpoint + "/api/tags")["models"] if m["name"] == model), None)
+    if not found:
+        raise HTTPException(503, "embedding_model_not_downloaded")
+    if found["digest"] != pinned:
+        raise HTTPException(503, "embedding_model_digest_mismatch")
+    result = request(endpoint + "/api/embed", "POST", body={"model": model, "input": req.texts, "keep_alive": setting("MODEL_KEEP_ALIVE", "5m")},
+                     timeout=remaining(req.deadline, 120))
+    return {"model": model, "model_digest": found["digest"], "embeddings": result["embeddings"]}
+
+
 class Review(Strict):
     diff: str = Field(max_length=28000)
     deadline: float
