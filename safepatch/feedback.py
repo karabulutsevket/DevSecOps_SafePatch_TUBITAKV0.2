@@ -6,7 +6,7 @@ by the team; it never contains model output or repository text.
 """
 from safepatch.common import canonical, digest
 
-CATEGORIES = ("compilation_failed", "behavior_regression", "security_witness_failed", "finding_remaining", "empty_patch", "unknown", "infrastructure")
+CATEGORIES = ("compilation_failed", "behavior_regression", "security_witness_failed", "finding_remaining", "empty_patch", "forbidden_capability", "unknown", "infrastructure")
 
 # Guidance has two levels. Level 0 is a diagnosis of the failure category. Level 1 adds
 # the weakness recipe (the standard secure repair), whatever the category: a model that
@@ -35,6 +35,7 @@ DIAGNOSIS = {
         "security_witness_failed": "The security test can still exploit the code.",
         "finding_remaining": "The scanner still reports the weakness at the same sink; remove the vulnerable construction itself, do not suppress or wrap it.",
         "empty_patch": "The previous answer returned the code unchanged. Change the vulnerable code itself.",
+        "forbidden_capability": "The previous answer was refused: it added or rewrote a line that holds a forbidden call or suppression (a process, network, reflection, environment or exit call, or a scanner or test suppression). A patch may not add such a line or edit one that already exists; it may remove one. Fix the vulnerable code without them.",
         "unknown": "The previous patch failed verification.",
     },
 }

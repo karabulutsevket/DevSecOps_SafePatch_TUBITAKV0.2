@@ -41,6 +41,10 @@ def read_only_context(files, target, limit=8000):
 
 EXPERT_ATTEMPTS = 3
 
+# Policy refusals of a model answer that fail its attempt instead of the job (feedback category).
+# Anything else (a protected path, a symlink, an invalid region answer) still rejects the job.
+RETRYABLE_REFUSALS = {"empty_patch": "empty_patch", "forbidden_capability_or_suppression": "forbidden_capability"}
+
 
 # Fields a per-file job keeps from the job whose scan it came from (week 4: one job per file).
 INHERITED = ("project", "memory_mode", "strategy", "case_id", "base_commit", "split", "policy_version", "scanner", "mode",
@@ -349,20 +353,24 @@ class Engine:
                 patch = Patch.model_validate(proposal["patch"])
                 meta = validate_patch(files, patch, allowed=allowed)
             except PolicyError as exc:
-                empty = str(exc) == "empty_patch"
-                failure = {"category": "empty_patch"} if empty else None
-                report = {"failure": failure, "no_change": no_change(proposal, view, source, initial)} if empty else {}
+                category = RETRYABLE_REFUSALS.get(str(exc))
+                failure = {"category": category} if category else None
+                report = {"failure": failure} if category else {}
+                if category == "empty_patch":
+                    report["no_change"] = no_change(proposal, view, source, initial)
                 self.store.mutate(job_id, lambda j: j["attempts"].append({"number": attempt, "proposal": proposal, "policy_error": str(exc), **report}))
-                if not empty:
+                if not category:
                     raise
-                # A model answer that changes nothing is a failed attempt, not a policy breach
-                # (region-mode development cases, 25 Oct 2026): retry with feedback.
-                feedback = dict(failure) if strategy.startswith("guided") else {"code": "empty_patch"}
+                # The patch stays refused; the job goes on with feedback. A model answer that
+                # changes nothing (region-mode development cases, 25 Oct 2026) or adds a forbidden
+                # call (two L3 runs: five jobs ended at once, one a case fixed at attempt 2 in
+                # the other run) is a failed attempt.
+                feedback = dict(failure) if strategy.startswith("guided") else {"code": category}
                 if not strategy.startswith("guided"):
-                    if ("empty_patch",) == previous_feedback:
+                    if (category,) == previous_feedback:
                         self.set(job_id, "needs_human", reason="no_progress")
                         return
-                    previous_feedback = ("empty_patch",)
+                    previous_feedback = (category,)
                 continue
             record = {"number": attempt, "proposal": proposal, "retry": retry, **meta}
             if meta["patch_sha256"] in seen:

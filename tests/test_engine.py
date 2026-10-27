@@ -382,11 +382,22 @@ def answered(job_store, patch_factory, source, answers, strategy="guided"):
     return db.get(job["id"]), verified, bodies
 
 
-def test_a_forbidden_capability_ends_the_job(job_store, patch_factory, source):
-    # Today's policy: a patch adding a forbidden call or suppression rejects the whole job
-    # (two L3 runs, five jobs; docs/KOK_NEDEN_UC_SORUN.md).
-    job, verified, _ = answered(job_store, patch_factory, source, [(SOURCE, source[SOURCE] + "class Exit { void x() { System.exit(0); } }\n"), (SOURCE, source[SOURCE] + "// fixed\n")])
-    assert (job["status"], job["reason"], verified, len(job["attempts"])) == ("rejected", "forbidden_capability_or_suppression", [], 1)
+EXIT = "class Exit { void x() { System.exit(0); } }\n"
+
+
+def test_a_forbidden_capability_fails_its_attempt_and_the_job_goes_on(job_store, patch_factory, source):
+    # Proposal B (docs/KOK_NEDEN_UC_SORUN.md): the patch is still refused, never verified; the
+    # job continues with the trusted diagnosis instead of being rejected at once.
+    job, verified, bodies = answered(job_store, patch_factory, source, [(SOURCE, source[SOURCE] + EXIT), (SOURCE, source[SOURCE] + "// fixed\n"), (SOURCE, source[SOURCE] + "// again\n")])
+    first = job["attempts"][0]
+    assert (first["policy_error"], first["failure"], verified) == ("forbidden_capability_or_suppression", {"category": "forbidden_capability"}, [2, 3])
+    assert bodies[1]["feedback"] == {"category": "forbidden_capability"} and "may remove one" in bodies[1]["guidance"]
+    assert (job["status"], job["reason"]) == ("needs_human", "attempt_budget_exhausted")
+
+
+def test_repeated_forbidden_capabilities_stop_as_no_progress(job_store, patch_factory, source):
+    job, verified, _ = answered(job_store, patch_factory, source, [(SOURCE, source[SOURCE] + EXIT)] * 3, strategy="v01")
+    assert (job["status"], job["reason"], verified, len(job["attempts"])) == ("needs_human", "no_progress", [], 2)
 
 
 def test_a_patch_to_a_protected_file_ends_the_job(job_store, patch_factory, source):
