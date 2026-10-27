@@ -1,0 +1,107 @@
+{
+  "model_mode": "mock-test-reference-patch",
+  "scanner_mode": "real-builtin-demo",
+  "result": {
+    "passed": false,
+    "baseline_valid": false,
+    "base_commit": "aa16822acb2e028c45484168f34d39e222738173",
+    "source_revision": "01c67542ccd3e3d88757fb109071c5042a768bc1",
+    "build": {
+      "passed": true,
+      "duration_seconds": 3.656
+    },
+    "behavior": {
+      "passed": false,
+      "tests": 3,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "knownAccount",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        },
+        {
+          "name": "secondAccount",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        }
+      ],
+      "exit_code": 1,
+      "duration_seconds": 2.781,
+      "junit_sha256": "6660fff775edbec583d0ff41c06bebd3df07ac131388c40734b529cf782580e0"
+    },
+    "security": {
+      "passed": true,
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "exit_code": 0,
+      "duration_seconds": 2.766,
+      "junit_sha256": "034925b28b268b10f2e8b9c996457e2305ea0d5a375c74375310a2f14025eddc"
+    },
+    "scans": [
+      {
+        "tool": "builtin-demo",
+        "version": "1.0.0",
+        "coverage": "three owned synthetic patterns only",
+        "status": "ok",
+        "analysis_id": "915a8122e137491aa8d0dd7e2ce6ad34",
+        "commit": "01c67542ccd3e3d88757fb109071c5042a768bc1",
+        "findings": []
+      }
+    ],
+    "tolerated": [],
+    "patch": {
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -1,24 +1,4 @@\n package demo;\n-\n-import java.sql.*;\n-import java.util.*;\n-\n-// Case sql-02.\n-// Deliberately vulnerable synthetic example. Never use with real data.\n public class DemoService {\n-    public String lookup(String input) throws Exception {\n-        try (Connection conn = DriverManager.getConnection(\"jdbc:h2:mem:demo;DB_CLOSE_DELAY=-1\")) {\n-            try (Statement init = conn.createStatement()) {\n-                init.execute(\"CREATE TABLE IF NOT EXISTS accounts(name VARCHAR PRIMARY KEY)\");\n-                init.execute(\"MERGE INTO accounts KEY(name) VALUES ('alice'), ('bob')\");\n-            }\n-            String query = \"SELECT name FROM accounts WHERE name = '\" + input + \"'\";\n-            List<String> names = new ArrayList<>();\n-            try (Statement statement = conn.createStatement(); ResultSet rows = statement.executeQuery(query)) {\n-                while (rows.next()) names.add(rows.getString(1));\n-            }\n-            Collections.sort(names);\n-            return String.join(\",\", names);\n-        }\n-    }\n+    public String lookup(String input) throws Exception { return \"\"; }\n }\n",
+      "patch_sha256": "66bfa1631348b623092a8485fe0b2439505248de163463726a9a865f5c90ba54",
+      "changed_lines": 22
+    },
+    "feedback": {
+      "code": "validation_failed",
+      "behavior": {
+        "passed": false,
+        "tests": 3,
+        "failures": 2,
+        "errors": 0,
+        "skipped": 0,
+        "details": [
+          {
+            "name": "knownAccount",
+            "type": "failure",
+            "assertion": "BEHAVIOR_REGRESSION"
+          },
+          {
+            "name": "secondAccount",
+            "type": "failure",
+            "assertion": "BEHAVIOR_REGRESSION"
+          }
+        ],
+        "exit_code": 1,
+        "duration_seconds": 2.781,
+        "junit_sha256": "6660fff775edbec583d0ff41c06bebd3df07ac131388c40734b529cf782580e0"
+      },
+      "security": {
+        "passed": true,
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 2.766,
+        "junit_sha256": "034925b28b268b10f2e8b9c996457e2305ea0d5a375c74375310a2f14025eddc"
+      },
+      "remaining_rules": []
+    },
+    "duration_seconds": 9.844,
+    "runner_profile": "native-same-user",
+    "versions": {
+      "java": "17; inspect preparation evidence",
+      "maven": "3.9.16"
+    }
+  }
+}

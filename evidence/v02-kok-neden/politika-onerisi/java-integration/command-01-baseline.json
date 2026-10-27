@@ -1,0 +1,106 @@
+{
+  "model_mode": "mock-test-reference-patch",
+  "scanner_mode": "real-builtin-demo",
+  "result": {
+    "passed": false,
+    "baseline_valid": true,
+    "base_commit": "00268862eb7cbd232b95ccf0fab24ec882ca32ee",
+    "source_revision": "00268862eb7cbd232b95ccf0fab24ec882ca32ee",
+    "build": {
+      "passed": true,
+      "duration_seconds": 3.906
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "exit_code": 0,
+      "duration_seconds": 2.891,
+      "junit_sha256": "7347fe76aee396979c7dad960eb7c3d2f222beaa3051247afad36129213c3b24"
+    },
+    "security": {
+      "passed": false,
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "shellMetacharactersAreLiteral",
+          "type": "failure",
+          "assertion": "COMMAND_INJECTION_REGRESSION"
+        }
+      ],
+      "exit_code": 1,
+      "duration_seconds": 2.859,
+      "junit_sha256": "0173ffc589c7be80710b660f57ea55e9b7e067a4ce5fcef50436eece1deeae35"
+    },
+    "scans": [
+      {
+        "tool": "builtin-demo",
+        "version": "1.0.0",
+        "coverage": "three owned synthetic patterns only",
+        "status": "ok",
+        "analysis_id": "79ebbc305189475391419db5db46c74f",
+        "commit": "00268862eb7cbd232b95ccf0fab24ec882ca32ee",
+        "findings": [
+          {
+            "tool": "builtin-demo",
+            "rule_id": "bigg.java.shell-command",
+            "cwe": "CWE-78",
+            "type": "VULNERABILITY",
+            "file": "src/main/java/demo/DemoService.java",
+            "line": 16,
+            "fingerprint": "28cc46870e034154cc56af172a3d989a42cf40422479caa1e50a030df4152135",
+            "severity": "HIGH"
+          }
+        ]
+      }
+    ],
+    "tolerated": [],
+    "patch": null,
+    "feedback": {
+      "code": "validation_failed",
+      "behavior": {
+        "passed": true,
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 2.891,
+        "junit_sha256": "7347fe76aee396979c7dad960eb7c3d2f222beaa3051247afad36129213c3b24"
+      },
+      "security": {
+        "passed": false,
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "details": [
+          {
+            "name": "shellMetacharactersAreLiteral",
+            "type": "failure",
+            "assertion": "COMMAND_INJECTION_REGRESSION"
+          }
+        ],
+        "exit_code": 1,
+        "duration_seconds": 2.859,
+        "junit_sha256": "0173ffc589c7be80710b660f57ea55e9b7e067a4ce5fcef50436eece1deeae35"
+      },
+      "remaining_rules": [
+        "bigg.java.shell-command"
+      ]
+    },
+    "duration_seconds": 10.125,
+    "runner_profile": "native-same-user",
+    "versions": {
+      "java": "17; inspect preparation evidence",
+      "maven": "3.9.16"
+    }
+  }
+}
