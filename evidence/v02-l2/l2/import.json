@@ -1,0 +1,64 @@
+{
+  "v1": {
+    "status": "installed",
+    "publisher": "safepatch-lab",
+    "version": 1,
+    "manifest_sha256": "010057d4a2e876994053c38d68c4071d7c671aa881b04be55bfd327794fadce2",
+    "signer": "SHA256:T1X+mEIe0gRfzPTFfXM6EehBa1axJ3u0pkfIfNd2b8w",
+    "experiment": true,
+    "created_at": 1793115676.6892576,
+    "imported_at": 1793115677.0504687,
+    "records": [
+      "l2:path-01-a073ee200d38"
+    ],
+    "withdrawn": []
+  },
+  "v2": {
+    "status": "installed",
+    "publisher": "safepatch-lab",
+    "version": 2,
+    "manifest_sha256": "52a79ec05d1bfb6b6d16c41f477b9030fd6542f9af0dbd8181acb69202a6ca0e",
+    "signer": "SHA256:T1X+mEIe0gRfzPTFfXM6EehBa1axJ3u0pkfIfNd2b8w",
+    "experiment": true,
+    "created_at": 1793115676.7523396,
+    "imported_at": 1793115774.3369057,
+    "records": [
+      "l2:path-01-a073ee200d38"
+    ],
+    "withdrawn": []
+  },
+  "refusals": {
+    "changed_record": "record_sha256_mismatch:l2:path-01-a073ee200d38",
+    "unknown_key": "signature_invalid",
+    "no_trust_file": "l2_trust_not_configured",
+    "older_version": "package_downgrade"
+  },
+  "packages": [
+    {
+      "publisher": "safepatch-lab",
+      "version": 2,
+      "manifest_sha256": "52a79ec05d1bfb6b6d16c41f477b9030fd6542f9af0dbd8181acb69202a6ca0e",
+      "signer": "SHA256:T1X+mEIe0gRfzPTFfXM6EehBa1axJ3u0pkfIfNd2b8w",
+      "experiment": true,
+      "created_at": 1793115676.7523396,
+      "imported_at": 1793115774.3369057,
+      "records": [
+        "l2:path-01-a073ee200d38"
+      ],
+      "withdrawn": []
+    },
+    {
+      "publisher": "safepatch-lab",
+      "version": 1,
+      "manifest_sha256": "010057d4a2e876994053c38d68c4071d7c671aa881b04be55bfd327794fadce2",
+      "signer": "SHA256:T1X+mEIe0gRfzPTFfXM6EehBa1axJ3u0pkfIfNd2b8w",
+      "experiment": true,
+      "created_at": 1793115676.6892576,
+      "imported_at": 1793115677.0504687,
+      "records": [
+        "l2:path-01-a073ee200d38"
+      ],
+      "withdrawn": []
+    }
+  ]
+}

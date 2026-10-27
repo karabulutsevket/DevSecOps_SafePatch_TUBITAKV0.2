@@ -1,0 +1,80 @@
+[
+  {
+    "id": "957d37a32f8e4c169361db125881ada3",
+    "case_id": "path-01",
+    "project": "owned-java-demo",
+    "phase": "lab-construction",
+    "scanner": "semgrep",
+    "memory_mode": "off",
+    "status": "awaiting_review",
+    "accepted": true,
+    "reason": null,
+    "attempts": 3,
+    "wall_seconds": 226.375,
+    "memory_tier": null,
+    "memory_use": null,
+    "memory_selected": null,
+    "considered": [],
+    "proposal_modes": [
+      "real-local-model",
+      "real-local-model",
+      "real-local-model"
+    ]
+  },
+  {
+    "id": "b1d97a3468c14da2a83d0526fca3d730",
+    "case_id": "package-path-1",
+    "project": "safepatch-package-dev",
+    "phase": "installation-use",
+    "scanner": "known",
+    "memory_mode": "guarded",
+    "status": "awaiting_review",
+    "accepted": true,
+    "reason": null,
+    "attempts": 1,
+    "wall_seconds": 59.303,
+    "memory_tier": "L2",
+    "memory_use": "example",
+    "memory_selected": "l2:path-01-a073ee200d38",
+    "considered": [
+      {
+        "id": "l2:path-01-a073ee200d38",
+        "tier": "L2",
+        "use": "example",
+        "rank": 1,
+        "differences": []
+      }
+    ],
+    "proposal_modes": [
+      "real-local-model"
+    ]
+  },
+  {
+    "id": "74b02589ec1d4d20b47c97effd812317",
+    "case_id": "package-path-1",
+    "project": "safepatch-package-dev",
+    "phase": "installation-after-promotion",
+    "scanner": "known",
+    "memory_mode": "guarded",
+    "status": "awaiting_review",
+    "accepted": true,
+    "reason": null,
+    "attempts": 1,
+    "wall_seconds": 37.343,
+    "memory_tier": "L1",
+    "memory_use": "replay",
+    "memory_selected": "8565934e812942c3930e998fdb7ab165",
+    "considered": [
+      {
+        "id": "8565934e812942c3930e998fdb7ab165",
+        "tier": null,
+        "use": "replay",
+        "rank": 1,
+        "differences": []
+      }
+    ],
+    "proposal_modes": [
+      "approved-memory-replay"
+    ]
+  }
+]

@@ -1,0 +1,484 @@
+{
+  "id": "b1d97a3468c14da2a83d0526fca3d730",
+  "case_id": "package-path-1",
+  "base_commit": "cf103601de471ee8dd2632cd6e79c30b50eed7db",
+  "project": "safepatch-package-dev",
+  "policy_version": "java-synthetic-v1",
+  "scanner": "known",
+  "mode": "real-local-model",
+  "evaluation": false,
+  "status": "awaiting_review",
+  "owner": "EXPERIMENT-NOT-A-HUMAN",
+  "started_at": 1793115677.0665166,
+  "deadline": 1793116877.0665166,
+  "max_attempts": 3,
+  "attempt_count": 1,
+  "attempts": [
+    {
+      "number": 1,
+      "proposal": {
+        "mode": "real-local-model",
+        "patch": {
+          "edits": [
+            {
+              "path": "src/main/java/demo/DemoService.java",
+              "old_sha256": "b6dfc6a9d54917df26a136128aeb14db15c729a7560dafc2fbc0bbfe7bf9db38",
+              "content": "/*\n * SafePatch development case (MIT).\n *\n * One handler among the many generated handlers of the demo package. The value\n * arrives through lookup(), passes a small helper and reaches one call of the\n * kind this class stands for. Everything here is synthetic: no real data, no\n * network, no real targets. The root folder is supplied by the trusted runner.\n *\n * @created 2026 for the SafePatch L3 development set\n */\npackage demo;\n\nimport java.nio.file.Files;\nimport java.nio.file.Path;\nimport java.util.Map;\n\npublic class DemoService {\n\n    private static final String ROOT_PROPERTY = \"demo.root\";\n\n    public String lookup(String input) throws Exception {\n        // some code\n        String param = \"\";\n        if (input != null) {\n            param = input; // just take the value\n        }\n\n        String bar = doSomething(param);\n\n        Path root = Path.of(System.getProperty(ROOT_PROPERTY)).toRealPath();\n        Path target = root.resolve(bar).toRealPath();\n        if (!target.startsWith(root)) {\n            throw new SecurityException(\"Input path escapes root\");\n        }\n        return Files.readString(target);\n    }\n\n    /** Entry point the package's dispatcher calls with the request's values; lookup() holds the work. */\n    public void serve(Map<String, String> request, StringBuilder response) {\n        response.append(\"<!DOCTYPE html>\\n<html>\\n<body>\\n<p>\");\n        String value = request.getOrDefault(\"DemoService\", \"\");\n        try {\n            response.append(\"Result: \").append(escape(lookup(value)));\n        } catch (Exception e) {\n            response.append(\"Error processing request.\");\n        }\n        response.append(\"</p>\\n</body>\\n</html>\");\n    }\n\n    private static String escape(String text) {\n        StringBuilder out = new StringBuilder();\n        for (char c : text.toCharArray()) {\n            switch (c) {\n                case '<':\n                    out.append(\"&lt;\");\n                    break;\n                case '>':\n                    out.append(\"&gt;\");\n                    break;\n                case '&':\n                    out.append(\"&amp;\");\n                    break;\n                case '\"':\n                    out.append(\"&quot;\");\n                    break;\n                default:\n                    out.append(c);\n            }\n        }\n        return out.toString();\n    }\n\n    private static String doSomething(String param) {\n        String bar;\n\n        // Simple if statement that assigns a constant to bar on a true condition\n        int num = 86;\n        if ((7 * 18) - num > 200) {\n            bar = \"This_should_never_happen\";\n        } else {\n            bar = param;\n        }\n\n        return bar;\n    }\n}\n"
+            }
+          ],
+          "rationale": "The vulnerability in the original code was due to the lack of path validation, which could allow an attacker to traverse the file system by providing a malicious input. The fix ensures that the resolved path starts with the root directory, preventing path traversal attacks."
+        },
+        "model": {
+          "runtime": "ollama",
+          "runtime_version": "0.34.0",
+          "model": "qwen2.5-coder:7b-instruct-q4_K_M",
+          "model_digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+          "quantization": "Q4_K_M",
+          "license_sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e"
+        },
+        "metrics": {
+          "edit_mode": "whole_file",
+          "whole_file_fallback": null,
+          "duration_seconds": 22.422,
+          "prompt_tokens_measured": 2552,
+          "output_tokens_measured": 821,
+          "context_chars": 9028,
+          "prompt_sha256": "72cca74ac5cfebb434f56c66011579e6c7dcc1135c1973deef6bb007c6ef8567",
+          "system_prompt_sha256": "c7151c7efcef902a01f125af42852290f6453f34910d25af9453ab280a69e923",
+          "seed": 43,
+          "temperature": 0.0,
+          "dropped_optional_context": [
+            "src/main/java/demo/Case001.java"
+          ],
+          "note_tag": null,
+          "num_ctx": 8192,
+          "num_predict": 2048
+        }
+      },
+      "retry": {
+        "strategy": "guided+context",
+        "temperature": 0.0,
+        "guidance_level": null,
+        "context_paths": [
+          "src/main/java/demo/Application.java",
+          "src/main/java/demo/Case001.java",
+          "src/main/java/demo/Case002.java"
+        ]
+      },
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -27,10 +27,12 @@\n \n         String bar = doSomething(param);\n \n-        Path root = Path.of(System.getProperty(ROOT_PROPERTY));\n-        Path target = root.resolve(bar);\n-        String text = Files.readString(target);\n-        return text;\n+        Path root = Path.of(System.getProperty(ROOT_PROPERTY)).toRealPath();\n+        Path target = root.resolve(bar).toRealPath();\n+        if (!target.startsWith(root)) {\n+            throw new SecurityException(\"Input path escapes root\");\n+        }\n+        return Files.readString(target);\n     }\n \n     /** Entry point the package's dispatcher calls with the request's values; lookup() holds the work. */\n",
+      "patch_sha256": "d9beffdb780159c3769941748bb7fb8e2ce6cd4526af84568532326ee188ff63",
+      "changed_lines": 10,
+      "verification": {
+        "passed": true,
+        "baseline_valid": false,
+        "base_commit": "cf103601de471ee8dd2632cd6e79c30b50eed7db",
+        "source_revision": "5405a7a3b2d31c68a36b694640d46eb2167aeb06",
+        "build": {
+          "passed": true,
+          "duration_seconds": 8.781
+        },
+        "behavior": {
+          "passed": true,
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "details": [],
+          "exit_code": 0,
+          "duration_seconds": 4.11,
+          "junit_sha256": "08d559a23ca22b69f53e5fbd96795715e3c1ce1c41a3451e6117ecb81ed127f5"
+        },
+        "security": {
+          "passed": true,
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "details": [],
+          "exit_code": 0,
+          "duration_seconds": 4.031,
+          "junit_sha256": "953fc1dca4d348d4d5f5a9a7db8816dca0c26ef51e0157393707163e911cb104"
+        },
+        "scans": [
+          {
+            "tool": "known-finding",
+            "version": "answer-key",
+            "status": "ok",
+            "commit": "5405a7a3b2d31c68a36b694640d46eb2167aeb06",
+            "findings": [],
+            "coverage": "answer key; a patched revision is not rescanned, the security witness decides"
+          }
+        ],
+        "tolerated": [],
+        "patch": {
+          "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -27,10 +27,12 @@\n \n         String bar = doSomething(param);\n \n-        Path root = Path.of(System.getProperty(ROOT_PROPERTY));\n-        Path target = root.resolve(bar);\n-        String text = Files.readString(target);\n-        return text;\n+        Path root = Path.of(System.getProperty(ROOT_PROPERTY)).toRealPath();\n+        Path target = root.resolve(bar).toRealPath();\n+        if (!target.startsWith(root)) {\n+            throw new SecurityException(\"Input path escapes root\");\n+        }\n+        return Files.readString(target);\n     }\n \n     /** Entry point the package's dispatcher calls with the request's values; lookup() holds the work. */\n",
+          "patch_sha256": "d9beffdb780159c3769941748bb7fb8e2ce6cd4526af84568532326ee188ff63",
+          "changed_lines": 10
+        },
+        "feedback": {
+          "code": "verified",
+          "behavior": {
+            "passed": true,
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "details": [],
+            "exit_code": 0,
+            "duration_seconds": 4.11,
+            "junit_sha256": "08d559a23ca22b69f53e5fbd96795715e3c1ce1c41a3451e6117ecb81ed127f5"
+          },
+          "security": {
+            "passed": true,
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "details": [],
+            "exit_code": 0,
+            "duration_seconds": 4.031,
+            "junit_sha256": "953fc1dca4d348d4d5f5a9a7db8816dca0c26ef51e0157393707163e911cb104"
+          },
+          "remaining_rules": []
+        },
+        "duration_seconds": 17.938,
+        "runner_profile": "native-same-user",
+        "versions": {
+          "java": "17; inspect preparation evidence",
+          "maven": "3.9.16"
+        },
+        "artifact_sha256": "54472e76817868b2621bd21338c8fc47d799891e4a0ac7eaea8abb59bc5e7405",
+        "candidate_commit": "5405a7a3b2d31c68a36b694640d46eb2167aeb06",
+        "review_branch": "candidate",
+        "review_repository": "C:\\TUBITAKClaude\\SafePatch_V0.2\\.runtime\\review\\b1d97a3468c14da2a83d0526fca3d730-98bd7d2e"
+      },
+      "failure": null
+    }
+  ],
+  "events": [
+    {
+      "time": 1793115677.305762,
+      "status": "scanning"
+    },
+    {
+      "time": 1793115693.794672,
+      "status": "scanning"
+    },
+    {
+      "time": 1793115693.8082676,
+      "status": "scanning"
+    },
+    {
+      "time": 1793115694.2905285,
+      "status": "scanning"
+    },
+    {
+      "time": 1793115694.335987,
+      "status": "patching"
+    },
+    {
+      "time": 1793115716.9784312,
+      "status": "verifying"
+    },
+    {
+      "time": 1793115736.4103696,
+      "status": "awaiting_review"
+    }
+  ],
+  "approval": null,
+  "memory_mode": "guarded",
+  "strategy": "guided+context",
+  "seed": 42,
+  "baseline": {
+    "passed": false,
+    "baseline_valid": true,
+    "base_commit": "cf103601de471ee8dd2632cd6e79c30b50eed7db",
+    "source_revision": "cf103601de471ee8dd2632cd6e79c30b50eed7db",
+    "build": {
+      "passed": true,
+      "duration_seconds": 7.469
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "exit_code": 0,
+      "duration_seconds": 3.75,
+      "junit_sha256": "bdbf6fbabb8977d5d7e9b6d1ce757b92d61b1119e07746c3d5c52bfde55e0516"
+    },
+    "security": {
+      "passed": false,
+      "tests": 3,
+      "failures": 3,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "cannotEscapeThroughLinkInsideRoot",
+          "type": "failure",
+          "assertion": "PATH_TRAVERSAL_REGRESSION"
+        },
+        {
+          "name": "cannotReadParentSecret",
+          "type": "failure",
+          "assertion": "PATH_TRAVERSAL_REGRESSION"
+        },
+        {
+          "name": "cannotReadAbsolutePathOutsideRoot",
+          "type": "failure",
+          "assertion": "PATH_TRAVERSAL_REGRESSION"
+        }
+      ],
+      "exit_code": 1,
+      "duration_seconds": 4.296,
+      "junit_sha256": "7e28eeeea2f276aa1edffe66cd8fc4b4f2009f990c12ce94d0971330988bcc3c"
+    },
+    "scans": [
+      {
+        "tool": "known-finding",
+        "version": "answer-key",
+        "status": "ok",
+        "commit": "cf103601de471ee8dd2632cd6e79c30b50eed7db",
+        "findings": [
+          {
+            "tool": "known-finding",
+            "rule_id": "known:package-path-1.1",
+            "cwe": "CWE-22",
+            "type": "VULNERABILITY",
+            "file": "src/main/java/demo/DemoService.java",
+            "line": 31,
+            "severity": "HIGH",
+            "source": "safepatch-synthetic answer key",
+            "fingerprint": "a9dbda298106c1da2619649d144315d26be77024de68af4a223bee3f99bd4c96"
+          }
+        ],
+        "coverage": "answer key; a patched revision is not rescanned, the security witness decides"
+      }
+    ],
+    "tolerated": [],
+    "patch": null,
+    "feedback": {
+      "code": "validation_failed",
+      "behavior": {
+        "passed": true,
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 3.75,
+        "junit_sha256": "bdbf6fbabb8977d5d7e9b6d1ce757b92d61b1119e07746c3d5c52bfde55e0516"
+      },
+      "security": {
+        "passed": false,
+        "tests": 3,
+        "failures": 3,
+        "errors": 0,
+        "skipped": 0,
+        "details": [
+          {
+            "name": "cannotEscapeThroughLinkInsideRoot",
+            "type": "failure",
+            "assertion": "PATH_TRAVERSAL_REGRESSION"
+          },
+          {
+            "name": "cannotReadParentSecret",
+            "type": "failure",
+            "assertion": "PATH_TRAVERSAL_REGRESSION"
+          },
+          {
+            "name": "cannotReadAbsolutePathOutsideRoot",
+            "type": "failure",
+            "assertion": "PATH_TRAVERSAL_REGRESSION"
+          }
+        ],
+        "exit_code": 1,
+        "duration_seconds": 4.296,
+        "junit_sha256": "7e28eeeea2f276aa1edffe66cd8fc4b4f2009f990c12ce94d0971330988bcc3c"
+      },
+      "remaining_rules": [
+        "known:package-path-1.1"
+      ]
+    },
+    "duration_seconds": 16.157,
+    "runner_profile": "native-same-user",
+    "versions": {
+      "java": "17; inspect preparation evidence",
+      "maven": "3.9.16"
+    }
+  },
+  "target_file": "src/main/java/demo/DemoService.java",
+  "findings": [
+    {
+      "tool": "known-finding",
+      "rule_id": "known:package-path-1.1",
+      "cwe": "CWE-22",
+      "type": "VULNERABILITY",
+      "file": "src/main/java/demo/DemoService.java",
+      "line": 31,
+      "severity": "HIGH",
+      "source": "safepatch-synthetic answer key",
+      "fingerprint": "a9dbda298106c1da2619649d144315d26be77024de68af4a223bee3f99bd4c96"
+    }
+  ],
+  "children": [],
+  "memory_lookup": {
+    "decision": "match",
+    "use": "example",
+    "tier": "L2",
+    "considered": [
+      {
+        "id": "l2:path-01-a073ee200d38",
+        "tier": "L2",
+        "use": "example",
+        "differences": [],
+        "rank": 1
+      }
+    ],
+    "rejected": [],
+    "failures": [],
+    "duration_seconds": 0.002147,
+    "selected_id": "l2:path-01-a073ee200d38",
+    "warnings_sent": []
+  },
+  "memory_context": {
+    "project": "safepatch-package-dev",
+    "cwe_family": "CWE-22",
+    "rule_id": "known:package-path-1.1",
+    "jdk": "17",
+    "source_path": "src/main/java/demo/DemoService.java",
+    "build_sha256": "26e043fae58e551912409518b9d20e281bf34a51d8980781ee6c3c299fec6819",
+    "contract_sha256": "e154b3c293b96bd61f254dcc6c39a5a527ea08de65b6d38497f9f767b39372d5",
+    "source_sha256": "b6dfc6a9d54917df26a136128aeb14db15c729a7560dafc2fbc0bbfe7bf9db38",
+    "signature": {
+      "schema": "safepatch-signature/1",
+      "sink": "java.nio.file.Files.readString",
+      "construction": "resolve",
+      "source": "system_property",
+      "library": "java-io",
+      "library_version": null
+    }
+  },
+  "memory_ids": [
+    "l2:path-01-a073ee200d38"
+  ],
+  "tokens_reserved": 8192,
+  "acceptance_manifest": {
+    "schema": "safepatch-evidence-v1",
+    "job_id": "b1d97a3468c14da2a83d0526fca3d730",
+    "base_commit": "cf103601de471ee8dd2632cd6e79c30b50eed7db",
+    "policy": "java-synthetic-v1",
+    "patch_sha256": "d9beffdb780159c3769941748bb7fb8e2ce6cd4526af84568532326ee188ff63",
+    "verification": {
+      "passed": true,
+      "baseline_valid": false,
+      "base_commit": "cf103601de471ee8dd2632cd6e79c30b50eed7db",
+      "source_revision": "5405a7a3b2d31c68a36b694640d46eb2167aeb06",
+      "build": {
+        "passed": true,
+        "duration_seconds": 8.781
+      },
+      "behavior": {
+        "passed": true,
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 4.11,
+        "junit_sha256": "08d559a23ca22b69f53e5fbd96795715e3c1ce1c41a3451e6117ecb81ed127f5"
+      },
+      "security": {
+        "passed": true,
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 4.031,
+        "junit_sha256": "953fc1dca4d348d4d5f5a9a7db8816dca0c26ef51e0157393707163e911cb104"
+      },
+      "scans": [
+        {
+          "tool": "known-finding",
+          "version": "answer-key",
+          "status": "ok",
+          "commit": "5405a7a3b2d31c68a36b694640d46eb2167aeb06",
+          "findings": [],
+          "coverage": "answer key; a patched revision is not rescanned, the security witness decides"
+        }
+      ],
+      "tolerated": [],
+      "patch": {
+        "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -27,10 +27,12 @@\n \n         String bar = doSomething(param);\n \n-        Path root = Path.of(System.getProperty(ROOT_PROPERTY));\n-        Path target = root.resolve(bar);\n-        String text = Files.readString(target);\n-        return text;\n+        Path root = Path.of(System.getProperty(ROOT_PROPERTY)).toRealPath();\n+        Path target = root.resolve(bar).toRealPath();\n+        if (!target.startsWith(root)) {\n+            throw new SecurityException(\"Input path escapes root\");\n+        }\n+        return Files.readString(target);\n     }\n \n     /** Entry point the package's dispatcher calls with the request's values; lookup() holds the work. */\n",
+        "patch_sha256": "d9beffdb780159c3769941748bb7fb8e2ce6cd4526af84568532326ee188ff63",
+        "changed_lines": 10
+      },
+      "feedback": {
+        "code": "verified",
+        "behavior": {
+          "passed": true,
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "details": [],
+          "exit_code": 0,
+          "duration_seconds": 4.11,
+          "junit_sha256": "08d559a23ca22b69f53e5fbd96795715e3c1ce1c41a3451e6117ecb81ed127f5"
+        },
+        "security": {
+          "passed": true,
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "details": [],
+          "exit_code": 0,
+          "duration_seconds": 4.031,
+          "junit_sha256": "953fc1dca4d348d4d5f5a9a7db8816dca0c26ef51e0157393707163e911cb104"
+        },
+        "remaining_rules": []
+      },
+      "duration_seconds": 17.938,
+      "runner_profile": "native-same-user",
+      "versions": {
+        "java": "17; inspect preparation evidence",
+        "maven": "3.9.16"
+      },
+      "artifact_sha256": "54472e76817868b2621bd21338c8fc47d799891e4a0ac7eaea8abb59bc5e7405",
+      "candidate_commit": "5405a7a3b2d31c68a36b694640d46eb2167aeb06",
+      "review_branch": "candidate",
+      "review_repository": "C:\\TUBITAKClaude\\SafePatch_V0.2\\.runtime\\review\\b1d97a3468c14da2a83d0526fca3d730-98bd7d2e"
+    },
+    "memory_ids": [
+      "l2:path-01-a073ee200d38"
+    ],
+    "mode": "real-local-model",
+    "origin": "real-local-model",
+    "author": null
+  },
+  "candidate": {
+    "evidence_sha256": "e3f243aa481fb114264c6741fd50c11fb6c2313135363fee66975eb3ab1eb2ec",
+    "commit": "5405a7a3b2d31c68a36b694640d46eb2167aeb06",
+    "artifact_sha256": "54472e76817868b2621bd21338c8fc47d799891e4a0ac7eaea8abb59bc5e7405",
+    "patch_sha256": "d9beffdb780159c3769941748bb7fb8e2ce6cd4526af84568532326ee188ff63",
+    "policy_version": "java-synthetic-v1",
+    "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -27,10 +27,12 @@\n \n         String bar = doSomething(param);\n \n-        Path root = Path.of(System.getProperty(ROOT_PROPERTY));\n-        Path target = root.resolve(bar);\n-        String text = Files.readString(target);\n-        return text;\n+        Path root = Path.of(System.getProperty(ROOT_PROPERTY)).toRealPath();\n+        Path target = root.resolve(bar).toRealPath();\n+        if (!target.startsWith(root)) {\n+            throw new SecurityException(\"Input path escapes root\");\n+        }\n+        return Files.readString(target);\n     }\n \n     /** Entry point the package's dispatcher calls with the request's values; lookup() holds the work. */\n",
+    "review_repository": "C:\\TUBITAKClaude\\SafePatch_V0.2\\.runtime\\review\\b1d97a3468c14da2a83d0526fca3d730-98bd7d2e",
+    "review_branch": "candidate",
+    "origin": "real-local-model",
+    "author": null
+  },
+  "advisory": null,
+  "review_expires_at": 1793202136.4093688,
+  "duration_seconds": 59.343,
+  "phase": "installation-use",
+  "wall_seconds": 59.303
+}
