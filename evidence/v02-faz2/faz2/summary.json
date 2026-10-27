@@ -1,0 +1,47 @@
+{
+  "scope": "synthetic Faz 2 exit check (scanner independence); not an independent benchmark",
+  "elapsed_seconds": 229.362,
+  "record": {
+    "id": "b9d82c69d384467b98dd7ee32cd5cad8",
+    "learned_from_rule": "bigg.java.sql-concatenation",
+    "cwe_family": "CWE-89"
+  },
+  "uses": [
+    {
+      "case_id": "sql-01",
+      "finding_rule": "SQL_INJECTION_JDBC",
+      "memory_use": "replay",
+      "memory_selected": "b9d82c69d384467b98dd7ee32cd5cad8",
+      "accepted": true,
+      "rescan_tools": [
+        "findsecbugs"
+      ],
+      "rescan_remaining": []
+    },
+    {
+      "case_id": "sql-02",
+      "finding_rule": "SQL_INJECTION_JDBC",
+      "memory_use": "example",
+      "memory_selected": "b9d82c69d384467b98dd7ee32cd5cad8",
+      "accepted": true,
+      "rescan_tools": [
+        "findsecbugs"
+      ],
+      "rescan_remaining": []
+    },
+    {
+      "case_id": "sql-03",
+      "finding_rule": "SQL_INJECTION_JDBC",
+      "memory_use": "example",
+      "memory_selected": "b9d82c69d384467b98dd7ee32cd5cad8",
+      "accepted": true,
+      "rescan_tools": [
+        "findsecbugs"
+      ],
+      "rescan_remaining": []
+    }
+  ],
+  "condition_met": true,
+  "human_approval": "SIMULATED",
+  "customer_validation": "not performed"
+}

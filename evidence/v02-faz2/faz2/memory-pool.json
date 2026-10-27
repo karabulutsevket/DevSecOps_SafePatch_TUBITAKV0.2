@@ -1,0 +1,99 @@
+[
+  {
+    "id": "b9d82c69d384467b98dd7ee32cd5cad8",
+    "state": "approved",
+    "version": 1,
+    "created_at": 1793114094.7792158,
+    "context": {
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-89",
+      "rule_id": "bigg.java.sql-concatenation",
+      "jdk": "17",
+      "source_path": "src/main/java/demo/DemoService.java",
+      "build_sha256": "26e043fae58e551912409518b9d20e281bf34a51d8980781ee6c3c299fec6819",
+      "contract_sha256": "ad5fdffc6258310c04d919cbec41a6f4fba78698e06c65726f15fe712b89d2ad",
+      "source_sha256": "675fb78a6ab9cfe1b87b215641c662df76e5ba65d24b93695981a70b80e87873",
+      "signature": {
+        "schema": "safepatch-signature/1",
+        "sink": "java.sql.Statement.executeQuery",
+        "construction": "concatenation",
+        "source": "method_parameter",
+        "library": "jdbc",
+        "library_version": null
+      }
+    },
+    "before": "package demo;\n\nimport java.sql.*;\nimport java.util.*;\n\n// Case sql-01.\n// Deliberately vulnerable synthetic example. Never use with real data.\npublic class DemoService {\n    public String lookup(String input) throws Exception {\n        try (Connection conn = DriverManager.getConnection(\"jdbc:h2:mem:demo;DB_CLOSE_DELAY=-1\")) {\n            try (Statement init = conn.createStatement()) {\n                init.execute(\"CREATE TABLE IF NOT EXISTS accounts(name VARCHAR PRIMARY KEY)\");\n                init.execute(\"MERGE INTO accounts KEY(name) VALUES ('alice'), ('bob')\");\n            }\n            String sql = \"SELECT name FROM accounts WHERE name = '\" + input + \"'\";\n            List<String> names = new ArrayList<>();\n            try (Statement statement = conn.createStatement(); ResultSet rows = statement.executeQuery(sql)) {\n                while (rows.next()) names.add(rows.getString(1));\n            }\n            Collections.sort(names);\n            return String.join(\",\", names);\n        }\n    }\n}\n",
+    "patch": {
+      "edits": [
+        {
+          "path": "src/main/java/demo/DemoService.java",
+          "old_sha256": "675fb78a6ab9cfe1b87b215641c662df76e5ba65d24b93695981a70b80e87873",
+          "content": "package demo;\n\nimport java.sql.*;\nimport java.util.*;\n\n// Case sql-01.\n// Deliberately vulnerable synthetic example. Never use with real data.\npublic class DemoService {\n    public String lookup(String input) throws Exception {\n        try (Connection conn = DriverManager.getConnection(\"jdbc:h2:mem:demo;DB_CLOSE_DELAY=-1\")) {\n            try (Statement init = conn.createStatement()) {\n                init.execute(\"CREATE TABLE IF NOT EXISTS accounts(name VARCHAR PRIMARY KEY)\");\n                init.execute(\"MERGE INTO accounts KEY(name) VALUES ('alice'), ('bob')\");\n            }\n            String sql = \"SELECT name FROM accounts WHERE name = ?\";\n            List<String> names = new ArrayList<>();\n            try (PreparedStatement statement = conn.prepareStatement(sql)) {\n                statement.setString(1, input);\n                try (ResultSet rows = statement.executeQuery()) {\n                    while (rows.next()) names.add(rows.getString(1));\n                }\n            }\n            Collections.sort(names);\n            return String.join(\",\", names);\n        }\n    }\n}\n"
+        }
+      ],
+      "rationale": "The original code concatenates user input directly into a SQL query, which is vulnerable to SQL injection. The fix uses a PreparedStatement with a bound parameter to prevent SQL injection."
+    },
+    "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -12,10 +12,13 @@\n                 init.execute(\"CREATE TABLE IF NOT EXISTS accounts(name VARCHAR PRIMARY KEY)\");\n                 init.execute(\"MERGE INTO accounts KEY(name) VALUES ('alice'), ('bob')\");\n             }\n-            String sql = \"SELECT name FROM accounts WHERE name = '\" + input + \"'\";\n+            String sql = \"SELECT name FROM accounts WHERE name = ?\";\n             List<String> names = new ArrayList<>();\n-            try (Statement statement = conn.createStatement(); ResultSet rows = statement.executeQuery(sql)) {\n-                while (rows.next()) names.add(rows.getString(1));\n+            try (PreparedStatement statement = conn.prepareStatement(sql)) {\n+                statement.setString(1, input);\n+                try (ResultSet rows = statement.executeQuery()) {\n+                    while (rows.next()) names.add(rows.getString(1));\n+                }\n             }\n             Collections.sort(names);\n             return String.join(\",\", names);\n",
+    "source_job": "ab5a0c3883c145f88f46308294ee7c12",
+    "model": {
+      "runtime": "ollama",
+      "runtime_version": "0.34.0",
+      "model": "qwen2.5-coder:7b-instruct-q4_K_M",
+      "model_digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+      "quantization": "Q4_K_M",
+      "license_sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e"
+    },
+    "author": null,
+    "provenance": "human-approved-local-repair",
+    "evidence_sha256": "8c2f0f18fedd12435f44cc54f1a0c672d9e2bf4ca742262025505e937b8146a9",
+    "evidence": {
+      "build": true,
+      "behavior": {
+        "passed": true,
+        "tests": 3
+      },
+      "security": {
+        "passed": true,
+        "tests": 1
+      },
+      "rescan": {
+        "tools": [
+          "semgrep"
+        ],
+        "remaining": 0,
+        "tolerated": 0
+      },
+      "approval": {
+        "reviewer": "SIMULATED-EXPERIMENT-REVIEWER",
+        "at": 1793114094.5938344
+      },
+      "reuse": {
+        "verified": 0,
+        "failed": 0,
+        "inconclusive": 0,
+        "approved_by_reviewer": 0,
+        "rejected_by_reviewer": 0
+      }
+    },
+    "rule_sha256": "0330019609931a0325c9e56e7297ad8241892fc992e1a35cf445a42bf649aba2",
+    "approval": {
+      "decision": "approve",
+      "candidate_commit": "729c049c720cd89c29e2d27d084bf1a7c1f1e7ec",
+      "artifact_sha256": "a25a7ab815fbcbe204c057ebceebba3de8f6bc5f3db4847adba608e783111378",
+      "policy_version": "java-synthetic-v1",
+      "reviewer": "SIMULATED-EXPERIMENT-REVIEWER",
+      "approved_at": 1793114094.5938344,
+      "expires_at": 1793200494.5938344
+    },
+    "uses": [],
+    "reuse": [],
+    "events": [
+      {
+        "state": "approved",
+        "actor": "SIMULATED-EXPERIMENT-REVIEWER",
+        "reason": "Experiment-only construction from a real verified local-model patch (Semgrep finding)",
+        "at": 1793114094.7792158
+      }
+    ]
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "question": "Faz 2 exit: a record learned from a Semgrep finding is chosen for the FindSecBugs finding of the same weakness and passes verification",
+  "started_at": 1793113994.798383,
+  "git_commit": "2c399c1606f6fdd07719d3e5425020887168575a",
+  "git_dirty": false,
+  "model": "qwen2.5-coder:7b-instruct-q4_K_M",
+  "system_prompt_sha256": "5875a8dbf3d87fcae41a555b8f264de0e742bfa73e91b7f9dd24aa422b373757",
+  "weakness_notes_sha256": "beeed9e84791259fa24345ce3c887a162e94fc91f9e13f0ad9e0e7ae1dd2456f",
+  "strategy": "guided+context",
+  "max_attempts": 3,
+  "seed": 42,
+  "construction": {
+    "case": "sql-01",
+    "scanner": "semgrep",
+    "memory_mode": "off"
+  },
+  "uses": {
+    "cases": [
+      "sql-01",
+      "sql-02",
+      "sql-03"
+    ],
+    "scanner": "findsecbugs",
+    "memory_mode": "guarded"
+  },
+  "human_approval": "SIMULATED: the accepted construction candidate is approved by SIMULATED-EXPERIMENT-REVIEWER in a separate experiment database",
+  "python": "3.12.14"
+}

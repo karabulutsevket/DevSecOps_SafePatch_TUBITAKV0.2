@@ -1,0 +1,93 @@
+[
+  {
+    "id": "59450d9e61a849679a4a808a980d6034",
+    "case_id": "sql-01",
+    "phase": "use",
+    "scanner": "findsecbugs",
+    "memory_mode": "guarded",
+    "finding_rule": "SQL_INJECTION_JDBC",
+    "finding_cwe": "CWE-89",
+    "finding_line": 17,
+    "status": "awaiting_review",
+    "accepted": true,
+    "reason": null,
+    "attempts": 1,
+    "wall_seconds": 37.204,
+    "memory_use": "replay",
+    "memory_selected": "b9d82c69d384467b98dd7ee32cd5cad8",
+    "considered": [
+      {
+        "id": "b9d82c69d384467b98dd7ee32cd5cad8",
+        "use": "replay",
+        "rank": 1,
+        "differences": []
+      }
+    ],
+    "rescan_tools": [
+      "findsecbugs"
+    ],
+    "rescan_remaining": []
+  },
+  {
+    "id": "1729578d7f384448bd327736b45c8437",
+    "case_id": "sql-02",
+    "phase": "use",
+    "scanner": "findsecbugs",
+    "memory_mode": "guarded",
+    "finding_rule": "SQL_INJECTION_JDBC",
+    "finding_cwe": "CWE-89",
+    "finding_line": 17,
+    "status": "awaiting_review",
+    "accepted": true,
+    "reason": null,
+    "attempts": 1,
+    "wall_seconds": 46.137,
+    "memory_use": "example",
+    "memory_selected": "b9d82c69d384467b98dd7ee32cd5cad8",
+    "considered": [
+      {
+        "id": "b9d82c69d384467b98dd7ee32cd5cad8",
+        "use": "example",
+        "rank": 1,
+        "differences": [
+          "source_sha256"
+        ]
+      }
+    ],
+    "rescan_tools": [
+      "findsecbugs"
+    ],
+    "rescan_remaining": []
+  },
+  {
+    "id": "60a68b8668374250a62fb2635ec231d7",
+    "case_id": "sql-03",
+    "phase": "use",
+    "scanner": "findsecbugs",
+    "memory_mode": "guarded",
+    "finding_rule": "SQL_INJECTION_JDBC",
+    "finding_cwe": "CWE-89",
+    "finding_line": 17,
+    "status": "awaiting_review",
+    "accepted": true,
+    "reason": null,
+    "attempts": 1,
+    "wall_seconds": 45.919,
+    "memory_use": "example",
+    "memory_selected": "b9d82c69d384467b98dd7ee32cd5cad8",
+    "considered": [
+      {
+        "id": "b9d82c69d384467b98dd7ee32cd5cad8",
+        "use": "example",
+        "rank": 1,
+        "differences": [
+          "source_sha256"
+        ]
+      }
+    ],
+    "rescan_tools": [
+      "findsecbugs"
+    ],
+    "rescan_remaining": []
+  }
+]

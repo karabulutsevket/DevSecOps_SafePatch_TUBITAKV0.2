@@ -237,6 +237,8 @@ Sorumlular: kurallar ve tanıklar *Yiğithan*, vakalar ve L2 kayıtları *Kadir*
 
 **Faz 2 geçiş koşulu:** L3'te en az 30 vaka çalışır durumda (derleniyor, başlangıçta güvenlik tanığı başarısız). L2 paketi imzalı olarak içeri alınabiliyor. Sandbox'ta uçtan uca bir iş tamamlandı. **Semgrep bulgusundan öğrenilmiş bir hafıza kaydı, aynı zafiyetin FindSecBugs bulgusunda seçildi ve doğrulamadan geçti** (tarayıcıdan bağımsızlığın kanıtı).
 
+**27 Ekim durumu:** L3'te 30 gerçek açık çalışıyor; sandbox'ta uçtan uca işler tamamlandı; Semgrep bulgusundan öğrenilen kayıt FindSecBugs bulgusunda seçildi ve üç işte de ilk denemede doğrulamadan geçti (simüle onayla, sentetik laboratuvarda). **Açık:** L2 paketinin imzalı içeri alınması ([docs/OLCUM_FAZ2_CIKIS.md](docs/OLCUM_FAZ2_CIKIS.md)).
+
 ### Faz 3 — Deney ve sertleştirme (Hafta 9–10)
 
 #### Hafta 9 · 21 – 27 Aralık
