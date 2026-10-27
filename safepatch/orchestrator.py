@@ -159,7 +159,7 @@ def cases(user=Depends(identity)):
 class NewJob(Strict):
     case_id: str = Field(pattern=PROJECT_ID)   # registered project id (descriptor)
     idempotency_key: str = Field(min_length=8, max_length=100, pattern=r"^[A-Za-z0-9_-]+$")
-    scanner: str = Field(default="semgrep", pattern=r"^(builtin|semgrep|sonarqube\+semgrep|known)$")
+    scanner: str = Field(default="semgrep", pattern=r"^(builtin|semgrep|sonarqube\+semgrep|known|findsecbugs|semgrep\+findsecbugs)$")
     max_attempts: int = Field(default=3, ge=1, le=3)
     second_review: bool = False
     memory_mode: str = Field(default="guarded", pattern=r"^(off|guarded)$")

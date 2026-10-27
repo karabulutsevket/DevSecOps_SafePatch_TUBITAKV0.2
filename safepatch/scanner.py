@@ -56,6 +56,52 @@ def parse_semgrep(data, commit, version, prefixes):
     return {"tool": "semgrep", "version": version, "status": "ok", "analysis_id": uuid.uuid4().hex, "commit": commit, "findings": findings}
 
 
+SPOTBUGS_VERSION = "4.9.8"
+
+
+def spotbugs_cwe(rule):
+    """The CWE a SpotBugs SARIF rule names in its relationships (FindSecBugs fills them)."""
+    for relation in rule.get("relationships", []):
+        if relation.get("target", {}).get("toolComponent", {}).get("name") == "CWE":
+            return "CWE-" + str(relation["target"]["id"])
+    return None
+
+
+def parse_spotbugs(data, commit, files, paths):
+    """SpotBugs SARIF (FindSecBugs plugin) -> findings. Only security results whose rule names a
+    CWE (in the SARIF, else in weakness.TOOL_RULES) are findings: style and bad-practice results
+    and informational notes (SPRING_ENDPOINT) would otherwise count as weaknesses never fixed.
+    SARIF paths are relative to a source root; each maps to the one repository file in the scan
+    paths that ends with it, else the result is counted as unmapped. Weaknesses outside the
+    supported families are kept apart as other_findings: reported, never a job."""
+    from safepatch.weakness import FAMILY, SUPPORTED, TOOL_RULES
+    run = data["runs"][0]
+    driver = run["tool"]["driver"]
+    if driver.get("name") != "SpotBugs" or driver.get("version") != SPOTBUGS_VERSION:
+        raise RuntimeError("spotbugs_version_mismatch")
+    if not all(i.get("executionSuccessful") for i in run.get("invocations", [])):
+        raise RuntimeError("spotbugs_incomplete_scan")
+    rules = {r["id"]: r for component in [driver, *run["tool"].get("extensions", [])] for r in component.get("rules", [])}
+    findings, other, unmapped = [], [], 0
+    for result in run["results"]:
+        rule = rules.get(result["ruleId"], {})
+        cwe = spotbugs_cwe(rule) or TOOL_RULES.get(result["ruleId"])
+        if "SECURITY" not in rule.get("properties", {}).get("tags", []) or not cwe:
+            continue
+        location = result["locations"][0]["physicalLocation"]
+        uri = location["artifactLocation"]["uri"].replace("\\", "/")
+        matches = [p for p in files if p.endswith("/" + uri) and in_scope(p, paths)]
+        if len(matches) != 1:
+            unmapped += 1
+            continue
+        finding = {"tool": "findsecbugs", "rule_id": result["ruleId"], "type": "VULNERABILITY", "file": matches[0],
+                   "line": location.get("region", {}).get("startLine"), "severity": result.get("level", "warning"),
+                   "message": result["message"]["text"][:300], "cwe": cwe, "fingerprint": digest(result["ruleId"] + matches[0])}
+        (findings if FAMILY.get(cwe, cwe) in SUPPORTED else other).append(finding)
+    return {"tool": "findsecbugs", "version": f"spotbugs-{SPOTBUGS_VERSION}+findsecbugs-1.14.0", "status": "ok", "analysis_id": uuid.uuid4().hex,
+            "commit": commit, "unmapped_results": unmapped, "findings": findings, "other_findings": other}
+
+
 class SonarAdapter:
     """Fresh unique project per scan; never query a shared project's moving HEAD."""
     def __init__(self, url, token, call=request):
