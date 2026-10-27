@@ -37,7 +37,7 @@ function memoryPanel(l){const box=el('section',undefined,'memory-why');box.appen
   if(!rows.length)box.append(el('p','Bu projede bu zayıflık ailesi için onaylı kayıt yok.'));
   else{const table=el('table');const head=el('tr');for(const h of ['Sıra','Kayıt','Kullanım','Neden'])head.append(el('th',h));table.append(head);
     for(const c of rows){const row=el('tr',undefined,c.id===l.selected_id?'chosen':'');const why=(c.differences||[]).length?c.differences.map(factText).join(', '):'tüm koşullar aynı';
-      row.append(el('td',c.rank?String(c.rank):'—'),el('td',c.id.slice(0,8),'hash'),el('td',c.use?uses[c.use]:'Elendi'),el('td',why));table.append(row)}
+      row.append(el('td',c.rank?String(c.rank):'—'),el('td',c.tier==='L2'?c.id:c.id.slice(0,8),'hash'),el('td',c.use?uses[c.use]+(c.tier==='L2'?' · L2: dış kaynak, bu kurumda doğrulanmadı':''):'Elendi'),el('td',why));table.append(row)}
     box.append(table)}
   const sent=l.warnings_sent||[];
   if(sent.length)box.append(el('p','Modele gönderilen başarısızlık uyarıları: '+sent.map(w=>(relations[w.relation]||w.relation)+' · '+w.failure).join('; ')));
@@ -76,6 +76,10 @@ async function refreshMemory(){
     }return row;
   }));
   if(!records.length)$('memories').append(el('p','Henüz onaylanıp hafızaya alınmış düzeltme yok.'));
+  // L2 (week 7): records of a signed shared package, at their own trust level.
+  const shared=await api('/v1/memory/shared');const l2states={available:'kullanılabilir',retired:'yeni sürümde yok',withdrawn:'yayıncı geri çekti'};
+  for(const r of shared.records){const row=el('div',undefined,'memory-row');const here=r.validated_here.length?'bu kurumda doğrulandı: L1 kaydı '+r.validated_here.map(v=>v.memory_id.slice(0,8)).join(', '):'dış kaynak, bu kurumda doğrulanmadı';
+    row.append(el('b','L2 · '+r.cwe_family+' · '+(l2states[r.state]||r.state)),el('p',here),el('p','Paket '+r.package.publisher+' v'+r.package.version+(r.package.experiment?' (deney paketi, simüle onay)':'')+' · kaynak '+r.origin.project+' · '+r.uses.length+' kullanım'),el('p',r.id,'hash'));$('memories').append(row)}
   const data=await api('/v1/measurements');
   $('measurements').replaceChildren();
   for(const [name,value] of Object.entries(data)){

@@ -27,6 +27,10 @@ FROM seeded AS verifier
 CMD ["python", "scripts/serve.py", "worker2", "--host", "0.0.0.0"]
 
 FROM seeded AS orchestrator
+# L2 packages are verified with OpenSSH (`ssh-keygen -Y verify`, safepatch/l2.py).
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends openssh-client && rm -rf /var/lib/apt/lists/*
+USER app
 CMD ["python", "scripts/serve.py", "orchestrator", "--host", "0.0.0.0"]
 
 FROM seeded AS runner

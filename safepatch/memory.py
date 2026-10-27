@@ -12,6 +12,7 @@ from sqlalchemy import Column, Float, JSON, MetaData, String, Table, select, upd
 from safepatch.acceptance import untolerated
 from safepatch.common import canonical, digest
 from safepatch.feedback import patch_caused
+from safepatch.l2 import PREFIX as L2, Shared, example_view
 from safepatch.policy import PolicyError
 from safepatch.signature import signature
 from safepatch.weakness import RULE_DIGESTS, family
@@ -197,6 +198,8 @@ class Memory:
         self.failure_table = Table("failure_memory", meta, Column("id", String(32), primary_key=True),
                                    Column("created", Float), Column("data", JSON, nullable=False))
         meta.create_all(store.engine)
+        # L2: records from a signed shared package, at their own trust level (safepatch/l2.py).
+        self.shared = Shared(store)
 
     def all(self, project=None):
         with self.store.engine.connect() as conn:
@@ -237,11 +240,18 @@ class Memory:
                   "rule_sha256": RULE_DIGESTS.get(context.get("rule_id")),
                   "approval": copy.deepcopy(approved), "uses": [], "reuse": [],
                   "events": [{"state": "approved", "actor": actor, "reason": rationale, "at": time.time()}]}
+        # A repair built from an L2 example is the institution's own once verified and approved
+        # here; it keeps where the example came from.
+        shared = [self.shared.get(i) for i in job.get("memory_ids", []) if i.startswith(L2)]
+        if shared:
+            record["l2_origin"] = [{"id": r["id"], "record_sha256": r["record_sha256"], **{k: r["package"][k] for k in ("publisher", "version")}} for r in shared]
         with self.store.lock, self.store.engine.begin() as conn:
             for old in self.all(context["project"]):
                 if old["source_job"] == job["id"]:
                     raise PolicyError("job_already_promoted")
             conn.execute(self.table.insert().values(id=record["id"], created=time.time(), data=record))
+        for origin in shared:
+            self.shared.validated(origin["id"], record["id"], job["id"])
         return record
 
     def change(self, memory_id, state, actor, reason):
@@ -276,10 +286,14 @@ class Memory:
 
     def assert_active(self, ids):
         for memory_id in ids:
-            if self.get(memory_id)["state"] != "approved":
+            if memory_id.startswith(L2):
+                self.shared.assert_active(memory_id)
+            elif self.get(memory_id)["state"] != "approved":
                 raise PolicyError("memory_no_longer_approved")
 
     def use(self, memory_id, job_id, how=None):
+        if memory_id.startswith(L2):
+            return self.shared.use(memory_id, job_id, how)
         with self.store.lock, self.store.engine.begin() as conn:
             record = self.get(memory_id)
             if record["state"] != "approved":
@@ -292,6 +306,8 @@ class Memory:
     def settle(self, memory_id, job_id, result=None, review=None):
         """Record how a job that used this record ended (and the reviewer's later decision).
         Runs after the job finished, so a missing record or entry is skipped, never raised."""
+        if memory_id.startswith(L2):
+            return self.shared.settle(memory_id, job_id, result, review)
         with self.store.lock, self.store.engine.begin() as conn:
             try:
                 record = self.get(memory_id)
@@ -462,7 +478,16 @@ class Memory:
         for entry in considered:
             entry.update(score=scores.get(entry["id"]), rank=order.get(entry["id"]))
         use, selected = candidates[0] if candidates else (None, None)
+        tier = "L1" if selected else None
+        # L2 only when no L1 record fits, and only as an example: external, not verified here.
+        if mode == "guarded" and not selected:
+            shared, usable = self.shared.candidates(context)
+            considered += shared
+            rejected += [entry for entry in shared if entry["use"] is None]
+            if usable:
+                use, selected, tier = "example", example_view(usable[0]), "L2"
+                next(e for e in shared if e["id"] == selected["id"])["rank"] = 1
         # Recorded for review and evidence; the model does not see failures yet (roadmap week 5).
         failures = self.failures(context)
-        return {"decision": "match" if selected else "no_match", "use": use, "selected": selected, "considered": considered,
+        return {"decision": "match" if selected else "no_match", "use": use, "tier": tier, "selected": selected, "considered": considered,
                 "rejected": rejected, "failures": failures, "duration_seconds": round(time.perf_counter() - start, 6)}

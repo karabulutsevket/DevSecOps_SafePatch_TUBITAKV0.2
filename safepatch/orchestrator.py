@@ -103,6 +103,14 @@ def failure_memory(user=Depends(identity)):
     return [r for r in Memory(store).failure_records() if r["context"]["project"] in user["projects"]]
 
 
+@app.get("/v1/memory/shared")
+def shared_memory(user=Depends(identity)):
+    """L2: installed packages and their records (external data, no customer project in them).
+    Imported offline with `python -m safepatch.l2 import`, never through this API."""
+    shared = Memory(store).shared
+    return {"packages": shared.installed(), "records": shared.all()}
+
+
 class MemoryDecision(Strict):
     state: str = Field(pattern=r"^(quarantined|revoked|approved)$")   # approved: a reviewer re-approves (week 5)
     reason: str = Field(min_length=10, max_length=1000)
