@@ -338,6 +338,8 @@ class Shared:
                 raise PackageError("package_version_conflict")
             if latest and version < latest["version"]:
                 raise PackageError("package_downgrade")
+            if any(existing[r["id"]]["package"]["publisher"] != publisher for r in records if r["id"] in existing):
+                raise PackageError("record_of_another_publisher")
             package = {"publisher": publisher, "version": version, "manifest_sha256": manifest_sha256, "signer": signer,
                        "experiment": manifest["experiment"], "created_at": manifest["created_at"], "imported_at": now,
                        "records": [r["id"] for r in records], "withdrawn": manifest["withdrawn"]}

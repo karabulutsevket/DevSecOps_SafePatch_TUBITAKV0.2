@@ -127,6 +127,15 @@ def test_versions_never_go_back_or_change_under_the_same_number(lab):
     assert [p["version"] for p in Shared(db).installed()] == [2]
 
 
+def test_a_publisher_cannot_overwrite_another_publishers_record(lab):
+    db, _, record, package, trusted, tmp = lab
+    Shared(db).install(package(1), trusted)
+    other = build([record], "other-lab", 1, tmp / "keys" / "publisher", tmp / "other.zip", experiment=True)["path"]
+    with pytest.raises(PackageError, match="record_of_another_publisher"):
+        Shared(db).install(other, trusted)
+    assert Shared(db).get(record["id"])["package"]["publisher"] == "safepatch-lab"
+
+
 def test_a_record_left_out_is_retired_and_a_withdrawn_one_blocks_what_used_it(lab):
     db, _, record, package, trusted, _ = lab
     Shared(db).install(package(1), trusted)

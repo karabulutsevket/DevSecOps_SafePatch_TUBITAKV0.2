@@ -219,10 +219,10 @@ Sorumlular: kurallar ve tanıklar *Yiğithan*, vakalar ve L2 kayıtları *Kadir*
 #### Hafta 7 · 7 – 13 Aralık
 **Hedef:** L2 ortak bilgi paketinin ilk sürümü.
 
-- [ ] Kaynaklar: sınıf paketlerinin laboratuvarda doğrulanmış geliştirme düzeltmeleri ve açık kaynak Java projelerinin CVE düzeltme commit'leri (ör. SAP project-kb, GitHub Advisory/OSV bağlantıları). **L3 değerlendirme setiyle çakışan projeler ve vakalar dışarıda bırakılır** — *Kadir*
-- [ ] Paket formatı: manifest, her kayıt için SHA-256, paket imzası, sürüm; içeri alma komutu çevrimdışı çalışır — *Şevket*
-- [ ] L2 kayıtları L1'den ayrı güven seviyesinde durur: "dış kaynak, bu kurumda doğrulanmadı". Kurumda bir kez doğrulanınca L1'e terfi eder — *Reşat*
-- [ ] Lisans kontrolü: kaynak kodun ve veri setlerinin lisansı `docs/LISANSLAR.md`'de — *Şevket*
+- [ ] Kaynaklar: sınıf paketlerinin laboratuvarda doğrulanmış geliştirme düzeltmeleri ve açık kaynak Java projelerinin CVE düzeltme commit'leri (ör. SAP project-kb, GitHub Advisory/OSV bağlantıları). **L3 değerlendirme setiyle çakışan projeler ve vakalar dışarıda bırakılır** — *Kadir*. **27 Ekim:** laboratuvar kaynağı hazır. Paket üreticisi (`scripts/l2_build.py`) yalnız L3 kataloğunda `split: development` ve `source: safepatch-synthetic` olan vakaları alıyor; değerlendirme vakalarını reddediyor. CVE düzeltme commit'leri henüz yok
+- [x] Paket formatı: manifest, her kayıt için SHA-256, paket imzası, sürüm; içeri alma komutu çevrimdışı çalışır — *Şevket*. **27 Ekim:** zip içinde manifest, OpenSSH Ed25519 imzası (`ssh-keygen -Y`, yeni Python bağımlılığı yok) ve kayıtlar. İçeri alma `python -m safepatch.l2 import`. Ya hepsi alınır ya hiçbiri; eski sürüme dönüş ve aynı sürümde farklı içerik reddedilir; kayıtlar alan alan denetlenir ([docs/L2_PAKETI.md](docs/L2_PAKETI.md)). Üretim imza anahtarının yönetimi karar bekliyor
+- [x] L2 kayıtları L1'den ayrı güven seviyesinde durur: "dış kaynak, bu kurumda doğrulanmadı". Kurumda bir kez doğrulanınca L1'e terfi eder — *Reşat*. **27 Ekim:** ayrı tablo. L2 yalnız uygun bir L1 kaydı yoksa ve yalnız örnek olarak kullanılıyor; birebir tekrar yok. Terfi, kurumda doğrulanan düzeltmenin insan onayıyla hafızaya alınması; L1 kaydı `l2_origin` alanında kaynağını taşıyor. Gösterim: L2 örneğiyle başka projede kabul, simüle onayla L1'e terfi, sonraki işte L1 kaydı ([docs/OLCUM_L2.md](docs/OLCUM_L2.md))
+- [x] Lisans kontrolü: kaynak kodun ve veri setlerinin lisansı `docs/LISANSLAR.md`'de — *Şevket*. **27 Ekim:** [docs/LISANSLAR_VE_KAYNAKLAR.md](docs/LISANSLAR_VE_KAYNAKLAR.md), "L2 paketi ve veri setleri". İzinli lisans listesi kodda (`l2.LICENSES`); bugün yalnız MIT, yani kendi laboratuvar kodumuz. Her yeni kaynak ayrı bir lisans kararı
 - [x] **FindSecBugs adaptörü:** SpotBugs + FindSecBugs'ı çevrimdışı kur (sürüm ve özet sabit, lisans teyidi), derlenmiş kod üzerinde çalıştır, SARIF çıktısını ortak bulgu modeline çevir; desen adı → CWE eşlemesi Hafta 4 tablosuna eklenir — *Yiğithan* **27 Ekim:** SpotBugs 4.9.8 + FindSecBugs 1.14.0, Maven Central'dan sabit özetle (`scripts/prepare_findsecbugs.py`); tarayıcı `findsecbugs` ve `semgrep+findsecbugs`. Gerçek projelerde sandbox içinde çalışıyor. CWE, SARIF'in kendisinden okunuyor; Hafta 4 tablosu yedek olarak doğrulandı. Desteklenen aileler dışındaki bulgular iş açmıyor. Açık karar: doğru bir komut düzeltmesinden sonra da kalan `COMMAND_INJECTION` bulgusu ([docs/FINDSECBUGS.md](docs/FINDSECBUGS.md))
 - [x] **Karşılaştırmalı tespit ölçümü:** L3 setinde Semgrep, FindSecBugs ve ikisi birlikte; sınıf bazında tespit oranı ve yanlış pozitif oranı. Sonuç `evidence/v02-detection/` altında — *Yiğithan, Kadir* **27 Ekim:** L3 değerlendirme setinde (45 vaka): kendi üç Semgrep kuralımız 0/30 tespit, 0/15 yanlış alarm; FindSecBugs 30/30 tespit, 15/15 yanlış alarm. FindSecBugs'ın yanlış alarmlarının 15'i de tanık kapısında kaldı (taban geçersiz, iş açılmadı) ([docs/OLCUM_TESPIT.md](docs/OLCUM_TESPIT.md))
 
@@ -237,7 +237,13 @@ Sorumlular: kurallar ve tanıklar *Yiğithan*, vakalar ve L2 kayıtları *Kadir*
 
 **Faz 2 geçiş koşulu:** L3'te en az 30 vaka çalışır durumda (derleniyor, başlangıçta güvenlik tanığı başarısız). L2 paketi imzalı olarak içeri alınabiliyor. Sandbox'ta uçtan uca bir iş tamamlandı. **Semgrep bulgusundan öğrenilmiş bir hafıza kaydı, aynı zafiyetin FindSecBugs bulgusunda seçildi ve doğrulamadan geçti** (tarayıcıdan bağımsızlığın kanıtı).
 
-**27 Ekim durumu:** L3'te 30 gerçek açık çalışıyor; sandbox'ta uçtan uca işler tamamlandı; Semgrep bulgusundan öğrenilen kayıt FindSecBugs bulgusunda seçildi ve üç işte de ilk denemede doğrulamadan geçti (simüle onayla, sentetik laboratuvarda). **Açık:** L2 paketinin imzalı içeri alınması ([docs/OLCUM_FAZ2_CIKIS.md](docs/OLCUM_FAZ2_CIKIS.md)).
+**27 Ekim durumu: dört koşul da sağlandı** (simüle onaylarla, sentetik laboratuvarda).
+- L3'te 30 gerçek açık çalışıyor.
+- Sandbox'ta uçtan uca işler tamamlandı.
+- Semgrep bulgusundan öğrenilen kayıt FindSecBugs bulgusunda seçildi; üç işte de ilk denemede doğrulamadan geçti ([docs/OLCUM_FAZ2_CIKIS.md](docs/OLCUM_FAZ2_CIKIS.md)).
+- İmzalı L2 deney paketi çevrimdışı içeri alındı. Değiştirilmiş kayıt, güvenilmeyen anahtar ve eski sürüm reddedildi ([docs/OLCUM_L2.md](docs/OLCUM_L2.md)).
+
+Hafta 8'in sandbox sertleştirme maddeleri ayrı iş olarak açık.
 
 ### Faz 3 — Deney ve sertleştirme (Hafta 9–10)
 

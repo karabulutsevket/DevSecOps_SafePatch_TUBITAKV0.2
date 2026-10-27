@@ -20,6 +20,19 @@ Sonar belgeleri, güncel Enterprise/Data Center AI CodeFix'in kurum içi LLM gat
 
 Sonar, Community Build'in taint analizini desteklemediğini ve güvenlik kapsamının sınırlı olduğunu ayrıca açıklıyor. Bu nedenle bu demoda SQL/path/command bulguları kendi Semgrep kurallarından gelir; Sonar kapsam eksikliği bir başarılı tarama gibi gizlenmez.
 
+## L2 paketi ve veri setleri (27 Ekim 2026)
+
+L2 paketine yalnız lisansı izinli kaynaktan gelen düzeltme girer ([L2_PAKETI.md](L2_PAKETI.md)). Kod tarafındaki izin listesi `safepatch/l2.py` içindeki `LICENSES`; paket üretilirken de içeri alınırken de denetlenir.
+
+| Kaynak | Lisans | L2'ye girer mi |
+|---|---|---|
+| SafePatch'in sentetik geliştirme vakaları (`samples/`, `l3/catalog.yml` içinde `source: safepatch-synthetic`, `split: development`) | MIT (bu depo) | Evet. Bugün izinli tek kaynak |
+| OWASP Benchmark (Java) | GPL-2.0 (`l3/catalog.yml`) | **Hayır.** Yalnız L3 değerlendirmede kullanılır (CLAUDE.md, kural 8); paket üreticisi değerlendirme vakalarını reddeder |
+| Vul4J vaka listesi ve vakaların projeleri | Liste GPL-3.0; projeler kendi lisanslarıyla (ör. Apache-2.0) | **Hayır.** Yalnız L3 değerlendirmede kullanılır |
+| Açık kaynak projelerin CVE düzeltme commit'leri (SAP project-kb, GitHub Advisory/OSV bağlantıları) | Her proje kendi lisansıyla | Henüz değil. Kaynak başına lisans incelemesi ve `LICENSES` listesine ekleme kararı gerekir; L3 değerlendirme projeleriyle çakışanlar dışarıda kalır |
+
+Pakete düzeltmenin farkı (değişen satırlar ve çevresi) girer, projenin kodu girmez. Yine de farkın kaynağı lisansı taşır. Bu yüzden lisans kaydı her kaydın `origin.license` alanında durur.
+
 ## Birincil kaynaklar
 
 1. [Sonar AI CodeFix güncel yapılandırma](https://docs.sonarsource.com/sonarqube-server/instance-administration/ai-features/enable-ai-codefix.md): yerel gateway ve paket koşulları.
