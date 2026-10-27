@@ -1,0 +1,386 @@
+{
+  "scanner": "findsecbugs",
+  "rows": [
+    {
+      "case": "owasp-benchmark-00331",
+      "baseline_valid": false,
+      "seconds": 57.7,
+      "tools": [
+        "findsecbugs spotbugs-4.9.8+findsecbugs-1.14.0"
+      ],
+      "findings": [
+        {
+          "rule_id": "SQL_INJECTION_JDBC",
+          "cwe": "CWE-89",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00331.java",
+          "line": 66
+        },
+        {
+          "rule_id": "SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING",
+          "cwe": "CWE-89",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00331.java",
+          "line": 66
+        }
+      ],
+      "other_findings": [],
+      "unmapped_results": 0
+    },
+    {
+      "case": "owasp-benchmark-00938",
+      "baseline_valid": false,
+      "seconds": 50.6,
+      "tools": [
+        "findsecbugs spotbugs-4.9.8+findsecbugs-1.14.0"
+      ],
+      "findings": [
+        {
+          "rule_id": "SQL_INJECTION_JDBC",
+          "cwe": "CWE-89",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00938.java",
+          "line": 61
+        },
+        {
+          "rule_id": "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+          "cwe": "CWE-89",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00938.java",
+          "line": 61
+        }
+      ],
+      "other_findings": [],
+      "unmapped_results": 0
+    },
+    {
+      "case": "owasp-benchmark-01092",
+      "baseline_valid": false,
+      "seconds": 52.0,
+      "tools": [
+        "findsecbugs spotbugs-4.9.8+findsecbugs-1.14.0"
+      ],
+      "findings": [
+        {
+          "rule_id": "SQL_INJECTION_JDBC",
+          "cwe": "CWE-89",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01092.java",
+          "line": 58
+        },
+        {
+          "rule_id": "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+          "cwe": "CWE-89",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01092.java",
+          "line": 58
+        }
+      ],
+      "other_findings": [
+        {
+          "rule_id": "SERVLET_HEADER",
+          "cwe": "CWE-807",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01092.java",
+          "line": 44
+        },
+        {
+          "rule_id": "SERVLET_HEADER",
+          "cwe": "CWE-807",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01092.java",
+          "line": 45
+        }
+      ],
+      "unmapped_results": 0
+    },
+    {
+      "case": "owasp-benchmark-01110",
+      "baseline_valid": false,
+      "seconds": 51.9,
+      "tools": [
+        "findsecbugs spotbugs-4.9.8+findsecbugs-1.14.0"
+      ],
+      "findings": [
+        {
+          "rule_id": "PATH_TRAVERSAL_IN",
+          "cwe": "CWE-22",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01110.java",
+          "line": 80
+        }
+      ],
+      "other_findings": [],
+      "unmapped_results": 0
+    },
+    {
+      "case": "owasp-benchmark-01315",
+      "baseline_valid": false,
+      "seconds": 50.7,
+      "tools": [
+        "findsecbugs spotbugs-4.9.8+findsecbugs-1.14.0"
+      ],
+      "findings": [
+        {
+          "rule_id": "SQL_INJECTION_JDBC",
+          "cwe": "CWE-89",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01315.java",
+          "line": 53
+        },
+        {
+          "rule_id": "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+          "cwe": "CWE-89",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01315.java",
+          "line": 53
+        }
+      ],
+      "other_findings": [
+        {
+          "rule_id": "SERVLET_PARAMETER",
+          "cwe": "CWE-20",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01315.java",
+          "line": 43
+        }
+      ],
+      "unmapped_results": 0
+    },
+    {
+      "case": "owasp-benchmark-01461",
+      "baseline_valid": false,
+      "seconds": 51.5,
+      "tools": [
+        "findsecbugs spotbugs-4.9.8+findsecbugs-1.14.0"
+      ],
+      "findings": [
+        {
+          "rule_id": "SQL_INJECTION_JDBC",
+          "cwe": "CWE-89",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01461.java",
+          "line": 68
+        }
+      ],
+      "other_findings": [
+        {
+          "rule_id": "SERVLET_PARAMETER",
+          "cwe": "CWE-20",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01461.java",
+          "line": 45
+        },
+        {
+          "rule_id": "SERVLET_PARAMETER",
+          "cwe": "CWE-20",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01461.java",
+          "line": 48
+        }
+      ],
+      "unmapped_results": 0
+    },
+    {
+      "case": "owasp-benchmark-01570",
+      "baseline_valid": false,
+      "seconds": 48.2,
+      "tools": [
+        "findsecbugs spotbugs-4.9.8+findsecbugs-1.14.0"
+      ],
+      "findings": [
+        {
+          "rule_id": "PATH_TRAVERSAL_IN",
+          "cwe": "CWE-22",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01570.java",
+          "line": 50
+        },
+        {
+          "rule_id": "PATH_TRAVERSAL_IN",
+          "cwe": "CWE-22",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01570.java",
+          "line": 50
+        }
+      ],
+      "other_findings": [
+        {
+          "rule_id": "SERVLET_PARAMETER",
+          "cwe": "CWE-20",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01570.java",
+          "line": 43
+        }
+      ],
+      "unmapped_results": 0
+    },
+    {
+      "case": "owasp-benchmark-01794",
+      "baseline_valid": false,
+      "seconds": 50.6,
+      "tools": [
+        "findsecbugs spotbugs-4.9.8+findsecbugs-1.14.0"
+      ],
+      "findings": [
+        {
+          "rule_id": "COMMAND_INJECTION",
+          "cwe": "CWE-78",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01794.java",
+          "line": 72
+        }
+      ],
+      "other_findings": [],
+      "unmapped_results": 0
+    },
+    {
+      "case": "owasp-benchmark-01905",
+      "baseline_valid": false,
+      "seconds": 49.7,
+      "tools": [
+        "findsecbugs spotbugs-4.9.8+findsecbugs-1.14.0"
+      ],
+      "findings": [
+        {
+          "rule_id": "PATH_TRAVERSAL_IN",
+          "cwe": "CWE-22",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01905.java",
+          "line": 58
+        }
+      ],
+      "other_findings": [
+        {
+          "rule_id": "SERVLET_HEADER",
+          "cwe": "CWE-807",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01905.java",
+          "line": 44
+        },
+        {
+          "rule_id": "SERVLET_HEADER",
+          "cwe": "CWE-807",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01905.java",
+          "line": 45
+        }
+      ],
+      "unmapped_results": 0
+    },
+    {
+      "case": "owasp-benchmark-02030",
+      "baseline_valid": false,
+      "seconds": 51.2,
+      "tools": [
+        "findsecbugs spotbugs-4.9.8+findsecbugs-1.14.0"
+      ],
+      "findings": [
+        {
+          "rule_id": "PATH_TRAVERSAL_IN",
+          "cwe": "CWE-22",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest02030.java",
+          "line": 75
+        }
+      ],
+      "other_findings": [],
+      "unmapped_results": 0
+    },
+    {
+      "case": "owasp-benchmark-02253",
+      "baseline_valid": false,
+      "seconds": 49.6,
+      "tools": [
+        "findsecbugs spotbugs-4.9.8+findsecbugs-1.14.0"
+      ],
+      "findings": [
+        {
+          "rule_id": "COMMAND_INJECTION",
+          "cwe": "CWE-78",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest02253.java",
+          "line": 75
+        }
+      ],
+      "other_findings": [
+        {
+          "rule_id": "SERVLET_PARAMETER",
+          "cwe": "CWE-20",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest02253.java",
+          "line": 43
+        }
+      ],
+      "unmapped_results": 0
+    },
+    {
+      "case": "owasp-benchmark-02428",
+      "baseline_valid": false,
+      "seconds": 46.9,
+      "tools": [
+        "findsecbugs spotbugs-4.9.8+findsecbugs-1.14.0"
+      ],
+      "findings": [
+        {
+          "rule_id": "COMMAND_INJECTION",
+          "cwe": "CWE-78",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest02428.java",
+          "line": 59
+        }
+      ],
+      "other_findings": [],
+      "unmapped_results": 0
+    },
+    {
+      "case": "owasp-benchmark-02513",
+      "baseline_valid": false,
+      "seconds": 47.5,
+      "tools": [
+        "findsecbugs spotbugs-4.9.8+findsecbugs-1.14.0"
+      ],
+      "findings": [
+        {
+          "rule_id": "COMMAND_INJECTION",
+          "cwe": "CWE-78",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest02513.java",
+          "line": 59
+        }
+      ],
+      "other_findings": [
+        {
+          "rule_id": "SERVLET_PARAMETER",
+          "cwe": "CWE-20",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest02513.java",
+          "line": 43
+        }
+      ],
+      "unmapped_results": 0
+    },
+    {
+      "case": "owasp-benchmark-02518",
+      "baseline_valid": false,
+      "seconds": 48.1,
+      "tools": [
+        "findsecbugs spotbugs-4.9.8+findsecbugs-1.14.0"
+      ],
+      "findings": [
+        {
+          "rule_id": "COMMAND_INJECTION",
+          "cwe": "CWE-78",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest02518.java",
+          "line": 56
+        }
+      ],
+      "other_findings": [
+        {
+          "rule_id": "SERVLET_PARAMETER",
+          "cwe": "CWE-20",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest02518.java",
+          "line": 43
+        }
+      ],
+      "unmapped_results": 0
+    },
+    {
+      "case": "owasp-benchmark-02568",
+      "baseline_valid": false,
+      "seconds": 48.4,
+      "tools": [
+        "findsecbugs spotbugs-4.9.8+findsecbugs-1.14.0"
+      ],
+      "findings": [
+        {
+          "rule_id": "PATH_TRAVERSAL_OUT",
+          "cwe": "CWE-22",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest02568.java",
+          "line": 78
+        }
+      ],
+      "other_findings": [
+        {
+          "rule_id": "SERVLET_QUERY_STRING",
+          "cwe": "CWE-20",
+          "file": "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest02568.java",
+          "line": 43
+        }
+      ],
+      "unmapped_results": 0
+    }
+  ]
+}

@@ -185,3 +185,29 @@ def test_package_cases_have_one_sink_a_fix_and_the_benchmark_like_context():
         # Two unrelated handlers and the application class; the EchoMain helper stays out, as Benchmark's helpers do.
         assert sorted(read_only_context(files, SOURCE)) == package_dev.CONTEXT
     assert {c.id for c in l3_catalog.load().cases if c.project == package_dev.PROJECT} == set(package_dev.CASES)
+
+
+def test_detection_counts_a_finding_in_the_answer_keys_file_and_family():
+    import detection_measure as d
+    from types import SimpleNamespace
+    known = [SimpleNamespace(file="src/A.java", line=10, cwe="CWE-89")]
+    same = {"file": "src/A.java", "line": 12, "cwe": "CWE-89"}
+    assert d.judge([same], known) == (True, False)
+    assert d.judge([{**same, "line": 10}], known) == (True, True)
+    assert d.judge([{**same, "cwe": "CWE-564"}], known) == (True, False)          # a child CWE is the same family
+    assert d.judge([{**same, "cwe": "CWE-22"}, {**same, "file": "src/B.java"}], known) == (False, False)
+
+
+def test_detection_summary_keeps_failed_scans_in_the_denominator():
+    import detection_measure as d
+    hit = {"found": True, "on_line": True}
+    miss = {"found": False, "on_line": False}
+    rows = [{"case": "a", "cwe": "CWE-89", "vulnerable": True, "semgrep": miss, "findsecbugs": hit},
+            {"case": "b", "cwe": "CWE-89", "vulnerable": True, "semgrep": hit, "findsecbugs": hit},
+            {"case": "c", "cwe": "CWE-89", "vulnerable": True, "error": "RuntimeError: x"},
+            {"case": "d", "cwe": "CWE-89", "vulnerable": False, "semgrep": miss, "findsecbugs": hit}]
+    summary = d.summarize(rows)
+    vulnerable = summary["vulnerable"]["all"]
+    assert (vulnerable["cases"], vulnerable["scan_errors"]) == (3, 1)
+    assert [vulnerable[t]["found"] for t in ("semgrep", "findsecbugs", "either", "both")] == [1, 2, 2, 1]
+    assert vulnerable["findsecbugs"]["of"] == 3 and summary["safe_false_alarms"]["all"]["findsecbugs"]["found"] == 1
