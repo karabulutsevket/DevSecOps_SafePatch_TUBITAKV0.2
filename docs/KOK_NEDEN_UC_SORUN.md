@@ -9,7 +9,10 @@
 
 **Dallar:**
 - `hafta6-kok-neden`: düzeltmeler.
-- `hafta6-politika-onerisi`: politika önerisi. Ayrı tutuldu; politika sahibinin onayı olmadan birleştirilmemeli.
+- `hafta6-politika-onerisi`: politika önerisi A (yetenek ifadeleri tam başvurularıyla sayılır).
+- `hafta6-politika-onerisi-b`: politika önerisi B (yasak yetenek reddi işi değil, denemeyi başarısız sayar).
+
+İki öneri de ayrı tutuldu ve politika sahibinin onayı olmadan birleştirilmemeli. Birbirinden bağımsızlar; ikisi birlikte de çakışmasız birleşiyor ve politika, motor, geri bildirim ve uzman yaması testlerinin 127'si birlikte geçiyor.
 
 | Sorun | Kök neden | Nereden kaynaklanıyor | Durum |
 |---|---|---|---|
@@ -58,7 +61,12 @@ Bir ek bulgu daha düzeltildi: bağlam dosyası seçimi Benchmark'ta iş başın
 - Dosyada zaten olan bir yeteneğin dosya içinde taşınmasına izin verir. Davranış testi ve tanık yine karar verir.
 - İfade temelli denetimin bilinen bir sınırı değişmiyor: dosya `import java.net.*;` içeriyorsa sınıfın basit adıyla (`new URL(...)`) kullanımı ne bugün ne öneriyle yakalanır.
 
-**Alternatif B (ayrı karar):** Politika reddi işi bitirmesin. Deneme başarısız sayılsın ve modele hangi yasak ifadenin eklendiği söylensin. Bu, motorun davranışını ve modele giden metni değiştirir.
+**Alternatif B (ayrı karar, `hafta6-politika-onerisi-b` dalında hazır):** Yasak bir yetenek ya da bastırma ekleyen yama yine reddedilir ve hiç doğrulanmaz, ama iş bitmez: deneme başarısız sayılır.
+- **Modele giden geri bildirim.** Model, SafePatch'in yazdığı sabit bir tanı alır (kategori `forbidden_capability`): "böyle bir satır eklenemez, var olan düzenlenemez, silinebilir". Hangi ifadenin eklendiği söylenmez.
+- **Değişmeyenler.** Diğer politika retleri işi bitirmeye devam eder: korunan dosya, sembolik bağ, geçersiz bölge cevabı. Uzman yamaları da değişmez.
+- **Tekrar.** `v01` stratejisinde aynı ret art arda gelirse iş, boş cevaplarda olduğu gibi "ilerleme yok" ile biter.
+- **Bedeli.** Motorun davranışı ve modele giden metin değişir.
+- **Testler.** Bugünkü davranışı sabitleyen iki motor testi bu dala eklendi (yasak yetenek işi bitiriyor; korunan dosya işi bitiriyor). Öneri dalı yalnız birincisini değiştiriyor. Dalda birim paketi 539 geçti, 1 beklenen başarısızlık.
 
 ### Bu dalda değişen
 
@@ -280,7 +288,7 @@ Değişiklikten sonraki ilk koşuda bir test başarısız oldu ([sonra/tests-all
 ## Karar bekleyenler
 
 1. **Politika önerisi** (`hafta6-politika-onerisi`): politika sahibi.
-2. **Politika reddinin işi bitirmesi** (alternatif B): politika sahibi. İki L3 koşusunda beş ret işi ilk ret anında bitirdi. Bunlardan biri (00306) ilk koşuda ikinci denemede doğru onarılmıştı ([OLCUM_L3_MODEL.md](OLCUM_L3_MODEL.md), ikinci koşu).
+2. **Politika reddinin işi bitirmesi** (alternatif B, `hafta6-politika-onerisi-b`): politika sahibi. İki L3 koşusunda beş ret işi ilk ret anında bitirdi. Bunlardan biri (00306) ilk koşuda ikinci denemede doğru onarılmıştı ([OLCUM_L3_MODEL.md](OLCUM_L3_MODEL.md), ikinci koşu).
 3. **Bütçe düzeltmesinin etkisi.** Geliştirme setinde (11/20 → 11/20) ve paket şekilli vakalarda (A 8/12, C 8/12) ölçülebilir bir etki yok.
 4. **L3'te bağlam seçimi.** Benchmark'ta ilgisiz kardeş dosyalar seçiliyor. Paket şekilli vakalarda bu bağlam yardımcı olmadı (B 6/12, C 8/12; fark gürültü içinde). Seçenekler:
    - (a) Strateji `guided+context` kalsın. Bu, ölçülmüş varsayılan; L3 koşusu böylece tek, önceden belirlenmiş stratejiyle koşar.
