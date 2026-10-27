@@ -89,6 +89,17 @@ Bir ek bulgu daha düzeltildi: bağlam dosyası seçimi Benchmark'ta iş başın
 - **O denemede kabul yok.** Üçünden hiçbiri o denemede kabul edilmezdi.
 - **Öneri A'nın asıl etkisi işin sürmesi.** Bu işler artık ilk denemede bitmiyor; derleyici ya da davranış geri bildirimiyle iki deneme daha alıyor. Bunun sonuca etkisi ancak model yeniden koşulunca görülür.
 
+**Model ile yeniden koşu** ([kayıt](../evidence/v02-kok-neden/politika-a-model/l3-model/jobs/)). İki vaka L3 koşularıyla aynı ayarlarla, öneri A yürürlükteyken koşuldu: seed 42, `guided+context`, 3 deneme, gizli testler.
+
+| Vaka | Öneri A'dan önce | Öneri A ile |
+|---|---|---|
+| 00306 | İş 1. denemede politika reddiyle bitti (ikinci koşu) | 1. ve 2. deneme davranış testinde kaldı; **3. deneme kabul edildi, gizli testler geçti** |
+| 01643 | İş iki koşuda da 1. denemede politika reddiyle bitti | Üç deneme de aynı derleme hatası (`String` üzerinde `toRealPath()`); deneme hakkı bitti |
+
+- **00306'nın kabul edilen düzeltmesi kaba.** Girdiyi betiğin dışında tutmuyor. Ortam değişkeni girdisinin başına `"echo: "` ekliyor; girdi böylece geçersiz bir değişken adına dönüşüyor ve betiğe hiç ulaşmıyor. Veri akışı kesiliyor ve testlerin hepsi geçiyor. İlk koşuda kabul edilen düzeltme de (ortam değeri boş) aynı türdendi; değerlendirmesi insan incelemesine kalıyor.
+- **01643'ü model düzeltemiyor.** Politika artık engel değil; model derleyici geri bildirimine rağmen aynı hatayı tekrarlıyor.
+- **İkinci koşunun sayısı.** Bu fark ikinci koşuya yansıtılırsa doğru onarım 7/30'dan 8/30'a çıkar. Bu tek seed'de, tek vakada görülen bir fark; ikinci koşunun kaydı değiştirilmedi.
+
 **`tests/test_policy.py` dosyasına eklenenler:**
 - **Dört koruma testi:** aynı sayıyla `URL`'ye geçiş, joker `import`, `.exec` kazanan `Runtime.getRuntime`, var olan satıra `NOSONAR`. Bugün de, öneriyle de ret.
 - **01643 kalıbı.** Önce `xfail(strict=True)` ile işaretli bir yeniden üretme testiydi. Öneri A ile işaret kaldırıldı; artık normal bir test olarak geçiyor.
