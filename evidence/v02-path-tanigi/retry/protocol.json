@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "hypothesis": "H2: failure-aware retries solve more cases than the fixed V0.1 retry loop",
+  "started_at": 1792921086.2822835,
+  "git_commit": "641a9788c8a69bf7c8631f7423e867d8a1ea0840",
+  "git_dirty": false,
+  "model": "qwen2.5-coder:7b-instruct-q4_K_M",
+  "system_prompt_sha256": "a578679af058fcc3a984e793e02fc6c1202fdff60d8685668ab892c99cbf5743",
+  "guidance_sha256": "667d1c9f468890fb069d20c7192e9e5d49039f139a5e95636cf38d35bc8c8d95",
+  "retry_temperature": 0.4,
+  "strategies": [
+    "v01",
+    "guided",
+    "guided+context"
+  ],
+  "cases": [
+    "path-01",
+    "path-02",
+    "path-03"
+  ],
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "max_attempts": 3,
+  "memory": "off",
+  "order": "seeds outermost; strategy order rotated per case and seed",
+  "jobs": 27,
+  "guidance_origin": "team-written after inspecting V0.1 failures on development cases (*-01)",
+  "guidance_placement": "appended after the JSON data in the user prompt. Pre-experiment probe on path-01 (seeds 43/44, temperature 0.4): the same text in the system prompt was ignored (identical patches); after the data it produced canonicalizing patches.",
+  "duplicate_handling": "v01/sampling stop on a duplicate patch; guided strategies skip re-verification and retry with deeper guidance",
+  "python": "3.12.14",
+  "scanner": "Semgrep 1.136.0 with three owned rules",
+  "runner": "native-same-user; no airgap claim",
+  "human_approval": "none; experiment never approves",
+  "note": "Path re-measurement after the stronger witness (absolute path, link inside root, linked root) and the toRealPath()-only recipe; witness and recipe changed together relative to H2 (evidence/v02-retry)."
+}

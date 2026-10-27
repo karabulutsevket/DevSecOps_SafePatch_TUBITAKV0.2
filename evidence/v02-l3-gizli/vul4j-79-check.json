@@ -1,0 +1,261 @@
+{
+  "case": "VUL4J-79",
+  "cve": "CVE-2018-1002201",
+  "cwe": "CWE-22",
+  "upstream": "zeroturnaround/zt-zip",
+  "derived_commit": "57c32d5d78d13bdc8b3198436261d0edae1fd0da",
+  "human_fix_commit": "759b72f33bc8f4d69f84f09fcb7f010ad45d6fff",
+  "started_at": 1792967418.6002398,
+  "baseline": {
+    "passed": false,
+    "baseline_valid": true,
+    "feedback": "validation_failed",
+    "build": {
+      "passed": true,
+      "duration_seconds": 23.204
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 116,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "duration_seconds": 11.718,
+      "reason": null
+    },
+    "security": {
+      "passed": false,
+      "tests": 2,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "testUnwrapDoesntLeaveTarget",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        },
+        {
+          "name": "testUnpackDoesntLeaveTarget",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        }
+      ],
+      "duration_seconds": 5.0,
+      "reason": null
+    },
+    "findings": [
+      "known:VUL4J-79.1 src/main/java/org/zeroturnaround/zip/ZipUtil.java:1152",
+      "known:VUL4J-79.2 src/main/java/org/zeroturnaround/zip/ZipUtil.java:1220",
+      "known:VUL4J-79.3 src/main/java/org/zeroturnaround/zip/ZipUtil.java:1225",
+      "known:VUL4J-79.4 src/main/java/org/zeroturnaround/zip/ZipUtil.java:1260"
+    ],
+    "patch": {
+      "patch_sha256": null,
+      "changed_lines": null
+    },
+    "source_revision": "57c32d5d78d13bdc8b3198436261d0edae1fd0da",
+    "artifact_sha256": null,
+    "runner_profile": "docker:maven:3.9.16-eclipse-temurin-8@sha256:0f402712b7a469189cfea5ec69cdcadcb32b22aaf1ea62777ab925c3d8470175",
+    "duration_seconds": 40.203,
+    "hidden": {
+      "passed": false,
+      "tests": 4,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "testUnwrapDoesNotWriteOutsideTheTarget",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        },
+        {
+          "name": "testTopLevelBackslashEntryDoesNotWriteOutsideTheTarget",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        }
+      ],
+      "duration_seconds": 10.797,
+      "reason": null
+    }
+  },
+  "human_fix": {
+    "passed": true,
+    "baseline_valid": false,
+    "feedback": "verified",
+    "build": {
+      "passed": true,
+      "duration_seconds": 20.094
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 116,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "duration_seconds": 11.125,
+      "reason": null
+    },
+    "security": {
+      "passed": true,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "duration_seconds": 5.141,
+      "reason": null
+    },
+    "findings": [],
+    "patch": {
+      "patch_sha256": "d351a91390a3a0ef29985af49f83f798da0d1145dcd1dd9b624e12db397be7e7",
+      "changed_lines": 36
+    },
+    "source_revision": "91496df6aa852ac4dbb53e2190bebae8b732ea8e",
+    "artifact_sha256": "e34477100b53b9a2ea0f97ec8d12522c68ec0afd4d4177001ceb5ac86d9ef610",
+    "runner_profile": "docker:maven:3.9.16-eclipse-temurin-8@sha256:0f402712b7a469189cfea5ec69cdcadcb32b22aaf1ea62777ab925c3d8470175",
+    "duration_seconds": 36.875,
+    "hidden": {
+      "passed": true,
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "duration_seconds": 10.328,
+      "reason": null
+    }
+  },
+  "control": {
+    "passed": false,
+    "baseline_valid": false,
+    "feedback": "validation_failed",
+    "build": {
+      "passed": true,
+      "duration_seconds": 18.375
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 116,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "duration_seconds": 11.359,
+      "reason": null
+    },
+    "security": {
+      "passed": false,
+      "tests": 2,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "testUnwrapDoesntLeaveTarget",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        },
+        {
+          "name": "testUnpackDoesntLeaveTarget",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        }
+      ],
+      "duration_seconds": 5.125,
+      "reason": null
+    },
+    "findings": [],
+    "patch": {
+      "patch_sha256": "1ca573f5d813c08ad3bb6a55d4663dc6904eb1136ea939dd700dae94050cd1c4",
+      "changed_lines": 1
+    },
+    "source_revision": "65109bf3e26bbb0d35e07dc1a3c2d382ee489d65",
+    "artifact_sha256": null,
+    "runner_profile": "docker:maven:3.9.16-eclipse-temurin-8@sha256:0f402712b7a469189cfea5ec69cdcadcb32b22aaf1ea62777ab925c3d8470175",
+    "duration_seconds": 35.375,
+    "hidden": {
+      "passed": false,
+      "tests": 4,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "testUnwrapDoesNotWriteOutsideTheTarget",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        },
+        {
+          "name": "testTopLevelBackslashEntryDoesNotWriteOutsideTheTarget",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        }
+      ],
+      "duration_seconds": 10.344,
+      "reason": null
+    }
+  },
+  "partial_fix": {
+    "passed": true,
+    "baseline_valid": false,
+    "feedback": "verified",
+    "build": {
+      "passed": true,
+      "duration_seconds": 18.781
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 116,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "duration_seconds": 11.328,
+      "reason": null
+    },
+    "security": {
+      "passed": true,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "duration_seconds": 4.938,
+      "reason": null
+    },
+    "findings": [],
+    "patch": {
+      "patch_sha256": "edf512f3b3d1ef127e749e3c1d6328af7485a1659522a2a0ee39ad2018d11e98",
+      "changed_lines": 18
+    },
+    "source_revision": "0f8c8ae4fd34bfc3168ba14e1216f4ade6327db1",
+    "artifact_sha256": "1bd91fb215c4691f167f2135d95ed7b2e5c08d0aa3681e47d88a0fa18bb3dacb",
+    "runner_profile": "docker:maven:3.9.16-eclipse-temurin-8@sha256:0f402712b7a469189cfea5ec69cdcadcb32b22aaf1ea62777ab925c3d8470175",
+    "duration_seconds": 35.547,
+    "hidden": {
+      "passed": false,
+      "tests": 4,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "testUnwrapDoesNotWriteOutsideTheTarget",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        },
+        {
+          "name": "testTopLevelBackslashEntryDoesNotWriteOutsideTheTarget",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        }
+      ],
+      "duration_seconds": 10.75,
+      "reason": null
+    }
+  }
+}

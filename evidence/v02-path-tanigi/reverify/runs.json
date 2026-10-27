@@ -1,0 +1,230 @@
+[
+  {
+    "source_job": "0f14e36311534f96ab41b10d8545df93",
+    "case_id": "path-03",
+    "split": "evaluation",
+    "strategy": "guided",
+    "seed": 42,
+    "patch_sha256": "b095955bddfc03113a2be2c19d30d4c74a79bbc58897d10f587305522c42d3fe",
+    "mentions_toRealPath": false,
+    "passed": false,
+    "failure": "security_witness_failed",
+    "failed_tests": [
+      "cannotEscapeThroughLinkInsideRoot"
+    ]
+  },
+  {
+    "source_job": "0fe19857fbc642f28a3acf198a2708bd",
+    "case_id": "path-02",
+    "split": "evaluation",
+    "strategy": "guided",
+    "seed": 42,
+    "patch_sha256": "ded24928ee3805e97fd34d45aac0662610171ac457c87c9bccc4e6c76e167061",
+    "mentions_toRealPath": false,
+    "passed": false,
+    "failure": "security_witness_failed",
+    "failed_tests": [
+      "cannotEscapeThroughLinkInsideRoot"
+    ]
+  },
+  {
+    "source_job": "21f06fd6995a442ba97cdedf088c5720",
+    "case_id": "path-03",
+    "split": "evaluation",
+    "strategy": "guided",
+    "seed": 43,
+    "patch_sha256": "d2242069a59c712ea9eb6e423e4fc4988e48de8722dd8edf95636bf8f3b1dbcb",
+    "mentions_toRealPath": false,
+    "passed": false,
+    "failure": "security_witness_failed",
+    "failed_tests": [
+      "cannotEscapeThroughLinkInsideRoot"
+    ]
+  },
+  {
+    "source_job": "2c9b1da7fefd4b35be429c3e8c04cbdf",
+    "case_id": "path-01",
+    "split": "development",
+    "strategy": "guided+context",
+    "seed": 42,
+    "patch_sha256": "7033babc4c791ab685c557c32f95acc352076deb061112bb3abc3dfe9c26777b",
+    "mentions_toRealPath": true,
+    "passed": true,
+    "failure": null,
+    "failed_tests": []
+  },
+  {
+    "source_job": "4591706b6fb84de7a4d0eec4ef404a36",
+    "case_id": "path-02",
+    "split": "evaluation",
+    "strategy": "guided",
+    "seed": 43,
+    "patch_sha256": "58ec88fc397785469b364f474b95b26a73d62b0b1d2ad9da91ca4b04a34c8208",
+    "mentions_toRealPath": false,
+    "passed": false,
+    "failure": "security_witness_failed",
+    "failed_tests": [
+      "cannotEscapeThroughLinkInsideRoot"
+    ]
+  },
+  {
+    "source_job": "45a911152aff466eab1d7a57971d81d3",
+    "case_id": "path-02",
+    "split": "evaluation",
+    "strategy": "guided+context",
+    "seed": 44,
+    "patch_sha256": "6abc5b217ae487cfcd666501fed614f20fd967e2859da6ec2f9c6a2f1e67fd86",
+    "mentions_toRealPath": true,
+    "passed": true,
+    "failure": null,
+    "failed_tests": []
+  },
+  {
+    "source_job": "63685bf798eb41fcb1b88be7784d9590",
+    "case_id": "path-01",
+    "split": "development",
+    "strategy": "guided",
+    "seed": 43,
+    "patch_sha256": "58ec88fc397785469b364f474b95b26a73d62b0b1d2ad9da91ca4b04a34c8208",
+    "mentions_toRealPath": false,
+    "passed": false,
+    "failure": "security_witness_failed",
+    "failed_tests": [
+      "cannotEscapeThroughLinkInsideRoot"
+    ]
+  },
+  {
+    "source_job": "639ea7067a4442329c2a026ac9a948c5",
+    "case_id": "path-03",
+    "split": "evaluation",
+    "strategy": "guided+context",
+    "seed": 42,
+    "patch_sha256": "f627b46bb430353216425c6690ebb34984eefa61ac0fe7964d9f81fdd5e52cd2",
+    "mentions_toRealPath": true,
+    "passed": true,
+    "failure": null,
+    "failed_tests": []
+  },
+  {
+    "source_job": "694a9d712e8d4b5e84f3dac2f3b6c0a0",
+    "case_id": "path-02",
+    "split": "evaluation",
+    "strategy": "guided",
+    "seed": 44,
+    "patch_sha256": "d5c8c1cefa32433ed471847e610641bd6abd03a263b473cf9a4e59b41c7ac7e8",
+    "mentions_toRealPath": true,
+    "passed": true,
+    "failure": null,
+    "failed_tests": []
+  },
+  {
+    "source_job": "74d870f95e2f45a0a22f7a9f3aba300e",
+    "case_id": "path-03",
+    "split": "evaluation",
+    "strategy": "guided+context",
+    "seed": 44,
+    "patch_sha256": "4f8f834af395d72e889f0ffad4622985664d70e7fd2a74e03323e7fea9d0be74",
+    "mentions_toRealPath": true,
+    "passed": true,
+    "failure": null,
+    "failed_tests": []
+  },
+  {
+    "source_job": "8d4372a42cc346b8b785fd1cedf14fe1",
+    "case_id": "path-01",
+    "split": "development",
+    "strategy": "guided",
+    "seed": 44,
+    "patch_sha256": "d5c8c1cefa32433ed471847e610641bd6abd03a263b473cf9a4e59b41c7ac7e8",
+    "mentions_toRealPath": true,
+    "passed": true,
+    "failure": null,
+    "failed_tests": []
+  },
+  {
+    "source_job": "9e0304744f5a48d5b8dce2ecafb55658",
+    "case_id": "path-03",
+    "split": "evaluation",
+    "strategy": "guided+context",
+    "seed": 43,
+    "patch_sha256": "be6f166d57c24de608dfc42202051c857cb2f8a5fbe139d8744f53deaa0dce8a",
+    "mentions_toRealPath": true,
+    "passed": true,
+    "failure": null,
+    "failed_tests": []
+  },
+  {
+    "source_job": "a004274a4c774e9fa89df6c8db96ff07",
+    "case_id": "path-03",
+    "split": "evaluation",
+    "strategy": "guided",
+    "seed": 44,
+    "patch_sha256": "b199dce76a8b515eb524b7931d9c128087959d3080b0b30de3ff933e8f8dca93",
+    "mentions_toRealPath": false,
+    "passed": false,
+    "failure": "security_witness_failed",
+    "failed_tests": [
+      "cannotEscapeThroughLinkInsideRoot"
+    ]
+  },
+  {
+    "source_job": "a06f1d95d3dd4b9e98ab5d2787cb490a",
+    "case_id": "path-02",
+    "split": "evaluation",
+    "strategy": "guided+context",
+    "seed": 42,
+    "patch_sha256": "fefc3ad4008544c4c8b687e0f03ec62061c5c56739212e2b6f307642e00187bf",
+    "mentions_toRealPath": true,
+    "passed": true,
+    "failure": null,
+    "failed_tests": []
+  },
+  {
+    "source_job": "a4943205777a482a946707a71169ad8c",
+    "case_id": "path-01",
+    "split": "development",
+    "strategy": "guided",
+    "seed": 42,
+    "patch_sha256": "d5c8c1cefa32433ed471847e610641bd6abd03a263b473cf9a4e59b41c7ac7e8",
+    "mentions_toRealPath": true,
+    "passed": true,
+    "failure": null,
+    "failed_tests": []
+  },
+  {
+    "source_job": "da4f17294fea4af8ad07361c493fea7c",
+    "case_id": "path-01",
+    "split": "development",
+    "strategy": "guided+context",
+    "seed": 44,
+    "patch_sha256": "83b4ace785193cc0a57a6cd6d2e35c7c78c7a34bf203a8a63ae266a91c66993a",
+    "mentions_toRealPath": true,
+    "passed": true,
+    "failure": null,
+    "failed_tests": []
+  },
+  {
+    "source_job": "de95594ef25e4f57bf95a9a513c5d6f5",
+    "case_id": "path-01",
+    "split": "development",
+    "strategy": "guided+context",
+    "seed": 43,
+    "patch_sha256": "ef6e05935558c08d3d333a32901f1a09a2be51f8f52af9eb72c7b873b16b7348",
+    "mentions_toRealPath": true,
+    "passed": true,
+    "failure": null,
+    "failed_tests": []
+  },
+  {
+    "source_job": "fe8a2036bc844e2081e626307eb8b25f",
+    "case_id": "path-02",
+    "split": "evaluation",
+    "strategy": "guided+context",
+    "seed": 43,
+    "patch_sha256": "deeb336256dd6b3e8579a595885527349eace0f333922664c0e111c263778b6a",
+    "mentions_toRealPath": true,
+    "passed": true,
+    "failure": null,
+    "failed_tests": []
+  }
+]

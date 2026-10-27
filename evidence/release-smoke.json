@@ -1,0 +1,802 @@
+{
+  "passed": true,
+  "scope": "real local LLM + HTTP workers + real Java/Semgrep + in-process control API; isolated test DB/users",
+  "human_approval": "SIMULATED ONLY",
+  "deployment": "not attempted",
+  "first": {
+    "id": "b97206fc38a34238ba2d08ec10550e9b",
+    "project": "owned-java-demo",
+    "memory_mode": "off",
+    "case_id": "sql-01",
+    "base_commit": "bac9cf9a007e5ad2ca6203822409991b4fbe4c1c",
+    "split": "development",
+    "policy_version": "java-synthetic-v1",
+    "scanner": "semgrep",
+    "mode": "real-local-model",
+    "status": "awaiting_review",
+    "started_at": 1789234354.2434938,
+    "deadline": 1789235554.2434938,
+    "max_attempts": 2,
+    "attempt_count": 1,
+    "attempts": [
+      {
+        "number": 1,
+        "proposal": {
+          "mode": "real-local-model",
+          "patch": {
+            "edits": [
+              {
+                "path": "src/main/java/demo/DemoService.java",
+                "old_sha256": "675fb78a6ab9cfe1b87b215641c662df76e5ba65d24b93695981a70b80e87873",
+                "content": "package demo;\n\nimport java.sql.*;\nimport java.util.*;\n\n// Case sql-01.\n// Deliberately vulnerable synthetic example. Never use with real data.\npublic class DemoService {\n    public String lookup(String input) throws Exception {\n        try (Connection conn = DriverManager.getConnection(\"jdbc:h2:mem:demo;DB_CLOSE_DELAY=-1\")) {\n            try (Statement init = conn.createStatement()) {\n                init.execute(\"CREATE TABLE IF NOT EXISTS accounts(name VARCHAR PRIMARY KEY)\");\n                init.execute(\"MERGE INTO accounts KEY(name) VALUES ('alice'), ('bob')\");\n            }\n            String sql = \"SELECT name FROM accounts WHERE name = ?\";\n            List<String> names = new ArrayList<>();\n            try (PreparedStatement statement = conn.prepareStatement(sql)) {\n                statement.setString(1, input);\n                try (ResultSet rows = statement.executeQuery()) {\n                    while (rows.next()) names.add(rows.getString(1));\n                }\n            }\n            Collections.sort(names);\n            return String.join(\",\", names);\n        }\n    }\n}\n"
+              }
+            ],
+            "rationale": "The original code concatenates user input directly into a SQL query, which is vulnerable to SQL injection. The fix uses a PreparedStatement with a bound parameter to prevent SQL injection."
+          },
+          "model": {
+            "runtime": "ollama",
+            "runtime_version": "0.34.0",
+            "model": "qwen2.5-coder:7b-instruct-q4_K_M",
+            "model_digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+            "quantization": "Q4_K_M",
+            "license_sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e"
+          },
+          "metrics": {
+            "duration_seconds": 11.141,
+            "prompt_tokens_measured": 725,
+            "output_tokens_measured": 387,
+            "context_chars": 1727,
+            "prompt_sha256": "6aa1395e36c9e0318061a123251f98d34c71da502b5f92e6ac31bd7be74df5f7",
+            "system_prompt_sha256": "a578679af058fcc3a984e793e02fc6c1202fdff60d8685668ab892c99cbf5743",
+            "seed": 43,
+            "temperature": 0,
+            "num_ctx": 8192,
+            "num_predict": 2048
+          }
+        },
+        "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -12,10 +12,13 @@\n                 init.execute(\"CREATE TABLE IF NOT EXISTS accounts(name VARCHAR PRIMARY KEY)\");\n                 init.execute(\"MERGE INTO accounts KEY(name) VALUES ('alice'), ('bob')\");\n             }\n-            String sql = \"SELECT name FROM accounts WHERE name = '\" + input + \"'\";\n+            String sql = \"SELECT name FROM accounts WHERE name = ?\";\n             List<String> names = new ArrayList<>();\n-            try (Statement statement = conn.createStatement(); ResultSet rows = statement.executeQuery(sql)) {\n-                while (rows.next()) names.add(rows.getString(1));\n+            try (PreparedStatement statement = conn.prepareStatement(sql)) {\n+                statement.setString(1, input);\n+                try (ResultSet rows = statement.executeQuery()) {\n+                    while (rows.next()) names.add(rows.getString(1));\n+                }\n             }\n             Collections.sort(names);\n             return String.join(\",\", names);\n",
+        "patch_sha256": "1d94e00ec271b9de49285cf9b80468fca3f698e6d2505d314520e294ca466975",
+        "changed_lines": 9,
+        "verification": {
+          "passed": true,
+          "baseline_valid": false,
+          "base_commit": "bac9cf9a007e5ad2ca6203822409991b4fbe4c1c",
+          "source_revision": "c1def8b705f65572533b8cea93ed3b178fd1a40f",
+          "build": {
+            "passed": true,
+            "duration_seconds": 4.875
+          },
+          "behavior": {
+            "passed": true,
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "details": [],
+            "exit_code": 0,
+            "duration_seconds": 3.453,
+            "junit_sha256": "1d196d3681727687876eac9fa3216977f11befb1409e2cc3d58bfcd507bb338c"
+          },
+          "security": {
+            "passed": true,
+            "tests": 1,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "details": [],
+            "exit_code": 0,
+            "duration_seconds": 2.796,
+            "junit_sha256": "81824e115285763d9c46741f67d1af5ed003cffbc9d8274879342ea0e4846b17"
+          },
+          "scans": [
+            {
+              "tool": "semgrep",
+              "version": "1.136.0",
+              "status": "ok",
+              "analysis_id": "53e5d1c9010848d9bb026908f15df425",
+              "commit": "c1def8b705f65572533b8cea93ed3b178fd1a40f",
+              "source_sha256": "7b21ce65d31b1aa77c6820eebad7ac8fa7dcdcd343c9503dd35a8d0abbea187d",
+              "findings": []
+            }
+          ],
+          "patch": {
+            "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -12,10 +12,13 @@\n                 init.execute(\"CREATE TABLE IF NOT EXISTS accounts(name VARCHAR PRIMARY KEY)\");\n                 init.execute(\"MERGE INTO accounts KEY(name) VALUES ('alice'), ('bob')\");\n             }\n-            String sql = \"SELECT name FROM accounts WHERE name = '\" + input + \"'\";\n+            String sql = \"SELECT name FROM accounts WHERE name = ?\";\n             List<String> names = new ArrayList<>();\n-            try (Statement statement = conn.createStatement(); ResultSet rows = statement.executeQuery(sql)) {\n-                while (rows.next()) names.add(rows.getString(1));\n+            try (PreparedStatement statement = conn.prepareStatement(sql)) {\n+                statement.setString(1, input);\n+                try (ResultSet rows = statement.executeQuery()) {\n+                    while (rows.next()) names.add(rows.getString(1));\n+                }\n             }\n             Collections.sort(names);\n             return String.join(\",\", names);\n",
+            "patch_sha256": "1d94e00ec271b9de49285cf9b80468fca3f698e6d2505d314520e294ca466975",
+            "changed_lines": 9
+          },
+          "feedback": {
+            "code": "verified",
+            "behavior": {
+              "passed": true,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "details": [],
+              "exit_code": 0,
+              "duration_seconds": 3.453,
+              "junit_sha256": "1d196d3681727687876eac9fa3216977f11befb1409e2cc3d58bfcd507bb338c"
+            },
+            "security": {
+              "passed": true,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "details": [],
+              "exit_code": 0,
+              "duration_seconds": 2.796,
+              "junit_sha256": "81824e115285763d9c46741f67d1af5ed003cffbc9d8274879342ea0e4846b17"
+            },
+            "remaining_rules": []
+          },
+          "duration_seconds": 24.953,
+          "runner_profile": "native-same-user",
+          "versions": {
+            "java": "17; inspect preparation evidence",
+            "maven": "3.9.16"
+          },
+          "artifact_sha256": "a25a7ab815fbcbe204c057ebceebba3de8f6bc5f3db4847adba608e783111378",
+          "candidate_commit": "c1def8b705f65572533b8cea93ed3b178fd1a40f",
+          "review_branch": "candidate",
+          "review_repository": "C:\\DevSecOps_Tubitak\\delivery\\SafePatchV01\\.runtime\\review\\b97206fc38a34238ba2d08ec10550e9b-e172d43b"
+        }
+      }
+    ],
+    "events": [
+      {
+        "time": 1789234354.2434938,
+        "status": "queued"
+      },
+      {
+        "time": 1789234354.801901,
+        "status": "scanning"
+      },
+      {
+        "time": 1789234383.6216452,
+        "status": "scanning"
+      },
+      {
+        "time": 1789234383.6358888,
+        "status": "scanning"
+      },
+      {
+        "time": 1789234383.6496136,
+        "status": "patching"
+      },
+      {
+        "time": 1789234394.9521666,
+        "status": "verifying"
+      },
+      {
+        "time": 1789234421.4847517,
+        "status": "awaiting_review"
+      }
+    ],
+    "owner": "SIMULATED-developer",
+    "second_review": false,
+    "approval": null,
+    "baseline": {
+      "passed": false,
+      "baseline_valid": true,
+      "base_commit": "bac9cf9a007e5ad2ca6203822409991b4fbe4c1c",
+      "source_revision": "bac9cf9a007e5ad2ca6203822409991b4fbe4c1c",
+      "build": {
+        "passed": true,
+        "duration_seconds": 4.437
+      },
+      "behavior": {
+        "passed": true,
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 3.969,
+        "junit_sha256": "4e00939a646324f8d8b0e748a55cc080e42b72f769122966412b3495b785d7b1"
+      },
+      "security": {
+        "passed": false,
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "details": [
+          {
+            "name": "injectionMustNotReturnAccounts",
+            "type": "failure",
+            "assertion": "SQL_INJECTION_REGRESSION"
+          }
+        ],
+        "exit_code": 1,
+        "duration_seconds": 3.719,
+        "junit_sha256": "c9af3cb0bc0d9707ceeedeb306c6408a7a4b71f97ae4c4b103ee1162678ed47f"
+      },
+      "scans": [
+        {
+          "tool": "semgrep",
+          "version": "1.136.0",
+          "status": "ok",
+          "analysis_id": "4b9228c62a7742ed9d9affa9b966c809",
+          "commit": "bac9cf9a007e5ad2ca6203822409991b4fbe4c1c",
+          "source_sha256": "675fb78a6ab9cfe1b87b215641c662df76e5ba65d24b93695981a70b80e87873",
+          "findings": [
+            {
+              "tool": "semgrep",
+              "rule_id": "bigg.java.sql-concatenation",
+              "raw_rule_id": "mnt.c.DevSecOps_Tubitak.delivery.SafePatchV01.rules.bigg.java.sql-concatenation",
+              "type": "VULNERABILITY",
+              "file": "src/main/java/demo/DemoService.java",
+              "line": 17,
+              "severity": "ERROR",
+              "message": "Synthetic input is concatenated into a JDBC query; use bound parameters.",
+              "cwe": "CWE-89",
+              "fingerprint": "719a83006189db99032fddd095ec2863cacff0367343a60e7f9ec5ed8e488657"
+            }
+          ]
+        }
+      ],
+      "patch": null,
+      "feedback": {
+        "code": "validation_failed",
+        "behavior": {
+          "passed": true,
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "details": [],
+          "exit_code": 0,
+          "duration_seconds": 3.969,
+          "junit_sha256": "4e00939a646324f8d8b0e748a55cc080e42b72f769122966412b3495b785d7b1"
+        },
+        "security": {
+          "passed": false,
+          "tests": 1,
+          "failures": 1,
+          "errors": 0,
+          "skipped": 0,
+          "details": [
+            {
+              "name": "injectionMustNotReturnAccounts",
+              "type": "failure",
+              "assertion": "SQL_INJECTION_REGRESSION"
+            }
+          ],
+          "exit_code": 1,
+          "duration_seconds": 3.719,
+          "junit_sha256": "c9af3cb0bc0d9707ceeedeb306c6408a7a4b71f97ae4c4b103ee1162678ed47f"
+        },
+        "remaining_rules": [
+          "bigg.java.sql-concatenation"
+        ]
+      },
+      "duration_seconds": 28.141,
+      "runner_profile": "native-same-user",
+      "versions": {
+        "java": "17; inspect preparation evidence",
+        "maven": "3.9.16"
+      }
+    },
+    "memory_lookup": {
+      "decision": "disabled",
+      "duration_seconds": 0,
+      "rejected": [],
+      "selected_id": null
+    },
+    "memory_context": {
+      "project": "owned-java-demo",
+      "kind": "sql",
+      "rule_id": "bigg.java.sql-concatenation",
+      "jdk": "17",
+      "source_path": "src/main/java/demo/DemoService.java",
+      "build_sha256": "26e043fae58e551912409518b9d20e281bf34a51d8980781ee6c3c299fec6819",
+      "contract_sha256": "ad5fdffc6258310c04d919cbec41a6f4fba78698e06c65726f15fe712b89d2ad",
+      "source_sha256": "675fb78a6ab9cfe1b87b215641c662df76e5ba65d24b93695981a70b80e87873"
+    },
+    "memory_ids": [],
+    "tokens_reserved": 8192,
+    "acceptance_manifest": {
+      "schema": "safepatch-evidence-v1",
+      "job_id": "b97206fc38a34238ba2d08ec10550e9b",
+      "base_commit": "bac9cf9a007e5ad2ca6203822409991b4fbe4c1c",
+      "policy": "java-synthetic-v1",
+      "patch_sha256": "1d94e00ec271b9de49285cf9b80468fca3f698e6d2505d314520e294ca466975",
+      "verification": {
+        "passed": true,
+        "baseline_valid": false,
+        "base_commit": "bac9cf9a007e5ad2ca6203822409991b4fbe4c1c",
+        "source_revision": "c1def8b705f65572533b8cea93ed3b178fd1a40f",
+        "build": {
+          "passed": true,
+          "duration_seconds": 4.875
+        },
+        "behavior": {
+          "passed": true,
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "details": [],
+          "exit_code": 0,
+          "duration_seconds": 3.453,
+          "junit_sha256": "1d196d3681727687876eac9fa3216977f11befb1409e2cc3d58bfcd507bb338c"
+        },
+        "security": {
+          "passed": true,
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "details": [],
+          "exit_code": 0,
+          "duration_seconds": 2.796,
+          "junit_sha256": "81824e115285763d9c46741f67d1af5ed003cffbc9d8274879342ea0e4846b17"
+        },
+        "scans": [
+          {
+            "tool": "semgrep",
+            "version": "1.136.0",
+            "status": "ok",
+            "analysis_id": "53e5d1c9010848d9bb026908f15df425",
+            "commit": "c1def8b705f65572533b8cea93ed3b178fd1a40f",
+            "source_sha256": "7b21ce65d31b1aa77c6820eebad7ac8fa7dcdcd343c9503dd35a8d0abbea187d",
+            "findings": []
+          }
+        ],
+        "patch": {
+          "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -12,10 +12,13 @@\n                 init.execute(\"CREATE TABLE IF NOT EXISTS accounts(name VARCHAR PRIMARY KEY)\");\n                 init.execute(\"MERGE INTO accounts KEY(name) VALUES ('alice'), ('bob')\");\n             }\n-            String sql = \"SELECT name FROM accounts WHERE name = '\" + input + \"'\";\n+            String sql = \"SELECT name FROM accounts WHERE name = ?\";\n             List<String> names = new ArrayList<>();\n-            try (Statement statement = conn.createStatement(); ResultSet rows = statement.executeQuery(sql)) {\n-                while (rows.next()) names.add(rows.getString(1));\n+            try (PreparedStatement statement = conn.prepareStatement(sql)) {\n+                statement.setString(1, input);\n+                try (ResultSet rows = statement.executeQuery()) {\n+                    while (rows.next()) names.add(rows.getString(1));\n+                }\n             }\n             Collections.sort(names);\n             return String.join(\",\", names);\n",
+          "patch_sha256": "1d94e00ec271b9de49285cf9b80468fca3f698e6d2505d314520e294ca466975",
+          "changed_lines": 9
+        },
+        "feedback": {
+          "code": "verified",
+          "behavior": {
+            "passed": true,
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "details": [],
+            "exit_code": 0,
+            "duration_seconds": 3.453,
+            "junit_sha256": "1d196d3681727687876eac9fa3216977f11befb1409e2cc3d58bfcd507bb338c"
+          },
+          "security": {
+            "passed": true,
+            "tests": 1,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "details": [],
+            "exit_code": 0,
+            "duration_seconds": 2.796,
+            "junit_sha256": "81824e115285763d9c46741f67d1af5ed003cffbc9d8274879342ea0e4846b17"
+          },
+          "remaining_rules": []
+        },
+        "duration_seconds": 24.953,
+        "runner_profile": "native-same-user",
+        "versions": {
+          "java": "17; inspect preparation evidence",
+          "maven": "3.9.16"
+        },
+        "artifact_sha256": "a25a7ab815fbcbe204c057ebceebba3de8f6bc5f3db4847adba608e783111378",
+        "candidate_commit": "c1def8b705f65572533b8cea93ed3b178fd1a40f",
+        "review_branch": "candidate",
+        "review_repository": "C:\\DevSecOps_Tubitak\\delivery\\SafePatchV01\\.runtime\\review\\b97206fc38a34238ba2d08ec10550e9b-e172d43b"
+      },
+      "memory_ids": [],
+      "mode": "real-local-model"
+    },
+    "candidate": {
+      "evidence_sha256": "28b7c9a6bba105293eee8c411b963a6463188177b35fd3009b396937ec5afb16",
+      "commit": "c1def8b705f65572533b8cea93ed3b178fd1a40f",
+      "artifact_sha256": "a25a7ab815fbcbe204c057ebceebba3de8f6bc5f3db4847adba608e783111378",
+      "patch_sha256": "1d94e00ec271b9de49285cf9b80468fca3f698e6d2505d314520e294ca466975",
+      "policy_version": "java-synthetic-v1",
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -12,10 +12,13 @@\n                 init.execute(\"CREATE TABLE IF NOT EXISTS accounts(name VARCHAR PRIMARY KEY)\");\n                 init.execute(\"MERGE INTO accounts KEY(name) VALUES ('alice'), ('bob')\");\n             }\n-            String sql = \"SELECT name FROM accounts WHERE name = '\" + input + \"'\";\n+            String sql = \"SELECT name FROM accounts WHERE name = ?\";\n             List<String> names = new ArrayList<>();\n-            try (Statement statement = conn.createStatement(); ResultSet rows = statement.executeQuery(sql)) {\n-                while (rows.next()) names.add(rows.getString(1));\n+            try (PreparedStatement statement = conn.prepareStatement(sql)) {\n+                statement.setString(1, input);\n+                try (ResultSet rows = statement.executeQuery()) {\n+                    while (rows.next()) names.add(rows.getString(1));\n+                }\n             }\n             Collections.sort(names);\n             return String.join(\",\", names);\n",
+      "review_repository": "C:\\DevSecOps_Tubitak\\delivery\\SafePatchV01\\.runtime\\review\\b97206fc38a34238ba2d08ec10550e9b-e172d43b",
+      "review_branch": "candidate"
+    },
+    "advisory": null,
+    "review_expires_at": 1789320821.4837496,
+    "duration_seconds": 67.24,
+    "wall_seconds": 67.244
+  },
+  "replay": {
+    "id": "9e5c91ec90e34bd0a34f28d5c510fb05",
+    "project": "owned-java-demo",
+    "memory_mode": "guarded",
+    "case_id": "sql-01",
+    "base_commit": "bac9cf9a007e5ad2ca6203822409991b4fbe4c1c",
+    "split": "development",
+    "policy_version": "java-synthetic-v1",
+    "scanner": "semgrep",
+    "mode": "real-local-model",
+    "status": "awaiting_review",
+    "started_at": 1789234422.062326,
+    "deadline": 1789235622.062326,
+    "max_attempts": 2,
+    "attempt_count": 1,
+    "attempts": [
+      {
+        "number": 1,
+        "proposal": {
+          "mode": "approved-memory-replay",
+          "patch": {
+            "edits": [
+              {
+                "path": "src/main/java/demo/DemoService.java",
+                "old_sha256": "675fb78a6ab9cfe1b87b215641c662df76e5ba65d24b93695981a70b80e87873",
+                "content": "package demo;\n\nimport java.sql.*;\nimport java.util.*;\n\n// Case sql-01.\n// Deliberately vulnerable synthetic example. Never use with real data.\npublic class DemoService {\n    public String lookup(String input) throws Exception {\n        try (Connection conn = DriverManager.getConnection(\"jdbc:h2:mem:demo;DB_CLOSE_DELAY=-1\")) {\n            try (Statement init = conn.createStatement()) {\n                init.execute(\"CREATE TABLE IF NOT EXISTS accounts(name VARCHAR PRIMARY KEY)\");\n                init.execute(\"MERGE INTO accounts KEY(name) VALUES ('alice'), ('bob')\");\n            }\n            String sql = \"SELECT name FROM accounts WHERE name = ?\";\n            List<String> names = new ArrayList<>();\n            try (PreparedStatement statement = conn.prepareStatement(sql)) {\n                statement.setString(1, input);\n                try (ResultSet rows = statement.executeQuery()) {\n                    while (rows.next()) names.add(rows.getString(1));\n                }\n            }\n            Collections.sort(names);\n            return String.join(\",\", names);\n        }\n    }\n}\n"
+              }
+            ],
+            "rationale": "The original code concatenates user input directly into a SQL query, which is vulnerable to SQL injection. The fix uses a PreparedStatement with a bound parameter to prevent SQL injection."
+          },
+          "memory_id": "e9f959a896374b93b741d3fa0dd8f383",
+          "metrics": {
+            "duration_seconds": 0.000601,
+            "prompt_tokens_measured": 0,
+            "output_tokens_measured": 0
+          }
+        },
+        "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -12,10 +12,13 @@\n                 init.execute(\"CREATE TABLE IF NOT EXISTS accounts(name VARCHAR PRIMARY KEY)\");\n                 init.execute(\"MERGE INTO accounts KEY(name) VALUES ('alice'), ('bob')\");\n             }\n-            String sql = \"SELECT name FROM accounts WHERE name = '\" + input + \"'\";\n+            String sql = \"SELECT name FROM accounts WHERE name = ?\";\n             List<String> names = new ArrayList<>();\n-            try (Statement statement = conn.createStatement(); ResultSet rows = statement.executeQuery(sql)) {\n-                while (rows.next()) names.add(rows.getString(1));\n+            try (PreparedStatement statement = conn.prepareStatement(sql)) {\n+                statement.setString(1, input);\n+                try (ResultSet rows = statement.executeQuery()) {\n+                    while (rows.next()) names.add(rows.getString(1));\n+                }\n             }\n             Collections.sort(names);\n             return String.join(\",\", names);\n",
+        "patch_sha256": "1d94e00ec271b9de49285cf9b80468fca3f698e6d2505d314520e294ca466975",
+        "changed_lines": 9,
+        "verification": {
+          "passed": true,
+          "baseline_valid": false,
+          "base_commit": "bac9cf9a007e5ad2ca6203822409991b4fbe4c1c",
+          "source_revision": "c1def8b705f65572533b8cea93ed3b178fd1a40f",
+          "build": {
+            "passed": true,
+            "duration_seconds": 4.203
+          },
+          "behavior": {
+            "passed": true,
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "details": [],
+            "exit_code": 0,
+            "duration_seconds": 3.125,
+            "junit_sha256": "81782f31e74de0cbcc75e5d9d6b6be0a638a82836edaadb3020d8245ff9e5abf"
+          },
+          "security": {
+            "passed": true,
+            "tests": 1,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "details": [],
+            "exit_code": 0,
+            "duration_seconds": 3.343,
+            "junit_sha256": "d01b14b990c9440446bc290275926355720479a8e5d6d9215460fd49adaaa74b"
+          },
+          "scans": [
+            {
+              "tool": "semgrep",
+              "version": "1.136.0",
+              "status": "ok",
+              "analysis_id": "b81e4a398f664f9698655867f686fd53",
+              "commit": "c1def8b705f65572533b8cea93ed3b178fd1a40f",
+              "source_sha256": "7b21ce65d31b1aa77c6820eebad7ac8fa7dcdcd343c9503dd35a8d0abbea187d",
+              "findings": []
+            }
+          ],
+          "patch": {
+            "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -12,10 +12,13 @@\n                 init.execute(\"CREATE TABLE IF NOT EXISTS accounts(name VARCHAR PRIMARY KEY)\");\n                 init.execute(\"MERGE INTO accounts KEY(name) VALUES ('alice'), ('bob')\");\n             }\n-            String sql = \"SELECT name FROM accounts WHERE name = '\" + input + \"'\";\n+            String sql = \"SELECT name FROM accounts WHERE name = ?\";\n             List<String> names = new ArrayList<>();\n-            try (Statement statement = conn.createStatement(); ResultSet rows = statement.executeQuery(sql)) {\n-                while (rows.next()) names.add(rows.getString(1));\n+            try (PreparedStatement statement = conn.prepareStatement(sql)) {\n+                statement.setString(1, input);\n+                try (ResultSet rows = statement.executeQuery()) {\n+                    while (rows.next()) names.add(rows.getString(1));\n+                }\n             }\n             Collections.sort(names);\n             return String.join(\",\", names);\n",
+            "patch_sha256": "1d94e00ec271b9de49285cf9b80468fca3f698e6d2505d314520e294ca466975",
+            "changed_lines": 9
+          },
+          "feedback": {
+            "code": "verified",
+            "behavior": {
+              "passed": true,
+              "tests": 3,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "details": [],
+              "exit_code": 0,
+              "duration_seconds": 3.125,
+              "junit_sha256": "81782f31e74de0cbcc75e5d9d6b6be0a638a82836edaadb3020d8245ff9e5abf"
+            },
+            "security": {
+              "passed": true,
+              "tests": 1,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0,
+              "details": [],
+              "exit_code": 0,
+              "duration_seconds": 3.343,
+              "junit_sha256": "d01b14b990c9440446bc290275926355720479a8e5d6d9215460fd49adaaa74b"
+            },
+            "remaining_rules": []
+          },
+          "duration_seconds": 26.265,
+          "runner_profile": "native-same-user",
+          "versions": {
+            "java": "17; inspect preparation evidence",
+            "maven": "3.9.16"
+          },
+          "artifact_sha256": "a25a7ab815fbcbe204c057ebceebba3de8f6bc5f3db4847adba608e783111378",
+          "candidate_commit": "c1def8b705f65572533b8cea93ed3b178fd1a40f",
+          "review_branch": "candidate",
+          "review_repository": "C:\\DevSecOps_Tubitak\\delivery\\SafePatchV01\\.runtime\\review\\9e5c91ec90e34bd0a34f28d5c510fb05-63d6948e"
+        }
+      }
+    ],
+    "events": [
+      {
+        "time": 1789234422.062326,
+        "status": "queued"
+      },
+      {
+        "time": 1789234422.6731791,
+        "status": "scanning"
+      },
+      {
+        "time": 1789234445.0951927,
+        "status": "scanning"
+      },
+      {
+        "time": 1789234445.108703,
+        "status": "scanning"
+      },
+      {
+        "time": 1789234445.1477885,
+        "status": "patching"
+      },
+      {
+        "time": 1789234445.1658084,
+        "status": "verifying"
+      },
+      {
+        "time": 1789234472.988085,
+        "status": "awaiting_review"
+      }
+    ],
+    "owner": "SIMULATED-developer",
+    "second_review": false,
+    "approval": null,
+    "baseline": {
+      "passed": false,
+      "baseline_valid": true,
+      "base_commit": "bac9cf9a007e5ad2ca6203822409991b4fbe4c1c",
+      "source_revision": "bac9cf9a007e5ad2ca6203822409991b4fbe4c1c",
+      "build": {
+        "passed": true,
+        "duration_seconds": 4.313
+      },
+      "behavior": {
+        "passed": true,
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 2.906,
+        "junit_sha256": "2b5e7471e27b0c17dc0433d268b0a95463d275f19a9456c6e56e5f39f30f145e"
+      },
+      "security": {
+        "passed": false,
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "details": [
+          {
+            "name": "injectionMustNotReturnAccounts",
+            "type": "failure",
+            "assertion": "SQL_INJECTION_REGRESSION"
+          }
+        ],
+        "exit_code": 1,
+        "duration_seconds": 3.094,
+        "junit_sha256": "c43526bec9772db9b41422cbce7b56cefe12be7b30cf59724c3fe62a3ac3afa6"
+      },
+      "scans": [
+        {
+          "tool": "semgrep",
+          "version": "1.136.0",
+          "status": "ok",
+          "analysis_id": "9299bbb47d8546bfb085b2183cb7da21",
+          "commit": "bac9cf9a007e5ad2ca6203822409991b4fbe4c1c",
+          "source_sha256": "675fb78a6ab9cfe1b87b215641c662df76e5ba65d24b93695981a70b80e87873",
+          "findings": [
+            {
+              "tool": "semgrep",
+              "rule_id": "bigg.java.sql-concatenation",
+              "raw_rule_id": "mnt.c.DevSecOps_Tubitak.delivery.SafePatchV01.rules.bigg.java.sql-concatenation",
+              "type": "VULNERABILITY",
+              "file": "src/main/java/demo/DemoService.java",
+              "line": 17,
+              "severity": "ERROR",
+              "message": "Synthetic input is concatenated into a JDBC query; use bound parameters.",
+              "cwe": "CWE-89",
+              "fingerprint": "719a83006189db99032fddd095ec2863cacff0367343a60e7f9ec5ed8e488657"
+            }
+          ]
+        }
+      ],
+      "patch": null,
+      "feedback": {
+        "code": "validation_failed",
+        "behavior": {
+          "passed": true,
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "details": [],
+          "exit_code": 0,
+          "duration_seconds": 2.906,
+          "junit_sha256": "2b5e7471e27b0c17dc0433d268b0a95463d275f19a9456c6e56e5f39f30f145e"
+        },
+        "security": {
+          "passed": false,
+          "tests": 1,
+          "failures": 1,
+          "errors": 0,
+          "skipped": 0,
+          "details": [
+            {
+              "name": "injectionMustNotReturnAccounts",
+              "type": "failure",
+              "assertion": "SQL_INJECTION_REGRESSION"
+            }
+          ],
+          "exit_code": 1,
+          "duration_seconds": 3.094,
+          "junit_sha256": "c43526bec9772db9b41422cbce7b56cefe12be7b30cf59724c3fe62a3ac3afa6"
+        },
+        "remaining_rules": [
+          "bigg.java.sql-concatenation"
+        ]
+      },
+      "duration_seconds": 21.843,
+      "runner_profile": "native-same-user",
+      "versions": {
+        "java": "17; inspect preparation evidence",
+        "maven": "3.9.16"
+      }
+    },
+    "memory_lookup": {
+      "decision": "match",
+      "rejected": [],
+      "duration_seconds": 0.000601,
+      "selected_id": "e9f959a896374b93b741d3fa0dd8f383"
+    },
+    "memory_context": {
+      "project": "owned-java-demo",
+      "kind": "sql",
+      "rule_id": "bigg.java.sql-concatenation",
+      "jdk": "17",
+      "source_path": "src/main/java/demo/DemoService.java",
+      "build_sha256": "26e043fae58e551912409518b9d20e281bf34a51d8980781ee6c3c299fec6819",
+      "contract_sha256": "ad5fdffc6258310c04d919cbec41a6f4fba78698e06c65726f15fe712b89d2ad",
+      "source_sha256": "675fb78a6ab9cfe1b87b215641c662df76e5ba65d24b93695981a70b80e87873"
+    },
+    "memory_ids": [
+      "e9f959a896374b93b741d3fa0dd8f383"
+    ],
+    "acceptance_manifest": {
+      "schema": "safepatch-evidence-v1",
+      "job_id": "9e5c91ec90e34bd0a34f28d5c510fb05",
+      "base_commit": "bac9cf9a007e5ad2ca6203822409991b4fbe4c1c",
+      "policy": "java-synthetic-v1",
+      "patch_sha256": "1d94e00ec271b9de49285cf9b80468fca3f698e6d2505d314520e294ca466975",
+      "verification": {
+        "passed": true,
+        "baseline_valid": false,
+        "base_commit": "bac9cf9a007e5ad2ca6203822409991b4fbe4c1c",
+        "source_revision": "c1def8b705f65572533b8cea93ed3b178fd1a40f",
+        "build": {
+          "passed": true,
+          "duration_seconds": 4.203
+        },
+        "behavior": {
+          "passed": true,
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "details": [],
+          "exit_code": 0,
+          "duration_seconds": 3.125,
+          "junit_sha256": "81782f31e74de0cbcc75e5d9d6b6be0a638a82836edaadb3020d8245ff9e5abf"
+        },
+        "security": {
+          "passed": true,
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "details": [],
+          "exit_code": 0,
+          "duration_seconds": 3.343,
+          "junit_sha256": "d01b14b990c9440446bc290275926355720479a8e5d6d9215460fd49adaaa74b"
+        },
+        "scans": [
+          {
+            "tool": "semgrep",
+            "version": "1.136.0",
+            "status": "ok",
+            "analysis_id": "b81e4a398f664f9698655867f686fd53",
+            "commit": "c1def8b705f65572533b8cea93ed3b178fd1a40f",
+            "source_sha256": "7b21ce65d31b1aa77c6820eebad7ac8fa7dcdcd343c9503dd35a8d0abbea187d",
+            "findings": []
+          }
+        ],
+        "patch": {
+          "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -12,10 +12,13 @@\n                 init.execute(\"CREATE TABLE IF NOT EXISTS accounts(name VARCHAR PRIMARY KEY)\");\n                 init.execute(\"MERGE INTO accounts KEY(name) VALUES ('alice'), ('bob')\");\n             }\n-            String sql = \"SELECT name FROM accounts WHERE name = '\" + input + \"'\";\n+            String sql = \"SELECT name FROM accounts WHERE name = ?\";\n             List<String> names = new ArrayList<>();\n-            try (Statement statement = conn.createStatement(); ResultSet rows = statement.executeQuery(sql)) {\n-                while (rows.next()) names.add(rows.getString(1));\n+            try (PreparedStatement statement = conn.prepareStatement(sql)) {\n+                statement.setString(1, input);\n+                try (ResultSet rows = statement.executeQuery()) {\n+                    while (rows.next()) names.add(rows.getString(1));\n+                }\n             }\n             Collections.sort(names);\n             return String.join(\",\", names);\n",
+          "patch_sha256": "1d94e00ec271b9de49285cf9b80468fca3f698e6d2505d314520e294ca466975",
+          "changed_lines": 9
+        },
+        "feedback": {
+          "code": "verified",
+          "behavior": {
+            "passed": true,
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "details": [],
+            "exit_code": 0,
+            "duration_seconds": 3.125,
+            "junit_sha256": "81782f31e74de0cbcc75e5d9d6b6be0a638a82836edaadb3020d8245ff9e5abf"
+          },
+          "security": {
+            "passed": true,
+            "tests": 1,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "details": [],
+            "exit_code": 0,
+            "duration_seconds": 3.343,
+            "junit_sha256": "d01b14b990c9440446bc290275926355720479a8e5d6d9215460fd49adaaa74b"
+          },
+          "remaining_rules": []
+        },
+        "duration_seconds": 26.265,
+        "runner_profile": "native-same-user",
+        "versions": {
+          "java": "17; inspect preparation evidence",
+          "maven": "3.9.16"
+        },
+        "artifact_sha256": "a25a7ab815fbcbe204c057ebceebba3de8f6bc5f3db4847adba608e783111378",
+        "candidate_commit": "c1def8b705f65572533b8cea93ed3b178fd1a40f",
+        "review_branch": "candidate",
+        "review_repository": "C:\\DevSecOps_Tubitak\\delivery\\SafePatchV01\\.runtime\\review\\9e5c91ec90e34bd0a34f28d5c510fb05-63d6948e"
+      },
+      "memory_ids": [
+        "e9f959a896374b93b741d3fa0dd8f383"
+      ],
+      "mode": "real-local-model"
+    },
+    "candidate": {
+      "evidence_sha256": "d5b82aea7edcb2e62c6030a7f5e2b040daa7274b4ad65cbe62d7ce6e779c2273",
+      "commit": "c1def8b705f65572533b8cea93ed3b178fd1a40f",
+      "artifact_sha256": "a25a7ab815fbcbe204c057ebceebba3de8f6bc5f3db4847adba608e783111378",
+      "patch_sha256": "1d94e00ec271b9de49285cf9b80468fca3f698e6d2505d314520e294ca466975",
+      "policy_version": "java-synthetic-v1",
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -12,10 +12,13 @@\n                 init.execute(\"CREATE TABLE IF NOT EXISTS accounts(name VARCHAR PRIMARY KEY)\");\n                 init.execute(\"MERGE INTO accounts KEY(name) VALUES ('alice'), ('bob')\");\n             }\n-            String sql = \"SELECT name FROM accounts WHERE name = '\" + input + \"'\";\n+            String sql = \"SELECT name FROM accounts WHERE name = ?\";\n             List<String> names = new ArrayList<>();\n-            try (Statement statement = conn.createStatement(); ResultSet rows = statement.executeQuery(sql)) {\n-                while (rows.next()) names.add(rows.getString(1));\n+            try (PreparedStatement statement = conn.prepareStatement(sql)) {\n+                statement.setString(1, input);\n+                try (ResultSet rows = statement.executeQuery()) {\n+                    while (rows.next()) names.add(rows.getString(1));\n+                }\n             }\n             Collections.sort(names);\n             return String.join(\",\", names);\n",
+      "review_repository": "C:\\DevSecOps_Tubitak\\delivery\\SafePatchV01\\.runtime\\review\\9e5c91ec90e34bd0a34f28d5c510fb05-63d6948e",
+      "review_branch": "candidate"
+    },
+    "advisory": null,
+    "review_expires_at": 1789320872.988085,
+    "duration_seconds": 50.926,
+    "wall_seconds": 50.931
+  },
+  "after_revocation": "needs_human",
+  "first_seconds": 67.244,
+  "replay_seconds": 50.931
+}

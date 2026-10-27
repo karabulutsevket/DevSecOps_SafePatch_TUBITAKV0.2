@@ -1,0 +1,151 @@
+{
+  "at": 1789233838.5602262,
+  "source": "https://api.osv.dev/v1/querybatch",
+  "scope": "Declared Python lock only, not Java/images/models or proof of no vulnerabilities",
+  "packages": [
+    {
+      "name": "annotated-doc",
+      "version": "0.0.5",
+      "vulnerabilities": []
+    },
+    {
+      "name": "annotated-types",
+      "version": "0.8.0",
+      "vulnerabilities": []
+    },
+    {
+      "name": "anyio",
+      "version": "4.15.1",
+      "vulnerabilities": []
+    },
+    {
+      "name": "certifi",
+      "version": "2026.7.22",
+      "vulnerabilities": []
+    },
+    {
+      "name": "click",
+      "version": "8.5.0",
+      "vulnerabilities": []
+    },
+    {
+      "name": "colorama",
+      "version": "0.4.6",
+      "vulnerabilities": []
+    },
+    {
+      "name": "fastapi",
+      "version": "0.141.1",
+      "vulnerabilities": []
+    },
+    {
+      "name": "greenlet",
+      "version": "3.5.5",
+      "vulnerabilities": []
+    },
+    {
+      "name": "h11",
+      "version": "0.16.0",
+      "vulnerabilities": []
+    },
+    {
+      "name": "httpcore",
+      "version": "1.0.9",
+      "vulnerabilities": []
+    },
+    {
+      "name": "httpx",
+      "version": "0.28.1",
+      "vulnerabilities": []
+    },
+    {
+      "name": "idna",
+      "version": "3.19",
+      "vulnerabilities": []
+    },
+    {
+      "name": "iniconfig",
+      "version": "2.3.0",
+      "vulnerabilities": []
+    },
+    {
+      "name": "packaging",
+      "version": "26.3",
+      "vulnerabilities": []
+    },
+    {
+      "name": "pluggy",
+      "version": "1.6.0",
+      "vulnerabilities": []
+    },
+    {
+      "name": "psycopg",
+      "version": "3.2.9",
+      "vulnerabilities": []
+    },
+    {
+      "name": "psycopg-binary",
+      "version": "3.2.9",
+      "vulnerabilities": []
+    },
+    {
+      "name": "pydantic",
+      "version": "2.13.5",
+      "vulnerabilities": []
+    },
+    {
+      "name": "pydantic_core",
+      "version": "2.46.5",
+      "vulnerabilities": []
+    },
+    {
+      "name": "Pygments",
+      "version": "2.21.0",
+      "vulnerabilities": []
+    },
+    {
+      "name": "pytest",
+      "version": "9.1.1",
+      "vulnerabilities": []
+    },
+    {
+      "name": "PyYAML",
+      "version": "6.0.2",
+      "vulnerabilities": []
+    },
+    {
+      "name": "SQLAlchemy",
+      "version": "2.0.43",
+      "vulnerabilities": []
+    },
+    {
+      "name": "starlette",
+      "version": "1.6.0",
+      "vulnerabilities": []
+    },
+    {
+      "name": "typing-inspection",
+      "version": "0.4.4",
+      "vulnerabilities": []
+    },
+    {
+      "name": "typing_extensions",
+      "version": "4.16.0",
+      "vulnerabilities": []
+    },
+    {
+      "name": "tzdata",
+      "version": "2026.3",
+      "vulnerabilities": []
+    },
+    {
+      "name": "uvicorn",
+      "version": "0.35.0",
+      "vulnerabilities": []
+    }
+  ],
+  "advisories": [],
+  "affected_packages": 0,
+  "queried_packages": 28,
+  "online_preparation_only": true
+}

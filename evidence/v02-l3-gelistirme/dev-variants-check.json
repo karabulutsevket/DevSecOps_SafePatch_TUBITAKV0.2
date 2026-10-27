@@ -1,0 +1,272 @@
+{
+  "cases": 7,
+  "as_expected": 7,
+  "rows": [
+    {
+      "case": "variant-sql-builder",
+      "baseline": {
+        "passed": false,
+        "baseline_valid": true,
+        "code": "validation_failed",
+        "behavior": {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "security": {
+          "tests": 1,
+          "failures": 1,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "reference_fix": {
+        "passed": true,
+        "baseline_valid": false,
+        "code": "verified",
+        "behavior": {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "security": {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "as_expected": true
+    },
+    {
+      "case": "variant-sql-format",
+      "baseline": {
+        "passed": false,
+        "baseline_valid": true,
+        "code": "validation_failed",
+        "behavior": {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "security": {
+          "tests": 1,
+          "failures": 1,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "reference_fix": {
+        "passed": true,
+        "baseline_valid": false,
+        "code": "verified",
+        "behavior": {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "security": {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "as_expected": true
+    },
+    {
+      "case": "variant-sql-helper",
+      "baseline": {
+        "passed": false,
+        "baseline_valid": true,
+        "code": "validation_failed",
+        "behavior": {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "security": {
+          "tests": 1,
+          "failures": 1,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "reference_fix": {
+        "passed": true,
+        "baseline_valid": false,
+        "code": "verified",
+        "behavior": {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "security": {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "as_expected": true
+    },
+    {
+      "case": "variant-path-file",
+      "baseline": {
+        "passed": false,
+        "baseline_valid": true,
+        "code": "validation_failed",
+        "behavior": {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "security": {
+          "tests": 3,
+          "failures": 2,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "reference_fix": {
+        "passed": true,
+        "baseline_valid": false,
+        "code": "verified",
+        "behavior": {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "security": {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "as_expected": true
+    },
+    {
+      "case": "variant-path-helper",
+      "baseline": {
+        "passed": false,
+        "baseline_valid": true,
+        "code": "validation_failed",
+        "behavior": {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "security": {
+          "tests": 3,
+          "failures": 2,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "reference_fix": {
+        "passed": true,
+        "baseline_valid": false,
+        "code": "verified",
+        "behavior": {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "security": {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "as_expected": true
+    },
+    {
+      "case": "variant-command-list",
+      "baseline": {
+        "passed": false,
+        "baseline_valid": true,
+        "code": "validation_failed",
+        "behavior": {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "security": {
+          "tests": 1,
+          "failures": 1,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "reference_fix": {
+        "passed": true,
+        "baseline_valid": false,
+        "code": "verified",
+        "behavior": {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "security": {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "as_expected": true
+    },
+    {
+      "case": "variant-command-format",
+      "baseline": {
+        "passed": false,
+        "baseline_valid": true,
+        "code": "validation_failed",
+        "behavior": {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "security": {
+          "tests": 1,
+          "failures": 1,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "reference_fix": {
+        "passed": true,
+        "baseline_valid": false,
+        "code": "verified",
+        "behavior": {
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "security": {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "as_expected": true
+    }
+  ]
+}

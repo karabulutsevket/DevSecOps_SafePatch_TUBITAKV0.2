@@ -1,0 +1,29 @@
+{
+  "mode": "mock-test-with-real-java-process",
+  "human_approval": "simulated-only",
+  "port": 18081,
+  "deployments": [
+    {
+      "pid": 20664,
+      "artifact_sha256": "a25a7ab815fbcbe204c057ebceebba3de8f6bc5f3db4847adba608e783111378",
+      "health": "ok",
+      "url": "http://127.0.0.1:18081",
+      "built_after_approval": false
+    },
+    {
+      "pid": 16464,
+      "artifact_sha256": "84380faffe2d69824cd0915220f6ac621c55aa3d7dbcee26f9dc545fb7aa6e07",
+      "health": "ok",
+      "url": "http://127.0.0.1:18081",
+      "built_after_approval": false
+    }
+  ],
+  "rollback": {
+    "pid": 19588,
+    "artifact_sha256": "a25a7ab815fbcbe204c057ebceebba3de8f6bc5f3db4847adba608e783111378",
+    "health": "ok",
+    "url": "http://127.0.0.1:18081",
+    "built_after_approval": false
+  },
+  "same_bytes_verified": true
+}

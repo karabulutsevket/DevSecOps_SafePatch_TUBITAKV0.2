@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "question": "Faz 1 exit conditions 2 and 3 (ROADMAP.md week 5)",
+  "started_at": 1792942138.373689,
+  "git_commit": "910595b4be583cf5ed62b9f95e421c6d6712f2f7",
+  "git_dirty": false,
+  "model": "qwen2.5-coder:7b-instruct-q4_K_M",
+  "system_prompt_sha256": "5875a8dbf3d87fcae41a555b8f264de0e742bfa73e91b7f9dd24aa422b373757",
+  "weakness_notes_sha256": "beeed9e84791259fa24345ce3c887a162e94fc91f9e13f0ad9e0e7ae1dd2456f",
+  "strategy": "guided+context",
+  "max_attempts": 3,
+  "seed": 42,
+  "scanner": "builtin lab scanner (the owned Semgrep rule does not match the execute() variant)",
+  "construction": [
+    "sql-01",
+    "path-01",
+    "command-01"
+  ],
+  "variants": [
+    "sql-02",
+    "sql-03",
+    "path-02",
+    "path-03",
+    "command-02",
+    "command-03",
+    "sql-execute"
+  ],
+  "arms": {
+    "off": "A: no memory",
+    "guarded": "C: week-4/5 applicability, ranking and failure warnings"
+  },
+  "variant_note": "sql-execute: sql-01 with Statement.execute()+getResultSet() instead of executeQuery(); same tests; experiment-only, not a sample",
+  "human_approval": "SIMULATED: accepted construction candidates are approved by SIMULATED-EXPERIMENT-REVIEWER in a separate database",
+  "failure_memory": "construction jobs may record failures; evaluation jobs never write memory",
+  "python": "3.12.14"
+}

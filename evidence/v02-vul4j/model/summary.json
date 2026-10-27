@@ -1,0 +1,400 @@
+{
+  "case": "VUL4J-79",
+  "jobs": 3,
+  "verified": 0,
+  "rows": [
+    {
+      "seed": 42,
+      "job": "0d8009c88602490f886aa106330ae041",
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "wall_seconds": 118.9,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2,
+            3
+          ],
+          "imports_added": [],
+          "changed_lines": 42,
+          "patch_sha256": "a0099474bcd707e26f2db51dbad08d842629e252f99900467ff46655f3365fda",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "compilation_failed",
+            "diagnostics": [
+              "[ERROR] /workspace/src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1152,8] error: cannot find symbol",
+              "[ERROR] /workspace/src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1152,8] error: cannot find symbol",
+              "[ERROR] /workspace/src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1152,20] error: cannot find symbol",
+              "[ERROR] /workspace/src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1154,10] error: cannot find symbol"
+            ]
+          },
+          "build": false,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 19.328,
+          "prompt_tokens": 2472,
+          "output_tokens": 938,
+          "dropped": [
+            "src/main/java/org/zeroturnaround/zip/FileSource.java",
+            "src/main/java/org/zeroturnaround/zip/ByteSource.java"
+          ]
+        },
+        {
+          "number": 2,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2,
+            3
+          ],
+          "imports_added": [],
+          "changed_lines": 42,
+          "patch_sha256": "a0099474bcd707e26f2db51dbad08d842629e252f99900467ff46655f3365fda",
+          "policy_error": null,
+          "stopped": "duplicate_patch",
+          "passed": null,
+          "failure": null,
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 19.781,
+          "prompt_tokens": 2545,
+          "output_tokens": 915,
+          "dropped": [
+            "src/main/java/org/zeroturnaround/zip/FileSource.java",
+            "src/main/java/org/zeroturnaround/zip/ByteSource.java",
+            "src/main/java/org/zeroturnaround/zip/CloseShieldInputStream.java",
+            "src/main/java/org/zeroturnaround/zip/IdentityNameMapper.java"
+          ]
+        },
+        {
+          "number": 3,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2,
+            3
+          ],
+          "imports_added": [],
+          "changed_lines": 58,
+          "patch_sha256": "c1fbe315dc7a22fc1f784af0085acb067d31545b4f49a2c8546b1f085d2321a2",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "compilation_failed",
+            "diagnostics": [
+              "[ERROR] /workspace/src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1152,8] error: cannot find symbol",
+              "[ERROR] /workspace/src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1152,8] error: cannot find symbol",
+              "[ERROR] /workspace/src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1152,29] error: cannot find symbol",
+              "[ERROR] /workspace/src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1153,8] error: cannot find symbol"
+            ]
+          },
+          "build": false,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 22.531,
+          "prompt_tokens": 2621,
+          "output_tokens": 1076,
+          "dropped": [
+            "src/main/java/org/zeroturnaround/zip/FileSource.java",
+            "src/main/java/org/zeroturnaround/zip/ByteSource.java",
+            "src/main/java/org/zeroturnaround/zip/CloseShieldInputStream.java",
+            "src/main/java/org/zeroturnaround/zip/IdentityNameMapper.java"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 43,
+      "job": "e65880ad95ab4145a9c8f6c28306e797",
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "wall_seconds": 117.9,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2,
+            3
+          ],
+          "imports_added": [],
+          "changed_lines": 42,
+          "patch_sha256": "a0099474bcd707e26f2db51dbad08d842629e252f99900467ff46655f3365fda",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "compilation_failed",
+            "diagnostics": [
+              "[ERROR] /workspace/src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1152,8] error: cannot find symbol",
+              "[ERROR] /workspace/src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1152,8] error: cannot find symbol",
+              "[ERROR] /workspace/src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1152,20] error: cannot find symbol",
+              "[ERROR] /workspace/src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1154,10] error: cannot find symbol"
+            ]
+          },
+          "build": false,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 19.25,
+          "prompt_tokens": 2472,
+          "output_tokens": 938,
+          "dropped": [
+            "src/main/java/org/zeroturnaround/zip/FileSource.java",
+            "src/main/java/org/zeroturnaround/zip/ByteSource.java"
+          ]
+        },
+        {
+          "number": 2,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2,
+            3
+          ],
+          "imports_added": [],
+          "changed_lines": 42,
+          "patch_sha256": "a0099474bcd707e26f2db51dbad08d842629e252f99900467ff46655f3365fda",
+          "policy_error": null,
+          "stopped": "duplicate_patch",
+          "passed": null,
+          "failure": null,
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 19.625,
+          "prompt_tokens": 2547,
+          "output_tokens": 922,
+          "dropped": [
+            "src/main/java/org/zeroturnaround/zip/FileSource.java",
+            "src/main/java/org/zeroturnaround/zip/ByteSource.java",
+            "src/main/java/org/zeroturnaround/zip/CloseShieldInputStream.java",
+            "src/main/java/org/zeroturnaround/zip/IdentityNameMapper.java"
+          ]
+        },
+        {
+          "number": 3,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2,
+            3
+          ],
+          "imports_added": [],
+          "changed_lines": 19,
+          "patch_sha256": "44be254d18e5fe75de72f6a902860afce86d154b2dac9cd9ef5bd00500ebc011",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "compilation_failed",
+            "diagnostics": [
+              "[ERROR] /workspace/src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1152,8] error: cannot find symbol",
+              "[ERROR] /workspace/src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1152,8] error: cannot find symbol",
+              "[ERROR] /workspace/src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1152,20] error: cannot find symbol",
+              "[ERROR] /workspace/src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1153,8] error: cannot find symbol"
+            ]
+          },
+          "build": false,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 22.797,
+          "prompt_tokens": 2623,
+          "output_tokens": 1088,
+          "dropped": [
+            "src/main/java/org/zeroturnaround/zip/FileSource.java",
+            "src/main/java/org/zeroturnaround/zip/ByteSource.java",
+            "src/main/java/org/zeroturnaround/zip/CloseShieldInputStream.java",
+            "src/main/java/org/zeroturnaround/zip/IdentityNameMapper.java"
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 44,
+      "job": "c551bb64dae142b9b3316c3036e96fbd",
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "wall_seconds": 119.5,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2,
+            3
+          ],
+          "imports_added": [],
+          "changed_lines": 42,
+          "patch_sha256": "a0099474bcd707e26f2db51dbad08d842629e252f99900467ff46655f3365fda",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "compilation_failed",
+            "diagnostics": [
+              "[ERROR] /workspace/src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1152,8] error: cannot find symbol",
+              "[ERROR] /workspace/src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1152,8] error: cannot find symbol",
+              "[ERROR] /workspace/src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1152,20] error: cannot find symbol",
+              "[ERROR] /workspace/src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1154,10] error: cannot find symbol"
+            ]
+          },
+          "build": false,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 19.25,
+          "prompt_tokens": 2472,
+          "output_tokens": 938,
+          "dropped": [
+            "src/main/java/org/zeroturnaround/zip/FileSource.java",
+            "src/main/java/org/zeroturnaround/zip/ByteSource.java"
+          ]
+        },
+        {
+          "number": 2,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2,
+            3
+          ],
+          "imports_added": [],
+          "changed_lines": 42,
+          "patch_sha256": "a0099474bcd707e26f2db51dbad08d842629e252f99900467ff46655f3365fda",
+          "policy_error": null,
+          "stopped": "duplicate_patch",
+          "passed": null,
+          "failure": null,
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 19.344,
+          "prompt_tokens": 2545,
+          "output_tokens": 903,
+          "dropped": [
+            "src/main/java/org/zeroturnaround/zip/FileSource.java",
+            "src/main/java/org/zeroturnaround/zip/ByteSource.java",
+            "src/main/java/org/zeroturnaround/zip/CloseShieldInputStream.java",
+            "src/main/java/org/zeroturnaround/zip/IdentityNameMapper.java"
+          ]
+        },
+        {
+          "number": 3,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2,
+            3
+          ],
+          "imports_added": [],
+          "changed_lines": 58,
+          "patch_sha256": "cd349c23b518915e30334a14a074d16d1576f171072a2a3c80b9e3f4ee5fbf16",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "compilation_failed",
+            "diagnostics": [
+              "[ERROR] /workspace/src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1152,8] error: cannot find symbol",
+              "[ERROR] /workspace/src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1152,8] error: cannot find symbol",
+              "[ERROR] /workspace/src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1152,29] error: cannot find symbol",
+              "[ERROR] /workspace/src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1153,8] error: cannot find symbol"
+            ]
+          },
+          "build": false,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 23.859,
+          "prompt_tokens": 2619,
+          "output_tokens": 1142,
+          "dropped": [
+            "src/main/java/org/zeroturnaround/zip/FileSource.java",
+            "src/main/java/org/zeroturnaround/zip/ByteSource.java",
+            "src/main/java/org/zeroturnaround/zip/CloseShieldInputStream.java",
+            "src/main/java/org/zeroturnaround/zip/IdentityNameMapper.java"
+          ]
+        }
+      ]
+    }
+  ]
+}

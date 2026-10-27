@@ -1,0 +1,45 @@
+{
+  "case": "variant-sql-builder",
+  "cwe": "CWE-89",
+  "project": "safepatch-variants",
+  "source": "safepatch-synthetic",
+  "scanner": "known",
+  "vulnerable": true,
+  "seed": 42,
+  "job": "00dad7485f71476087388bca4e2acdcb",
+  "status": "awaiting_review",
+  "reason": null,
+  "wall_seconds": 32.6,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 10,
+      "patch_sha256": "ca623fe49c36121f40c457e8691a844fc9a9d0a7c918bec14143e376f858af0c",
+      "policy_error": null,
+      "stopped": null,
+      "passed": true,
+      "failure": null,
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "model_seconds": 7.953,
+      "prompt_tokens": 902,
+      "output_tokens": 387,
+      "dropped": []
+    }
+  ],
+  "hidden": null,
+  "false_acceptance": null
+}

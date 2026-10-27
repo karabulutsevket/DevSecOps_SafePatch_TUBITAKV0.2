@@ -1,0 +1,32 @@
+{
+  "label": "control-overblock",
+  "source": ".runtime/l3-hidden-controls",
+  "accepted": 1,
+  "with_hidden_tests": 1,
+  "false_acceptances": 1,
+  "rows": [
+    {
+      "job": "control-overblock-00678",
+      "case": "owasp-benchmark-00678",
+      "seed": 42,
+      "attempt": 1,
+      "hidden": {
+        "passed": false,
+        "tests": 2,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "details": [
+          {
+            "name": "anotherBenignInputAnswersAsBefore",
+            "type": "failure",
+            "assertion": "BEHAVIOR_REGRESSION"
+          }
+        ],
+        "duration_seconds": 12.546,
+        "reason": null
+      },
+      "false_acceptance": true
+    }
+  ]
+}

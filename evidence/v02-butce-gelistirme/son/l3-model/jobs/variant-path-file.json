@@ -1,0 +1,117 @@
+{
+  "case": "variant-path-file",
+  "cwe": "CWE-22",
+  "project": "safepatch-variants",
+  "source": "safepatch-synthetic",
+  "scanner": "known",
+  "vulnerable": true,
+  "seed": 42,
+  "job": "2ad0a37d59fb4f78a9507a0468533f28",
+  "status": "needs_human",
+  "reason": "attempt_budget_exhausted",
+  "wall_seconds": 44.8,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 3,
+      "patch_sha256": "bb2489e4a5f681c6bcdfb5ce1a80375525cf1309b590b494d8bfef475c1fd008",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "security_witness_failed",
+        "failed_tests": [
+          {
+            "suite": "security",
+            "test": "cannotEscapeThroughLinkInsideRoot",
+            "marker": "PATH_TRAVERSAL_REGRESSION"
+          }
+        ],
+        "remaining_rules": []
+      },
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 3,
+        "failures": 1,
+        "errors": 0
+      },
+      "model_seconds": 6.109,
+      "prompt_tokens": 783,
+      "output_tokens": 277,
+      "dropped": []
+    },
+    {
+      "number": 2,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 3,
+      "patch_sha256": "bb2489e4a5f681c6bcdfb5ce1a80375525cf1309b590b494d8bfef475c1fd008",
+      "policy_error": null,
+      "stopped": "duplicate_patch",
+      "passed": null,
+      "failure": null,
+      "no_change": null,
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 7.063,
+      "prompt_tokens": 1032,
+      "output_tokens": 329,
+      "dropped": []
+    },
+    {
+      "number": 3,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 7,
+      "patch_sha256": "de592e33f9400836d0bac6a4918fac7fedefd4bf142598d5fc1af13058b008f9",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/demo/DemoService.java:[10,62] cannot find symbol: toRealPath",
+          "[ERROR] src/main/java/demo/DemoService.java:[11,44] cannot find symbol: toRealPath"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 6.422,
+      "prompt_tokens": 1162,
+      "output_tokens": 307,
+      "dropped": []
+    }
+  ],
+  "hidden": null,
+  "false_acceptance": null
+}

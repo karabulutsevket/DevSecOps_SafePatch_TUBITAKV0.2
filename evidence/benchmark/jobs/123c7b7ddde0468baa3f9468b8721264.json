@@ -1,0 +1,368 @@
+{
+  "id": "123c7b7ddde0468baa3f9468b8721264",
+  "case_id": "command-03",
+  "base_commit": "2170955c17d141a60f6f69ba0f676f39c884ed9d",
+  "project": "owned-java-demo",
+  "policy_version": "java-synthetic-v1",
+  "scanner": "semgrep",
+  "mode": "real-local-model",
+  "evaluation": true,
+  "status": "needs_human",
+  "owner": "BENCHMARK-NOT-A-HUMAN",
+  "started_at": 1789233802.9868042,
+  "deadline": 1789235002.9868042,
+  "max_attempts": 2,
+  "attempt_count": 2,
+  "attempts": [
+    {
+      "number": 1,
+      "proposal": {
+        "mode": "real-local-model",
+        "patch": {
+          "edits": [
+            {
+              "path": "src/main/java/demo/DemoService.java",
+              "old_sha256": "31e499e3c4e76d9add82e9b28832895ccd07193ea8dcc7def1bc22ceff39cd62",
+              "content": "package demo;\n\nimport java.nio.file.*;\nimport java.nio.charset.StandardCharsets;\nimport java.util.concurrent.TimeUnit;\n\n// Case command-03.\n// Deliberately vulnerable synthetic subprocess; no network or real targets.\npublic class DemoService {\n    public String lookup(String input) throws Exception {\n        boolean windows = System.getProperty(\"os.name\").toLowerCase().contains(\"win\");\n        String java = Path.of(System.getProperty(\"java.home\"), \"bin\", windows ? \"java.exe\" : \"java\").toString();\n        String command = \"echo echo:\" + input;\n        Process child = new ProcessBuilder(java, command).redirectErrorStream(true).start();\n        if (!child.waitFor(5, TimeUnit.SECONDS)) { child.destroyForcibly(); throw new IllegalStateException(\"child timeout\"); }\n        if (child.exitValue() != 0) throw new IllegalStateException(\"child failed\");\n        return new String(child.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();\n    }\n}\n"
+            }
+          ],
+          "rationale": "The original code was attempting to execute a shell command using `cmd.exe` or `/bin/sh` to run `echo echo:` followed by the input. This is a potential security risk as it could be exploited to run arbitrary commands. The fix replaces the shell with the `java` executable and passes the command as an argument, which is a safer approach."
+        },
+        "model": {
+          "runtime": "ollama",
+          "runtime_version": "0.34.0",
+          "model": "qwen2.5-coder:7b-instruct-q4_K_M",
+          "model_digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+          "quantization": "Q4_K_M",
+          "license_sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e"
+        },
+        "metrics": {
+          "duration_seconds": 8.344,
+          "prompt_tokens_measured": 745,
+          "output_tokens_measured": 400,
+          "context_chars": 1784,
+          "prompt_sha256": "112ed24fb6ce620d94a6f57c7191be0a7706c82fc5bc469c9d69df2cbb4445e9",
+          "system_prompt_sha256": "a578679af058fcc3a984e793e02fc6c1202fdff60d8685668ab892c99cbf5743",
+          "seed": 43,
+          "temperature": 0,
+          "num_ctx": 8192,
+          "num_predict": 2048
+        }
+      },
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -10,10 +10,8 @@\n     public String lookup(String input) throws Exception {\n         boolean windows = System.getProperty(\"os.name\").toLowerCase().contains(\"win\");\n         String java = Path.of(System.getProperty(\"java.home\"), \"bin\", windows ? \"java.exe\" : \"java\").toString();\n-        String shell = windows ? \"cmd.exe\" : \"/bin/sh\";\n-        String flag = windows ? \"/c\" : \"-c\";\n         String command = \"echo echo:\" + input;\n-        Process child = new ProcessBuilder(shell, flag, command).redirectErrorStream(true).start();\n+        Process child = new ProcessBuilder(java, command).redirectErrorStream(true).start();\n         if (!child.waitFor(5, TimeUnit.SECONDS)) { child.destroyForcibly(); throw new IllegalStateException(\"child timeout\"); }\n         if (child.exitValue() != 0) throw new IllegalStateException(\"child failed\");\n         return new String(child.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();\n",
+      "patch_sha256": "01a0924f10e685badc222cd2051737d6bf4a056e3d2d0c514a34f61889dbb5f0",
+      "changed_lines": 4,
+      "verification": {
+        "passed": false,
+        "baseline_valid": false,
+        "base_commit": "2170955c17d141a60f6f69ba0f676f39c884ed9d",
+        "source_revision": "9d06dca9f77b2bb278993486d6f113585c63c3d1",
+        "build": {
+          "passed": true,
+          "duration_seconds": 4.547
+        },
+        "behavior": {
+          "passed": false,
+          "tests": 2,
+          "failures": 0,
+          "errors": 2,
+          "skipped": 0,
+          "details": [
+            {
+              "name": "echoesHello",
+              "type": "error",
+              "assertion": "BEHAVIOR_REGRESSION"
+            },
+            {
+              "name": "echoesWorld",
+              "type": "error",
+              "assertion": "BEHAVIOR_REGRESSION"
+            }
+          ],
+          "exit_code": 1,
+          "duration_seconds": 3.25,
+          "junit_sha256": "e20ff6ca3cce46c32e36a9fe8daf8e631690ca64f9a6defdc7daae9b0d42ffcb"
+        },
+        "security": {
+          "passed": false,
+          "tests": 1,
+          "failures": 0,
+          "errors": 1,
+          "skipped": 0,
+          "details": [
+            {
+              "name": "shellMetacharactersAreLiteral",
+              "type": "error",
+              "assertion": "BEHAVIOR_REGRESSION"
+            }
+          ],
+          "exit_code": 1,
+          "duration_seconds": 3.109,
+          "junit_sha256": "c32a5d63411350ae1669c8ce0f6d92eef450d6d0e55c2150f4930ae31bad24a4"
+        },
+        "scans": [
+          {
+            "tool": "semgrep",
+            "version": "1.136.0",
+            "status": "ok",
+            "analysis_id": "e67d0308f1564444a86bd79f6fc8b4c9",
+            "commit": "9d06dca9f77b2bb278993486d6f113585c63c3d1",
+            "source_sha256": "e64fe206487bc502847c473de174cea1777ebe8f14f60063c1f3ee1d5cd13195",
+            "findings": []
+          }
+        ],
+        "patch": {
+          "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -10,10 +10,8 @@\n     public String lookup(String input) throws Exception {\n         boolean windows = System.getProperty(\"os.name\").toLowerCase().contains(\"win\");\n         String java = Path.of(System.getProperty(\"java.home\"), \"bin\", windows ? \"java.exe\" : \"java\").toString();\n-        String shell = windows ? \"cmd.exe\" : \"/bin/sh\";\n-        String flag = windows ? \"/c\" : \"-c\";\n         String command = \"echo echo:\" + input;\n-        Process child = new ProcessBuilder(shell, flag, command).redirectErrorStream(true).start();\n+        Process child = new ProcessBuilder(java, command).redirectErrorStream(true).start();\n         if (!child.waitFor(5, TimeUnit.SECONDS)) { child.destroyForcibly(); throw new IllegalStateException(\"child timeout\"); }\n         if (child.exitValue() != 0) throw new IllegalStateException(\"child failed\");\n         return new String(child.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();\n",
+          "patch_sha256": "01a0924f10e685badc222cd2051737d6bf4a056e3d2d0c514a34f61889dbb5f0",
+          "changed_lines": 4
+        },
+        "feedback": {
+          "code": "validation_failed",
+          "behavior": {
+            "passed": false,
+            "tests": 2,
+            "failures": 0,
+            "errors": 2,
+            "skipped": 0,
+            "details": [
+              {
+                "name": "echoesHello",
+                "type": "error",
+                "assertion": "BEHAVIOR_REGRESSION"
+              },
+              {
+                "name": "echoesWorld",
+                "type": "error",
+                "assertion": "BEHAVIOR_REGRESSION"
+              }
+            ],
+            "exit_code": 1,
+            "duration_seconds": 3.25,
+            "junit_sha256": "e20ff6ca3cce46c32e36a9fe8daf8e631690ca64f9a6defdc7daae9b0d42ffcb"
+          },
+          "security": {
+            "passed": false,
+            "tests": 1,
+            "failures": 0,
+            "errors": 1,
+            "skipped": 0,
+            "details": [
+              {
+                "name": "shellMetacharactersAreLiteral",
+                "type": "error",
+                "assertion": "BEHAVIOR_REGRESSION"
+              }
+            ],
+            "exit_code": 1,
+            "duration_seconds": 3.109,
+            "junit_sha256": "c32a5d63411350ae1669c8ce0f6d92eef450d6d0e55c2150f4930ae31bad24a4"
+          },
+          "remaining_rules": []
+        },
+        "duration_seconds": 25.156,
+        "runner_profile": "native-same-user",
+        "versions": {
+          "java": "17; inspect preparation evidence",
+          "maven": "3.9.16"
+        }
+      }
+    },
+    {
+      "number": 2,
+      "proposal": {
+        "mode": "real-local-model",
+        "patch": {
+          "edits": [
+            {
+              "path": "src/main/java/demo/DemoService.java",
+              "old_sha256": "31e499e3c4e76d9add82e9b28832895ccd07193ea8dcc7def1bc22ceff39cd62",
+              "content": "package demo;\n\nimport java.nio.file.*;\nimport java.nio.charset.StandardCharsets;\nimport java.util.concurrent.TimeUnit;\n\n// Case command-03.\n// Deliberately vulnerable synthetic subprocess; no network or real targets.\npublic class DemoService {\n    public String lookup(String input) throws Exception {\n        boolean windows = System.getProperty(\"os.name\").toLowerCase().contains(\"win\");\n        String java = Path.of(System.getProperty(\"java.home\"), \"bin\", windows ? \"java.exe\" : \"java\").toString();\n        String command = \"echo echo:\" + input;\n        Process child = new ProcessBuilder(java, command).redirectErrorStream(true).start();\n        if (!child.waitFor(5, TimeUnit.SECONDS)) { child.destroyForcibly(); throw new IllegalStateException(\"child timeout\"); }\n        if (child.exitValue() != 0) throw new IllegalStateException(\"child failed\");\n        return new String(child.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();\n    }\n}\n"
+            }
+          ],
+          "rationale": "The original code was using a shell to execute a command, which is vulnerable to shell injection. The fixed code uses the `java` executable directly, passing the command as an argument. This avoids the need for a shell and mitigates the risk of shell injection."
+        },
+        "model": {
+          "runtime": "ollama",
+          "runtime_version": "0.34.0",
+          "model": "qwen2.5-coder:7b-instruct-q4_K_M",
+          "model_digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+          "quantization": "Q4_K_M",
+          "license_sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e"
+        },
+        "metrics": {
+          "duration_seconds": 7.953,
+          "prompt_tokens_measured": 1073,
+          "output_tokens_measured": 381,
+          "context_chars": 2533,
+          "prompt_sha256": "a176ed61436dbc5325c2dbd5d463e07f33aa52d78c9aa9e21e2115df203a23ce",
+          "system_prompt_sha256": "a578679af058fcc3a984e793e02fc6c1202fdff60d8685668ab892c99cbf5743",
+          "seed": 44,
+          "temperature": 0,
+          "num_ctx": 8192,
+          "num_predict": 2048
+        }
+      },
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -10,10 +10,8 @@\n     public String lookup(String input) throws Exception {\n         boolean windows = System.getProperty(\"os.name\").toLowerCase().contains(\"win\");\n         String java = Path.of(System.getProperty(\"java.home\"), \"bin\", windows ? \"java.exe\" : \"java\").toString();\n-        String shell = windows ? \"cmd.exe\" : \"/bin/sh\";\n-        String flag = windows ? \"/c\" : \"-c\";\n         String command = \"echo echo:\" + input;\n-        Process child = new ProcessBuilder(shell, flag, command).redirectErrorStream(true).start();\n+        Process child = new ProcessBuilder(java, command).redirectErrorStream(true).start();\n         if (!child.waitFor(5, TimeUnit.SECONDS)) { child.destroyForcibly(); throw new IllegalStateException(\"child timeout\"); }\n         if (child.exitValue() != 0) throw new IllegalStateException(\"child failed\");\n         return new String(child.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();\n",
+      "patch_sha256": "01a0924f10e685badc222cd2051737d6bf4a056e3d2d0c514a34f61889dbb5f0",
+      "changed_lines": 4,
+      "stopped": "duplicate_patch"
+    }
+  ],
+  "events": [
+    {
+      "time": 1789233803.4361348,
+      "status": "scanning"
+    },
+    {
+      "time": 1789233828.512203,
+      "status": "scanning"
+    },
+    {
+      "time": 1789233828.5239017,
+      "status": "scanning"
+    },
+    {
+      "time": 1789233828.536293,
+      "status": "patching"
+    },
+    {
+      "time": 1789233836.9854317,
+      "status": "verifying"
+    },
+    {
+      "time": 1789233862.6696424,
+      "status": "patching"
+    },
+    {
+      "time": 1789233870.7435148,
+      "status": "needs_human"
+    }
+  ],
+  "approval": null,
+  "memory_mode": "off",
+  "seed": 42,
+  "baseline": {
+    "passed": false,
+    "baseline_valid": true,
+    "base_commit": "2170955c17d141a60f6f69ba0f676f39c884ed9d",
+    "source_revision": "2170955c17d141a60f6f69ba0f676f39c884ed9d",
+    "build": {
+      "passed": true,
+      "duration_seconds": 4.562
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "exit_code": 0,
+      "duration_seconds": 3.11,
+      "junit_sha256": "9d42892fafd5aae17e7a98b94878319b89be38303e63f21d40006fb6d0226167"
+    },
+    "security": {
+      "passed": false,
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "shellMetacharactersAreLiteral",
+          "type": "failure",
+          "assertion": "COMMAND_INJECTION_REGRESSION"
+        }
+      ],
+      "exit_code": 1,
+      "duration_seconds": 3.062,
+      "junit_sha256": "42c4870446031c86bd0adecef375b6475fada70618f8076ca9e1b95f7705613a"
+    },
+    "scans": [
+      {
+        "tool": "semgrep",
+        "version": "1.136.0",
+        "status": "ok",
+        "analysis_id": "0a8eaa828b884d33beb56cd748cab18d",
+        "commit": "2170955c17d141a60f6f69ba0f676f39c884ed9d",
+        "source_sha256": "31e499e3c4e76d9add82e9b28832895ccd07193ea8dcc7def1bc22ceff39cd62",
+        "findings": [
+          {
+            "tool": "semgrep",
+            "rule_id": "bigg.java.shell-command",
+            "raw_rule_id": "mnt.c.DevSecOps_Tubitak.delivery.SafePatchV01.rules.bigg.java.shell-command",
+            "type": "VULNERABILITY",
+            "file": "src/main/java/demo/DemoService.java",
+            "line": 16,
+            "severity": "ERROR",
+            "message": "Pass fixed executable and separate literal argv; do not call a shell.",
+            "cwe": "CWE-78",
+            "fingerprint": "28cc46870e034154cc56af172a3d989a42cf40422479caa1e50a030df4152135"
+          }
+        ]
+      }
+    ],
+    "patch": null,
+    "feedback": {
+      "code": "validation_failed",
+      "behavior": {
+        "passed": true,
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 3.11,
+        "junit_sha256": "9d42892fafd5aae17e7a98b94878319b89be38303e63f21d40006fb6d0226167"
+      },
+      "security": {
+        "passed": false,
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "details": [
+          {
+            "name": "shellMetacharactersAreLiteral",
+            "type": "failure",
+            "assertion": "COMMAND_INJECTION_REGRESSION"
+          }
+        ],
+        "exit_code": 1,
+        "duration_seconds": 3.062,
+        "junit_sha256": "42c4870446031c86bd0adecef375b6475fada70618f8076ca9e1b95f7705613a"
+      },
+      "remaining_rules": [
+        "bigg.java.shell-command"
+      ]
+    },
+    "duration_seconds": 24.61,
+    "runner_profile": "native-same-user",
+    "versions": {
+      "java": "17; inspect preparation evidence",
+      "maven": "3.9.16"
+    }
+  },
+  "memory_lookup": {
+    "decision": "disabled",
+    "duration_seconds": 0,
+    "rejected": [],
+    "selected_id": null
+  },
+  "memory_context": {
+    "project": "owned-java-demo",
+    "kind": "command",
+    "rule_id": "bigg.java.shell-command",
+    "jdk": "17",
+    "source_path": "src/main/java/demo/DemoService.java",
+    "build_sha256": "26e043fae58e551912409518b9d20e281bf34a51d8980781ee6c3c299fec6819",
+    "contract_sha256": "8723ecf146850955660c4ae45afba8df8399503349d0891add653c515f2011d1",
+    "source_sha256": "31e499e3c4e76d9add82e9b28832895ccd07193ea8dcc7def1bc22ceff39cd62"
+  },
+  "memory_ids": [],
+  "tokens_reserved": 16384,
+  "reason": "duplicate_patch",
+  "phase": "variant",
+  "wall_seconds": 67.76
+}

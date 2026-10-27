@@ -1,0 +1,106 @@
+{
+  "model_mode": "mock-test-reference-patch",
+  "scanner_mode": "real-builtin-demo",
+  "result": {
+    "passed": false,
+    "baseline_valid": true,
+    "base_commit": "320454b6992454d81ebf64c63a9bbb6a333d9f5c",
+    "source_revision": "320454b6992454d81ebf64c63a9bbb6a333d9f5c",
+    "build": {
+      "passed": true,
+      "duration_seconds": 5.047
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "exit_code": 0,
+      "duration_seconds": 3.031,
+      "junit_sha256": "d1c214f31668de5c6a53736caecb89a709e0c06fe3ebeaa3921decfa011c6cd0"
+    },
+    "security": {
+      "passed": false,
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "cannotReadParentSecret",
+          "type": "failure",
+          "assertion": "PATH_TRAVERSAL_REGRESSION"
+        }
+      ],
+      "exit_code": 1,
+      "duration_seconds": 4.172,
+      "junit_sha256": "28da4f92198937d037473d33d8b85be3c4ecc994bae2b754285692377ccb6d74"
+    },
+    "scans": [
+      {
+        "tool": "builtin-demo",
+        "version": "1.0.0",
+        "coverage": "three owned synthetic patterns only",
+        "status": "ok",
+        "analysis_id": "1d93b9acd65a4673842919f5041769e3",
+        "commit": "320454b6992454d81ebf64c63a9bbb6a333d9f5c",
+        "source_sha256": "e05b594b2a0370824369766455fbf0ad5cd7b0fb08b0e9e30838113aa99c501d",
+        "findings": [
+          {
+            "tool": "builtin-demo",
+            "rule_id": "bigg.java.path-resolution",
+            "cwe": "CWE-22",
+            "type": "VULNERABILITY",
+            "file": "src/main/java/demo/DemoService.java",
+            "line": 10,
+            "fingerprint": "56d7bcba77c8af2c9b4fbf2ee140780a3f021d4e6d73dec92fd1bebe46cd32a9",
+            "severity": "HIGH"
+          }
+        ]
+      }
+    ],
+    "patch": null,
+    "feedback": {
+      "code": "validation_failed",
+      "behavior": {
+        "passed": true,
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 3.031,
+        "junit_sha256": "d1c214f31668de5c6a53736caecb89a709e0c06fe3ebeaa3921decfa011c6cd0"
+      },
+      "security": {
+        "passed": false,
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "details": [
+          {
+            "name": "cannotReadParentSecret",
+            "type": "failure",
+            "assertion": "PATH_TRAVERSAL_REGRESSION"
+          }
+        ],
+        "exit_code": 1,
+        "duration_seconds": 4.172,
+        "junit_sha256": "28da4f92198937d037473d33d8b85be3c4ecc994bae2b754285692377ccb6d74"
+      },
+      "remaining_rules": [
+        "bigg.java.path-resolution"
+      ]
+    },
+    "duration_seconds": 12.844,
+    "runner_profile": "native-same-user",
+    "versions": {
+      "java": "17; inspect preparation evidence",
+      "maven": "3.9.16"
+    }
+  }
+}

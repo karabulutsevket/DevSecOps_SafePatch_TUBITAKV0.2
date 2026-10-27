@@ -1,0 +1,147 @@
+{
+  "case": "region-path-write",
+  "cwe": "CWE-22",
+  "project": "safepatch-region-dev",
+  "source": "safepatch-synthetic",
+  "scanner": "known",
+  "vulnerable": true,
+  "seed": 42,
+  "job": "4cc4d527984f43a389bd629f569dd681",
+  "status": "needs_human",
+  "reason": "attempt_budget_exhausted",
+  "wall_seconds": 43.3,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "regions",
+      "regions_changed": [
+        1,
+        2
+      ],
+      "imports_added": [],
+      "changed_lines": null,
+      "patch_sha256": null,
+      "policy_error": "empty_patch",
+      "stopped": null,
+      "passed": null,
+      "failure": {
+        "category": "empty_patch"
+      },
+      "no_change": {
+        "answer": "repeats_shown_code",
+        "shown": "regions",
+        "change_required_by": "failing_security_witness"
+      },
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 7.0,
+      "prompt_tokens": 1077,
+      "output_tokens": 317,
+      "dropped": []
+    },
+    {
+      "number": 2,
+      "edit_mode": "regions",
+      "regions_changed": [
+        1,
+        2
+      ],
+      "imports_added": [],
+      "changed_lines": null,
+      "patch_sha256": null,
+      "policy_error": "empty_patch",
+      "stopped": null,
+      "passed": null,
+      "failure": {
+        "category": "empty_patch"
+      },
+      "no_change": {
+        "answer": "repeats_shown_code",
+        "shown": "regions",
+        "change_required_by": "failing_security_witness"
+      },
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 6.641,
+      "prompt_tokens": 1187,
+      "output_tokens": 311,
+      "dropped": []
+    },
+    {
+      "number": 3,
+      "edit_mode": "regions",
+      "regions_changed": [
+        1,
+        2
+      ],
+      "imports_added": [],
+      "changed_lines": 18,
+      "patch_sha256": "f37463f868fcdf1096da25b252c42ad1a9ba15c117e9f52cf36d8658ea7f9133",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "behavior_regression",
+        "failed_tests": [
+          {
+            "suite": "behavior",
+            "test": "appendsLines",
+            "marker": "BEHAVIOR_REGRESSION"
+          },
+          {
+            "suite": "behavior",
+            "test": "savesThroughLinkedRoot",
+            "marker": "BEHAVIOR_REGRESSION"
+          },
+          {
+            "suite": "behavior",
+            "test": "savesNestedFileCreatingDirectories",
+            "marker": "BEHAVIOR_REGRESSION"
+          },
+          {
+            "suite": "behavior",
+            "test": "savesFile",
+            "marker": "BEHAVIOR_REGRESSION"
+          }
+        ],
+        "remaining_rules": []
+      },
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 4
+      },
+      "security": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0
+      },
+      "model_seconds": 7.281,
+      "prompt_tokens": 1317,
+      "output_tokens": 339,
+      "dropped": []
+    }
+  ],
+  "hidden": null,
+  "false_acceptance": null
+}

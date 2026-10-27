@@ -1,0 +1,27 @@
+rules:
+  - id: bigg.java.sql-concatenation
+    languages: [java]
+    severity: ERROR
+    message: Synthetic input is concatenated into a JDBC query; use bound parameters.
+    metadata: {cwe: CWE-89, license: MIT, scope: synthetic-fixtures}
+    patterns:
+      - pattern-inside: |
+          String $SQL = "..." + input + "...";
+          ...
+      - pattern: $ST.executeQuery($SQL)
+  - id: bigg.java.path-resolution
+    languages: [java]
+    severity: ERROR
+    message: Synthetic path requires canonical root containment before reading.
+    metadata: {cwe: CWE-22, license: MIT, scope: synthetic-fixtures}
+    patterns:
+      - pattern: Files.readString($TARGET)
+      - pattern-not-inside: |
+          if (!$TARGET.startsWith($ROOT)) { ... }
+          ...
+  - id: bigg.java.shell-command
+    languages: [java]
+    severity: ERROR
+    message: Pass fixed executable and separate literal argv; do not call a shell.
+    metadata: {cwe: CWE-78, license: MIT, scope: synthetic-fixtures}
+    pattern: new ProcessBuilder(shell, flag, $COMMAND)

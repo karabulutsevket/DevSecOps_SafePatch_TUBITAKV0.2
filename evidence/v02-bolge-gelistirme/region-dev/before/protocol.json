@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "what": "Region-mode development cases with the real local model, native runner, known-finding scanner",
+  "label": "before",
+  "git_commit": "feb66feeeb2bb6a7dd8130849e3a6b853552db32",
+  "git_dirty": false,
+  "started_at": 1792958666.4747963,
+  "cases": {
+    "region-path-read": "b3971891600f73ff934077ec1a751bf6bf5b8fb6",
+    "region-path-write": "3eb7503c2b741e5c44e717d110f973383b167af8",
+    "region-sql": "0e6b93d7dd80f979d8ca634d61ac506645aba3a3",
+    "region-command": "b663cb3395b472135096ad62cf4993104cd73f0b"
+  },
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "strategy": "guided+context",
+  "memory_mode": "off",
+  "max_attempts": 3,
+  "system_sha256": "5875a8dbf3d87fcae41a555b8f264de0e742bfa73e91b7f9dd24aa422b373757",
+  "region_system_sha256": "88414eb15714749b755265497e31f6316e18fa54ca5647d4c5e339809e691f37",
+  "weakness_notes_sha256": "69192a99194ec00b65e64bab4f6567ae594024e538cdc0ba811fa6a9c4f5e2a3",
+  "experiment_jobs": "evaluation=true: never approved, never in memory; owner EXPERIMENT-NOT-A-HUMAN"
+}

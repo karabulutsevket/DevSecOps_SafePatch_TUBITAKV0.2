@@ -1,0 +1,554 @@
+{
+  "snapshot": "acc50f20ec449e2b977a7c409fa8175491657cba",
+  "seed": 20261026,
+  "sample": {
+    "pathtraver": [
+      [
+        "BenchmarkTest00011",
+        true
+      ],
+      [
+        "BenchmarkTest00452",
+        true
+      ],
+      [
+        "BenchmarkTest00526",
+        true
+      ],
+      [
+        "BenchmarkTest00623",
+        true
+      ],
+      [
+        "BenchmarkTest01110",
+        false
+      ],
+      [
+        "BenchmarkTest01116",
+        true
+      ],
+      [
+        "BenchmarkTest01570",
+        false
+      ],
+      [
+        "BenchmarkTest01643",
+        true
+      ],
+      [
+        "BenchmarkTest01839",
+        true
+      ],
+      [
+        "BenchmarkTest01905",
+        false
+      ],
+      [
+        "BenchmarkTest02030",
+        false
+      ],
+      [
+        "BenchmarkTest02032",
+        true
+      ],
+      [
+        "BenchmarkTest02034",
+        true
+      ],
+      [
+        "BenchmarkTest02556",
+        true
+      ],
+      [
+        "BenchmarkTest02568",
+        false
+      ]
+    ],
+    "sqli": [
+      [
+        "BenchmarkTest00196",
+        true
+      ],
+      [
+        "BenchmarkTest00331",
+        false
+      ],
+      [
+        "BenchmarkTest00678",
+        true
+      ],
+      [
+        "BenchmarkTest00938",
+        false
+      ],
+      [
+        "BenchmarkTest01087",
+        true
+      ],
+      [
+        "BenchmarkTest01092",
+        false
+      ],
+      [
+        "BenchmarkTest01097",
+        true
+      ],
+      [
+        "BenchmarkTest01315",
+        false
+      ],
+      [
+        "BenchmarkTest01461",
+        false
+      ],
+      [
+        "BenchmarkTest01620",
+        true
+      ],
+      [
+        "BenchmarkTest01964",
+        true
+      ],
+      [
+        "BenchmarkTest02091",
+        true
+      ],
+      [
+        "BenchmarkTest02181",
+        true
+      ],
+      [
+        "BenchmarkTest02630",
+        true
+      ],
+      [
+        "BenchmarkTest02653",
+        true
+      ]
+    ],
+    "cmdi": [
+      [
+        "BenchmarkTest00306",
+        true
+      ],
+      [
+        "BenchmarkTest00823",
+        true
+      ],
+      [
+        "BenchmarkTest00825",
+        true
+      ],
+      [
+        "BenchmarkTest00979",
+        true
+      ],
+      [
+        "BenchmarkTest01066",
+        true
+      ],
+      [
+        "BenchmarkTest01286",
+        true
+      ],
+      [
+        "BenchmarkTest01689",
+        true
+      ],
+      [
+        "BenchmarkTest01794",
+        false
+      ],
+      [
+        "BenchmarkTest02154",
+        true
+      ],
+      [
+        "BenchmarkTest02250",
+        true
+      ],
+      [
+        "BenchmarkTest02253",
+        false
+      ],
+      [
+        "BenchmarkTest02414",
+        true
+      ],
+      [
+        "BenchmarkTest02428",
+        false
+      ],
+      [
+        "BenchmarkTest02513",
+        false
+      ],
+      [
+        "BenchmarkTest02518",
+        false
+      ]
+    ]
+  },
+  "cases": {
+    "BenchmarkTest00011": {
+      "visible": "directory: told whether the file outside exists; ",
+      "nested": "",
+      "benign_1": "a7690bc1b2dce6bdd026089acabcfd1027dd672fea5b29cffe2bd3b10ba4eacc",
+      "benign_2": "a7690bc1b2dce6bdd026089acabcfd1027dd672fea5b29cffe2bd3b10ba4eacc",
+      "dots_1": "f7fafe62c4fda8bb05e809c05548fa9c674f8180fddc7172dac50547f004b09b",
+      "dots_2": "f7fafe62c4fda8bb05e809c05548fa9c674f8180fddc7172dac50547f004b09b"
+    },
+    "BenchmarkTest00452": {
+      "visible": "climb: told whether the file outside exists; ",
+      "nested": "nested: told whether the file outside exists; ",
+      "benign_1": "1730b2e92703ee0db5ea6fa8f8312f4c25e74bc538eaa95967edb0dc5efd9c4d",
+      "benign_2": "1730b2e92703ee0db5ea6fa8f8312f4c25e74bc538eaa95967edb0dc5efd9c4d",
+      "dots_1": "5952062c8c4cc9a8e1ff98f17578fe6c378c0f8404ecf5afec8a1e0df3425b39",
+      "dots_2": "5952062c8c4cc9a8e1ff98f17578fe6c378c0f8404ecf5afec8a1e0df3425b39"
+    },
+    "BenchmarkTest00526": {
+      "visible": "directory: told whether the file outside exists; ",
+      "nested": "",
+      "benign_1": "a7690bc1b2dce6bdd026089acabcfd1027dd672fea5b29cffe2bd3b10ba4eacc",
+      "benign_2": "a7690bc1b2dce6bdd026089acabcfd1027dd672fea5b29cffe2bd3b10ba4eacc",
+      "dots_1": "f7fafe62c4fda8bb05e809c05548fa9c674f8180fddc7172dac50547f004b09b",
+      "dots_2": "f7fafe62c4fda8bb05e809c05548fa9c674f8180fddc7172dac50547f004b09b"
+    },
+    "BenchmarkTest00623": {
+      "visible": "directory: told whether the file outside exists; ",
+      "nested": "",
+      "benign_1": "a7690bc1b2dce6bdd026089acabcfd1027dd672fea5b29cffe2bd3b10ba4eacc",
+      "benign_2": "a7690bc1b2dce6bdd026089acabcfd1027dd672fea5b29cffe2bd3b10ba4eacc",
+      "dots_1": "f7fafe62c4fda8bb05e809c05548fa9c674f8180fddc7172dac50547f004b09b",
+      "dots_2": "f7fafe62c4fda8bb05e809c05548fa9c674f8180fddc7172dac50547f004b09b"
+    },
+    "BenchmarkTest01110": {
+      "visible": "",
+      "nested": "",
+      "benign_1": "bb937823271aedf623372b60f0ba7ac2ad3e6b7204a71b49fb0ddfaa9c70f30e",
+      "benign_2": "bb937823271aedf623372b60f0ba7ac2ad3e6b7204a71b49fb0ddfaa9c70f30e",
+      "dots_1": "bb937823271aedf623372b60f0ba7ac2ad3e6b7204a71b49fb0ddfaa9c70f30e",
+      "dots_2": "bb937823271aedf623372b60f0ba7ac2ad3e6b7204a71b49fb0ddfaa9c70f30e"
+    },
+    "BenchmarkTest01116": {
+      "visible": "climb: told whether the file outside exists; ",
+      "nested": "nested: told whether the file outside exists; ",
+      "benign_1": "413709504c7662945293033b5b49de9efe7847a0e84477e3a73ae9569d0fc612",
+      "benign_2": "413709504c7662945293033b5b49de9efe7847a0e84477e3a73ae9569d0fc612",
+      "dots_1": "0a220919173abef40f09e5c9eee2bf2fdb3e3df3aea1a2b69e35951da5b373bd",
+      "dots_2": "0a220919173abef40f09e5c9eee2bf2fdb3e3df3aea1a2b69e35951da5b373bd"
+    },
+    "BenchmarkTest01570": {
+      "visible": "",
+      "nested": "",
+      "benign_1": "0b90acfb6406d310abcedb3cdeb3ec18c09877f2bd83dbb77f3a00be6be4a377",
+      "benign_2": "0b90acfb6406d310abcedb3cdeb3ec18c09877f2bd83dbb77f3a00be6be4a377",
+      "dots_1": "0b90acfb6406d310abcedb3cdeb3ec18c09877f2bd83dbb77f3a00be6be4a377",
+      "dots_2": "0b90acfb6406d310abcedb3cdeb3ec18c09877f2bd83dbb77f3a00be6be4a377"
+    },
+    "BenchmarkTest01643": {
+      "visible": "climb: told whether the file outside exists; ",
+      "nested": "nested: told whether the file outside exists; ",
+      "benign_1": "1730b2e92703ee0db5ea6fa8f8312f4c25e74bc538eaa95967edb0dc5efd9c4d",
+      "benign_2": "1730b2e92703ee0db5ea6fa8f8312f4c25e74bc538eaa95967edb0dc5efd9c4d",
+      "dots_1": "5952062c8c4cc9a8e1ff98f17578fe6c378c0f8404ecf5afec8a1e0df3425b39",
+      "dots_2": "5952062c8c4cc9a8e1ff98f17578fe6c378c0f8404ecf5afec8a1e0df3425b39"
+    },
+    "BenchmarkTest01839": {
+      "visible": "climb: wrote the file outside; ",
+      "nested": "nested: wrote the file outside; ",
+      "benign_1": "413709504c7662945293033b5b49de9efe7847a0e84477e3a73ae9569d0fc612",
+      "benign_2": "413709504c7662945293033b5b49de9efe7847a0e84477e3a73ae9569d0fc612",
+      "dots_1": "0a220919173abef40f09e5c9eee2bf2fdb3e3df3aea1a2b69e35951da5b373bd",
+      "dots_2": "0a220919173abef40f09e5c9eee2bf2fdb3e3df3aea1a2b69e35951da5b373bd"
+    },
+    "BenchmarkTest01905": {
+      "visible": "",
+      "nested": "",
+      "benign_1": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "benign_2": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "dots_1": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "dots_2": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "BenchmarkTest02030": {
+      "visible": "",
+      "nested": "",
+      "benign_1": "13ed4970f475ea96470678e89900a95c16a5d32417da772106782ba4e2320b9d",
+      "benign_2": "13ed4970f475ea96470678e89900a95c16a5d32417da772106782ba4e2320b9d",
+      "dots_1": "13ed4970f475ea96470678e89900a95c16a5d32417da772106782ba4e2320b9d",
+      "dots_2": "13ed4970f475ea96470678e89900a95c16a5d32417da772106782ba4e2320b9d"
+    },
+    "BenchmarkTest02032": {
+      "visible": "climb: read the file outside; climb: told whether the file outside exists; ",
+      "nested": "nested: read the file outside; nested: told whether the file outside exists; ",
+      "benign_1": "31842c96cf58fed3edfdd37088ad04b38d646f93b2a4f9d27f60d46641be1a05",
+      "benign_2": "31842c96cf58fed3edfdd37088ad04b38d646f93b2a4f9d27f60d46641be1a05",
+      "dots_1": "a1a7e2e14ba0c50302dcbd4435bb58d7ea80ccc8f3cb98ea040de50d414d6ff8",
+      "dots_2": "a1a7e2e14ba0c50302dcbd4435bb58d7ea80ccc8f3cb98ea040de50d414d6ff8"
+    },
+    "BenchmarkTest02034": {
+      "visible": "climb: told whether the file outside exists; ",
+      "nested": "nested: told whether the file outside exists; ",
+      "benign_1": "413709504c7662945293033b5b49de9efe7847a0e84477e3a73ae9569d0fc612",
+      "benign_2": "413709504c7662945293033b5b49de9efe7847a0e84477e3a73ae9569d0fc612",
+      "dots_1": "0a220919173abef40f09e5c9eee2bf2fdb3e3df3aea1a2b69e35951da5b373bd",
+      "dots_2": "0a220919173abef40f09e5c9eee2bf2fdb3e3df3aea1a2b69e35951da5b373bd"
+    },
+    "BenchmarkTest02556": {
+      "visible": "absolute: told whether the file outside exists; ",
+      "nested": "",
+      "benign_1": "80bd067d1870cc3a93ab725dbc11866748f6da49ecd41a3bf9517848b473052b",
+      "benign_2": "80bd067d1870cc3a93ab725dbc11866748f6da49ecd41a3bf9517848b473052b",
+      "dots_1": "b022cf092d6430c668d406544c13d31a5033eb00a84ad1a2d36398d9f50f52b2",
+      "dots_2": "b022cf092d6430c668d406544c13d31a5033eb00a84ad1a2d36398d9f50f52b2"
+    },
+    "BenchmarkTest02568": {
+      "visible": "",
+      "nested": "",
+      "benign_1": "4cda68256b5f498fd3417c65774958e52fc48e326a44a364a03557022d7f0c8e",
+      "benign_2": "4cda68256b5f498fd3417c65774958e52fc48e326a44a364a03557022d7f0c8e",
+      "dots_1": "4cda68256b5f498fd3417c65774958e52fc48e326a44a364a03557022d7f0c8e",
+      "dots_2": "4cda68256b5f498fd3417c65774958e52fc48e326a44a364a03557022d7f0c8e"
+    },
+    "BenchmarkTest00196": {
+      "visible": "quote: answers differ; ",
+      "nested": "",
+      "benign_1": "1bc8042b44b6f246cbc911c90aa09ba01c4fa595ca4ab308594143088a2728cf",
+      "benign_2": "1bc8042b44b6f246cbc911c90aa09ba01c4fa595ca4ab308594143088a2728cf",
+      "dots_1": "1bc8042b44b6f246cbc911c90aa09ba01c4fa595ca4ab308594143088a2728cf",
+      "dots_2": "1bc8042b44b6f246cbc911c90aa09ba01c4fa595ca4ab308594143088a2728cf"
+    },
+    "BenchmarkTest00331": {
+      "visible": "",
+      "nested": "",
+      "benign_1": "61e2ea576c9e506a24575511dd8fd6265c5038f7c0ee97d59a73f40368f04492",
+      "benign_2": "61e2ea576c9e506a24575511dd8fd6265c5038f7c0ee97d59a73f40368f04492",
+      "dots_1": "61e2ea576c9e506a24575511dd8fd6265c5038f7c0ee97d59a73f40368f04492",
+      "dots_2": "61e2ea576c9e506a24575511dd8fd6265c5038f7c0ee97d59a73f40368f04492"
+    },
+    "BenchmarkTest00678": {
+      "visible": "tautology: answers differ; quote: answers differ; ",
+      "nested": "comment tautology: answers differ; ",
+      "benign_1": "2d9218e22fa4786dd6f3b1ccdab341c73f378d88ab44668e8652f86169abbd0d",
+      "benign_2": "2d9218e22fa4786dd6f3b1ccdab341c73f378d88ab44668e8652f86169abbd0d",
+      "dots_1": "816870c533007fe75ef14ccf3d87c4d561db6277ccfef93f2bc1d083be20cb84",
+      "dots_2": "816870c533007fe75ef14ccf3d87c4d561db6277ccfef93f2bc1d083be20cb84"
+    },
+    "BenchmarkTest00938": {
+      "visible": "",
+      "nested": "",
+      "benign_1": "753fd8f4f9706655794c7bd71dcb53706c52bdaa32a51e8d42133977fb7de205",
+      "benign_2": "753fd8f4f9706655794c7bd71dcb53706c52bdaa32a51e8d42133977fb7de205",
+      "dots_1": "753fd8f4f9706655794c7bd71dcb53706c52bdaa32a51e8d42133977fb7de205",
+      "dots_2": "753fd8f4f9706655794c7bd71dcb53706c52bdaa32a51e8d42133977fb7de205"
+    },
+    "BenchmarkTest01087": {
+      "visible": "tautology: answers differ; quote: answers differ; ",
+      "nested": "comment tautology: answers differ; ",
+      "benign_1": "2d9218e22fa4786dd6f3b1ccdab341c73f378d88ab44668e8652f86169abbd0d",
+      "benign_2": "2d9218e22fa4786dd6f3b1ccdab341c73f378d88ab44668e8652f86169abbd0d",
+      "dots_1": "816870c533007fe75ef14ccf3d87c4d561db6277ccfef93f2bc1d083be20cb84",
+      "dots_2": "816870c533007fe75ef14ccf3d87c4d561db6277ccfef93f2bc1d083be20cb84"
+    },
+    "BenchmarkTest01092": {
+      "visible": "",
+      "nested": "",
+      "benign_1": "61e2ea576c9e506a24575511dd8fd6265c5038f7c0ee97d59a73f40368f04492",
+      "benign_2": "61e2ea576c9e506a24575511dd8fd6265c5038f7c0ee97d59a73f40368f04492",
+      "dots_1": "61e2ea576c9e506a24575511dd8fd6265c5038f7c0ee97d59a73f40368f04492",
+      "dots_2": "61e2ea576c9e506a24575511dd8fd6265c5038f7c0ee97d59a73f40368f04492"
+    },
+    "BenchmarkTest01097": {
+      "visible": "quote: answers differ; insert: the input added a row; ",
+      "nested": "",
+      "benign_1": "a7d6a5b482d46ce516afed30d5021a27002c11a8d23a746bce857a3a8fd3c5d8",
+      "benign_2": "a7d6a5b482d46ce516afed30d5021a27002c11a8d23a746bce857a3a8fd3c5d8",
+      "dots_1": "a7d6a5b482d46ce516afed30d5021a27002c11a8d23a746bce857a3a8fd3c5d8",
+      "dots_2": "a7d6a5b482d46ce516afed30d5021a27002c11a8d23a746bce857a3a8fd3c5d8"
+    },
+    "BenchmarkTest01315": {
+      "visible": "",
+      "nested": "",
+      "benign_1": "a7d6a5b482d46ce516afed30d5021a27002c11a8d23a746bce857a3a8fd3c5d8",
+      "benign_2": "a7d6a5b482d46ce516afed30d5021a27002c11a8d23a746bce857a3a8fd3c5d8",
+      "dots_1": "a7d6a5b482d46ce516afed30d5021a27002c11a8d23a746bce857a3a8fd3c5d8",
+      "dots_2": "a7d6a5b482d46ce516afed30d5021a27002c11a8d23a746bce857a3a8fd3c5d8"
+    },
+    "BenchmarkTest01461": {
+      "visible": "",
+      "nested": "",
+      "benign_1": "9589277d12af61ade72f3ef6f0476b5c099f71585e24babb3f5ceef748e1fbd8",
+      "benign_2": "9589277d12af61ade72f3ef6f0476b5c099f71585e24babb3f5ceef748e1fbd8",
+      "dots_1": "9589277d12af61ade72f3ef6f0476b5c099f71585e24babb3f5ceef748e1fbd8",
+      "dots_2": "9589277d12af61ade72f3ef6f0476b5c099f71585e24babb3f5ceef748e1fbd8"
+    },
+    "BenchmarkTest01620": {
+      "visible": "call: answers differ; ",
+      "nested": "",
+      "benign_1": "9589277d12af61ade72f3ef6f0476b5c099f71585e24babb3f5ceef748e1fbd8",
+      "benign_2": "9589277d12af61ade72f3ef6f0476b5c099f71585e24babb3f5ceef748e1fbd8",
+      "dots_1": "9589277d12af61ade72f3ef6f0476b5c099f71585e24babb3f5ceef748e1fbd8",
+      "dots_2": "9589277d12af61ade72f3ef6f0476b5c099f71585e24babb3f5ceef748e1fbd8"
+    },
+    "BenchmarkTest01964": {
+      "visible": "tautology: answers differ; quote: answers differ; ",
+      "nested": "comment tautology: answers differ; ",
+      "benign_1": "8c6242f912e15e5b3869937806c414f78743b3d0b12366d09846af174ac22cbb",
+      "benign_2": "8c6242f912e15e5b3869937806c414f78743b3d0b12366d09846af174ac22cbb",
+      "dots_1": "1cdbd040685486d4bc9276630d62ea3bf9eefb5b924001690d91125ca4c8b2d0",
+      "dots_2": "1cdbd040685486d4bc9276630d62ea3bf9eefb5b924001690d91125ca4c8b2d0"
+    },
+    "BenchmarkTest02091": {
+      "visible": "tautology: answers differ; quote: answers differ; ",
+      "nested": "comment tautology: answers differ; ",
+      "benign_1": "8c6242f912e15e5b3869937806c414f78743b3d0b12366d09846af174ac22cbb",
+      "benign_2": "8c6242f912e15e5b3869937806c414f78743b3d0b12366d09846af174ac22cbb",
+      "dots_1": "1cdbd040685486d4bc9276630d62ea3bf9eefb5b924001690d91125ca4c8b2d0",
+      "dots_2": "1cdbd040685486d4bc9276630d62ea3bf9eefb5b924001690d91125ca4c8b2d0"
+    },
+    "BenchmarkTest02181": {
+      "visible": "tautology: answers differ; quote: answers differ; ",
+      "nested": "comment tautology: answers differ; ",
+      "benign_1": "2014d4e524331c91efb7f9868a06fae9fa0d76dcb54e79200d6e6e61767be2ca",
+      "benign_2": "2014d4e524331c91efb7f9868a06fae9fa0d76dcb54e79200d6e6e61767be2ca",
+      "dots_1": "816870c533007fe75ef14ccf3d87c4d561db6277ccfef93f2bc1d083be20cb84",
+      "dots_2": "816870c533007fe75ef14ccf3d87c4d561db6277ccfef93f2bc1d083be20cb84"
+    },
+    "BenchmarkTest02630": {
+      "visible": "call: answers differ; ",
+      "nested": "",
+      "benign_1": "9589277d12af61ade72f3ef6f0476b5c099f71585e24babb3f5ceef748e1fbd8",
+      "benign_2": "9589277d12af61ade72f3ef6f0476b5c099f71585e24babb3f5ceef748e1fbd8",
+      "dots_1": "9589277d12af61ade72f3ef6f0476b5c099f71585e24babb3f5ceef748e1fbd8",
+      "dots_2": "9589277d12af61ade72f3ef6f0476b5c099f71585e24babb3f5ceef748e1fbd8"
+    },
+    "BenchmarkTest02653": {
+      "visible": "tautology: answers differ; quote: answers differ; ",
+      "nested": "comment tautology: answers differ; ",
+      "benign_1": "cce367c581a7223f274ac40a241c81e5e67975e0e98856f6921c244c6fc10180",
+      "benign_2": "cce367c581a7223f274ac40a241c81e5e67975e0e98856f6921c244c6fc10180",
+      "dots_1": "7a0e20f50a193782e179deb06dd3d27a6fda5fb96d4c98cd69eb7097eb67f867",
+      "dots_2": "7a0e20f50a193782e179deb06dd3d27a6fda5fb96d4c98cd69eb7097eb67f867"
+    },
+    "BenchmarkTest00306": {
+      "visible": "variable: a shell ran the input; ",
+      "nested": "",
+      "benign_1": "820ae69b5cba45217161d4fb155874f43521ce931edcaac4b1690c056b608713",
+      "benign_2": "820ae69b5cba45217161d4fb155874f43521ce931edcaac4b1690c056b608713",
+      "dots_1": "820ae69b5cba45217161d4fb155874f43521ce931edcaac4b1690c056b608713",
+      "dots_2": "820ae69b5cba45217161d4fb155874f43521ce931edcaac4b1690c056b608713"
+    },
+    "BenchmarkTest00823": {
+      "visible": "variable: a shell ran the input; ",
+      "nested": "",
+      "benign_1": "820ae69b5cba45217161d4fb155874f43521ce931edcaac4b1690c056b608713",
+      "benign_2": "820ae69b5cba45217161d4fb155874f43521ce931edcaac4b1690c056b608713",
+      "dots_1": "820ae69b5cba45217161d4fb155874f43521ce931edcaac4b1690c056b608713",
+      "dots_2": "820ae69b5cba45217161d4fb155874f43521ce931edcaac4b1690c056b608713"
+    },
+    "BenchmarkTest00825": {
+      "visible": "variable: a shell ran the input; ",
+      "nested": "",
+      "benign_1": "820ae69b5cba45217161d4fb155874f43521ce931edcaac4b1690c056b608713",
+      "benign_2": "820ae69b5cba45217161d4fb155874f43521ce931edcaac4b1690c056b608713",
+      "dots_1": "820ae69b5cba45217161d4fb155874f43521ce931edcaac4b1690c056b608713",
+      "dots_2": "820ae69b5cba45217161d4fb155874f43521ce931edcaac4b1690c056b608713"
+    },
+    "BenchmarkTest00979": {
+      "visible": "separator: a shell ran the input; variable: a shell ran the input; ",
+      "nested": "pipe: a shell ran the input; ",
+      "benign_1": "7dfc1eae936ef2d1f20e4ce2a08f81bb82c15d89cf4c639730b02e52ff9db4a7",
+      "benign_2": "7dfc1eae936ef2d1f20e4ce2a08f81bb82c15d89cf4c639730b02e52ff9db4a7",
+      "dots_1": "e5416d6f9ed7b4c1806bec56f4eb8864d9ecf7b6fac5de20ba341594bdbf44c2",
+      "dots_2": "e5416d6f9ed7b4c1806bec56f4eb8864d9ecf7b6fac5de20ba341594bdbf44c2"
+    },
+    "BenchmarkTest01066": {
+      "visible": "variable: a shell ran the input; ",
+      "nested": "",
+      "benign_1": "820ae69b5cba45217161d4fb155874f43521ce931edcaac4b1690c056b608713",
+      "benign_2": "820ae69b5cba45217161d4fb155874f43521ce931edcaac4b1690c056b608713",
+      "dots_1": "820ae69b5cba45217161d4fb155874f43521ce931edcaac4b1690c056b608713",
+      "dots_2": "820ae69b5cba45217161d4fb155874f43521ce931edcaac4b1690c056b608713"
+    },
+    "BenchmarkTest01286": {
+      "visible": "separator: a shell ran the input; ",
+      "nested": "pipe: a shell ran the input; ",
+      "benign_1": "37fb146ef257511cac6e28778816c37ac5e74d8b81759384672e0062ce7fdcf7",
+      "benign_2": "37fb146ef257511cac6e28778816c37ac5e74d8b81759384672e0062ce7fdcf7",
+      "dots_1": "37fb146ef257511cac6e28778816c37ac5e74d8b81759384672e0062ce7fdcf7",
+      "dots_2": "37fb146ef257511cac6e28778816c37ac5e74d8b81759384672e0062ce7fdcf7"
+    },
+    "BenchmarkTest01689": {
+      "visible": "",
+      "nested": "",
+      "benign_1": "c0d91aa436ca81dcef02e83da16af68839abe8e37af3760ca419741810e480c5",
+      "benign_2": "c0d91aa436ca81dcef02e83da16af68839abe8e37af3760ca419741810e480c5",
+      "dots_1": "f452daf974d82d2250553481e7f58d7ea75b4d7165450647aaf75824cb95bec5",
+      "dots_2": "f452daf974d82d2250553481e7f58d7ea75b4d7165450647aaf75824cb95bec5"
+    },
+    "BenchmarkTest01794": {
+      "visible": "",
+      "nested": "",
+      "benign_1": "42b12c92185183ee39ab70724a4f685184d60de9e9fbd3f5df8c255c549e3618",
+      "benign_2": "42b12c92185183ee39ab70724a4f685184d60de9e9fbd3f5df8c255c549e3618",
+      "dots_1": "42b12c92185183ee39ab70724a4f685184d60de9e9fbd3f5df8c255c549e3618",
+      "dots_2": "42b12c92185183ee39ab70724a4f685184d60de9e9fbd3f5df8c255c549e3618"
+    },
+    "BenchmarkTest02154": {
+      "visible": "",
+      "nested": "",
+      "benign_1": "84dfd6d9717a6f2238be91e6f5b1587dd8087e4dffddee774f6c6a7b274489dc",
+      "benign_2": "84dfd6d9717a6f2238be91e6f5b1587dd8087e4dffddee774f6c6a7b274489dc",
+      "dots_1": "0987be7f9a4fbac04545248be62db9103ebe21ccf965391b2788404b18d7e7ac",
+      "dots_2": "0987be7f9a4fbac04545248be62db9103ebe21ccf965391b2788404b18d7e7ac"
+    },
+    "BenchmarkTest02250": {
+      "visible": "",
+      "nested": "",
+      "benign_1": "c0d91aa436ca81dcef02e83da16af68839abe8e37af3760ca419741810e480c5",
+      "benign_2": "c0d91aa436ca81dcef02e83da16af68839abe8e37af3760ca419741810e480c5",
+      "dots_1": "f452daf974d82d2250553481e7f58d7ea75b4d7165450647aaf75824cb95bec5",
+      "dots_2": "f452daf974d82d2250553481e7f58d7ea75b4d7165450647aaf75824cb95bec5"
+    },
+    "BenchmarkTest02253": {
+      "visible": "",
+      "nested": "",
+      "benign_1": "55bb5e5718d25dfbbde5b3d6df3e95a50c3241b2d8dac131b9041dd8887a5268",
+      "benign_2": "55bb5e5718d25dfbbde5b3d6df3e95a50c3241b2d8dac131b9041dd8887a5268",
+      "dots_1": "55bb5e5718d25dfbbde5b3d6df3e95a50c3241b2d8dac131b9041dd8887a5268",
+      "dots_2": "55bb5e5718d25dfbbde5b3d6df3e95a50c3241b2d8dac131b9041dd8887a5268"
+    },
+    "BenchmarkTest02414": {
+      "visible": "separator: a shell ran the input; variable: a shell ran the input; ",
+      "nested": "pipe: a shell ran the input; ",
+      "benign_1": "1ef3ead44bead11dc6cb75212c979feee9981a49a01f805bc0b14f783407a42b",
+      "benign_2": "1ef3ead44bead11dc6cb75212c979feee9981a49a01f805bc0b14f783407a42b",
+      "dots_1": "5b95944194d8a8a453317b0f264476d1c1f6ccbbaaabff5fbce74daa0f344d6d",
+      "dots_2": "5b95944194d8a8a453317b0f264476d1c1f6ccbbaaabff5fbce74daa0f344d6d"
+    },
+    "BenchmarkTest02428": {
+      "visible": "",
+      "nested": "",
+      "benign_1": "8cb96cc8fb4262795593a783ba8c5479f18760431bc487101fa709e259f4ad9e",
+      "benign_2": "8cb96cc8fb4262795593a783ba8c5479f18760431bc487101fa709e259f4ad9e",
+      "dots_1": "8cb96cc8fb4262795593a783ba8c5479f18760431bc487101fa709e259f4ad9e",
+      "dots_2": "8cb96cc8fb4262795593a783ba8c5479f18760431bc487101fa709e259f4ad9e"
+    },
+    "BenchmarkTest02513": {
+      "visible": "",
+      "nested": "",
+      "benign_1": "820ae69b5cba45217161d4fb155874f43521ce931edcaac4b1690c056b608713",
+      "benign_2": "820ae69b5cba45217161d4fb155874f43521ce931edcaac4b1690c056b608713",
+      "dots_1": "820ae69b5cba45217161d4fb155874f43521ce931edcaac4b1690c056b608713",
+      "dots_2": "820ae69b5cba45217161d4fb155874f43521ce931edcaac4b1690c056b608713"
+    },
+    "BenchmarkTest02518": {
+      "visible": "",
+      "nested": "",
+      "benign_1": "820ae69b5cba45217161d4fb155874f43521ce931edcaac4b1690c056b608713",
+      "benign_2": "820ae69b5cba45217161d4fb155874f43521ce931edcaac4b1690c056b608713",
+      "dots_1": "820ae69b5cba45217161d4fb155874f43521ce931edcaac4b1690c056b608713",
+      "dots_2": "820ae69b5cba45217161d4fb155874f43521ce931edcaac4b1690c056b608713"
+    }
+  }
+}

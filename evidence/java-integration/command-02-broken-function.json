@@ -1,0 +1,119 @@
+{
+  "model_mode": "mock-test-reference-patch",
+  "scanner_mode": "real-builtin-demo",
+  "result": {
+    "passed": false,
+    "baseline_valid": false,
+    "base_commit": "4c59567758299163ad25aa6ca259edd07e5b12f5",
+    "source_revision": "ca880c57b7e3103ff5dd2c89c9acf01ddcc3b18c",
+    "build": {
+      "passed": true,
+      "duration_seconds": 4.531
+    },
+    "behavior": {
+      "passed": false,
+      "tests": 2,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "echoesHello",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        },
+        {
+          "name": "echoesWorld",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        }
+      ],
+      "exit_code": 1,
+      "duration_seconds": 3.265,
+      "junit_sha256": "6887a4036dc8222e7cf68a1c9223c840340ef7a4dc9a76802bb4c1b81a9e7e61"
+    },
+    "security": {
+      "passed": false,
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "shellMetacharactersAreLiteral",
+          "type": "failure",
+          "assertion": "COMMAND_INJECTION_REGRESSION"
+        }
+      ],
+      "exit_code": 1,
+      "duration_seconds": 3.125,
+      "junit_sha256": "1fe240239e50170e8fc7cf13dccf3fe25704d05557c30b017defcb3d919b11a8"
+    },
+    "scans": [
+      {
+        "tool": "builtin-demo",
+        "version": "1.0.0",
+        "coverage": "three owned synthetic patterns only",
+        "status": "ok",
+        "analysis_id": "045f17417ee34c26a6ffbf6d7bb0518b",
+        "commit": "ca880c57b7e3103ff5dd2c89c9acf01ddcc3b18c",
+        "source_sha256": "0e6208200c4819318551f82cfa78dafd2145a45269d1afb2bfc888b3ec053204",
+        "findings": []
+      }
+    ],
+    "patch": {
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -1,21 +1,4 @@\n package demo;\n-\n-import java.nio.file.*;\n-import java.nio.charset.StandardCharsets;\n-import java.util.concurrent.TimeUnit;\n-\n-// Case invocation-02.\n-// Deliberately vulnerable synthetic subprocess; no network or real targets.\n public class DemoService {\n-    public String lookup(String input) throws Exception {\n-        boolean windows = System.getProperty(\"os.name\").toLowerCase().contains(\"win\");\n-        String java = Path.of(System.getProperty(\"java.home\"), \"bin\", windows ? \"java.exe\" : \"java\").toString();\n-        String shell = windows ? \"cmd.exe\" : \"/bin/sh\";\n-        String flag = windows ? \"/c\" : \"-c\";\n-        String invocation = \"echo echo:\" + input;\n-        Process child = new ProcessBuilder(shell, flag, invocation).redirectErrorStream(true).start();\n-        if (!child.waitFor(5, TimeUnit.SECONDS)) { child.destroyForcibly(); throw new IllegalStateException(\"child timeout\"); }\n-        if (child.exitValue() != 0) throw new IllegalStateException(\"child failed\");\n-        return new String(child.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();\n-    }\n+    public String lookup(String input) throws Exception { return \"\"; }\n }\n",
+      "patch_sha256": "1785a0d9b8557ea557701d98fff068a7addca2664ec034a7ca998ce9d2666a2a",
+      "changed_lines": 19
+    },
+    "feedback": {
+      "code": "validation_failed",
+      "behavior": {
+        "passed": false,
+        "tests": 2,
+        "failures": 2,
+        "errors": 0,
+        "skipped": 0,
+        "details": [
+          {
+            "name": "echoesHello",
+            "type": "failure",
+            "assertion": "BEHAVIOR_REGRESSION"
+          },
+          {
+            "name": "echoesWorld",
+            "type": "failure",
+            "assertion": "BEHAVIOR_REGRESSION"
+          }
+        ],
+        "exit_code": 1,
+        "duration_seconds": 3.265,
+        "junit_sha256": "6887a4036dc8222e7cf68a1c9223c840340ef7a4dc9a76802bb4c1b81a9e7e61"
+      },
+      "security": {
+        "passed": false,
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "details": [
+          {
+            "name": "shellMetacharactersAreLiteral",
+            "type": "failure",
+            "assertion": "COMMAND_INJECTION_REGRESSION"
+          }
+        ],
+        "exit_code": 1,
+        "duration_seconds": 3.125,
+        "junit_sha256": "1fe240239e50170e8fc7cf13dccf3fe25704d05557c30b017defcb3d919b11a8"
+      },
+      "remaining_rules": []
+    },
+    "duration_seconds": 11.969,
+    "runner_profile": "native-same-user",
+    "versions": {
+      "java": "17; inspect preparation evidence",
+      "maven": "3.9.16"
+    }
+  }
+}

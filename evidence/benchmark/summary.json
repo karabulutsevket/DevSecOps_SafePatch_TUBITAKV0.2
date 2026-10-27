@@ -1,0 +1,130 @@
+{
+  "scope": "synthetic controlled recurrence/variant smoke test; not independent project benchmark",
+  "n": 18,
+  "construction": [
+    {
+      "id": "c15b08eba8344218bd4e4b6765be9cb9",
+      "case_id": "sql-01",
+      "phase": "memory-construction",
+      "arm": "off",
+      "seed": 42,
+      "status": "awaiting_review",
+      "accepted": true,
+      "reason": null,
+      "wall_seconds": 73.188,
+      "attempts": 1,
+      "model_seconds": 11.375,
+      "prompt_tokens": 725,
+      "output_tokens": 387,
+      "memory_hit": false,
+      "replay": false
+    },
+    {
+      "id": "32593787a13942c19d5ce6eb72cf67e5",
+      "case_id": "path-01",
+      "phase": "memory-construction",
+      "arm": "off",
+      "seed": 42,
+      "status": "needs_human",
+      "accepted": false,
+      "reason": "duplicate_patch",
+      "wall_seconds": 62.139,
+      "attempts": 2,
+      "model_seconds": 10.625,
+      "prompt_tokens": 1427,
+      "output_tokens": 490,
+      "memory_hit": false,
+      "replay": false
+    },
+    {
+      "id": "977f29166265414b917b15a10d792daa",
+      "case_id": "command-01",
+      "phase": "memory-construction",
+      "arm": "off",
+      "seed": 42,
+      "status": "needs_human",
+      "accepted": false,
+      "reason": "no_progress",
+      "wall_seconds": 95.273,
+      "attempts": 2,
+      "model_seconds": 16.516,
+      "prompt_tokens": 1841,
+      "output_tokens": 785,
+      "memory_hit": false,
+      "replay": false
+    }
+  ],
+  "memory_records": 1,
+  "memory_pool_sha256": "6126a5dab230ef7ab00a37d2b233f49a4c034550d81a325d6d52fa9c8ba7962e",
+  "elapsed_seconds": 1438.963,
+  "groups": [
+    {
+      "phase": "recurrence",
+      "arm": "off",
+      "n": 3,
+      "accepted": 1,
+      "median_wall_seconds": 56.865,
+      "all_statuses": {
+        "awaiting_review": 1,
+        "needs_human": 2
+      }
+    },
+    {
+      "phase": "recurrence",
+      "arm": "naive",
+      "n": 3,
+      "accepted": 1,
+      "median_wall_seconds": 60.614,
+      "all_statuses": {
+        "awaiting_review": 1,
+        "needs_human": 2
+      }
+    },
+    {
+      "phase": "recurrence",
+      "arm": "guarded",
+      "n": 3,
+      "accepted": 1,
+      "median_wall_seconds": 60.131,
+      "all_statuses": {
+        "awaiting_review": 1,
+        "needs_human": 2
+      }
+    },
+    {
+      "phase": "variant",
+      "arm": "off",
+      "n": 3,
+      "accepted": 1,
+      "median_wall_seconds": 67.76,
+      "all_statuses": {
+        "awaiting_review": 1,
+        "needs_human": 2
+      }
+    },
+    {
+      "phase": "variant",
+      "arm": "naive",
+      "n": 3,
+      "accepted": 1,
+      "median_wall_seconds": 69.664,
+      "all_statuses": {
+        "awaiting_review": 1,
+        "needs_human": 2
+      }
+    },
+    {
+      "phase": "variant",
+      "arm": "guarded",
+      "n": 3,
+      "accepted": 1,
+      "median_wall_seconds": 68.646,
+      "all_statuses": {
+        "awaiting_review": 1,
+        "needs_human": 2
+      }
+    }
+  ],
+  "human_minutes_saved": null,
+  "customer_validation": "not performed"
+}

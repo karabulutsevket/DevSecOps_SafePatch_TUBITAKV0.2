@@ -1,0 +1,87 @@
+{
+  "scope": "re-verification of earlier accepted patches; synthetic cases, not an independent benchmark",
+  "n": 18,
+  "groups": [
+    {
+      "strategy": "all",
+      "split": "all",
+      "accepted_before": 18,
+      "distinct_patches": 17,
+      "still_pass": 12,
+      "mentions_toRealPath": 12,
+      "still_pass_without_toRealPath": 0
+    },
+    {
+      "strategy": "all",
+      "split": "development",
+      "accepted_before": 6,
+      "distinct_patches": 5,
+      "still_pass": 5,
+      "mentions_toRealPath": 5,
+      "still_pass_without_toRealPath": 0
+    },
+    {
+      "strategy": "all",
+      "split": "evaluation",
+      "accepted_before": 12,
+      "distinct_patches": 12,
+      "still_pass": 7,
+      "mentions_toRealPath": 7,
+      "still_pass_without_toRealPath": 0
+    },
+    {
+      "strategy": "guided",
+      "split": "all",
+      "accepted_before": 9,
+      "distinct_patches": 8,
+      "still_pass": 3,
+      "mentions_toRealPath": 3,
+      "still_pass_without_toRealPath": 0
+    },
+    {
+      "strategy": "guided",
+      "split": "development",
+      "accepted_before": 3,
+      "distinct_patches": 2,
+      "still_pass": 2,
+      "mentions_toRealPath": 2,
+      "still_pass_without_toRealPath": 0
+    },
+    {
+      "strategy": "guided",
+      "split": "evaluation",
+      "accepted_before": 6,
+      "distinct_patches": 6,
+      "still_pass": 1,
+      "mentions_toRealPath": 1,
+      "still_pass_without_toRealPath": 0
+    },
+    {
+      "strategy": "guided+context",
+      "split": "all",
+      "accepted_before": 9,
+      "distinct_patches": 9,
+      "still_pass": 9,
+      "mentions_toRealPath": 9,
+      "still_pass_without_toRealPath": 0
+    },
+    {
+      "strategy": "guided+context",
+      "split": "development",
+      "accepted_before": 3,
+      "distinct_patches": 3,
+      "still_pass": 3,
+      "mentions_toRealPath": 3,
+      "still_pass_without_toRealPath": 0
+    },
+    {
+      "strategy": "guided+context",
+      "split": "evaluation",
+      "accepted_before": 6,
+      "distinct_patches": 6,
+      "still_pass": 6,
+      "mentions_toRealPath": 6,
+      "still_pass_without_toRealPath": 0
+    }
+  ]
+}

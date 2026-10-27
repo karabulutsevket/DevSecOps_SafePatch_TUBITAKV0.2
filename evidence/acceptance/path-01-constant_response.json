@@ -1,0 +1,124 @@
+{
+  "case": "path-01",
+  "candidate": "constant_response",
+  "expected_acceptable": false,
+  "V0_scanner_only": true,
+  "V1_build_and_scanner": true,
+  "V2_full_acceptance": false,
+  "seconds": 20.344,
+  "result": {
+    "passed": false,
+    "baseline_valid": false,
+    "base_commit": "320454b6992454d81ebf64c63a9bbb6a333d9f5c",
+    "source_revision": "2ae65e91dcdd43f00b1b1e726d2cc3b9d466d8f2",
+    "build": {
+      "passed": true,
+      "duration_seconds": 4.031
+    },
+    "behavior": {
+      "passed": false,
+      "tests": 2,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "readsNestedFile",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        },
+        {
+          "name": "readsAllowedFile",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        }
+      ],
+      "exit_code": 1,
+      "duration_seconds": 2.703,
+      "junit_sha256": "dfecd7ec9f235fc2c46b593139bde01575471383ef915a21b911915664e87458"
+    },
+    "security": {
+      "passed": false,
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "cannotReadParentSecret",
+          "type": "failure",
+          "assertion": "PATH_TRAVERSAL_REGRESSION"
+        }
+      ],
+      "exit_code": 1,
+      "duration_seconds": 2.781,
+      "junit_sha256": "7254999def59ad4ce98a6663b44095202c7a9540b17f3fdc3c89d577cef0ede7"
+    },
+    "scans": [
+      {
+        "tool": "semgrep",
+        "version": "1.136.0",
+        "status": "ok",
+        "analysis_id": "45ec582af052475a89e7e1e0a3c5cd1a",
+        "commit": "2ae65e91dcdd43f00b1b1e726d2cc3b9d466d8f2",
+        "source_sha256": "de3cf42f08e5856000f164b285768a37306259d0e991fe5e842e42f87ea3e34e",
+        "findings": []
+      }
+    ],
+    "patch": {
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -1,13 +1,4 @@\n package demo;\n-\n-import java.nio.file.*;\n-\n-// Case path-01.\n-// Deliberately vulnerable synthetic example. Root is supplied by trusted runner.\n public class DemoService {\n-    public String lookup(String input) throws Exception {\n-        Path root = Path.of(System.getProperty(\"demo.root\"));\n-        Path target = root.resolve(input);\n-        return Files.readString(target);\n-    }\n+ public String lookup(String input) throws Exception { return \"alice\"; }\n }\n",
+      "patch_sha256": "2da507b16922767c13066f4c19b45b7dc4d3909fafbab122da21b0ccfae7b94c",
+      "changed_lines": 11
+    },
+    "feedback": {
+      "code": "validation_failed",
+      "behavior": {
+        "passed": false,
+        "tests": 2,
+        "failures": 2,
+        "errors": 0,
+        "skipped": 0,
+        "details": [
+          {
+            "name": "readsNestedFile",
+            "type": "failure",
+            "assertion": "BEHAVIOR_REGRESSION"
+          },
+          {
+            "name": "readsAllowedFile",
+            "type": "failure",
+            "assertion": "BEHAVIOR_REGRESSION"
+          }
+        ],
+        "exit_code": 1,
+        "duration_seconds": 2.703,
+        "junit_sha256": "dfecd7ec9f235fc2c46b593139bde01575471383ef915a21b911915664e87458"
+      },
+      "security": {
+        "passed": false,
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "details": [
+          {
+            "name": "cannotReadParentSecret",
+            "type": "failure",
+            "assertion": "PATH_TRAVERSAL_REGRESSION"
+          }
+        ],
+        "exit_code": 1,
+        "duration_seconds": 2.781,
+        "junit_sha256": "7254999def59ad4ce98a6663b44095202c7a9540b17f3fdc3c89d577cef0ede7"
+      },
+      "remaining_rules": []
+    },
+    "duration_seconds": 20.344,
+    "runner_profile": "native-same-user",
+    "versions": {
+      "java": "17; inspect preparation evidence",
+      "maven": "3.9.16"
+    }
+  },
+  "origin": "hand-authored deterministic control; not LLM"
+}

@@ -1,0 +1,150 @@
+{
+  "case": "VUL4J-79",
+  "cve": "CVE-2018-1002201",
+  "cwe": "CWE-22",
+  "upstream": "zeroturnaround/zt-zip",
+  "derived_commit": "57c32d5d78d13bdc8b3198436261d0edae1fd0da",
+  "human_fix_commit": "759b72f33bc8f4d69f84f09fcb7f010ad45d6fff",
+  "started_at": 1792948326.7205498,
+  "baseline": {
+    "passed": false,
+    "baseline_valid": true,
+    "feedback": "validation_failed",
+    "build": {
+      "passed": true,
+      "duration_seconds": 30.172
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 116,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "duration_seconds": 14.141,
+      "reason": null
+    },
+    "security": {
+      "passed": false,
+      "tests": 2,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "testUnwrapDoesntLeaveTarget",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        },
+        {
+          "name": "testUnpackDoesntLeaveTarget",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        }
+      ],
+      "duration_seconds": 5.906,
+      "reason": null
+    },
+    "findings": [
+      "known:VUL4J-79.1 src/main/java/org/zeroturnaround/zip/ZipUtil.java:1152",
+      "known:VUL4J-79.2 src/main/java/org/zeroturnaround/zip/ZipUtil.java:1220",
+      "known:VUL4J-79.3 src/main/java/org/zeroturnaround/zip/ZipUtil.java:1225",
+      "known:VUL4J-79.4 src/main/java/org/zeroturnaround/zip/ZipUtil.java:1260"
+    ],
+    "patch": {
+      "patch_sha256": null,
+      "changed_lines": null
+    },
+    "source_revision": "57c32d5d78d13bdc8b3198436261d0edae1fd0da",
+    "artifact_sha256": null,
+    "runner_profile": "docker:maven:3.9.16-eclipse-temurin-8@sha256:0f402712b7a469189cfea5ec69cdcadcb32b22aaf1ea62777ab925c3d8470175",
+    "duration_seconds": 50.531
+  },
+  "human_fix": {
+    "passed": true,
+    "baseline_valid": false,
+    "feedback": "verified",
+    "build": {
+      "passed": true,
+      "duration_seconds": 19.047
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 116,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "duration_seconds": 11.625,
+      "reason": null
+    },
+    "security": {
+      "passed": true,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "duration_seconds": 4.985,
+      "reason": null
+    },
+    "findings": [],
+    "patch": {
+      "patch_sha256": "d351a91390a3a0ef29985af49f83f798da0d1145dcd1dd9b624e12db397be7e7",
+      "changed_lines": 36
+    },
+    "source_revision": "91496df6aa852ac4dbb53e2190bebae8b732ea8e",
+    "artifact_sha256": "71a6d86c2a95732194c4b834d63843484c98508b4ed7acd57833f55cfe9e8d03",
+    "runner_profile": "docker:maven:3.9.16-eclipse-temurin-8@sha256:0f402712b7a469189cfea5ec69cdcadcb32b22aaf1ea62777ab925c3d8470175",
+    "duration_seconds": 36.188
+  },
+  "control": {
+    "passed": false,
+    "baseline_valid": false,
+    "feedback": "validation_failed",
+    "build": {
+      "passed": true,
+      "duration_seconds": 20.64
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 116,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "duration_seconds": 11.453,
+      "reason": null
+    },
+    "security": {
+      "passed": false,
+      "tests": 2,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "testUnwrapDoesntLeaveTarget",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        },
+        {
+          "name": "testUnpackDoesntLeaveTarget",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        }
+      ],
+      "duration_seconds": 5.657,
+      "reason": null
+    },
+    "findings": [],
+    "patch": {
+      "patch_sha256": "1ca573f5d813c08ad3bb6a55d4663dc6904eb1136ea939dd700dae94050cd1c4",
+      "changed_lines": 1
+    },
+    "source_revision": "65109bf3e26bbb0d35e07dc1a3c2d382ee489d65",
+    "artifact_sha256": null,
+    "runner_profile": "docker:maven:3.9.16-eclipse-temurin-8@sha256:0f402712b7a469189cfea5ec69cdcadcb32b22aaf1ea62777ab925c3d8470175",
+    "duration_seconds": 38.25
+  }
+}

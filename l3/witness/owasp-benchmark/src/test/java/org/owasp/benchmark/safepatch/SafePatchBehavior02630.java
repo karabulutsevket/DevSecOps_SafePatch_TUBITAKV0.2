@@ -1,0 +1,14 @@
+package org.owasp.benchmark.safepatch;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+
+/** SafePatch L3 behaviour test for OWASP Benchmark BenchmarkTest02630 (generated, MIT): a benign input answers as in the original code. */
+class SafePatchBehavior02630 {
+
+  @Test
+  void benignInputAnswersAsBefore() throws Exception {
+    assertEquals("9589277d12af61ade72f3ef6f0476b5c099f71585e24babb3f5ceef748e1fbd8", WitnessSupport.sqlAnswer(org.owasp.benchmark.testcode.BenchmarkTest02630.class, "BenchmarkTest02630", "bar"), "BEHAVIOR_REGRESSION");
+  }
+}

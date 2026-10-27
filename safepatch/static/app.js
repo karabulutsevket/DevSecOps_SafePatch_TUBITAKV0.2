@@ -1,0 +1,84 @@
+let key='', me=null, selected=null, shown='';
+const drafts={};
+const $=id=>document.getElementById(id);
+const labels={queued:'Sırada',scanning:'Başlangıç taraması',patching:'Yerel AI düzeltmesi',verifying:'Worker2 doğrulaması',awaiting_review:'İnsan incelemesine hazır',approved:'İnsan onayı verildi',deployed:'Staging çalışıyor',needs_human:'İnsan müdahalesi gerekli',infrastructure_error:'Altyapı hatası',rejected:'Reddedildi',cancelled:'İptal edildi',expired:'Onay süresi doldu',deploying:'Staging başlatılıyor'};
+// Turkish explanations for stop reasons and refusals; the code itself stays visible next to them.
+const reasons={known_findings_only_in_lab_profile:'Bilinen bulgu kipi yalnız laboratuvar ve değerlendirme profilinde açılır.',known_findings_need_answer_key_and_witness:'Bu vakanın cevap anahtarı ya da güvenlik tanığı yok.',source_exceeds_model_context:'Dosya modelin bağlamına sığmıyor (en çok 24 000 karakter); model denemesi yapılmadı, düzeltmeyi uzman yazmalı.',attempt_budget_exhausted:'Model üç denemede doğrulamadan geçen bir yama üretemedi.',no_progress:'Model ilerleme kaydetmedi; aynı başarısızlık tekrarlandı.',duplicate_patch:'Model aynı yamayı yeniden üretti.',expert_patch_failed_verification:'Uzman yaması doğrulamadan geçemedi; nedeni deneme geçmişinde.',security_witness_missing:'Projede güvenlik tanığı yok; zafiyetin giderildiği kanıtlanamıyor.',suspected_prompt_injection:'Metin SafePatch doğrulayıcı notunu taklit ediyor.',finding_file_not_editable:'Bulgunun dosyası proje tanımına göre değiştirilemez.',baseline_missing_expected_failing_security_assertion_or_finding:'Başlangıç taraması beklenen bulguyu ve başarısız güvenlik testini üretmedi.',baseline_not_valid:'Başlangıç taraması geçerli bir bulgu üretmedi.',token_budget_exhausted:'Model bütçesi doldu.',job_deadline_exceeded:'İş süresi doldu.',memory_no_longer_approved:'Kullanılan hafıza kaydı artık onaylı değil.',protected_or_unauthorized_path:'Yalnız bulgunun dosyası değiştirilebilir; test, build ve CI dosyaları korunur.',stale_base_hash:'Dosya bu işin taban sürümüyle uyuşmuyor.',forbidden_capability_or_suppression:'Yamada yasak bir yetenek ya da tarayıcı bastırma ifadesi var.',empty_patch:'Dosyada değişiklik yok.',line_budget:'Değişiklik 200 satır sınırını aşıyor.',source_requires_final_newline:'Dosya bir satır sonuyla bitmeli.',invalid_source_encoding:'Dosyada geçersiz karakter var.',job_not_waiting_for_a_human:'İş uzman yaması beklemiyor.',expert_attempt_budget_exhausted:'Bu iş için üç uzman denemesi kullanıldı.',evaluation_job_cannot_take_expert_patch:'Deney işlerine uzman yaması gönderilmez.',authorship_changed:'Adaydaki yazar kanıtla uyuşmuyor.',author_cannot_promote_own_patch:'Kendi yamanızı hafızaya alamazsınız.'};
+const origins={'human-authored':'Uzman yaması','real-local-model':'Yerel AI','approved-memory-replay':'Hafızadan tekrar','mock-test':'Test modu'};
+function explain(code){if(!code)return '';const text=code.startsWith('verification_infrastructure:')?'Doğrulama ortamında hata (yamadan değil); ortam düzelince yeniden deneyin.':reasons[code];return text?text+' ('+code+')':code}
+async function api(path,method='GET',body){const r=await fetch(path,{method,headers:{'Authorization':'Bearer '+key,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});if(!r.ok){const t=await r.text();let d=t;try{d=JSON.parse(t).detail}catch(e){}throw new Error(typeof d==='string'?explain(d):t)}return r.json()}
+function el(tag,text,cls){const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n}
+function act(text,fn,enabled=true){const b=el('button',text);b.disabled=!enabled;b.onclick=()=>guard(fn);return b}
+async function guard(fn){try{$('message').textContent='';await fn()}catch(e){$('message').textContent=e.message}}
+function originOf(p){return (origins[p.mode]||p.mode||'—')+(p.author?' · '+p.author:'')}
+function diffView(text){const pre=el('pre',undefined,'diff');for(const line of text.replace(/\n$/,'').split('\n'))pre.append(el('span',line||' ',/^(\+\+\+|---)/.test(line)?'file':line.startsWith('@@')?'hunk':line[0]==='+'?'add':line[0]==='-'?'del':''));return pre}
+$('login').onclick=()=>guard(async()=>{key=$('token').value;me=await api('/v1/me');$('token').value='';shown='';for(const k in drafts)delete drafts[k];$('identity').textContent=me.subject+' · '+me.roles.join(', ');$('workspace').hidden=false;$('create').disabled=!me.roles.includes('submit');const cases=await api('/v1/cases');$('case').replaceChildren(...Object.keys(cases).map(k=>{const o=el('option',k+' · '+cases[k].split);o.value=k;return o}));$('scanner').querySelector('[value=known]').hidden=!Object.values(cases).some(c=>c.known_findings);$('case').onchange=()=>{if(cases[$('case').value])$('scanner').value=cases[$('case').value].known_findings?'known':'semgrep'};$('case').onchange();await refresh()});
+$('refresh').onclick=()=>guard(refresh);
+$('create').onclick=()=>guard(async()=>{const j=await api('/v1/jobs','POST',{case_id:$('case').value,scanner:$('scanner').value,idempotency_key:crypto.randomUUID()});selected=j.id;shown='';await refresh()});
+// The detail view is redrawn only when the job changed, so open sections and an expert's draft survive the 5 s refresh.
+async function refresh(){await refreshMemory();const jobs=await api('/v1/jobs');$('jobs').replaceChildren(...jobs.map(j=>{const b=el('button',j.case_id+(j.target_file?' · '+j.target_file.split('/').pop():''),j.id===selected?'active':'');b.append(el('small',labels[j.status]||j.status));b.onclick=()=>guard(async()=>{selected=j.id;shown='';await refresh()});return b}));if(selected){const j=jobs.find(j=>j.id===selected);const state=j&&JSON.stringify(j);if(j&&state!==shown){shown=state;render(j)}}}
+function render(j){const d=$('detail');d.replaceChildren(el('h2',j.case_id+' · '+(labels[j.status]||j.status)));d.append(el('span',j.mode,j.mode==='mock-test'?'badge mock':'badge'),el('span',j.scanner,'badge'));const m=el('div',undefined,'metrics');for(const [a,b] of [[j.attempt_count+' / '+j.max_attempts,'Düzeltme denemesi'],[j.duration_seconds?Math.round(j.duration_seconds)+' sn':'—','Tamamlanan süre'],[j.approval?j.approval.reviewer:'Bekleniyor','İnsan kararı']]){const c=el('div');c.append(el('b',a),el('small',b));m.append(c)}d.append(m,el('p','İş: '+j.id,'hash'),el('p','Başlangıç commit: '+j.base_commit,'hash'));if(j.target_file)d.append(el('p','Hedef dosya: '+j.target_file+' · '+(j.findings||[]).length+' bulgu','hash'));if(j.parent_job)d.append(el('p','Aynı taramadan açıldı; ana iş: '+j.parent_job,'hash'));if(j.children&&j.children.length)d.append(el('p','Aynı taramadaki diğer '+j.children.length+' dosya için ayrı iş açıldı','hash'));if(j.reason)d.append(el('p',explain(j.reason),'reason'));
+  const mine=!!(j.candidate&&j.candidate.author&&j.candidate.author===me.subject);
+  if(j.candidate){if(j.candidate.origin)d.append(el('span',originOf({mode:j.candidate.origin,author:j.candidate.author}),'badge'));d.append(el('p','Doğrulanmış commit: '+j.candidate.commit,'hash'),el('p','Artifact SHA-256: '+j.candidate.artifact_sha256,'hash'),el('h3','İncelenecek değişiklik'),diffView(j.candidate.diff));if(mine&&me.roles.includes('review'))d.append(el('p','Bu yamayı siz yazdınız. Onay ve hafızaya alma kararını başka bir inceleyici verir.','note'))}
+  if(me.roles.includes('submit')&&j.status==='needs_human'&&j.baseline&&j.baseline.baseline_valid)d.append(expertPanel(j));
+  if(j.attempts&&j.attempts.length)d.append(el('h3','Deneme geçmişi'),history(j));
+  if(j.memory_lookup)d.append(memoryPanel(j.memory_lookup));
+  for(const [title,data] of [['Başlangıç taraması ve beklenen başarısız güvenlik testi',j.baseline],['Hafıza eşleştirmesi (ham kanıt)',j.memory_lookup],['Denemeler, testler ve yeniden tarama (ham kanıt)',j.attempts],['İkinci modelin yardımcı yorumu',j.advisory]]){if(!data)continue;const det=el('details');det.append(el('summary',title),el('pre',JSON.stringify(data,null,2)));d.append(det)}
+  const actions=el('div',undefined,'actions');if(j.candidate){for(const [text,decision]of[['İnceledim, onayla','approve'],['Reddet','reject']])actions.append(act(text,async()=>{if(!confirm(j.id+' işinin '+j.candidate.artifact_sha256+' artifact’i için '+text+'?'))return;await api('/v1/jobs/'+j.id+'/approval','POST',{candidate_commit:j.candidate.commit,artifact_sha256:j.candidate.artifact_sha256,policy_version:j.candidate.policy_version,decision});await refresh()},me.roles.includes('review')&&j.status==='awaiting_review'&&!mine));actions.append(act('Onaylı artifact’i staging’e dağıt',async()=>{await api('/v1/jobs/'+j.id+'/deploy','POST');await refresh()},me.roles.includes('deploy')&&j.status==='approved'))}if(j.candidate)actions.append(act('Onaylı düzeltmeyi hafızaya al',async()=>{await api('/v1/memory/promote','POST',{job_id:j.id,reason:'İncelenen düzeltme kurum hafızasına alındı'});await refresh()},me.roles.includes('review')&&['approved','deployed'].includes(j.status)&&!mine));actions.append(act('JSON kanıtını indir',async()=>{const data=await api('/v1/jobs/'+j.id+'/evidence.json');const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const a=el('a');a.href=url;a.download=j.id+'.json';a.click();URL.revokeObjectURL(url)}));d.append(actions)}
+// "Why was this record chosen / rejected?" (week 5): each candidate's use and the facts that differ.
+const uses={replay:'Birebir tekrar (model çağrılmaz, yine doğrulanır)',example:'Modele örnek',example_unknown:'Modele örnek (uygunluk bilinmiyor)'};
+const facts={project:'proje',cwe_family:'CWE ailesi',jdk:'JDK',source_path:'dosya',build_sha256:'build dosyası',contract_sha256:'test sözleşmesi',source_sha256:'kaynak kod',signature:'yapısal imza','signature.sink':'imzada hedef çağrı','signature.construction':'imzada değerin kuruluşu','signature.library':'imzada kütüphane','signature.library_version':'imzada kütüphane sürümü'};
+const relations={same_source:'aynı kaynak kod',same_context:'aynı dosya ve sözleşme',same_shape:'aynı imza biçimi, başka dosya'};
+function factText(d){const [k,u]=d.split(':');if(k==='state')return 'durum: '+(states[u]||u);return (facts[k]||k)+(u?' bilinmiyor':' farklı')}
+function memoryPanel(l){const box=el('section',undefined,'memory-why');box.append(el('h3','Hafıza kararı'));
+  if(l.decision==='disabled'){box.append(el('p','Bu işte hafıza kapalı.'));return box}
+  if(!('considered' in l)){box.append(el('p','Bu iş Hafta 5 öncesine ait; ayrıntı ham kanıtta.'));return box}
+  const rows=l.considered.slice().sort((a,b)=>(a.rank||99)-(b.rank||99));
+  if(!rows.length)box.append(el('p','Bu projede bu zayıflık ailesi için onaylı kayıt yok.'));
+  else{const table=el('table');const head=el('tr');for(const h of ['Sıra','Kayıt','Kullanım','Neden'])head.append(el('th',h));table.append(head);
+    for(const c of rows){const row=el('tr',undefined,c.id===l.selected_id?'chosen':'');const why=(c.differences||[]).length?c.differences.map(factText).join(', '):'tüm koşullar aynı';
+      row.append(el('td',c.rank?String(c.rank):'—'),el('td',c.id.slice(0,8),'hash'),el('td',c.use?uses[c.use]:'Elendi'),el('td',why));table.append(row)}
+    box.append(table)}
+  const sent=l.warnings_sent||[];
+  if(sent.length)box.append(el('p','Modele gönderilen başarısızlık uyarıları: '+sent.map(w=>(relations[w.relation]||w.relation)+' · '+w.failure).join('; ')));
+  else if((l.failures||[]).length)box.append(el('p',l.failures.length+' ilgili başarısızlık kaydı var; modele gönderilmedi.'));
+  return box}
+function history(j){const list=el('div',undefined,'history');for(const a of j.attempts){const p=a.proposal||{};const result=a.verification&&a.verification.passed?'doğrulandı':a.failure?a.failure.category:a.stopped||a.policy_error||'—';const det=el('details');det.append(el('summary',a.number+'. deneme · '+originOf(p)+' · '+result));if(a.diff)det.append(diffView(a.diff));const failed=a.failure&&a.failure.failed_tests||[];if(failed.length)det.append(el('p','Düşen testler: '+failed.map(t=>t.test).join(', '),'hash'));list.append(det)}return list}
+// Expert patch: the finding's file is edited in full; the server's policy code produces the diff that will be verified.
+function expertPanel(j){const box=el('section',undefined,'expert');box.append(el('h3','Uzman yaması'),el('p','Model bu bulguyu çözemedi. Düzeltmeyi siz yazabilirsiniz: yama, model yamasıyla aynı politika ve doğrulamadan geçer. Onayı başka bir inceleyici verir.'));
+  guard(async()=>{const draft=drafts[j.id]||(drafts[j.id]={});if(!draft.source)draft.source=await api('/v1/jobs/'+j.id+'/expert-source');const src=draft.source;
+    const editor=el('textarea',undefined,'editor');editor.value=draft.content===undefined?src.content:draft.content;editor.spellcheck=false;editor.wrap='off';editor.setAttribute('aria-label','Dosyanın yeni hâli');editor.oninput=()=>{draft.content=editor.value};
+    const why=el('textarea',undefined,'why');why.value=draft.why||'';why.placeholder='Düzeltme neden doğru? En az 20 karakter.';why.maxLength=1600;why.setAttribute('aria-label','Gerekçe');why.oninput=()=>{draft.why=why.value};
+    const preview=el('div');const body=()=>({edits:[{path:src.path,old_sha256:src.sha256,content:editor.value}],rationale:why.value});const buttons=el('div',undefined,'actions');
+    buttons.append(act('Değişikliği önizle',async()=>{const p=await api('/v1/jobs/'+j.id+'/expert-patch/preview','POST',body());preview.replaceChildren(el('p',p.changed_lines+' satır değişti · politika denetiminden geçti'),diffView(p.diff))}),
+      act('Doğrulamaya gönder',async()=>{if(why.value.trim().length<20)throw new Error('Gerekçe en az 20 karakter olmalı.');if(!confirm(src.path+' için uzman yaması doğrulamaya gönderilsin mi? Kalan uzman denemesi: '+src.attempts_left))return;await api('/v1/jobs/'+j.id+'/expert-patch','POST',body());delete draft.source;await refresh()},src.attempts_left>0));
+    box.append(el('p',src.path+' · kalan uzman denemesi: '+src.attempts_left+' / 3','hash'),el('label','Dosyanın yeni hâli'),editor,el('label','Gerekçe'),why,buttons,preview)});
+  return box}
+setInterval(()=>{if(me)guard(refresh)},5000);
+
+const states={approved:'onaylı',quarantined:'karantinada',revoked:'geri çekildi',needs_revalidation:'yeniden doğrulanmalı'};
+// Evidence vector of a memory record (week 4): what its own acceptance proved and how its reuses ended.
+function evidenceText(e){if(!e)return 'Kanıt vektörü yok (Hafta 4 öncesi kayıt)';const yes=v=>v==null?'bilinmiyor':v?'geçti':'geçmedi';const suite=s=>s?yes(s.passed)+(s.tests!=null?' ('+s.tests+' test)':''):'bilinmiyor';const r=e.reuse||{};return 'Kanıt · derleme: '+yes(e.build)+' · davranış: '+suite(e.behavior)+' · tanık: '+suite(e.security)+' · tarama: '+(e.rescan?(e.rescan.remaining==null?'yeniden taranmadı, tanık belirler':e.rescan.remaining===0?'temiz':e.rescan.remaining+' bulgu kaldı')+(e.rescan.tools.length?' ('+e.rescan.tools.join(', ')+')':''):'bilinmiyor')+' · yeniden kullanım: '+(r.verified||0)+' doğrulandı, '+(r.failed||0)+' başarısız, '+(r.inconclusive||0)+' belirsiz; inceleyici '+(r.approved_by_reviewer||0)+' onay, '+(r.rejected_by_reviewer||0)+' ret'}
+
+async function refreshMemory(){
+  $('memory-panel').hidden=false;$('measurements-panel').hidden=false;
+  const records=await api('/v1/memory');
+  $('memories').replaceChildren(...records.map(r=>{
+    const row=el('div',undefined,'memory-row');
+    const last=r.events[r.events.length-1]||{};
+    row.append(el('b',(r.context.cwe_family||r.context.rule_id)+' · '+(states[r.state]||r.state)),el('p',r.context.project+' · v'+r.version+' · '+r.uses.length+' kullanım'),el('p',evidenceText(r.evidence)),el('p',r.id,'hash'));
+    if(r.state!=='approved')row.append(el('p','Son karar: '+(last.actor||'—')+' · '+(last.reason||'—'),'reason'));
+    if(me.roles.includes('review')&&r.state!=='revoked'){
+      const reason=el('input');reason.placeholder='Karar gerekçesi (en az 10 karakter)';reason.maxLength=1000;
+      row.append(reason);
+      const choices=r.state==='approved'?[['Karantinaya al','quarantined'],['Geri çek','revoked']]:[['Yeniden onayla','approved'],['Karantinaya al','quarantined'],['Geri çek','revoked']];
+      for(const [title,state] of choices.filter(([,s])=>s!==r.state))row.append(act(title,async()=>{await api('/v1/memory/'+r.id+'/state','POST',{state,reason:reason.value});await refresh()}));
+    }return row;
+  }));
+  if(!records.length)$('memories').append(el('p','Henüz onaylanıp hafızaya alınmış düzeltme yok.'));
+  const data=await api('/v1/measurements');
+  $('measurements').replaceChildren();
+  for(const [name,value] of Object.entries(data)){
+    const detail=el('details');detail.append(el('summary',name),el('pre',JSON.stringify(value,null,2)));$('measurements').append(detail);
+  }
+}

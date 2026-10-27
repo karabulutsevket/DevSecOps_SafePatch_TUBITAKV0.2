@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "js_errors": [],
+  "case_count": 9,
+  "token_cleared": true,
+  "storage": {
+    "local": 0,
+    "session": 0
+  },
+  "memory_visible": true,
+  "measurements_visible": true,
+  "scope": "Real local browser, authenticated UI; no repair or approval clicked"
+}

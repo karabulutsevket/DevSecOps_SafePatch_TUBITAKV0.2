@@ -1,0 +1,64 @@
+{
+  "rows": [
+    {
+      "answer": "l3-model-1/owasp-benchmark-01643/1",
+      "run_status": "rejected",
+      "run_policy_error": "forbidden_capability_or_suppression",
+      "commit": "8bd5841cf9c0a8d0f8ce85c2649c497bc0b70e6e",
+      "patch_sha256": "96fad812dd1cba1786bd85a6dadaf2d53a99de15da28280e5039f6c10ccf6f5d",
+      "passed": false,
+      "code": "compilation_failed",
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "hidden": null
+    },
+    {
+      "answer": "l3-model-2/owasp-benchmark-01643/1",
+      "run_status": "rejected",
+      "run_policy_error": "forbidden_capability_or_suppression",
+      "commit": "8bd5841cf9c0a8d0f8ce85c2649c497bc0b70e6e",
+      "patch_sha256": "96fad812dd1cba1786bd85a6dadaf2d53a99de15da28280e5039f6c10ccf6f5d",
+      "passed": false,
+      "code": "compilation_failed",
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "hidden": null
+    },
+    {
+      "answer": "l3-model-2/owasp-benchmark-00306/1",
+      "run_status": "rejected",
+      "run_policy_error": "forbidden_capability_or_suppression",
+      "commit": "8bd5841cf9c0a8d0f8ce85c2649c497bc0b70e6e",
+      "patch_sha256": "9df815e5576349d78e1d60428d2420e127d56c78e6cbdb72244998f35d619e4a",
+      "passed": false,
+      "code": "validation_failed",
+      "behavior": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "hidden": null
+    }
+  ]
+}

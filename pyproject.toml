@@ -1,0 +1,11 @@
+[project]
+name = "bigg-safe-patch"
+version = "0.1.0"
+description = "Local evidence-driven Java remediation demonstrator"
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra"
+markers = ["integration: requires prepared Java/Maven runtime"]

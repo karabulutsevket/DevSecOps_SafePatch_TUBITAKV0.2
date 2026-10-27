@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "started_at": 1789232501.4756732,
+  "model": "qwen2.5-coder:7b-instruct-q4_K_M",
+  "seed": 42,
+  "max_attempts": 2,
+  "job_wall_budget": 1200,
+  "context": 8192,
+  "max_output": 2048,
+  "arms": {
+    "off": "A: no memory",
+    "naive": "B: project/rule retrieval without precondition filter; inference required",
+    "guarded": "C: compatibility filter, exact source replay else inference"
+  },
+  "phases": [
+    "recurrence: same vulnerable commit used for memory construction",
+    "variant: same template family with small source changes"
+  ],
+  "heldout_project_generalization": false,
+  "human_approval": "SIMULATED benchmark-only memory construction",
+  "memory_pool": "frozen after successful local-model construction; no benchmark candidates promoted",
+  "order": "balanced rotation of arms across six case/phase blocks",
+  "python": "3.12.14",
+  "scanner": "real Semgrep 1.136.0 with three owned rules",
+  "runner": "native-same-user; no airgap claim"
+}

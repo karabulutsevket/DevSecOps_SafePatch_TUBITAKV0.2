@@ -1,0 +1,93 @@
+{
+  "case": "package-command-1",
+  "cwe": "CWE-78",
+  "project": "safepatch-package-dev",
+  "source": "safepatch-synthetic",
+  "scanner": "known",
+  "vulnerable": true,
+  "seed": 42,
+  "job": "d7b95935964342af8330a990252e69b4",
+  "status": "awaiting_review",
+  "reason": null,
+  "wall_seconds": 68.0,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 15,
+      "patch_sha256": "eeb4306a72079635e470d2f5b8cfbf8de20f66282741f559b8ad790388881de0",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "behavior_regression",
+        "failed_tests": [
+          {
+            "suite": "behavior",
+            "test": "echoesHello",
+            "marker": "BEHAVIOR_REGRESSION"
+          },
+          {
+            "suite": "behavior",
+            "test": "echoesWorld",
+            "marker": "BEHAVIOR_REGRESSION"
+          },
+          {
+            "suite": "security",
+            "test": "shellMetacharactersAreLiteral",
+            "marker": "COMMAND_INJECTION_REGRESSION"
+          }
+        ],
+        "remaining_rules": []
+      },
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 2,
+        "failures": 2,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0
+      },
+      "model_seconds": 15.718,
+      "prompt_tokens": 1190,
+      "output_tokens": 776,
+      "dropped": []
+    },
+    {
+      "number": 2,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 15,
+      "patch_sha256": "fbff3bb922ed888a7c85d6886ae64d8d3ad94de03f07325a5adf501821b099ec",
+      "policy_error": null,
+      "stopped": null,
+      "passed": true,
+      "failure": null,
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "model_seconds": 16.406,
+      "prompt_tokens": 1620,
+      "output_tokens": 781,
+      "dropped": []
+    }
+  ],
+  "hidden": null,
+  "false_acceptance": null
+}

@@ -1,0 +1,246 @@
+{
+  "run": "dev-butce-once",
+  "jobs": 20,
+  "vulnerable": {
+    "jobs": 20,
+    "statuses": {
+      "awaiting_review": 11,
+      "needs_human": 9
+    },
+    "reasons": {
+      "attempt_budget_exhausted": 9
+    },
+    "accepted": 11,
+    "false_acceptances": 0,
+    "accepted_and_hidden_passed": 0,
+    "model_attempts": 46
+  },
+  "safe": {
+    "jobs": 0,
+    "statuses": {},
+    "reasons": {},
+    "accepted": 0,
+    "false_acceptances": 0,
+    "accepted_and_hidden_passed": 0,
+    "model_attempts": 0
+  },
+  "by_cwe": {
+    "CWE-22": {
+      "jobs": 7,
+      "statuses": {
+        "awaiting_review": 3,
+        "needs_human": 4
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 4
+      },
+      "accepted": 3,
+      "false_acceptances": 0,
+      "accepted_and_hidden_passed": 0,
+      "model_attempts": 21
+    },
+    "CWE-78": {
+      "jobs": 6,
+      "statuses": {
+        "needs_human": 5,
+        "awaiting_review": 1
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 5
+      },
+      "accepted": 1,
+      "false_acceptances": 0,
+      "accepted_and_hidden_passed": 0,
+      "model_attempts": 18
+    },
+    "CWE-89": {
+      "jobs": 7,
+      "statuses": {
+        "awaiting_review": 7
+      },
+      "reasons": {},
+      "accepted": 7,
+      "false_acceptances": 0,
+      "accepted_and_hidden_passed": 0,
+      "model_attempts": 7
+    }
+  },
+  "by_source": {
+    "safepatch-synthetic": {
+      "jobs": 20,
+      "statuses": {
+        "awaiting_review": 11,
+        "needs_human": 9
+      },
+      "reasons": {
+        "attempt_budget_exhausted": 9
+      },
+      "accepted": 11,
+      "false_acceptances": 0,
+      "accepted_and_hidden_passed": 0,
+      "model_attempts": 46
+    }
+  },
+  "rows": [
+    {
+      "case": "sql-01",
+      "cwe": "CWE-89",
+      "vulnerable": true,
+      "status": "awaiting_review",
+      "reason": null,
+      "false_acceptance": null
+    },
+    {
+      "case": "sql-02",
+      "cwe": "CWE-89",
+      "vulnerable": true,
+      "status": "awaiting_review",
+      "reason": null,
+      "false_acceptance": null
+    },
+    {
+      "case": "sql-03",
+      "cwe": "CWE-89",
+      "vulnerable": true,
+      "status": "awaiting_review",
+      "reason": null,
+      "false_acceptance": null
+    },
+    {
+      "case": "path-01",
+      "cwe": "CWE-22",
+      "vulnerable": true,
+      "status": "awaiting_review",
+      "reason": null,
+      "false_acceptance": null
+    },
+    {
+      "case": "path-02",
+      "cwe": "CWE-22",
+      "vulnerable": true,
+      "status": "awaiting_review",
+      "reason": null,
+      "false_acceptance": null
+    },
+    {
+      "case": "path-03",
+      "cwe": "CWE-22",
+      "vulnerable": true,
+      "status": "awaiting_review",
+      "reason": null,
+      "false_acceptance": null
+    },
+    {
+      "case": "command-01",
+      "cwe": "CWE-78",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "command-02",
+      "cwe": "CWE-78",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "command-03",
+      "cwe": "CWE-78",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "region-path-read",
+      "cwe": "CWE-22",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "region-path-write",
+      "cwe": "CWE-22",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "region-sql",
+      "cwe": "CWE-89",
+      "vulnerable": true,
+      "status": "awaiting_review",
+      "reason": null,
+      "false_acceptance": null
+    },
+    {
+      "case": "region-command",
+      "cwe": "CWE-78",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "variant-sql-builder",
+      "cwe": "CWE-89",
+      "vulnerable": true,
+      "status": "awaiting_review",
+      "reason": null,
+      "false_acceptance": null
+    },
+    {
+      "case": "variant-sql-format",
+      "cwe": "CWE-89",
+      "vulnerable": true,
+      "status": "awaiting_review",
+      "reason": null,
+      "false_acceptance": null
+    },
+    {
+      "case": "variant-sql-helper",
+      "cwe": "CWE-89",
+      "vulnerable": true,
+      "status": "awaiting_review",
+      "reason": null,
+      "false_acceptance": null
+    },
+    {
+      "case": "variant-path-file",
+      "cwe": "CWE-22",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "variant-path-helper",
+      "cwe": "CWE-22",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    },
+    {
+      "case": "variant-command-list",
+      "cwe": "CWE-78",
+      "vulnerable": true,
+      "status": "awaiting_review",
+      "reason": null,
+      "false_acceptance": null
+    },
+    {
+      "case": "variant-command-format",
+      "cwe": "CWE-78",
+      "vulnerable": true,
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "false_acceptance": null
+    }
+  ]
+}

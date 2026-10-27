@@ -1,0 +1,45 @@
+{
+  "case": "region-sql",
+  "cwe": "CWE-89",
+  "project": "safepatch-region-dev",
+  "source": "safepatch-synthetic",
+  "scanner": "known",
+  "vulnerable": true,
+  "seed": 42,
+  "job": "8540b911f63442029915e7619be7913e",
+  "status": "awaiting_review",
+  "reason": null,
+  "wall_seconds": 67.0,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 20,
+      "patch_sha256": "6e82d4bb395abff4120c8cbdf714f346d07eab396d8b5cb033bfb3771afdbb4f",
+      "policy_error": null,
+      "stopped": null,
+      "passed": true,
+      "failure": null,
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "model_seconds": 37.36,
+      "prompt_tokens": 2262,
+      "output_tokens": 1755,
+      "dropped": []
+    }
+  ],
+  "hidden": null,
+  "false_acceptance": null
+}

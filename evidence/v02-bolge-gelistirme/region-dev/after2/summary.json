@@ -1,0 +1,1203 @@
+{
+  "label": "after2",
+  "jobs": 12,
+  "verified": 5,
+  "by_case": {
+    "region-path-read": 1,
+    "region-path-write": 0,
+    "region-sql": 3,
+    "region-command": 1
+  },
+  "rows": [
+    {
+      "case": "region-path-read",
+      "seed": 42,
+      "job": "a716e1140f404cf29f2d68f9b6d9e35e",
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "wall_seconds": 29.2,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 2,
+          "patch_sha256": "f7a32ae3059a0e514f1620059ce2f892f23795a11f2757df5a8815eaf236869b",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "compilation_failed",
+            "diagnostics": [
+              "[ERROR] src/main/java/demo/DemoService.java:[112,61] cannot find symbol: toRealPath"
+            ]
+          },
+          "build": false,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 3.187,
+          "prompt_tokens": 869,
+          "output_tokens": 127,
+          "dropped": []
+        },
+        {
+          "number": 2,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 2,
+          "patch_sha256": "f7a32ae3059a0e514f1620059ce2f892f23795a11f2757df5a8815eaf236869b",
+          "policy_error": null,
+          "stopped": "duplicate_patch",
+          "passed": null,
+          "failure": null,
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 3.781,
+          "prompt_tokens": 1080,
+          "output_tokens": 157,
+          "dropped": []
+        },
+        {
+          "number": 3,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 7,
+          "patch_sha256": "aa4b9f26dce6be0496f191652d10c034c3527af36b2960b0fd8d15fe0fc47ddf",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "compilation_failed",
+            "diagnostics": [
+              "[ERROR] src/main/java/demo/DemoService.java:[112,62] cannot find symbol: toRealPath",
+              "[ERROR] src/main/java/demo/DemoService.java:[113,44] cannot find symbol: toRealPath",
+              "[ERROR] src/main/java/demo/DemoService.java:[114,20] cannot find symbol: startsWith"
+            ]
+          },
+          "build": false,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 3.985,
+          "prompt_tokens": 1216,
+          "output_tokens": 182,
+          "dropped": []
+        }
+      ]
+    },
+    {
+      "case": "region-path-read",
+      "seed": 43,
+      "job": "942c412b1ab84269845cc6ebfc43d411",
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "wall_seconds": 28.1,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 2,
+          "patch_sha256": "f7a32ae3059a0e514f1620059ce2f892f23795a11f2757df5a8815eaf236869b",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "compilation_failed",
+            "diagnostics": [
+              "[ERROR] src/main/java/demo/DemoService.java:[112,61] cannot find symbol: toRealPath"
+            ]
+          },
+          "build": false,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 2.922,
+          "prompt_tokens": 869,
+          "output_tokens": 130,
+          "dropped": []
+        },
+        {
+          "number": 2,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 2,
+          "patch_sha256": "f7a32ae3059a0e514f1620059ce2f892f23795a11f2757df5a8815eaf236869b",
+          "policy_error": null,
+          "stopped": "duplicate_patch",
+          "passed": null,
+          "failure": null,
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 3.922,
+          "prompt_tokens": 1086,
+          "output_tokens": 158,
+          "dropped": []
+        },
+        {
+          "number": 3,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 7,
+          "patch_sha256": "3ef6f7c8a2e25a761a7679cbe81910049b77b4444dd90d5d5610993943945928",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "compilation_failed",
+            "diagnostics": [
+              "[ERROR] src/main/java/demo/DemoService.java:[112,62] cannot find symbol: toRealPath",
+              "[ERROR] src/main/java/demo/DemoService.java:[113,44] cannot find symbol: toRealPath"
+            ]
+          },
+          "build": false,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 3.641,
+          "prompt_tokens": 1214,
+          "output_tokens": 165,
+          "dropped": []
+        }
+      ]
+    },
+    {
+      "case": "region-path-read",
+      "seed": 44,
+      "job": "297b68b9a3ea4d2284c89b29d8f37bc0",
+      "status": "awaiting_review",
+      "reason": null,
+      "wall_seconds": 46.8,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 2,
+          "patch_sha256": "f7a32ae3059a0e514f1620059ce2f892f23795a11f2757df5a8815eaf236869b",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "compilation_failed",
+            "diagnostics": [
+              "[ERROR] src/main/java/demo/DemoService.java:[112,61] cannot find symbol: toRealPath"
+            ]
+          },
+          "build": false,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 3.047,
+          "prompt_tokens": 869,
+          "output_tokens": 130,
+          "dropped": []
+        },
+        {
+          "number": 2,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 8,
+          "patch_sha256": "7f2ab8d418d9a7fc6344e91d28bf616d63d63e94fbd8f79a43e23c6b305aaf89",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "security_witness_failed",
+            "failed_tests": [
+              {
+                "suite": "security",
+                "test": "cannotEscapeThroughLinkInsideRoot",
+                "marker": "PATH_TRAVERSAL_REGRESSION"
+              },
+              {
+                "suite": "security",
+                "test": "cannotReadParentSecret",
+                "marker": "PATH_TRAVERSAL_REGRESSION"
+              },
+              {
+                "suite": "security",
+                "test": "cannotReadAbsolutePathOutsideRoot",
+                "marker": "PATH_TRAVERSAL_REGRESSION"
+              }
+            ],
+            "remaining_rules": []
+          },
+          "build": true,
+          "behavior": {
+            "tests": 3,
+            "failures": 0,
+            "errors": 0
+          },
+          "security": {
+            "tests": 3,
+            "failures": 3,
+            "errors": 0
+          },
+          "model_seconds": 3.828,
+          "prompt_tokens": 1082,
+          "output_tokens": 171,
+          "dropped": []
+        },
+        {
+          "number": 3,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 11,
+          "patch_sha256": "397c2ad08708af7973d8ac1ebe79e210fde571a1b1c14b3efc98cce2c9ccb5d9",
+          "policy_error": null,
+          "stopped": null,
+          "passed": true,
+          "failure": null,
+          "build": true,
+          "behavior": {
+            "tests": 3,
+            "failures": 0,
+            "errors": 0
+          },
+          "security": {
+            "tests": 3,
+            "failures": 0,
+            "errors": 0
+          },
+          "model_seconds": 3.813,
+          "prompt_tokens": 1403,
+          "output_tokens": 157,
+          "dropped": []
+        }
+      ]
+    },
+    {
+      "case": "region-path-write",
+      "seed": 42,
+      "job": "63b7ee5764af424683dbd88001c62578",
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "wall_seconds": 42.7,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2
+          ],
+          "imports_added": [],
+          "changed_lines": null,
+          "patch_sha256": null,
+          "policy_error": "empty_patch",
+          "stopped": null,
+          "passed": null,
+          "failure": {
+            "category": "empty_patch"
+          },
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 7.532,
+          "prompt_tokens": 1077,
+          "output_tokens": 348,
+          "dropped": []
+        },
+        {
+          "number": 2,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2
+          ],
+          "imports_added": [],
+          "changed_lines": null,
+          "patch_sha256": null,
+          "policy_error": "empty_patch",
+          "stopped": null,
+          "passed": null,
+          "failure": {
+            "category": "empty_patch"
+          },
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 6.5,
+          "prompt_tokens": 1189,
+          "output_tokens": 310,
+          "dropped": []
+        },
+        {
+          "number": 3,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2
+          ],
+          "imports_added": [],
+          "changed_lines": 18,
+          "patch_sha256": "f37463f868fcdf1096da25b252c42ad1a9ba15c117e9f52cf36d8658ea7f9133",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "behavior_regression",
+            "failed_tests": [
+              {
+                "suite": "behavior",
+                "test": "appendsLines",
+                "marker": "BEHAVIOR_REGRESSION"
+              },
+              {
+                "suite": "behavior",
+                "test": "savesThroughLinkedRoot",
+                "marker": "BEHAVIOR_REGRESSION"
+              },
+              {
+                "suite": "behavior",
+                "test": "savesNestedFileCreatingDirectories",
+                "marker": "BEHAVIOR_REGRESSION"
+              },
+              {
+                "suite": "behavior",
+                "test": "savesFile",
+                "marker": "BEHAVIOR_REGRESSION"
+              }
+            ],
+            "remaining_rules": []
+          },
+          "build": true,
+          "behavior": {
+            "tests": 4,
+            "failures": 0,
+            "errors": 4
+          },
+          "security": {
+            "tests": 3,
+            "failures": 0,
+            "errors": 0
+          },
+          "model_seconds": 6.828,
+          "prompt_tokens": 1315,
+          "output_tokens": 324,
+          "dropped": []
+        }
+      ]
+    },
+    {
+      "case": "region-path-write",
+      "seed": 43,
+      "job": "4c477b10db7348fbbfa4b4c006c1a574",
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "wall_seconds": 37.6,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2
+          ],
+          "imports_added": [],
+          "changed_lines": null,
+          "patch_sha256": null,
+          "policy_error": "empty_patch",
+          "stopped": null,
+          "passed": null,
+          "failure": {
+            "category": "empty_patch"
+          },
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 6.687,
+          "prompt_tokens": 1077,
+          "output_tokens": 311,
+          "dropped": []
+        },
+        {
+          "number": 2,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2
+          ],
+          "imports_added": [],
+          "changed_lines": null,
+          "patch_sha256": null,
+          "policy_error": "empty_patch",
+          "stopped": null,
+          "passed": null,
+          "failure": {
+            "category": "empty_patch"
+          },
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 6.235,
+          "prompt_tokens": 1189,
+          "output_tokens": 296,
+          "dropped": []
+        },
+        {
+          "number": 3,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2
+          ],
+          "imports_added": [],
+          "changed_lines": 24,
+          "patch_sha256": "b7f10ee1fc681fb9595b64d40e8c76a1e6da598907bba2bd91c5bd374b0276dd",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "compilation_failed",
+            "diagnostics": [
+              "[ERROR] src/main/java/demo/DemoService.java:[126,46] cannot find symbol: isDirectory"
+            ]
+          },
+          "build": false,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 10.0,
+          "prompt_tokens": 1319,
+          "output_tokens": 484,
+          "dropped": []
+        }
+      ]
+    },
+    {
+      "case": "region-path-write",
+      "seed": 44,
+      "job": "cb1e8bf1b6bb4cebb043fb50b87adb4b",
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "wall_seconds": 42.0,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2
+          ],
+          "imports_added": [],
+          "changed_lines": null,
+          "patch_sha256": null,
+          "policy_error": "empty_patch",
+          "stopped": null,
+          "passed": null,
+          "failure": {
+            "category": "empty_patch"
+          },
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 6.531,
+          "prompt_tokens": 1077,
+          "output_tokens": 311,
+          "dropped": []
+        },
+        {
+          "number": 2,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2
+          ],
+          "imports_added": [],
+          "changed_lines": null,
+          "patch_sha256": null,
+          "policy_error": "empty_patch",
+          "stopped": null,
+          "passed": null,
+          "failure": {
+            "category": "empty_patch"
+          },
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 6.438,
+          "prompt_tokens": 1187,
+          "output_tokens": 307,
+          "dropped": []
+        },
+        {
+          "number": 3,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2
+          ],
+          "imports_added": [],
+          "changed_lines": 18,
+          "patch_sha256": "f86a82c3121896fbcf66b0e5aa02c0be143b8e513fa53e1c793199cd12586c8e",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "behavior_regression",
+            "failed_tests": [
+              {
+                "suite": "behavior",
+                "test": "appendsLines",
+                "marker": "BEHAVIOR_REGRESSION"
+              },
+              {
+                "suite": "behavior",
+                "test": "savesThroughLinkedRoot",
+                "marker": "BEHAVIOR_REGRESSION"
+              },
+              {
+                "suite": "behavior",
+                "test": "savesNestedFileCreatingDirectories",
+                "marker": "BEHAVIOR_REGRESSION"
+              },
+              {
+                "suite": "behavior",
+                "test": "savesFile",
+                "marker": "BEHAVIOR_REGRESSION"
+              }
+            ],
+            "remaining_rules": []
+          },
+          "build": true,
+          "behavior": {
+            "tests": 4,
+            "failures": 0,
+            "errors": 4
+          },
+          "security": {
+            "tests": 3,
+            "failures": 0,
+            "errors": 0
+          },
+          "model_seconds": 7.406,
+          "prompt_tokens": 1319,
+          "output_tokens": 353,
+          "dropped": []
+        }
+      ]
+    },
+    {
+      "case": "region-sql",
+      "seed": 42,
+      "job": "ebc6caf7678247c99d9ae527c7b4a0ec",
+      "status": "awaiting_review",
+      "reason": null,
+      "wall_seconds": 28.9,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 12,
+          "patch_sha256": "2cc828af8f95a9d3df3f755989e64762785605fd7c8be61d315c0f888f6ce6df",
+          "policy_error": null,
+          "stopped": null,
+          "passed": true,
+          "failure": null,
+          "build": true,
+          "behavior": {
+            "tests": 3,
+            "failures": 0,
+            "errors": 0
+          },
+          "security": {
+            "tests": 1,
+            "failures": 0,
+            "errors": 0
+          },
+          "model_seconds": 6.406,
+          "prompt_tokens": 1001,
+          "output_tokens": 305,
+          "dropped": []
+        }
+      ]
+    },
+    {
+      "case": "region-sql",
+      "seed": 43,
+      "job": "118c7f725f874cdb9281b6f61ca440ae",
+      "status": "awaiting_review",
+      "reason": null,
+      "wall_seconds": 28.6,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 12,
+          "patch_sha256": "2cc828af8f95a9d3df3f755989e64762785605fd7c8be61d315c0f888f6ce6df",
+          "policy_error": null,
+          "stopped": null,
+          "passed": true,
+          "failure": null,
+          "build": true,
+          "behavior": {
+            "tests": 3,
+            "failures": 0,
+            "errors": 0
+          },
+          "security": {
+            "tests": 1,
+            "failures": 0,
+            "errors": 0
+          },
+          "model_seconds": 6.422,
+          "prompt_tokens": 1001,
+          "output_tokens": 305,
+          "dropped": []
+        }
+      ]
+    },
+    {
+      "case": "region-sql",
+      "seed": 44,
+      "job": "32f7a5a2448e42c1a0678c348feb4800",
+      "status": "awaiting_review",
+      "reason": null,
+      "wall_seconds": 28.6,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 12,
+          "patch_sha256": "2cc828af8f95a9d3df3f755989e64762785605fd7c8be61d315c0f888f6ce6df",
+          "policy_error": null,
+          "stopped": null,
+          "passed": true,
+          "failure": null,
+          "build": true,
+          "behavior": {
+            "tests": 3,
+            "failures": 0,
+            "errors": 0
+          },
+          "security": {
+            "tests": 1,
+            "failures": 0,
+            "errors": 0
+          },
+          "model_seconds": 6.344,
+          "prompt_tokens": 1001,
+          "output_tokens": 305,
+          "dropped": []
+        }
+      ]
+    },
+    {
+      "case": "region-command",
+      "seed": 42,
+      "job": "8b40484ce8b34cc880d47899462538d9",
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "wall_seconds": 41.6,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 2,
+          "patch_sha256": "dd5566121e7e6b04707e343862592797ea2ceeff5c998ebcc2ca42311d0b2c41",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "behavior_regression",
+            "failed_tests": [
+              {
+                "suite": "behavior",
+                "test": "echoesHello",
+                "marker": "BEHAVIOR_REGRESSION"
+              },
+              {
+                "suite": "behavior",
+                "test": "echoesWorld",
+                "marker": "BEHAVIOR_REGRESSION"
+              },
+              {
+                "suite": "security",
+                "test": "shellMetacharactersAreLiteral",
+                "marker": "BEHAVIOR_REGRESSION"
+              }
+            ],
+            "remaining_rules": []
+          },
+          "build": true,
+          "behavior": {
+            "tests": 2,
+            "failures": 0,
+            "errors": 2
+          },
+          "security": {
+            "tests": 1,
+            "failures": 0,
+            "errors": 1
+          },
+          "model_seconds": 6.781,
+          "prompt_tokens": 1035,
+          "output_tokens": 330,
+          "dropped": []
+        },
+        {
+          "number": 2,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 2,
+          "patch_sha256": "dd5566121e7e6b04707e343862592797ea2ceeff5c998ebcc2ca42311d0b2c41",
+          "policy_error": null,
+          "stopped": "duplicate_patch",
+          "passed": null,
+          "failure": null,
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 6.922,
+          "prompt_tokens": 1303,
+          "output_tokens": 315,
+          "dropped": []
+        },
+        {
+          "number": 3,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 18,
+          "patch_sha256": "ee95a35d3e42ead84448c777ff636753753d59a30b1af6ad62b7b2627e046ee0",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "compilation_failed",
+            "diagnostics": [
+              "[ERROR] src/main/java/demo/Application.java:[17,40] cannot find symbol: lookup",
+              "[ERROR] src/main/java/demo/DemoService.java:[111,44] cannot find symbol: java",
+              "[ERROR] src/main/java/demo/DemoService.java:[111,122] cannot find symbol: input"
+            ]
+          },
+          "build": false,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 2.781,
+          "prompt_tokens": 1381,
+          "output_tokens": 117,
+          "dropped": []
+        }
+      ]
+    },
+    {
+      "case": "region-command",
+      "seed": 43,
+      "job": "396628bf02e4429a8dd2f7b893f90a5e",
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "wall_seconds": 42.1,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 2,
+          "patch_sha256": "dd5566121e7e6b04707e343862592797ea2ceeff5c998ebcc2ca42311d0b2c41",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "behavior_regression",
+            "failed_tests": [
+              {
+                "suite": "behavior",
+                "test": "echoesHello",
+                "marker": "BEHAVIOR_REGRESSION"
+              },
+              {
+                "suite": "behavior",
+                "test": "echoesWorld",
+                "marker": "BEHAVIOR_REGRESSION"
+              },
+              {
+                "suite": "security",
+                "test": "shellMetacharactersAreLiteral",
+                "marker": "BEHAVIOR_REGRESSION"
+              }
+            ],
+            "remaining_rules": []
+          },
+          "build": true,
+          "behavior": {
+            "tests": 2,
+            "failures": 0,
+            "errors": 2
+          },
+          "security": {
+            "tests": 1,
+            "failures": 0,
+            "errors": 1
+          },
+          "model_seconds": 6.812,
+          "prompt_tokens": 1035,
+          "output_tokens": 330,
+          "dropped": []
+        },
+        {
+          "number": 2,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 2,
+          "patch_sha256": "dd5566121e7e6b04707e343862592797ea2ceeff5c998ebcc2ca42311d0b2c41",
+          "policy_error": null,
+          "stopped": "duplicate_patch",
+          "passed": null,
+          "failure": null,
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 7.109,
+          "prompt_tokens": 1305,
+          "output_tokens": 325,
+          "dropped": []
+        },
+        {
+          "number": 3,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 19,
+          "patch_sha256": "c8feee9e1eb143f185178c0a5659607b72fc48320cb867a41cc260f363b731b6",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "compilation_failed",
+            "diagnostics": [
+              "[ERROR] src/main/java/demo/Application.java:[17,40] cannot find symbol: lookup",
+              "[ERROR] src/main/java/demo/DemoService.java:[111,26] cannot find symbol: input",
+              "[ERROR] src/main/java/demo/DemoService.java:[112,44] cannot find symbol: java"
+            ]
+          },
+          "build": false,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 3.047,
+          "prompt_tokens": 1375,
+          "output_tokens": 131,
+          "dropped": []
+        }
+      ]
+    },
+    {
+      "case": "region-command",
+      "seed": 44,
+      "job": "73707f11a5c14707a27ff8d3a5aab97d",
+      "status": "awaiting_review",
+      "reason": null,
+      "wall_seconds": 54.2,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 2,
+          "patch_sha256": "dd5566121e7e6b04707e343862592797ea2ceeff5c998ebcc2ca42311d0b2c41",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "behavior_regression",
+            "failed_tests": [
+              {
+                "suite": "behavior",
+                "test": "echoesHello",
+                "marker": "BEHAVIOR_REGRESSION"
+              },
+              {
+                "suite": "behavior",
+                "test": "echoesWorld",
+                "marker": "BEHAVIOR_REGRESSION"
+              },
+              {
+                "suite": "security",
+                "test": "shellMetacharactersAreLiteral",
+                "marker": "BEHAVIOR_REGRESSION"
+              }
+            ],
+            "remaining_rules": []
+          },
+          "build": true,
+          "behavior": {
+            "tests": 2,
+            "failures": 0,
+            "errors": 2
+          },
+          "security": {
+            "tests": 1,
+            "failures": 0,
+            "errors": 1
+          },
+          "model_seconds": 6.891,
+          "prompt_tokens": 1035,
+          "output_tokens": 330,
+          "dropped": []
+        },
+        {
+          "number": 2,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": null,
+          "patch_sha256": null,
+          "policy_error": "empty_patch",
+          "stopped": null,
+          "passed": null,
+          "failure": {
+            "category": "empty_patch"
+          },
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 7.172,
+          "prompt_tokens": 1305,
+          "output_tokens": 326,
+          "dropped": []
+        },
+        {
+          "number": 3,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 2,
+          "patch_sha256": "b2f01969e1e41dadf6f9106d446511db104d0de33fe3fce6ef8de8011ed2d877",
+          "policy_error": null,
+          "stopped": null,
+          "passed": true,
+          "failure": null,
+          "build": true,
+          "behavior": {
+            "tests": 2,
+            "failures": 0,
+            "errors": 0
+          },
+          "security": {
+            "tests": 1,
+            "failures": 0,
+            "errors": 0
+          },
+          "model_seconds": 7.063,
+          "prompt_tokens": 1223,
+          "output_tokens": 338,
+          "dropped": []
+        }
+      ]
+    }
+  ]
+}

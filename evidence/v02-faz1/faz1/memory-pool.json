@@ -1,0 +1,196 @@
+[
+  {
+    "id": "a94a829f49bf44668e43394453c6929d",
+    "state": "approved",
+    "version": 1,
+    "created_at": 1792942235.786356,
+    "context": {
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-22",
+      "rule_id": "bigg.java.path-resolution",
+      "jdk": "17",
+      "source_path": "src/main/java/demo/DemoService.java",
+      "build_sha256": "26e043fae58e551912409518b9d20e281bf34a51d8980781ee6c3c299fec6819",
+      "contract_sha256": "e154b3c293b96bd61f254dcc6c39a5a527ea08de65b6d38497f9f767b39372d5",
+      "source_sha256": "e05b594b2a0370824369766455fbf0ad5cd7b0fb08b0e9e30838113aa99c501d",
+      "signature": {
+        "schema": "safepatch-signature/1",
+        "sink": "java.nio.file.Files.readString",
+        "construction": "resolve",
+        "source": "method_parameter",
+        "library": "java-io",
+        "library_version": null
+      }
+    },
+    "before": "package demo;\n\nimport java.nio.file.*;\n\n// Case path-01.\n// Deliberately vulnerable synthetic example. Root is supplied by trusted runner.\npublic class DemoService {\n    public String lookup(String input) throws Exception {\n        Path root = Path.of(System.getProperty(\"demo.root\"));\n        Path target = root.resolve(input);\n        return Files.readString(target);\n    }\n}\n",
+    "patch": {
+      "edits": [
+        {
+          "path": "src/main/java/demo/DemoService.java",
+          "old_sha256": "e05b594b2a0370824369766455fbf0ad5cd7b0fb08b0e9e30838113aa99c501d",
+          "content": "package demo;\n\nimport java.nio.file.*;\n\n// Case path-01.\n// Deliberately vulnerable synthetic example. Root is supplied by trusted runner.\npublic class DemoService {\n    public String lookup(String input) throws Exception {\n        Path root = Path.of(System.getProperty(\"demo.root\")).toRealPath();\n        Path target = root.resolve(input).toRealPath();\n        if (!target.startsWith(root)) {\n            throw new SecurityException(\"Input path escapes root\");\n        }\n        return Files.readString(target);\n    }\n}\n"
+        }
+      ],
+      "rationale": "Resolved both the root and the target paths through the file system using toRealPath() before checking if the target starts with the root. This ensures that any symbolic links or relative paths are correctly handled and prevents path traversal vulnerabilities."
+    },
+    "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -6,8 +6,11 @@\n // Deliberately vulnerable synthetic example. Root is supplied by trusted runner.\n public class DemoService {\n     public String lookup(String input) throws Exception {\n-        Path root = Path.of(System.getProperty(\"demo.root\"));\n-        Path target = root.resolve(input);\n+        Path root = Path.of(System.getProperty(\"demo.root\")).toRealPath();\n+        Path target = root.resolve(input).toRealPath();\n+        if (!target.startsWith(root)) {\n+            throw new SecurityException(\"Input path escapes root\");\n+        }\n         return Files.readString(target);\n     }\n }\n",
+    "source_job": "ea9d83b28ac74b579947be2e8ca5f377",
+    "model": {
+      "runtime": "ollama",
+      "runtime_version": "0.34.0",
+      "model": "qwen2.5-coder:7b-instruct-q4_K_M",
+      "model_digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+      "quantization": "Q4_K_M",
+      "license_sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e"
+    },
+    "author": null,
+    "provenance": "human-approved-local-repair",
+    "evidence_sha256": "e09d92c097d36aa57ac892dc277682784e5ec9468fd69cf633be0cde38a77151",
+    "evidence": {
+      "build": true,
+      "behavior": {
+        "passed": true,
+        "tests": 3
+      },
+      "security": {
+        "passed": true,
+        "tests": 3
+      },
+      "rescan": {
+        "tools": [
+          "builtin-demo"
+        ],
+        "remaining": 0,
+        "tolerated": 0
+      },
+      "approval": {
+        "reviewer": "SIMULATED-EXPERIMENT-REVIEWER",
+        "at": 1792942235.6174743
+      },
+      "reuse": {
+        "verified": 0,
+        "failed": 0,
+        "inconclusive": 0,
+        "approved_by_reviewer": 0,
+        "rejected_by_reviewer": 0
+      }
+    },
+    "rule_sha256": "7faed059c39fd3e83299f62c7338a6cd6562d796aa62fd0ba28a71634cbecc04",
+    "approval": {
+      "decision": "approve",
+      "candidate_commit": "0dda4b0b63e53fb6a9da7f3a2dffa5e3317ebcd7",
+      "artifact_sha256": "1fd56660e7d3d14c2d8728c47001a5a50aeaed507fba6e23ac6f8994f7c23e00",
+      "policy_version": "java-synthetic-v1",
+      "reviewer": "SIMULATED-EXPERIMENT-REVIEWER",
+      "approved_at": 1792942235.6174743,
+      "expires_at": 1793028635.6174743
+    },
+    "uses": [],
+    "reuse": [],
+    "events": [
+      {
+        "state": "approved",
+        "actor": "SIMULATED-EXPERIMENT-REVIEWER",
+        "reason": "Experiment-only construction from a real verified local-model patch",
+        "at": 1792942235.786356
+      }
+    ]
+  },
+  {
+    "id": "c2b8a80880a04cc38cb5900517bfd120",
+    "state": "approved",
+    "version": 1,
+    "created_at": 1792942173.6948924,
+    "context": {
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-89",
+      "rule_id": "bigg.java.sql-concatenation",
+      "jdk": "17",
+      "source_path": "src/main/java/demo/DemoService.java",
+      "build_sha256": "26e043fae58e551912409518b9d20e281bf34a51d8980781ee6c3c299fec6819",
+      "contract_sha256": "ad5fdffc6258310c04d919cbec41a6f4fba78698e06c65726f15fe712b89d2ad",
+      "source_sha256": "675fb78a6ab9cfe1b87b215641c662df76e5ba65d24b93695981a70b80e87873",
+      "signature": {
+        "schema": "safepatch-signature/1",
+        "sink": "java.sql.Statement.executeQuery",
+        "construction": "concatenation",
+        "source": "method_parameter",
+        "library": "jdbc",
+        "library_version": null
+      }
+    },
+    "before": "package demo;\n\nimport java.sql.*;\nimport java.util.*;\n\n// Case sql-01.\n// Deliberately vulnerable synthetic example. Never use with real data.\npublic class DemoService {\n    public String lookup(String input) throws Exception {\n        try (Connection conn = DriverManager.getConnection(\"jdbc:h2:mem:demo;DB_CLOSE_DELAY=-1\")) {\n            try (Statement init = conn.createStatement()) {\n                init.execute(\"CREATE TABLE IF NOT EXISTS accounts(name VARCHAR PRIMARY KEY)\");\n                init.execute(\"MERGE INTO accounts KEY(name) VALUES ('alice'), ('bob')\");\n            }\n            String sql = \"SELECT name FROM accounts WHERE name = '\" + input + \"'\";\n            List<String> names = new ArrayList<>();\n            try (Statement statement = conn.createStatement(); ResultSet rows = statement.executeQuery(sql)) {\n                while (rows.next()) names.add(rows.getString(1));\n            }\n            Collections.sort(names);\n            return String.join(\",\", names);\n        }\n    }\n}\n",
+    "patch": {
+      "edits": [
+        {
+          "path": "src/main/java/demo/DemoService.java",
+          "old_sha256": "675fb78a6ab9cfe1b87b215641c662df76e5ba65d24b93695981a70b80e87873",
+          "content": "package demo;\n\nimport java.sql.*;\nimport java.util.*;\n\n// Case sql-01.\n// Deliberately vulnerable synthetic example. Never use with real data.\npublic class DemoService {\n    public String lookup(String input) throws Exception {\n        try (Connection conn = DriverManager.getConnection(\"jdbc:h2:mem:demo;DB_CLOSE_DELAY=-1\")) {\n            try (Statement init = conn.createStatement()) {\n                init.execute(\"CREATE TABLE IF NOT EXISTS accounts(name VARCHAR PRIMARY KEY)\");\n                init.execute(\"MERGE INTO accounts KEY(name) VALUES ('alice'), ('bob')\");\n            }\n            String sql = \"SELECT name FROM accounts WHERE name = ?\";\n            List<String> names = new ArrayList<>();\n            try (PreparedStatement statement = conn.prepareStatement(sql)) {\n                statement.setString(1, input);\n                try (ResultSet rows = statement.executeQuery()) {\n                    while (rows.next()) names.add(rows.getString(1));\n                }\n            }\n            Collections.sort(names);\n            return String.join(\",\", names);\n        }\n    }\n}\n"
+        }
+      ],
+      "rationale": "The original code concatenates user input directly into the SQL query, which is vulnerable to SQL injection. The fix uses a PreparedStatement with a parameterized query to prevent SQL injection."
+    },
+    "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -12,10 +12,13 @@\n                 init.execute(\"CREATE TABLE IF NOT EXISTS accounts(name VARCHAR PRIMARY KEY)\");\n                 init.execute(\"MERGE INTO accounts KEY(name) VALUES ('alice'), ('bob')\");\n             }\n-            String sql = \"SELECT name FROM accounts WHERE name = '\" + input + \"'\";\n+            String sql = \"SELECT name FROM accounts WHERE name = ?\";\n             List<String> names = new ArrayList<>();\n-            try (Statement statement = conn.createStatement(); ResultSet rows = statement.executeQuery(sql)) {\n-                while (rows.next()) names.add(rows.getString(1));\n+            try (PreparedStatement statement = conn.prepareStatement(sql)) {\n+                statement.setString(1, input);\n+                try (ResultSet rows = statement.executeQuery()) {\n+                    while (rows.next()) names.add(rows.getString(1));\n+                }\n             }\n             Collections.sort(names);\n             return String.join(\",\", names);\n",
+    "source_job": "e1e8146c38d142ba8cbb50dd0353cb88",
+    "model": {
+      "runtime": "ollama",
+      "runtime_version": "0.34.0",
+      "model": "qwen2.5-coder:7b-instruct-q4_K_M",
+      "model_digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+      "quantization": "Q4_K_M",
+      "license_sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e"
+    },
+    "author": null,
+    "provenance": "human-approved-local-repair",
+    "evidence_sha256": "083e690bbe0b99b22b6eda767000dde0b524a102dbff33ae21301c2296eeca4d",
+    "evidence": {
+      "build": true,
+      "behavior": {
+        "passed": true,
+        "tests": 3
+      },
+      "security": {
+        "passed": true,
+        "tests": 1
+      },
+      "rescan": {
+        "tools": [
+          "builtin-demo"
+        ],
+        "remaining": 0,
+        "tolerated": 0
+      },
+      "approval": {
+        "reviewer": "SIMULATED-EXPERIMENT-REVIEWER",
+        "at": 1792942173.5384505
+      },
+      "reuse": {
+        "verified": 0,
+        "failed": 0,
+        "inconclusive": 0,
+        "approved_by_reviewer": 0,
+        "rejected_by_reviewer": 0
+      }
+    },
+    "rule_sha256": "0330019609931a0325c9e56e7297ad8241892fc992e1a35cf445a42bf649aba2",
+    "approval": {
+      "decision": "approve",
+      "candidate_commit": "729c049c720cd89c29e2d27d084bf1a7c1f1e7ec",
+      "artifact_sha256": "a25a7ab815fbcbe204c057ebceebba3de8f6bc5f3db4847adba608e783111378",
+      "policy_version": "java-synthetic-v1",
+      "reviewer": "SIMULATED-EXPERIMENT-REVIEWER",
+      "approved_at": 1792942173.5384505,
+      "expires_at": 1793028573.5384505
+    },
+    "uses": [],
+    "reuse": [],
+    "events": [
+      {
+        "state": "approved",
+        "actor": "SIMULATED-EXPERIMENT-REVIEWER",
+        "reason": "Experiment-only construction from a real verified local-model patch",
+        "at": 1792942173.6948924
+      }
+    ]
+  }
+]

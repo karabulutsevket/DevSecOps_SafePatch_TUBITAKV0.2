@@ -1,0 +1,72 @@
+{
+  "scope": "synthetic Faz 1 exit check; not an independent benchmark",
+  "n": 14,
+  "elapsed_seconds": 684.918,
+  "construction": [
+    {
+      "case_id": "sql-01",
+      "accepted": true,
+      "failures": "passed"
+    },
+    {
+      "case_id": "path-01",
+      "accepted": true,
+      "failures": "security_witness_failed|security_witness_failed|passed"
+    },
+    {
+      "case_id": "command-01",
+      "accepted": false,
+      "failures": "behavior_regression|behavior_regression|security_witness_failed"
+    }
+  ],
+  "memory_records": 2,
+  "arms": {
+    "off": {
+      "accepted": 5,
+      "n": 7
+    },
+    "guarded": {
+      "accepted": 5,
+      "n": 7
+    }
+  },
+  "condition_2": {
+    "met": true,
+    "examples": [
+      {
+        "case_id": "sql-02",
+        "record": "c2b8a80880a04cc38cb5900517bfd120",
+        "accepted": true
+      },
+      {
+        "case_id": "sql-03",
+        "record": "c2b8a80880a04cc38cb5900517bfd120",
+        "accepted": true
+      },
+      {
+        "case_id": "path-02",
+        "record": "a94a829f49bf44668e43394453c6929d",
+        "accepted": true
+      },
+      {
+        "case_id": "path-03",
+        "record": "a94a829f49bf44668e43394453c6929d",
+        "accepted": true
+      }
+    ]
+  },
+  "condition_3": {
+    "met": true,
+    "rejection": {
+      "id": "c2b8a80880a04cc38cb5900517bfd120",
+      "use": null,
+      "rank": null,
+      "differences": [
+        "source_sha256",
+        "signature.sink"
+      ]
+    }
+  },
+  "human_approval": "SIMULATED",
+  "customer_validation": "not performed"
+}

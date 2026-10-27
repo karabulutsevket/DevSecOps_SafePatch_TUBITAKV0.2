@@ -1,0 +1,119 @@
+{
+  "model_mode": "mock-test-reference-patch",
+  "scanner_mode": "real-builtin-demo",
+  "result": {
+    "passed": false,
+    "baseline_valid": false,
+    "base_commit": "e159ef5bdbeac12a32e60f6658e89a8c7cd22f1d",
+    "source_revision": "2604295449d148e061406bd8ecbe8ae0df837792",
+    "build": {
+      "passed": true,
+      "duration_seconds": 4.797
+    },
+    "behavior": {
+      "passed": false,
+      "tests": 2,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "readsNestedFile",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        },
+        {
+          "name": "readsAllowedFile",
+          "type": "failure",
+          "assertion": "BEHAVIOR_REGRESSION"
+        }
+      ],
+      "exit_code": 1,
+      "duration_seconds": 3.14,
+      "junit_sha256": "5961d5e11527b8b26ef4ad59684b9d2e4fe4a23cad01112f2bb9c0126dbf7354"
+    },
+    "security": {
+      "passed": false,
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "details": [
+        {
+          "name": "cannotReadParentSecret",
+          "type": "failure",
+          "assertion": "PATH_TRAVERSAL_REGRESSION"
+        }
+      ],
+      "exit_code": 1,
+      "duration_seconds": 3.391,
+      "junit_sha256": "a288c55729dc4241e09180548b6e69d41f14db545fdd4fbcadbbbb28f070ecd8"
+    },
+    "scans": [
+      {
+        "tool": "builtin-demo",
+        "version": "1.0.0",
+        "coverage": "three owned synthetic patterns only",
+        "status": "ok",
+        "analysis_id": "ec997acec6b847d79eefe4ea43fe656a",
+        "commit": "2604295449d148e061406bd8ecbe8ae0df837792",
+        "source_sha256": "0e6208200c4819318551f82cfa78dafd2145a45269d1afb2bfc888b3ec053204",
+        "findings": []
+      }
+    ],
+    "patch": {
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -1,13 +1,4 @@\n package demo;\n-\n-import java.nio.file.*;\n-\n-// Case path-02.\n-// Deliberately vulnerable synthetic example. Root is supplied by trusted runner.\n public class DemoService {\n-    public String lookup(String input) throws Exception {\n-        Path root = Path.of(System.getProperty(\"demo.root\"));\n-        Path target = root.resolve(input);\n-        return Files.readString(target);\n-    }\n+    public String lookup(String input) throws Exception { return \"\"; }\n }\n",
+      "patch_sha256": "b8684c848c7e2ee82c8b7d9469155a4eaa0c0cb81b4ac3c7411ce1cd9a1ac1d0",
+      "changed_lines": 11
+    },
+    "feedback": {
+      "code": "validation_failed",
+      "behavior": {
+        "passed": false,
+        "tests": 2,
+        "failures": 2,
+        "errors": 0,
+        "skipped": 0,
+        "details": [
+          {
+            "name": "readsNestedFile",
+            "type": "failure",
+            "assertion": "BEHAVIOR_REGRESSION"
+          },
+          {
+            "name": "readsAllowedFile",
+            "type": "failure",
+            "assertion": "BEHAVIOR_REGRESSION"
+          }
+        ],
+        "exit_code": 1,
+        "duration_seconds": 3.14,
+        "junit_sha256": "5961d5e11527b8b26ef4ad59684b9d2e4fe4a23cad01112f2bb9c0126dbf7354"
+      },
+      "security": {
+        "passed": false,
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "details": [
+          {
+            "name": "cannotReadParentSecret",
+            "type": "failure",
+            "assertion": "PATH_TRAVERSAL_REGRESSION"
+          }
+        ],
+        "exit_code": 1,
+        "duration_seconds": 3.391,
+        "junit_sha256": "a288c55729dc4241e09180548b6e69d41f14db545fdd4fbcadbbbb28f070ecd8"
+      },
+      "remaining_rules": []
+    },
+    "duration_seconds": 12.375,
+    "runner_profile": "native-same-user",
+    "versions": {
+      "java": "17; inspect preparation evidence",
+      "maven": "3.9.16"
+    }
+  }
+}

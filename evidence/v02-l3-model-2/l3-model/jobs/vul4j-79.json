@@ -1,0 +1,150 @@
+{
+  "case": "vul4j-79",
+  "cwe": "CWE-22",
+  "project": "zeroturnaround/zt-zip",
+  "source": "vul4j",
+  "scanner": "known",
+  "vulnerable": true,
+  "seed": 42,
+  "job": "091e094b95224d72962d0278727fe623",
+  "status": "needs_human",
+  "reason": "attempt_budget_exhausted",
+  "wall_seconds": 122.2,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "regions",
+      "regions_changed": [
+        1,
+        2,
+        3
+      ],
+      "imports_added": [],
+      "changed_lines": 18,
+      "patch_sha256": "2f72406e0e275a894d52f689d53107678cbcb6226db1c8bbbb3d195dfed59788",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1154,34] error: incompatible types: File cannot be converted to String",
+          "[ERROR] src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1155,38] error: no suitable method found for get(File)",
+          "[ERROR] src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1205,38] error: no suitable method found for get(File)",
+          "[ERROR] src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1271,38] error: no suitable method found for get(File)"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 29.937,
+      "prompt_tokens": 2491,
+      "output_tokens": 1009,
+      "dropped": [
+        "src/main/java/org/zeroturnaround/zip/FileSource.java",
+        "src/main/java/org/zeroturnaround/zip/ByteSource.java"
+      ]
+    },
+    {
+      "number": 2,
+      "edit_mode": "regions",
+      "regions_changed": [
+        1,
+        2,
+        3
+      ],
+      "imports_added": [],
+      "changed_lines": 14,
+      "patch_sha256": "21e44fc4f014920b7d2ac450b03f82dfa48d9916dcc9dd3397bd9021742e48d9",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1154,34] error: incompatible types: File cannot be converted to String",
+          "[ERROR] src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1155,38] error: no suitable method found for get(File)",
+          "[ERROR] src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1267,38] error: no suitable method found for get(File)",
+          "[ERROR] src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1266,34] error: incompatible types: File cannot be converted to String"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 21.156,
+      "prompt_tokens": 2441,
+      "output_tokens": 993,
+      "dropped": [
+        "src/main/java/org/zeroturnaround/zip/FileSource.java",
+        "src/main/java/org/zeroturnaround/zip/ByteSource.java",
+        "src/main/java/org/zeroturnaround/zip/CloseShieldInputStream.java",
+        "src/main/java/org/zeroturnaround/zip/IdentityNameMapper.java"
+      ]
+    },
+    {
+      "number": 3,
+      "edit_mode": "regions",
+      "regions_changed": [
+        1,
+        2,
+        3
+      ],
+      "imports_added": [],
+      "changed_lines": 22,
+      "patch_sha256": "20bccd0ce715c790c07d5efd8fa7aff01dc33776b45117ee214d689c9979e4cc",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1154,34] error: incompatible types: File cannot be converted to String",
+          "[ERROR] src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1155,38] error: no suitable method found for get(File)",
+          "[ERROR] src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1233,40] error: no suitable method found for get(File)",
+          "[ERROR] src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1272,38] error: no suitable method found for get(File)"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 22.235,
+      "prompt_tokens": 2498,
+      "output_tokens": 1040,
+      "dropped": [
+        "src/main/java/org/zeroturnaround/zip/FileSource.java",
+        "src/main/java/org/zeroturnaround/zip/ByteSource.java",
+        "src/main/java/org/zeroturnaround/zip/CloseShieldInputStream.java",
+        "src/main/java/org/zeroturnaround/zip/IdentityNameMapper.java"
+      ]
+    }
+  ],
+  "hidden": null,
+  "false_acceptance": null
+}

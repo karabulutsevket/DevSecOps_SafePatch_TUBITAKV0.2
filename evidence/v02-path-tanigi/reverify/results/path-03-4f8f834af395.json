@@ -1,0 +1,84 @@
+{
+  "case_id": "path-03",
+  "patch_sha256": "4f8f834af395d72e889f0ffad4622985664d70e7fd2a74e03323e7fea9d0be74",
+  "result": {
+    "passed": true,
+    "baseline_valid": false,
+    "base_commit": "38f3b9a765a4378b71f4a40c67fbe7e9d2690ebe",
+    "source_revision": "c73ce5b20eaf4e302a15d4f3dd3c27636f333496",
+    "build": {
+      "passed": true,
+      "duration_seconds": 7.438
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "exit_code": 0,
+      "duration_seconds": 4.437,
+      "junit_sha256": "32293a30e1c6d202ca838973cdcdfd72a2a37ba8a38236b374e13e945e21f11b"
+    },
+    "security": {
+      "passed": true,
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "exit_code": 0,
+      "duration_seconds": 4.297,
+      "junit_sha256": "b01ac3254aea8fff28b9533911c4740a7c45e13cbfc9ca8af4dae4b985f808f7"
+    },
+    "scans": [
+      {
+        "tool": "semgrep",
+        "version": "1.136.0",
+        "status": "ok",
+        "analysis_id": "8f34f59024af46ca868628d3d59be583",
+        "commit": "c73ce5b20eaf4e302a15d4f3dd3c27636f333496",
+        "findings": []
+      }
+    ],
+    "patch": {
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -6,8 +6,11 @@\n // Deliberately vulnerable synthetic example. Root is supplied by trusted runner.\n public class DemoService {\n     public String lookup(String input) throws Exception {\n-        Path root = Path.of(System.getProperty(\"demo.root\"));\n-        Path requested = root.resolve(input);\n+        Path root = Paths.get(System.getProperty(\"demo.root\")).toRealPath();\n+        Path requested = root.resolve(input).toRealPath();\n+        if (!requested.startsWith(root)) {\n+            throw new IllegalArgumentException(\"Requested path must be within the root\");\n+        }\n         return Files.readString(requested);\n     }\n }\n",
+      "patch_sha256": "4f8f834af395d72e889f0ffad4622985664d70e7fd2a74e03323e7fea9d0be74",
+      "changed_lines": 7
+    },
+    "feedback": {
+      "code": "verified",
+      "behavior": {
+        "passed": true,
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 4.437,
+        "junit_sha256": "32293a30e1c6d202ca838973cdcdfd72a2a37ba8a38236b374e13e945e21f11b"
+      },
+      "security": {
+        "passed": true,
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 4.297,
+        "junit_sha256": "b01ac3254aea8fff28b9533911c4740a7c45e13cbfc9ca8af4dae4b985f808f7"
+      },
+      "remaining_rules": []
+    },
+    "duration_seconds": 46.141,
+    "runner_profile": "native-same-user",
+    "versions": {
+      "java": "17; inspect preparation evidence",
+      "maven": "3.9.16"
+    },
+    "artifact_sha256": "5a0e1d88b90acf58fa8eabc7e2afbfdb5b6be3c242aa1ce7993981aebc0facc6"
+  }
+}

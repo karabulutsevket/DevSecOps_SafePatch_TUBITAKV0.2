@@ -1,0 +1,314 @@
+{
+  "source": "runs.json and jobs/*.json in this folder",
+  "n": 108,
+  "by_strategy": {
+    "v01": {
+      "all": {
+        "accepted": 9,
+        "n": 27
+      },
+      "sql": {
+        "accepted": 9,
+        "n": 9
+      },
+      "path": {
+        "accepted": 0,
+        "n": 9
+      },
+      "command": {
+        "accepted": 0,
+        "n": 9
+      },
+      "development": {
+        "accepted": 3,
+        "n": 9
+      },
+      "evaluation": {
+        "accepted": 6,
+        "n": 18
+      },
+      "seed_42": {
+        "accepted": 3,
+        "n": 9
+      },
+      "seed_43": {
+        "accepted": 3,
+        "n": 9
+      },
+      "seed_44": {
+        "accepted": 3,
+        "n": 9
+      }
+    },
+    "sampling": {
+      "all": {
+        "accepted": 9,
+        "n": 27
+      },
+      "sql": {
+        "accepted": 9,
+        "n": 9
+      },
+      "path": {
+        "accepted": 0,
+        "n": 9
+      },
+      "command": {
+        "accepted": 0,
+        "n": 9
+      },
+      "development": {
+        "accepted": 3,
+        "n": 9
+      },
+      "evaluation": {
+        "accepted": 6,
+        "n": 18
+      },
+      "seed_42": {
+        "accepted": 3,
+        "n": 9
+      },
+      "seed_43": {
+        "accepted": 3,
+        "n": 9
+      },
+      "seed_44": {
+        "accepted": 3,
+        "n": 9
+      }
+    },
+    "guided": {
+      "all": {
+        "accepted": 19,
+        "n": 27
+      },
+      "sql": {
+        "accepted": 9,
+        "n": 9
+      },
+      "path": {
+        "accepted": 9,
+        "n": 9
+      },
+      "command": {
+        "accepted": 1,
+        "n": 9
+      },
+      "development": {
+        "accepted": 6,
+        "n": 9
+      },
+      "evaluation": {
+        "accepted": 13,
+        "n": 18
+      },
+      "seed_42": {
+        "accepted": 7,
+        "n": 9
+      },
+      "seed_43": {
+        "accepted": 6,
+        "n": 9
+      },
+      "seed_44": {
+        "accepted": 6,
+        "n": 9
+      }
+    },
+    "guided+context": {
+      "all": {
+        "accepted": 19,
+        "n": 27
+      },
+      "sql": {
+        "accepted": 9,
+        "n": 9
+      },
+      "path": {
+        "accepted": 9,
+        "n": 9
+      },
+      "command": {
+        "accepted": 1,
+        "n": 9
+      },
+      "development": {
+        "accepted": 6,
+        "n": 9
+      },
+      "evaluation": {
+        "accepted": 13,
+        "n": 18
+      },
+      "seed_42": {
+        "accepted": 7,
+        "n": 9
+      },
+      "seed_43": {
+        "accepted": 6,
+        "n": 9
+      },
+      "seed_44": {
+        "accepted": 6,
+        "n": 9
+      }
+    }
+  },
+  "paired_mcnemar": [
+    {
+      "baseline": "v01",
+      "compared": "sampling",
+      "only_compared_solved": 0,
+      "only_baseline_solved": 0,
+      "exact_p_two_sided": 1.0
+    },
+    {
+      "baseline": "v01",
+      "compared": "guided",
+      "only_compared_solved": 10,
+      "only_baseline_solved": 0,
+      "exact_p_two_sided": 0.00195
+    },
+    {
+      "baseline": "v01",
+      "compared": "guided+context",
+      "only_compared_solved": 10,
+      "only_baseline_solved": 0,
+      "exact_p_two_sided": 0.00195
+    },
+    {
+      "baseline": "guided",
+      "compared": "guided+context",
+      "only_compared_solved": 1,
+      "only_baseline_solved": 1,
+      "exact_p_two_sided": 1.0
+    }
+  ],
+  "per_case_accepted_of_3_seeds": {
+    "command-01": {
+      "v01": 0,
+      "sampling": 0,
+      "guided": 0,
+      "guided+context": 0
+    },
+    "command-02": {
+      "v01": 0,
+      "sampling": 0,
+      "guided": 0,
+      "guided+context": 1
+    },
+    "command-03": {
+      "v01": 0,
+      "sampling": 0,
+      "guided": 1,
+      "guided+context": 0
+    },
+    "path-01": {
+      "v01": 0,
+      "sampling": 0,
+      "guided": 3,
+      "guided+context": 3
+    },
+    "path-02": {
+      "v01": 0,
+      "sampling": 0,
+      "guided": 3,
+      "guided+context": 3
+    },
+    "path-03": {
+      "v01": 0,
+      "sampling": 0,
+      "guided": 3,
+      "guided+context": 3
+    },
+    "sql-01": {
+      "v01": 3,
+      "sampling": 3,
+      "guided": 3,
+      "guided+context": 3
+    },
+    "sql-02": {
+      "v01": 3,
+      "sampling": 3,
+      "guided": 3,
+      "guided+context": 3
+    },
+    "sql-03": {
+      "v01": 3,
+      "sampling": 3,
+      "guided": 3,
+      "guided+context": 3
+    }
+  },
+  "timing": {
+    "v01": {
+      "median_wall_seconds": 63.043,
+      "median_wall_seconds_accepted": 55.755,
+      "attempts_of_accepted": {
+        "1": 9
+      },
+      "stop_reasons": {
+        "duplicate_patch": 13,
+        "no_progress": 5
+      }
+    },
+    "sampling": {
+      "median_wall_seconds": 67.426,
+      "median_wall_seconds_accepted": 55.272,
+      "attempts_of_accepted": {
+        "1": 9
+      },
+      "stop_reasons": {
+        "no_progress": 9,
+        "duplicate_patch": 9
+      }
+    },
+    "guided": {
+      "median_wall_seconds": 87.646,
+      "median_wall_seconds_accepted": 73.08,
+      "attempts_of_accepted": {
+        "3": 4,
+        "2": 6,
+        "1": 9
+      },
+      "stop_reasons": {
+        "attempt_budget_exhausted": 8
+      }
+    },
+    "guided+context": {
+      "median_wall_seconds": 64.766,
+      "median_wall_seconds_accepted": 86.723,
+      "attempts_of_accepted": {
+        "3": 10,
+        "1": 9
+      },
+      "stop_reasons": {
+        "attempt_budget_exhausted": 8
+      }
+    }
+  },
+  "path_fix_quality": {
+    "guided": {
+      "accepted": 9,
+      "real_path_on_target": 3,
+      "lexical_normalize_only": 6
+    },
+    "guided+context": {
+      "accepted": 9,
+      "real_path_on_target": 9,
+      "lexical_normalize_only": 0
+    }
+  },
+  "path_quality_note": "normalize() is lexical and does not resolve symbolic links; the current witness only tests '../secret.txt', so normalize-only fixes pass it",
+  "first_attempt_patch_identical_across_seeds": {
+    "v01": 7,
+    "sampling": 8
+  },
+  "guided_context_dropped_optional_context": {
+    "none": 45,
+    "src/main/java/demo/Application.java": 17,
+    "src/main/java/demo/Application.java+src/main/java/demo/EchoMain.java+previous_patch_diff": 1
+  },
+  "pairs_note": "pairs are (case, seed); 9 synthetic cases from 3 families, so pairs are not independent projects"
+}

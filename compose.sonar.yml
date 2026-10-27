@@ -1,0 +1,22 @@
+# Optional live SonarQube profile. No successful live run is claimed for this file.
+services:
+  sonarqube:
+    image: sonarqube:25.9.0.112764-community@sha256:294f862e5f4a9eb3a363597de3607d0ea4d79f14633d7df6015fd464baab1728
+    ports: [127.0.0.1:9000:9000]
+    networks: [validation]
+    volumes: [sonar-data:/opt/sonarqube/data, sonar-logs:/opt/sonarqube/logs, sonar-extensions:/opt/sonarqube/extensions]
+    mem_limit: 4g
+    cpus: 2
+    # Embedded database is solely for a disposable local demo; never production.
+  runner:
+    environment:
+      SONAR_URL: http://sonarqube:9000
+      SONAR_VERSION: 25.9.0.112764
+      SONAR_TOKEN_FILE: /run/secrets/sonar_token
+    secrets: [sonar_token]
+volumes:
+  sonar-data:
+  sonar-logs:
+  sonar-extensions:
+secrets:
+  sonar_token: {file: .secrets/sonar_token}

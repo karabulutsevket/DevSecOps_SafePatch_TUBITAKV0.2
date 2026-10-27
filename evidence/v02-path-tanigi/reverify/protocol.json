@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "question": "Do patches accepted under an earlier security witness pass the current witness?",
+  "started_at": 1792920214.447893,
+  "git_commit": "dc8a594ff9c4a66ea16e8c15109122c413a0fd4c",
+  "git_dirty": false,
+  "source": "evidence/v02-retry/retry",
+  "source_git_commit": "3d0f54f63167affc44a719df0d7c6f8b607f95aa",
+  "cases": [
+    "path-01",
+    "path-02",
+    "path-03"
+  ],
+  "current_commits": {
+    "path-01": "7a3ce43adc8e1845c8a42903218bac47e1939429",
+    "path-02": "b10397dc95e1b77ddc1343d7578b622e0de7c13b",
+    "path-03": "38f3b9a765a4378b71f4a40c67fbe7e9d2690ebe"
+  },
+  "current_test_sha256": {
+    "path-01": {
+      "src/test/java/demo/BehaviorTest.java": "40021c257ed2adf464d42bbff8b1f605efdfe603ed05b561c9bbfea70e983911",
+      "src/test/java/demo/Links.java": "385e9bbad9af02608e969cafd8c2bf116942666fdff135c476e9654f573f6cd6",
+      "src/test/java/demo/SecurityTest.java": "844eb0eb301ce1e4bc5e18c1059d4566690db94c216cd280732e2235afc778e2"
+    },
+    "path-02": {
+      "src/test/java/demo/BehaviorTest.java": "40021c257ed2adf464d42bbff8b1f605efdfe603ed05b561c9bbfea70e983911",
+      "src/test/java/demo/Links.java": "385e9bbad9af02608e969cafd8c2bf116942666fdff135c476e9654f573f6cd6",
+      "src/test/java/demo/SecurityTest.java": "844eb0eb301ce1e4bc5e18c1059d4566690db94c216cd280732e2235afc778e2"
+    },
+    "path-03": {
+      "src/test/java/demo/BehaviorTest.java": "40021c257ed2adf464d42bbff8b1f605efdfe603ed05b561c9bbfea70e983911",
+      "src/test/java/demo/Links.java": "385e9bbad9af02608e969cafd8c2bf116942666fdff135c476e9654f573f6cd6",
+      "src/test/java/demo/SecurityTest.java": "844eb0eb301ce1e4bc5e18c1059d4566690db94c216cd280732e2235afc778e2"
+    }
+  },
+  "model": "not used",
+  "method": "each distinct accepted patch re-run once by the in-process runner on the current commit; the job's scanner; no human approval",
+  "source_unchanged_check": "every patch's old_sha256 must equal the current source file, or the run stops (stale_base_hash)"
+}

@@ -1,0 +1,1344 @@
+{
+  "label": "after",
+  "jobs": 12,
+  "verified": 1,
+  "by_case": {
+    "region-path-read": 0,
+    "region-path-write": 0,
+    "region-sql": 0,
+    "region-command": 1
+  },
+  "rows": [
+    {
+      "case": "region-path-read",
+      "seed": 42,
+      "job": "8f61a6c1c84a4c758cce747ef844ffdd",
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "wall_seconds": 29.3,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": null,
+          "patch_sha256": null,
+          "policy_error": "empty_patch",
+          "stopped": null,
+          "passed": null,
+          "failure": {
+            "category": "empty_patch"
+          },
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 6.969,
+          "prompt_tokens": 909,
+          "output_tokens": 142,
+          "dropped": []
+        },
+        {
+          "number": 2,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": null,
+          "patch_sha256": null,
+          "policy_error": "empty_patch",
+          "stopped": null,
+          "passed": null,
+          "failure": {
+            "category": "empty_patch"
+          },
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 3.234,
+          "prompt_tokens": 1023,
+          "output_tokens": 148,
+          "dropped": []
+        },
+        {
+          "number": 3,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 7,
+          "patch_sha256": "1d5fb9b985c1594b10904943737d2f5aa2afa4535b4cd0b1cfce22cf003d5ee5",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "compilation_failed",
+            "diagnostics": [
+              "[ERROR] src/main/java/demo/DemoService.java:[112,62] cannot find symbol: toRealPath",
+              "[ERROR] src/main/java/demo/DemoService.java:[113,44] cannot find symbol: toRealPath",
+              "[ERROR] src/main/java/demo/DemoService.java:[114,20] cannot find symbol: startsWith"
+            ]
+          },
+          "build": false,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 4.422,
+          "prompt_tokens": 1151,
+          "output_tokens": 207,
+          "dropped": []
+        }
+      ]
+    },
+    {
+      "case": "region-path-read",
+      "seed": 43,
+      "job": "20b7be93315e4fb6bf3b1a5370c6da3e",
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "wall_seconds": 25.6,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": null,
+          "patch_sha256": null,
+          "policy_error": "empty_patch",
+          "stopped": null,
+          "passed": null,
+          "failure": {
+            "category": "empty_patch"
+          },
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 3.625,
+          "prompt_tokens": 909,
+          "output_tokens": 161,
+          "dropped": []
+        },
+        {
+          "number": 2,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": null,
+          "patch_sha256": null,
+          "policy_error": "empty_patch",
+          "stopped": null,
+          "passed": null,
+          "failure": {
+            "category": "empty_patch"
+          },
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 2.719,
+          "prompt_tokens": 1021,
+          "output_tokens": 122,
+          "dropped": []
+        },
+        {
+          "number": 3,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 7,
+          "patch_sha256": "3f9d2741967ea632f8ba3d60820899b256fec61f0cc4838640601775f75029eb",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "compilation_failed",
+            "diagnostics": [
+              "[ERROR] src/main/java/demo/DemoService.java:[112,62] cannot find symbol: toRealPath",
+              "[ERROR] src/main/java/demo/DemoService.java:[113,44] cannot find symbol: toRealPath",
+              "[ERROR] src/main/java/demo/DemoService.java:[114,20] cannot find symbol: startsWith"
+            ]
+          },
+          "build": false,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 4.812,
+          "prompt_tokens": 1151,
+          "output_tokens": 226,
+          "dropped": []
+        }
+      ]
+    },
+    {
+      "case": "region-path-read",
+      "seed": 44,
+      "job": "30f0b7577530486e98251ddff12ac40b",
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "wall_seconds": 25.4,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": null,
+          "patch_sha256": null,
+          "policy_error": "empty_patch",
+          "stopped": null,
+          "passed": null,
+          "failure": {
+            "category": "empty_patch"
+          },
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 3.547,
+          "prompt_tokens": 909,
+          "output_tokens": 161,
+          "dropped": []
+        },
+        {
+          "number": 2,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": null,
+          "patch_sha256": null,
+          "policy_error": "empty_patch",
+          "stopped": null,
+          "passed": null,
+          "failure": {
+            "category": "empty_patch"
+          },
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 3.64,
+          "prompt_tokens": 1023,
+          "output_tokens": 167,
+          "dropped": []
+        },
+        {
+          "number": 3,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 7,
+          "patch_sha256": "83c9a520b418a549bf82eba36da48b8a02d0911d0da62faeef2cf50290f5dca0",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "compilation_failed",
+            "diagnostics": [
+              "[ERROR] src/main/java/demo/DemoService.java:[112,62] cannot find symbol: toRealPath",
+              "[ERROR] src/main/java/demo/DemoService.java:[113,44] cannot find symbol: toRealPath",
+              "[ERROR] src/main/java/demo/DemoService.java:[114,20] cannot find symbol: startsWith"
+            ]
+          },
+          "build": false,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 4.125,
+          "prompt_tokens": 1149,
+          "output_tokens": 189,
+          "dropped": []
+        }
+      ]
+    },
+    {
+      "case": "region-path-write",
+      "seed": 42,
+      "job": "a5aa5b146c104ee99eb4cc96907c3124",
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "wall_seconds": 35.5,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2
+          ],
+          "imports_added": [],
+          "changed_lines": null,
+          "patch_sha256": null,
+          "policy_error": "empty_patch",
+          "stopped": null,
+          "passed": null,
+          "failure": {
+            "category": "empty_patch"
+          },
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 7.25,
+          "prompt_tokens": 1117,
+          "output_tokens": 331,
+          "dropped": []
+        },
+        {
+          "number": 2,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2
+          ],
+          "imports_added": [],
+          "changed_lines": null,
+          "patch_sha256": null,
+          "policy_error": "empty_patch",
+          "stopped": null,
+          "passed": null,
+          "failure": {
+            "category": "empty_patch"
+          },
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 6.671,
+          "prompt_tokens": 1229,
+          "output_tokens": 318,
+          "dropped": []
+        },
+        {
+          "number": 3,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2
+          ],
+          "imports_added": [],
+          "changed_lines": 8,
+          "patch_sha256": "f34b9e383122b698bf0e028d922c7aff8d4b3b2cad32a67789cef5d6587866a3",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "compilation_failed",
+            "diagnostics": [
+              "[ERROR] src/main/java/demo/DemoService.java:[118,62] cannot find symbol: toRealPath",
+              "[ERROR] src/main/java/demo/DemoService.java:[119,43] cannot find symbol: toRealPath",
+              "[ERROR] src/main/java/demo/DemoService.java:[131,62] cannot find symbol: toRealPath",
+              "[ERROR] src/main/java/demo/DemoService.java:[132,43] cannot find symbol: toRealPath"
+            ]
+          },
+          "build": false,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 6.985,
+          "prompt_tokens": 1361,
+          "output_tokens": 331,
+          "dropped": []
+        }
+      ]
+    },
+    {
+      "case": "region-path-write",
+      "seed": 43,
+      "job": "d8419e0ff56f486db8a0eb4d10a899a2",
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "wall_seconds": 36.6,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2
+          ],
+          "imports_added": [],
+          "changed_lines": null,
+          "patch_sha256": null,
+          "policy_error": "empty_patch",
+          "stopped": null,
+          "passed": null,
+          "failure": {
+            "category": "empty_patch"
+          },
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 7.265,
+          "prompt_tokens": 1117,
+          "output_tokens": 343,
+          "dropped": []
+        },
+        {
+          "number": 2,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2
+          ],
+          "imports_added": [],
+          "changed_lines": null,
+          "patch_sha256": null,
+          "policy_error": "empty_patch",
+          "stopped": null,
+          "passed": null,
+          "failure": {
+            "category": "empty_patch"
+          },
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 6.797,
+          "prompt_tokens": 1231,
+          "output_tokens": 322,
+          "dropped": []
+        },
+        {
+          "number": 3,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2
+          ],
+          "imports_added": [],
+          "changed_lines": 14,
+          "patch_sha256": "b3c72ac3a27bf6e69ead515d1b2bc1fd82c56b74709e83f8f1ed31d1987a6fd9",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "compilation_failed",
+            "diagnostics": [
+              "[ERROR] src/main/java/demo/DemoService.java:[118,62] cannot find symbol: toRealPath",
+              "[ERROR] src/main/java/demo/DemoService.java:[119,43] cannot find symbol: toRealPath",
+              "[ERROR] src/main/java/demo/DemoService.java:[120,20] cannot find symbol: startsWith",
+              "[ERROR] src/main/java/demo/DemoService.java:[134,62] cannot find symbol: toRealPath"
+            ]
+          },
+          "build": false,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 8.031,
+          "prompt_tokens": 1363,
+          "output_tokens": 383,
+          "dropped": []
+        }
+      ]
+    },
+    {
+      "case": "region-path-write",
+      "seed": 44,
+      "job": "4283e5860acf4c528caaea10c689f6ff",
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "wall_seconds": 37.3,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2
+          ],
+          "imports_added": [],
+          "changed_lines": null,
+          "patch_sha256": null,
+          "policy_error": "empty_patch",
+          "stopped": null,
+          "passed": null,
+          "failure": {
+            "category": "empty_patch"
+          },
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 7.297,
+          "prompt_tokens": 1117,
+          "output_tokens": 343,
+          "dropped": []
+        },
+        {
+          "number": 2,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2
+          ],
+          "imports_added": [],
+          "changed_lines": null,
+          "patch_sha256": null,
+          "policy_error": "empty_patch",
+          "stopped": null,
+          "passed": null,
+          "failure": {
+            "category": "empty_patch"
+          },
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 7.094,
+          "prompt_tokens": 1229,
+          "output_tokens": 339,
+          "dropped": []
+        },
+        {
+          "number": 3,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1,
+            2
+          ],
+          "imports_added": [],
+          "changed_lines": 20,
+          "patch_sha256": "4cb4bbe55e19eec4c734d9bbe97820b60b043124d4f8763d0c02b65cab737bae",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "compilation_failed",
+            "diagnostics": [
+              "[ERROR] src/main/java/demo/DemoService.java:[118,9] cannot find symbol: Path",
+              "[ERROR] src/main/java/demo/DemoService.java:[118,25] cannot find symbol: Paths",
+              "[ERROR] src/main/java/demo/DemoService.java:[119,9] cannot find symbol: Path",
+              "[ERROR] src/main/java/demo/DemoService.java:[134,9] cannot find symbol: Path"
+            ]
+          },
+          "build": false,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 8.297,
+          "prompt_tokens": 1361,
+          "output_tokens": 398,
+          "dropped": []
+        }
+      ]
+    },
+    {
+      "case": "region-sql",
+      "seed": 42,
+      "job": "0851bc86cd4141019c23b268496cc600",
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "wall_seconds": 33.3,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 11,
+          "patch_sha256": "8d0c57929220e672875291697b25769cb8b87e929134693b7d1411bf9bcba7a8",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "compilation_failed",
+            "diagnostics": [
+              "[ERROR] src/main/java/demo/DemoService.java:[120,18] cannot find symbol: PreparedStatement"
+            ]
+          },
+          "build": false,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 6.578,
+          "prompt_tokens": 1001,
+          "output_tokens": 305,
+          "dropped": []
+        },
+        {
+          "number": 2,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 11,
+          "patch_sha256": "8d0c57929220e672875291697b25769cb8b87e929134693b7d1411bf9bcba7a8",
+          "policy_error": null,
+          "stopped": "duplicate_patch",
+          "passed": null,
+          "failure": null,
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 5.719,
+          "prompt_tokens": 1329,
+          "output_tokens": 258,
+          "dropped": []
+        },
+        {
+          "number": 3,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 11,
+          "patch_sha256": "8d0c57929220e672875291697b25769cb8b87e929134693b7d1411bf9bcba7a8",
+          "policy_error": null,
+          "stopped": "duplicate_patch",
+          "passed": null,
+          "failure": null,
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 6.047,
+          "prompt_tokens": 1367,
+          "output_tokens": 284,
+          "dropped": []
+        }
+      ]
+    },
+    {
+      "case": "region-sql",
+      "seed": 43,
+      "job": "01b76c3ccb0d45a0a624743fe51f8758",
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "wall_seconds": 33.1,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 11,
+          "patch_sha256": "8d0c57929220e672875291697b25769cb8b87e929134693b7d1411bf9bcba7a8",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "compilation_failed",
+            "diagnostics": [
+              "[ERROR] src/main/java/demo/DemoService.java:[120,18] cannot find symbol: PreparedStatement"
+            ]
+          },
+          "build": false,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 6.407,
+          "prompt_tokens": 1001,
+          "output_tokens": 305,
+          "dropped": []
+        },
+        {
+          "number": 2,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 11,
+          "patch_sha256": "8d0c57929220e672875291697b25769cb8b87e929134693b7d1411bf9bcba7a8",
+          "policy_error": null,
+          "stopped": "duplicate_patch",
+          "passed": null,
+          "failure": null,
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 5.797,
+          "prompt_tokens": 1333,
+          "output_tokens": 258,
+          "dropped": []
+        },
+        {
+          "number": 3,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 11,
+          "patch_sha256": "8d0c57929220e672875291697b25769cb8b87e929134693b7d1411bf9bcba7a8",
+          "policy_error": null,
+          "stopped": "duplicate_patch",
+          "passed": null,
+          "failure": null,
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 6.156,
+          "prompt_tokens": 1373,
+          "output_tokens": 290,
+          "dropped": []
+        }
+      ]
+    },
+    {
+      "case": "region-sql",
+      "seed": 44,
+      "job": "91bc83d7038a4e8b91d16a822eec8a50",
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "wall_seconds": 33.1,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 11,
+          "patch_sha256": "8d0c57929220e672875291697b25769cb8b87e929134693b7d1411bf9bcba7a8",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "compilation_failed",
+            "diagnostics": [
+              "[ERROR] src/main/java/demo/DemoService.java:[120,18] cannot find symbol: PreparedStatement"
+            ]
+          },
+          "build": false,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 6.375,
+          "prompt_tokens": 1001,
+          "output_tokens": 305,
+          "dropped": []
+        },
+        {
+          "number": 2,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 11,
+          "patch_sha256": "8d0c57929220e672875291697b25769cb8b87e929134693b7d1411bf9bcba7a8",
+          "policy_error": null,
+          "stopped": "duplicate_patch",
+          "passed": null,
+          "failure": null,
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 6.265,
+          "prompt_tokens": 1333,
+          "output_tokens": 280,
+          "dropped": []
+        },
+        {
+          "number": 3,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 11,
+          "patch_sha256": "8d0c57929220e672875291697b25769cb8b87e929134693b7d1411bf9bcba7a8",
+          "policy_error": null,
+          "stopped": "duplicate_patch",
+          "passed": null,
+          "failure": null,
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 5.875,
+          "prompt_tokens": 1369,
+          "output_tokens": 276,
+          "dropped": []
+        }
+      ]
+    },
+    {
+      "case": "region-command",
+      "seed": 42,
+      "job": "2eb3e075afb64cb284df817cde65e18a",
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "wall_seconds": 42.3,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 2,
+          "patch_sha256": "dd5566121e7e6b04707e343862592797ea2ceeff5c998ebcc2ca42311d0b2c41",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "behavior_regression",
+            "failed_tests": [
+              {
+                "suite": "behavior",
+                "test": "echoesHello",
+                "marker": "BEHAVIOR_REGRESSION"
+              },
+              {
+                "suite": "behavior",
+                "test": "echoesWorld",
+                "marker": "BEHAVIOR_REGRESSION"
+              },
+              {
+                "suite": "security",
+                "test": "shellMetacharactersAreLiteral",
+                "marker": "BEHAVIOR_REGRESSION"
+              }
+            ],
+            "remaining_rules": []
+          },
+          "build": true,
+          "behavior": {
+            "tests": 2,
+            "failures": 0,
+            "errors": 2
+          },
+          "security": {
+            "tests": 1,
+            "failures": 0,
+            "errors": 1
+          },
+          "model_seconds": 7.172,
+          "prompt_tokens": 1035,
+          "output_tokens": 330,
+          "dropped": []
+        },
+        {
+          "number": 2,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 2,
+          "patch_sha256": "dd5566121e7e6b04707e343862592797ea2ceeff5c998ebcc2ca42311d0b2c41",
+          "policy_error": null,
+          "stopped": "duplicate_patch",
+          "passed": null,
+          "failure": null,
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 6.891,
+          "prompt_tokens": 1307,
+          "output_tokens": 311,
+          "dropped": []
+        },
+        {
+          "number": 3,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 17,
+          "patch_sha256": "cfd7ab99fe8f51cc1ea292b52f45bcb14b91e2026158a1f5b1c8e2cc467ef09d",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "compilation_failed",
+            "diagnostics": [
+              "[ERROR] src/main/java/demo/Application.java:[17,40] cannot find symbol: lookup",
+              "[ERROR] src/main/java/demo/DemoService.java:[111,71] cannot find symbol: windows",
+              "[ERROR] src/main/java/demo/DemoService.java:[112,50] cannot find symbol: input"
+            ]
+          },
+          "build": false,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 3.156,
+          "prompt_tokens": 1383,
+          "output_tokens": 137,
+          "dropped": []
+        }
+      ]
+    },
+    {
+      "case": "region-command",
+      "seed": 43,
+      "job": "8c2dc2637e964a9f9419858872563335",
+      "status": "needs_human",
+      "reason": "attempt_budget_exhausted",
+      "wall_seconds": 41.7,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 2,
+          "patch_sha256": "dd5566121e7e6b04707e343862592797ea2ceeff5c998ebcc2ca42311d0b2c41",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "behavior_regression",
+            "failed_tests": [
+              {
+                "suite": "behavior",
+                "test": "echoesHello",
+                "marker": "BEHAVIOR_REGRESSION"
+              },
+              {
+                "suite": "behavior",
+                "test": "echoesWorld",
+                "marker": "BEHAVIOR_REGRESSION"
+              },
+              {
+                "suite": "security",
+                "test": "shellMetacharactersAreLiteral",
+                "marker": "BEHAVIOR_REGRESSION"
+              }
+            ],
+            "remaining_rules": []
+          },
+          "build": true,
+          "behavior": {
+            "tests": 2,
+            "failures": 0,
+            "errors": 2
+          },
+          "security": {
+            "tests": 1,
+            "failures": 0,
+            "errors": 1
+          },
+          "model_seconds": 6.969,
+          "prompt_tokens": 1035,
+          "output_tokens": 330,
+          "dropped": []
+        },
+        {
+          "number": 2,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 2,
+          "patch_sha256": "dd5566121e7e6b04707e343862592797ea2ceeff5c998ebcc2ca42311d0b2c41",
+          "policy_error": null,
+          "stopped": "duplicate_patch",
+          "passed": null,
+          "failure": null,
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 7.0,
+          "prompt_tokens": 1305,
+          "output_tokens": 318,
+          "dropped": []
+        },
+        {
+          "number": 3,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 19,
+          "patch_sha256": "c8feee9e1eb143f185178c0a5659607b72fc48320cb867a41cc260f363b731b6",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "compilation_failed",
+            "diagnostics": [
+              "[ERROR] src/main/java/demo/Application.java:[17,40] cannot find symbol: lookup",
+              "[ERROR] src/main/java/demo/DemoService.java:[111,26] cannot find symbol: input",
+              "[ERROR] src/main/java/demo/DemoService.java:[112,44] cannot find symbol: java"
+            ]
+          },
+          "build": false,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 2.578,
+          "prompt_tokens": 1375,
+          "output_tokens": 108,
+          "dropped": []
+        }
+      ]
+    },
+    {
+      "case": "region-command",
+      "seed": 44,
+      "job": "5b92a784bc3f4c7283e89d515e1f6d17",
+      "status": "awaiting_review",
+      "reason": null,
+      "wall_seconds": 53.7,
+      "attempts": [
+        {
+          "number": 1,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 2,
+          "patch_sha256": "dd5566121e7e6b04707e343862592797ea2ceeff5c998ebcc2ca42311d0b2c41",
+          "policy_error": null,
+          "stopped": null,
+          "passed": false,
+          "failure": {
+            "category": "behavior_regression",
+            "failed_tests": [
+              {
+                "suite": "behavior",
+                "test": "echoesHello",
+                "marker": "BEHAVIOR_REGRESSION"
+              },
+              {
+                "suite": "behavior",
+                "test": "echoesWorld",
+                "marker": "BEHAVIOR_REGRESSION"
+              },
+              {
+                "suite": "security",
+                "test": "shellMetacharactersAreLiteral",
+                "marker": "BEHAVIOR_REGRESSION"
+              }
+            ],
+            "remaining_rules": []
+          },
+          "build": true,
+          "behavior": {
+            "tests": 2,
+            "failures": 0,
+            "errors": 2
+          },
+          "security": {
+            "tests": 1,
+            "failures": 0,
+            "errors": 1
+          },
+          "model_seconds": 6.985,
+          "prompt_tokens": 1035,
+          "output_tokens": 330,
+          "dropped": []
+        },
+        {
+          "number": 2,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 2,
+          "patch_sha256": "dd5566121e7e6b04707e343862592797ea2ceeff5c998ebcc2ca42311d0b2c41",
+          "policy_error": null,
+          "stopped": "duplicate_patch",
+          "passed": null,
+          "failure": null,
+          "build": null,
+          "behavior": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "security": {
+            "tests": null,
+            "failures": null,
+            "errors": null
+          },
+          "model_seconds": 7.015,
+          "prompt_tokens": 1305,
+          "output_tokens": 315,
+          "dropped": []
+        },
+        {
+          "number": 3,
+          "edit_mode": "regions",
+          "regions_changed": [
+            1
+          ],
+          "imports_added": [],
+          "changed_lines": 6,
+          "patch_sha256": "f2c2b80e3c5d8e64799589e71c6b53655b9b449ad6441c7b08a7cb32e91c45ea",
+          "policy_error": null,
+          "stopped": null,
+          "passed": true,
+          "failure": null,
+          "build": true,
+          "behavior": {
+            "tests": 2,
+            "failures": 0,
+            "errors": 0
+          },
+          "security": {
+            "tests": 1,
+            "failures": 0,
+            "errors": 0
+          },
+          "model_seconds": 6.609,
+          "prompt_tokens": 1375,
+          "output_tokens": 312,
+          "dropped": []
+        }
+      ]
+    }
+  ]
+}

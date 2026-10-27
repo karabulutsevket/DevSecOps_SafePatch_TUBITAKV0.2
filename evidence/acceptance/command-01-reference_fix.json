@@ -1,0 +1,91 @@
+{
+  "case": "command-01",
+  "candidate": "reference_fix",
+  "expected_acceptable": true,
+  "V0_scanner_only": true,
+  "V1_build_and_scanner": true,
+  "V2_full_acceptance": true,
+  "seconds": 23.734,
+  "result": {
+    "passed": true,
+    "baseline_valid": false,
+    "base_commit": "00268862eb7cbd232b95ccf0fab24ec882ca32ee",
+    "source_revision": "eb75e8f50c244a794aacc47977d703bd0fb3c4c5",
+    "build": {
+      "passed": true,
+      "duration_seconds": 3.922
+    },
+    "behavior": {
+      "passed": true,
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "exit_code": 0,
+      "duration_seconds": 2.906,
+      "junit_sha256": "5da47072e38a4f931802e2da72d1d982bdc2a506ac7df57f907c2b263bd14ddf"
+    },
+    "security": {
+      "passed": true,
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "details": [],
+      "exit_code": 0,
+      "duration_seconds": 2.875,
+      "junit_sha256": "f84b9ed0ea500afd1a9095c6fe034241816088f8c0df1732287550e00de53a96"
+    },
+    "scans": [
+      {
+        "tool": "semgrep",
+        "version": "1.136.0",
+        "status": "ok",
+        "analysis_id": "9b052b89ddd74d6abb4d73f9588ecbdb",
+        "commit": "eb75e8f50c244a794aacc47977d703bd0fb3c4c5",
+        "source_sha256": "81895f19738df6d9e893b4f9bd37db49e9ee8bb700fbfc8cad0a8f5e7806d33b",
+        "findings": []
+      }
+    ],
+    "patch": {
+      "diff": "--- a/src/main/java/demo/DemoService.java\n+++ b/src/main/java/demo/DemoService.java\n@@ -13,7 +13,7 @@\n         String shell = windows ? \"cmd.exe\" : \"/bin/sh\";\n         String flag = windows ? \"/c\" : \"-c\";\n         String command = \"echo echo:\" + input;\n-        Process child = new ProcessBuilder(shell, flag, command).redirectErrorStream(true).start();\n+        Process child = new ProcessBuilder(java, \"-cp\", System.getProperty(\"java.class.path\"), \"demo.EchoMain\", input).redirectErrorStream(true).start();\n         if (!child.waitFor(5, TimeUnit.SECONDS)) { child.destroyForcibly(); throw new IllegalStateException(\"child timeout\"); }\n         if (child.exitValue() != 0) throw new IllegalStateException(\"child failed\");\n         return new String(child.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();\n",
+      "patch_sha256": "2905add5929e34eea8e8fa5f32fd8842b4697be7e6b747f3a05b839f837f6394",
+      "changed_lines": 2
+    },
+    "feedback": {
+      "code": "verified",
+      "behavior": {
+        "passed": true,
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 2.906,
+        "junit_sha256": "5da47072e38a4f931802e2da72d1d982bdc2a506ac7df57f907c2b263bd14ddf"
+      },
+      "security": {
+        "passed": true,
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "details": [],
+        "exit_code": 0,
+        "duration_seconds": 2.875,
+        "junit_sha256": "f84b9ed0ea500afd1a9095c6fe034241816088f8c0df1732287550e00de53a96"
+      },
+      "remaining_rules": []
+    },
+    "duration_seconds": 23.734,
+    "runner_profile": "native-same-user",
+    "versions": {
+      "java": "17; inspect preparation evidence",
+      "maven": "3.9.16"
+    },
+    "artifact_sha256": "94ed900a685de0415a89eff6c9d788ae6c647a238013b37f31152b0a83792a86"
+  },
+  "origin": "hand-authored deterministic control; not LLM"
+}

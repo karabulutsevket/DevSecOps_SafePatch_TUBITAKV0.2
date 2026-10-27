@@ -1,0 +1,54 @@
+{
+  "cases": 2,
+  "as_expected": 0,
+  "rows": [
+    {
+      "case": "owasp-benchmark-01097",
+      "commit": "5b970a28b55652de33c47bf5f19d68c058dd439e",
+      "fix_sha256": "a5dbafef4e290a8dbe363563b6327745395664eacd43ab50406f2633bd36aafb",
+      "passed": false,
+      "code": "validation_failed",
+      "behavior": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "hidden": {
+        "passed": true,
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "as_expected": false
+    },
+    {
+      "case": "owasp-benchmark-00196",
+      "commit": "5b970a28b55652de33c47bf5f19d68c058dd439e",
+      "fix_sha256": "db5671dbe751f446b193edcc4cb604ba1a88776f6d13f78290a83c2d9a9d29ba",
+      "passed": false,
+      "code": "validation_failed",
+      "behavior": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "hidden": {
+        "passed": true,
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "as_expected": false
+    }
+  ]
+}

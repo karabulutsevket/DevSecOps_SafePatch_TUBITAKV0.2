@@ -1,0 +1,50 @@
+[
+  {
+    "id": "e1e8146c38d142ba8cbb50dd0353cb88",
+    "case_id": "sql-01",
+    "phase": "memory-construction",
+    "arm": "off",
+    "status": "awaiting_review",
+    "accepted": true,
+    "reason": null,
+    "attempts": 1,
+    "wall_seconds": 35.095,
+    "memory_use": null,
+    "memory_selected": null,
+    "considered": [],
+    "warnings_sent": 0,
+    "failures": "passed"
+  },
+  {
+    "id": "ea9d83b28ac74b579947be2e8ca5f377",
+    "case_id": "path-01",
+    "phase": "memory-construction",
+    "arm": "off",
+    "status": "awaiting_review",
+    "accepted": true,
+    "reason": null,
+    "attempts": 3,
+    "wall_seconds": 61.873,
+    "memory_use": null,
+    "memory_selected": null,
+    "considered": [],
+    "warnings_sent": 0,
+    "failures": "security_witness_failed|security_witness_failed|passed"
+  },
+  {
+    "id": "28aee43dc414469194c580cdea5c5adb",
+    "case_id": "command-01",
+    "phase": "memory-construction",
+    "arm": "off",
+    "status": "needs_human",
+    "accepted": false,
+    "reason": "attempt_budget_exhausted",
+    "attempts": 3,
+    "wall_seconds": 72.266,
+    "memory_use": null,
+    "memory_selected": null,
+    "considered": [],
+    "warnings_sent": 0,
+    "failures": "behavior_regression|behavior_regression|security_witness_failed"
+  }
+]
