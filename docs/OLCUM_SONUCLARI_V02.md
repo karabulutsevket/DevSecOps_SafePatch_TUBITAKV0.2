@@ -190,7 +190,7 @@ A ile aynı vaka ve seed üzerinden eşleştirme vaka zorluğunu dengeliyor. Ama
 
 Değerlendirme seti ayar için kullanılmaz. Uyarıları kapatıp aynı sette yeniden koşmak ve oradan "düzeldi" sonucu çıkarmak kural dışı. Önerilen yol:
 
-1. **Geliştirme setinde uyarı denemesi.**
+1. **Geliştirme setinde uyarı denemesi.** Proje lideri 28 Ekim'de onayladı; protokol: [DENEY_UYARI.md](DENEY_UYARI.md).
    - Kollar: C ve "C, uyarısız".
    - Fark yalnız başarısızlık uyarısının gönderilmesi; uyarısız kol yalnız deney profilinde açılan bir seçenekle kurulur.
    - Öbür koşullar ana deneyle aynı: 26 geliştirme vakası (L3 geliştirme 20 ve paket 6), seed 42–44.

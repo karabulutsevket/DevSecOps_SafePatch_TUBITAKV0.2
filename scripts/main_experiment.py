@@ -74,7 +74,7 @@ def code_digest():
     return digest(b"".join(p.read_bytes() for p in sorted((ROOT / "safepatch").glob("*.py"))))
 
 
-def new_job(store, case_id, memory_mode, seed, max_attempts=3, experiment=None):
+def new_job(store, case_id, memory_mode, seed, max_attempts=3, experiment=None, fields=None):
     now = time.time()
     info = registry()[1][case_id]
     spec = project(case_id, info["commit"])
@@ -83,7 +83,7 @@ def new_job(store, case_id, memory_mode, seed, max_attempts=3, experiment=None):
            # Not an evaluation job: its database is this experiment's institution, never operational memory.
            "evaluation": False, "experiment": experiment, "status": "queued", "owner": "EXPERIMENT-NOT-A-HUMAN", "started_at": now,
            "deadline": now + 1800, "max_attempts": max_attempts, "attempt_count": 0, "attempts": [], "events": [], "approval": None,
-           "memory_mode": memory_mode, "strategy": "guided+context", "seed": seed}
+           "memory_mode": memory_mode, "strategy": "guided+context", "seed": seed, **(fields or {})}
     store.create(job, job["id"])
     return job["id"]
 
@@ -138,14 +138,16 @@ def lookup_row(job):
     chosen = next((c for c in lookup.get("considered", []) if c.get("id") == lookup.get("selected_id")), {})
     return {"decision": lookup.get("decision"), "tier": lookup.get("tier"), "use": lookup.get("use"), "selected_id": lookup.get("selected_id"),
             "considered": len(lookup.get("considered", [])), "same_shape": chosen.get("same_shape"), "similarity": chosen.get("similarity"),
-            "warnings_sent": len(lookup.get("warnings_sent", []))}
+            "warnings_sent": len(lookup.get("warnings_sent", [])), "warnings_withheld": len(lookup.get("warnings_withheld", []))}
 
 
-def solve(store, case, seed, arm, position, private):
-    """One case in one arm: the job (once more after an infrastructure error) and its hidden tests."""
+def solve(store, case, seed, arm, position, private, setup=None):
+    """One case in one arm: the job (once more after an infrastructure error) and its hidden tests.
+    `setup` is (memory_mode, extra job fields) for arms outside this experiment's ARMS."""
+    memory_mode, fields = setup or (ARMS[arm], None)
     tries = []
     for _ in range(2):
-        job_id = new_job(store, case.id, ARMS[arm], seed, experiment={"arm": arm, "seed": seed, "position": position})
+        job_id = new_job(store, case.id, memory_mode, seed, experiment={"arm": arm, "seed": seed, "position": position}, fields=fields)
         start = time.perf_counter()
         Engine(store).run(job_id)
         job = store.get(job_id)

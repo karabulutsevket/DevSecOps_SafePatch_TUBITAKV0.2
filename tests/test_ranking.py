@@ -124,6 +124,24 @@ def test_no_warnings_without_memory_or_with_a_forged_note(job_store, source, pat
     assert "failure_data" not in bodies[0]
 
 
+@pytest.mark.parametrize("profile,withheld", [("lab", True), ("evaluation", True), ("product", False), (None, False)])
+def test_the_experiment_arm_without_warnings_withholds_them_in_lab_profiles_only(job_store, source, patch_factory, monkeypatch, profile, withheld):
+    # docs/DENEY_UYARI.md: the failures are still found and recorded; only the model does not see them.
+    db, job = job_store
+    if profile:
+        monkeypatch.setenv("SAFEPATCH_PROFILE", profile)
+    else:
+        monkeypatch.delenv("SAFEPATCH_PROFILE", raising=False)
+    db.mutate(job["id"], lambda j: j.update(experiment_failure_warnings=False))
+    bodies, stored = run_with_failures(db, job, source, patch_factory, "--- a/X\n+++ b/X\n-sql\n+String q = sql;\n")
+    lookup = stored["memory_lookup"]
+    if withheld:
+        assert "failure_data" not in bodies[0] and lookup["warnings_sent"] == []
+        assert [w["relation"] for w in lookup["warnings_withheld"]] == ["same_source"]
+    else:
+        assert bodies[0]["failure_data"] and "warnings_withheld" not in lookup
+
+
 @pytest.fixture
 def sent(monkeypatch):
     captured = {}

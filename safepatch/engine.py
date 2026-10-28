@@ -2,7 +2,7 @@ import difflib
 import time
 import uuid
 
-from safepatch.common import MODEL_REGION_CHARS, MODEL_SOURCE_CHARS, POLICY, Patch, canonical, digest, remaining, request, secret, setting
+from safepatch.common import MODEL_REGION_CHARS, MODEL_SOURCE_CHARS, POLICY, Patch, canonical, digest, known_findings_enabled, remaining, request, secret, setting
 from safepatch.memory import Memory, context_for, reuse_result
 from safepatch.acceptance import manifest
 from safepatch.feedback import GUIDANCE_KEY, classify, guidance_for, imitates_note
@@ -44,7 +44,7 @@ EXPERT_ATTEMPTS = 3
 
 # Fields a per-file job keeps from the job whose scan it came from (week 4: one job per file).
 INHERITED = ("project", "memory_mode", "strategy", "case_id", "base_commit", "split", "policy_version", "scanner", "mode",
-             "max_attempts", "owner", "second_review", "evaluation", "seed")
+             "max_attempts", "owner", "second_review", "evaluation", "seed", "experiment_failure_warnings")
 
 
 def finding_groups(initial):
@@ -312,6 +312,11 @@ class Engine:
         # Week 5: the closest failed candidates go to the model as "did not work here" data.
         # Stored diffs are data; one that imitates the verifier note is never sent.
         warnings = [w for w in self.memory.failure_warnings(lookup.get("failures", []), context["project"]) if not imitates_note(w["changed_lines"])]
+        if job.get("experiment_failure_warnings") is False and known_findings_enabled():
+            # Experiment arm "C without warnings" (docs/DENEY_UYARI.md), lab and evaluation profiles
+            # only: the failures are found and recorded as usual, only the model never sees them.
+            lookup["warnings_withheld"] = [{"id": w["id"], "relation": w["relation"], "failure": w["failure"]} for w in warnings]
+            warnings = []
         lookup["warnings_sent"] = [{"id": w["id"], "relation": w["relation"], "failure": w["failure"]} for w in warnings]
         failure_data = [{k: w[k] for k in ("relation", "failure", "changed_lines")} for w in warnings]
         self.set(job_id, "scanning", memory_lookup=lookup, memory_context=context, memory_ids=[])

@@ -1,0 +1,253 @@
+{
+  "scope": "static, outcome-free exposure before the warning experiment",
+  "summary": {
+    "cases": 26,
+    "with_sibling": 20,
+    "by_family": {
+      "CWE-22": {
+        "cases": 9,
+        "with_sibling": 7
+      },
+      "CWE-78": {
+        "cases": 8,
+        "with_sibling": 6
+      },
+      "CWE-89": {
+        "cases": 9,
+        "with_sibling": 7
+      }
+    }
+  },
+  "cases": [
+    {
+      "case": "command-01",
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-78",
+      "siblings": [
+        "command-02",
+        "command-03",
+        "region-command"
+      ]
+    },
+    {
+      "case": "command-02",
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-78",
+      "siblings": [
+        "command-01",
+        "command-03",
+        "region-command"
+      ]
+    },
+    {
+      "case": "command-03",
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-78",
+      "siblings": [
+        "command-01",
+        "command-02",
+        "region-command"
+      ]
+    },
+    {
+      "case": "package-command-1",
+      "project": "safepatch-package-dev",
+      "cwe_family": "CWE-78",
+      "siblings": [
+        "package-command-2"
+      ]
+    },
+    {
+      "case": "package-command-2",
+      "project": "safepatch-package-dev",
+      "cwe_family": "CWE-78",
+      "siblings": [
+        "package-command-1"
+      ]
+    },
+    {
+      "case": "package-path-1",
+      "project": "safepatch-package-dev",
+      "cwe_family": "CWE-22",
+      "siblings": []
+    },
+    {
+      "case": "package-path-2",
+      "project": "safepatch-package-dev",
+      "cwe_family": "CWE-22",
+      "siblings": []
+    },
+    {
+      "case": "package-sql-1",
+      "project": "safepatch-package-dev",
+      "cwe_family": "CWE-89",
+      "siblings": [
+        "package-sql-2"
+      ]
+    },
+    {
+      "case": "package-sql-2",
+      "project": "safepatch-package-dev",
+      "cwe_family": "CWE-89",
+      "siblings": [
+        "package-sql-1"
+      ]
+    },
+    {
+      "case": "path-01",
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-22",
+      "siblings": [
+        "path-02",
+        "path-03",
+        "variant-path-helper"
+      ]
+    },
+    {
+      "case": "path-02",
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-22",
+      "siblings": [
+        "path-01",
+        "path-03",
+        "variant-path-helper"
+      ]
+    },
+    {
+      "case": "path-03",
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-22",
+      "siblings": [
+        "path-01",
+        "path-02",
+        "variant-path-helper"
+      ]
+    },
+    {
+      "case": "region-command",
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-78",
+      "siblings": [
+        "command-01",
+        "command-02",
+        "command-03"
+      ]
+    },
+    {
+      "case": "region-path-read",
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-22",
+      "siblings": [
+        "region-path-write",
+        "variant-path-file"
+      ]
+    },
+    {
+      "case": "region-path-write",
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-22",
+      "siblings": [
+        "region-path-read",
+        "variant-path-file"
+      ]
+    },
+    {
+      "case": "region-sql",
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-89",
+      "siblings": [
+        "sql-01",
+        "sql-02",
+        "sql-03",
+        "variant-sql-helper"
+      ]
+    },
+    {
+      "case": "sql-01",
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-89",
+      "siblings": [
+        "region-sql",
+        "sql-02",
+        "sql-03",
+        "variant-sql-helper"
+      ]
+    },
+    {
+      "case": "sql-02",
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-89",
+      "siblings": [
+        "region-sql",
+        "sql-01",
+        "sql-03",
+        "variant-sql-helper"
+      ]
+    },
+    {
+      "case": "sql-03",
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-89",
+      "siblings": [
+        "region-sql",
+        "sql-01",
+        "sql-02",
+        "variant-sql-helper"
+      ]
+    },
+    {
+      "case": "variant-command-format",
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-78",
+      "siblings": []
+    },
+    {
+      "case": "variant-command-list",
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-78",
+      "siblings": []
+    },
+    {
+      "case": "variant-path-file",
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-22",
+      "siblings": [
+        "region-path-read",
+        "region-path-write"
+      ]
+    },
+    {
+      "case": "variant-path-helper",
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-22",
+      "siblings": [
+        "path-01",
+        "path-02",
+        "path-03"
+      ]
+    },
+    {
+      "case": "variant-sql-builder",
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-89",
+      "siblings": []
+    },
+    {
+      "case": "variant-sql-format",
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-89",
+      "siblings": []
+    },
+    {
+      "case": "variant-sql-helper",
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-89",
+      "siblings": [
+        "region-sql",
+        "sql-01",
+        "sql-02",
+        "sql-03"
+      ]
+    }
+  ]
+}
