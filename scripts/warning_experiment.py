@@ -2,10 +2,10 @@
 
 In the main experiment, jobs that got only failure warnings did worse than the same cases with
 memory off (docs/OLCUM_SONUCLARI_V02.md, exploratory). This tests that on the development cases,
-never on the evaluation set. Arm C is SafePatch's rules as in the main experiment; arm C-W is the
-same with the failure warnings withheld from the model (job field experiment_failure_warnings=
-False, honoured by the engine in the lab and evaluation profiles only; the failures are still
-found, recorded and listed as withheld). Everything else is the main experiment's: the seeded
+never on the evaluation set. Arm C is SafePatch's rules as in the main experiment, failure
+warnings sent to the model; arm C-W is the same with them withheld (job field
+experiment_failure_warnings, honoured by the engine in the lab and evaluation profiles only; the
+failures are still found, recorded and listed as withheld). Everything else is the main experiment's: the seeded
 case order shared by the arms, rotating arm order, a database per (seed, arm), admission 2a.
 The development cases have no hidden tests, so the outcome is the verifier's acceptance.
 
@@ -35,7 +35,9 @@ from l3_catalog import CATALOG, load
 from main_experiment import REVIEWER, case_order, code_digest, promote, solve
 
 SEEDS = (42, 43, 44)
-ARMS = {"C": ("guarded", None), "C-W": ("guarded", {"experiment_failure_warnings": False})}
+# Run uyari-1 (e2ff4a3) gave arm C no field: warnings were sent by default then. Since the
+# 29 Oct decision they are withheld by default, so arm C asks for them explicitly.
+ARMS = {"C": ("guarded", {"experiment_failure_warnings": True}), "C-W": ("guarded", {"experiment_failure_warnings": False})}
 
 
 def arm_order(seed):

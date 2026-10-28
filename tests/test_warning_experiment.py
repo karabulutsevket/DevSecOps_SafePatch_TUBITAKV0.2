@@ -14,7 +14,7 @@ def row(arm, case, accepted, example=None, sent=0, withheld=0, cwe="CWE-89"):
 
 def test_the_arms_alternate_and_differ_only_in_the_warnings():
     assert [experiment.arm_order(s) for s in (42, 43, 44)] == [["C", "C-W"], ["C-W", "C"], ["C", "C-W"]]
-    assert experiment.ARMS == {"C": ("guarded", None), "C-W": ("guarded", {"experiment_failure_warnings": False})}
+    assert experiment.ARMS == {"C": ("guarded", {"experiment_failure_warnings": True}), "C-W": ("guarded", {"experiment_failure_warnings": False})}
 
 
 def test_the_experiment_job_carries_the_arm_fields(job_store):

@@ -198,6 +198,8 @@ Değerlendirme seti ayar için kullanılmaz. Uyarıları kapatıp aynı sette ye
    - Tahmini süre: 3–5 saat GPU.
    - **Sonuç (29 Ekim, `uyari-1`):** uyarısız kol, C'ye yalnız uyarı giden 24 çiftte 12'ye 2 öndeydi (p = 0,013); bütün çiftlerde +10,3 puan (p = 0,077). Fark büyük ölçüde komut ailesinde. Ayrıntı ve sınırlar: [DENEY_UYARI.md](DENEY_UYARI.md), "Sonuç: `uyari-1`".
 2. **Uyarı politikası sonuca göre seçilir.** Seçenekler: uyarıyı kaldırmak, yalnız aynı kaynağa ait başarısızlıklarla sınırlamak, metnini değiştirmek. Bu seçim ancak geliştirme setindeki sonuçla yapılır.
+   - **Karar (29 Ekim, proje lideri):** uyarı modele gönderilmez; yalnız kaydedilir.
 3. **Gerekirse değerlendirmede yeni bir koşu.** Koşunun adı `ana-2` olur ve önceden sabitlenmiş bir protokolle yapılır. İki koşu birlikte raporlanır; `ana-1` geçerliliğini korur.
+   - Protokol taslağı: [DENEY_ANA2.md](DENEY_ANA2.md). Proje liderinin onayını bekliyor.
 
 **Ayrıca açık soru.** B'nin komut ailesindeki işareti, C'nin örnek uygunluk kuralının komut ailesi için fazla katı olabileceğini düşündürüyor. Ama B'nin tek yanlış kabulü de imzası uyuşmayan bir örnekten geldi. Bu dengeyi de ancak geliştirme setinde ölçmek doğru olur.

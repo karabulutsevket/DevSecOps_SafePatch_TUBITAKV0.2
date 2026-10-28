@@ -309,16 +309,16 @@ class Engine:
             lookup = self.memory.search(context, job.get("memory_mode", "guarded"))
         selected = lookup.pop("selected")
         lookup["selected_id"] = selected["id"] if selected else None
-        # Week 5: the closest failed candidates go to the model as "did not work here" data.
-        # Stored diffs are data; one that imitates the verifier note is never sent.
+        # The closest failed candidates ("did not work here") are found and recorded for the reviewer,
+        # but not sent to the model: on the development set the 7B model did worse with them
+        # (docs/DENEY_UYARI.md, decided 29 Oct). Week 5's sending stays as an experiment option,
+        # lab and evaluation profiles only. Stored diffs are data; one that imitates the verifier
+        # note is never sent.
         warnings = [w for w in self.memory.failure_warnings(lookup.get("failures", []), context["project"]) if not imitates_note(w["changed_lines"])]
-        if job.get("experiment_failure_warnings") is False and known_findings_enabled():
-            # Experiment arm "C without warnings" (docs/DENEY_UYARI.md), lab and evaluation profiles
-            # only: the failures are found and recorded as usual, only the model never sees them.
-            lookup["warnings_withheld"] = [{"id": w["id"], "relation": w["relation"], "failure": w["failure"]} for w in warnings]
-            warnings = []
-        lookup["warnings_sent"] = [{"id": w["id"], "relation": w["relation"], "failure": w["failure"]} for w in warnings]
-        failure_data = [{k: w[k] for k in ("relation", "failure", "changed_lines")} for w in warnings]
+        found = [{"id": w["id"], "relation": w["relation"], "failure": w["failure"]} for w in warnings]
+        send = job.get("experiment_failure_warnings") is True and known_findings_enabled()
+        lookup["warnings_sent"], lookup["warnings_withheld"] = (found, []) if send else ([], found)
+        failure_data = [{k: w[k] for k in ("relation", "failure", "changed_lines")} for w in warnings] if send else []
         self.set(job_id, "scanning", memory_lookup=lookup, memory_context=context, memory_ids=[])
         memory_data = None
         replay = None

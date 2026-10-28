@@ -1,6 +1,8 @@
 # Uyarı denemesi protokolü: C ile uyarısız C (28 Ekim 2026, Hafta 10)
 
 **Durum: koşudan önce sabitlendi; koşu (`uyari-1`) 29 Ekim'de bitti.** Sonuç en altta, "Sonuç: `uyari-1`" bölümünde.
+
+**Karar (29 Ekim, proje lideri): 1. seçenek.** "Olur, 1. seçenekle ilerle." Uyarılar artık modele gönderilmiyor; yalnız kaydediliyor ([HAFIZA_UYGUNLUK.md](HAFIZA_UYGUNLUK.md)). Değerlendirmedeki yeni koşunun taslağı: [DENEY_ANA2.md](DENEY_ANA2.md).
 - Proje liderinin onayı: 28 Ekim, "Olur, uyarı denemesiyle devam et".
 - Koşu başladıktan sonra protokol de ürün kodu da değişmez. Betik bunu denetler: `safepatch/` değişmişse devam reddedilir.
 

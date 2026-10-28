@@ -39,9 +39,10 @@ function memoryPanel(l){const box=el('section',undefined,'memory-why');box.appen
     for(const c of rows){const row=el('tr',undefined,c.id===l.selected_id?'chosen':'');const why=(c.differences||[]).length?c.differences.map(factText).join(', '):'tüm koşullar aynı';
       row.append(el('td',c.rank?String(c.rank):'—'),el('td',c.tier==='L2'?c.id:c.id.slice(0,8),'hash'),el('td',c.use?uses[c.use]+(c.tier==='L2'?' · L2: dış kaynak, bu kurumda doğrulanmadı':''):'Elendi'),el('td',why));table.append(row)}
     box.append(table)}
-  const sent=l.warnings_sent||[];
-  if(sent.length)box.append(el('p','Modele gönderilen başarısızlık uyarıları: '+sent.map(w=>(relations[w.relation]||w.relation)+' · '+w.failure).join('; ')));
-  else if((l.failures||[]).length)box.append(el('p',l.failures.length+' ilgili başarısızlık kaydı var; modele gönderilmedi.'));
+  const sent=l.warnings_sent||[],held=l.warnings_withheld||[],warning=w=>(relations[w.relation]||w.relation)+' · '+w.failure;
+  if(sent.length)box.append(el('p','Modele gönderilen başarısızlık uyarıları: '+sent.map(warning).join('; ')));
+  if(held.length)box.append(el('p','Bu bağlamda daha önce başarısız olan yamalar (modele gönderilmez): '+held.map(warning).join('; ')));
+  else if(!sent.length&&(l.failures||[]).length)box.append(el('p',l.failures.length+' ilgili başarısızlık kaydı var; modele gönderilmedi.'));
   return box}
 function history(j){const list=el('div',undefined,'history');for(const a of j.attempts){const p=a.proposal||{};const result=a.verification&&a.verification.passed?'doğrulandı':a.failure?a.failure.category:a.stopped||a.policy_error||'—';const det=el('details');det.append(el('summary',a.number+'. deneme · '+originOf(p)+' · '+result));if(a.diff)det.append(diffView(a.diff));const failed=a.failure&&a.failure.failed_tests||[];if(failed.length)det.append(el('p','Düşen testler: '+failed.map(t=>t.test).join(', '),'hash'));list.append(det)}return list}
 // Expert patch: the finding's file is edited in full; the server's policy code produces the diff that will be verified.
