@@ -96,3 +96,18 @@ def test_a_finished_run_is_analysed_once_and_bound_to_its_rows(tmp_path, monkeyp
     _, before = analysis.load(run)
     (run / "runs" / "42-A" / "c3.json").write_text(json.dumps({**rows[2], "correct": True}), encoding="utf-8")
     assert analysis.load(run)[1] != before
+
+
+def test_a_rerun_is_compared_arm_by_arm_with_the_earlier_run():
+    def rows(c_correct, a_patch):
+        out = []
+        for seed in (42, 43):
+            out.append({**row("A", "c1", seed, True), "attempts": [{"passed": True, "patch_sha256": a_patch}]})
+            out.append(row("C", "c1", seed, c_correct))
+            out.append(row("C", "safe", seed, None, vulnerable=False))
+        return out
+    result = analysis.cross_run(rows(True, "same"), rows(False, "same"))
+    assert (result["C"]["pairs"], result["C"]["only_C@run"], result["C"]["only_C@previous"]) == (2, 2, 0)
+    assert result["A"]["only_A@run"] == result["A"]["only_A@previous"] == 0 and result["A"]["same_attempt_patches"] == 2
+    assert analysis.cross_run(rows(True, "other"), rows(True, "same"))["A"]["same_attempt_patches"] == 0
+    assert set(result) == {"A", "C"}

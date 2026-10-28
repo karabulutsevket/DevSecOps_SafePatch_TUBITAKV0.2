@@ -225,7 +225,7 @@ def run(args, out, private):
             raise SystemExit("safepatch/ changed since this run began; a changed run starts again under a new name")
     else:
         protocol.write_text(json.dumps({
-            "schema": 1, "run": args.run, "protocol": "docs/DENEY_PROTOKOLU.md", "started_at": time.time(), "git_commit": git("rev-parse", "HEAD"),
+            "schema": 1, "run": args.run, "protocol": args.protocol, "started_at": time.time(), "git_commit": git("rev-parse", "HEAD"),
             "git_dirty": bool(git("status", "--porcelain", "--untracked-files=no")), "code_sha256": code_digest(), "split": args.split,
             "catalog_sha256": digest(CATALOG.read_bytes()), "seeds": args.seeds, "arms": {a: ARMS[a] for a in args.arms},
             "arm_order": {s: [a for a in arm_order(s) if a in args.arms] for s in args.seeds},
@@ -269,6 +269,7 @@ def main():
     parser.add_argument("--seeds", nargs="+", type=int, default=list(SEEDS))
     parser.add_argument("--arms", nargs="+", choices=list(ARMS), default=list(ARMS))
     parser.add_argument("--cases", nargs="+", help="only these cases (a trial; no summary is written)")
+    parser.add_argument("--protocol", default="docs/DENEY_PROTOKOLU.md", help="the document that fixed this run (ana-2: docs/DENEY_ANA2.md)")
     args = parser.parse_args()
     for service, port in (("WORKER1", 8101), ("WORKER2", 8102)):
         os.environ.setdefault(service + "_URL", f"http://127.0.0.1:{port}")
