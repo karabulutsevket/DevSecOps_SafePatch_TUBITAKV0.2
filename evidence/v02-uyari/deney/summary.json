@@ -1,0 +1,191 @@
+{
+  "run": "uyari-1",
+  "arms": {
+    "C": {
+      "total": {
+        "jobs": 78,
+        "accepted": 47,
+        "examples": 29,
+        "warnings_sent_jobs": 38,
+        "warnings_withheld_jobs": 0,
+        "statuses": {
+          "awaiting_review": 47,
+          "needs_human": 30,
+          "rejected": 1
+        },
+        "infrastructure_retries": 0
+      },
+      "by_cwe": {
+        "CWE-22": {
+          "jobs": 27,
+          "accepted": 16,
+          "examples": 11,
+          "warnings_sent_jobs": 20,
+          "warnings_withheld_jobs": 0,
+          "statuses": {
+            "awaiting_review": 16,
+            "needs_human": 11
+          },
+          "infrastructure_retries": 0
+        },
+        "CWE-78": {
+          "jobs": 24,
+          "accepted": 5,
+          "examples": 3,
+          "warnings_sent_jobs": 18,
+          "warnings_withheld_jobs": 0,
+          "statuses": {
+            "awaiting_review": 5,
+            "needs_human": 18,
+            "rejected": 1
+          },
+          "infrastructure_retries": 0
+        },
+        "CWE-89": {
+          "jobs": 27,
+          "accepted": 26,
+          "examples": 15,
+          "warnings_sent_jobs": 0,
+          "warnings_withheld_jobs": 0,
+          "statuses": {
+            "awaiting_review": 26,
+            "needs_human": 1
+          },
+          "infrastructure_retries": 0
+        }
+      },
+      "by_seed": {
+        "42": {
+          "jobs": 26,
+          "accepted": 19,
+          "examples": 11,
+          "warnings_sent_jobs": 12,
+          "warnings_withheld_jobs": 0,
+          "statuses": {
+            "awaiting_review": 19,
+            "needs_human": 6,
+            "rejected": 1
+          },
+          "infrastructure_retries": 0
+        },
+        "43": {
+          "jobs": 26,
+          "accepted": 14,
+          "examples": 8,
+          "warnings_sent_jobs": 13,
+          "warnings_withheld_jobs": 0,
+          "statuses": {
+            "needs_human": 12,
+            "awaiting_review": 14
+          },
+          "infrastructure_retries": 0
+        },
+        "44": {
+          "jobs": 26,
+          "accepted": 14,
+          "examples": 10,
+          "warnings_sent_jobs": 13,
+          "warnings_withheld_jobs": 0,
+          "statuses": {
+            "needs_human": 12,
+            "awaiting_review": 14
+          },
+          "infrastructure_retries": 0
+        }
+      }
+    },
+    "C-W": {
+      "total": {
+        "jobs": 78,
+        "accepted": 55,
+        "examples": 32,
+        "warnings_sent_jobs": 0,
+        "warnings_withheld_jobs": 38,
+        "statuses": {
+          "awaiting_review": 55,
+          "needs_human": 22,
+          "rejected": 1
+        },
+        "infrastructure_retries": 0
+      },
+      "by_cwe": {
+        "CWE-22": {
+          "jobs": 27,
+          "accepted": 14,
+          "examples": 9,
+          "warnings_sent_jobs": 0,
+          "warnings_withheld_jobs": 20,
+          "statuses": {
+            "needs_human": 13,
+            "awaiting_review": 14
+          },
+          "infrastructure_retries": 0
+        },
+        "CWE-78": {
+          "jobs": 24,
+          "accepted": 15,
+          "examples": 8,
+          "warnings_sent_jobs": 0,
+          "warnings_withheld_jobs": 18,
+          "statuses": {
+            "awaiting_review": 15,
+            "needs_human": 8,
+            "rejected": 1
+          },
+          "infrastructure_retries": 0
+        },
+        "CWE-89": {
+          "jobs": 27,
+          "accepted": 26,
+          "examples": 15,
+          "warnings_sent_jobs": 0,
+          "warnings_withheld_jobs": 0,
+          "statuses": {
+            "awaiting_review": 26,
+            "needs_human": 1
+          },
+          "infrastructure_retries": 0
+        }
+      },
+      "by_seed": {
+        "42": {
+          "jobs": 26,
+          "accepted": 18,
+          "examples": 10,
+          "warnings_sent_jobs": 0,
+          "warnings_withheld_jobs": 12,
+          "statuses": {
+            "awaiting_review": 18,
+            "needs_human": 7,
+            "rejected": 1
+          },
+          "infrastructure_retries": 0
+        },
+        "43": {
+          "jobs": 26,
+          "accepted": 18,
+          "examples": 11,
+          "warnings_sent_jobs": 0,
+          "warnings_withheld_jobs": 13,
+          "statuses": {
+            "awaiting_review": 18,
+            "needs_human": 8
+          },
+          "infrastructure_retries": 0
+        },
+        "44": {
+          "jobs": 26,
+          "accepted": 19,
+          "examples": 11,
+          "warnings_sent_jobs": 0,
+          "warnings_withheld_jobs": 13,
+          "statuses": {
+            "awaiting_review": 19,
+            "needs_human": 7
+          },
+          "infrastructure_retries": 0
+        }
+      }
+    }
+  }
+}

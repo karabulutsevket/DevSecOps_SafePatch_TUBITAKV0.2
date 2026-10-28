@@ -196,6 +196,7 @@ Değerlendirme seti ayar için kullanılmaz. Uyarıları kapatıp aynı sette ye
    - Öbür koşullar ana deneyle aynı: 26 geliştirme vakası (L3 geliştirme 20 ve paket 6), seed 42–44.
    - Önce geliştirme setinde kaç işe uyarı gideceği statik olarak sayılır. Çok azsa bu deneme de güçsüz kalır ve bu önceden yazılır.
    - Tahmini süre: 3–5 saat GPU.
+   - **Sonuç (29 Ekim, `uyari-1`):** uyarısız kol, C'ye yalnız uyarı giden 24 çiftte 12'ye 2 öndeydi (p = 0,013); bütün çiftlerde +10,3 puan (p = 0,077). Fark büyük ölçüde komut ailesinde. Ayrıntı ve sınırlar: [DENEY_UYARI.md](DENEY_UYARI.md), "Sonuç: `uyari-1`".
 2. **Uyarı politikası sonuca göre seçilir.** Seçenekler: uyarıyı kaldırmak, yalnız aynı kaynağa ait başarısızlıklarla sınırlamak, metnini değiştirmek. Bu seçim ancak geliştirme setindeki sonuçla yapılır.
 3. **Gerekirse değerlendirmede yeni bir koşu.** Koşunun adı `ana-2` olur ve önceden sabitlenmiş bir protokolle yapılır. İki koşu birlikte raporlanır; `ana-1` geçerliliğini korur.
 

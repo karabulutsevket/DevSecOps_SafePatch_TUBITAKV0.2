@@ -113,6 +113,44 @@ def analyze(rows):
             "by_cwe_descriptive": {c: paired(outcome, "C-W", "C", {k for k in keys if family[k[0]] == c}) for c in sorted(set(family.values()))}}
 
 
+def explore(rows, private):
+    """Exploratory, written after the pre-declared analysis: where the difference came from. Not
+    part of the protocol's decision; every split pairs C-W with C on the same case and seed."""
+    from experiment_analysis import attempt_outcome
+    outcome = {(r["arm"], r["case"], r["seed"]): bool(r["accepted"]) for r in rows}
+    by_key = {(r["arm"], r["case"], r["seed"]): r for r in rows}
+    keys = {(r["case"], r["seed"]) for r in rows}
+    only = {k for k in keys if warned(by_key[("C", *k)], only=True)}
+    # Withholding can cascade: C-W accepts an earlier sibling, then gets it as an example.
+    cascade = {k for k in only if by_key[("C-W", *k)]["memory"]["use"]}
+    splits = {"c_warnings_only_and_c_w_no_example": only - cascade, "c_warnings_only_and_c_w_example": cascade,
+              "c_example_and_warnings": {k for k in keys if warned(by_key[("C", *k)]) and k not in only},
+              "c_no_warning": {k for k in keys if not warned(by_key[("C", *k)])}}
+
+    def own_class(r):
+        return ("example" if r["memory"]["use"] else "no_example") + ("_and_warnings" if warned(r) else "")
+    kinds, digests = {}, {}
+    jobs = {r["job"] for r in rows}
+    for db in sorted(private.glob("*.db")):
+        digests[db.name] = digest(db.read_bytes())
+        counter = kinds.setdefault(db.stem.partition("-")[2], Counter())
+        for job in Store("sqlite:///" + db.as_posix()).all():
+            lookup = job.get("memory_lookup") or {}
+            if job["id"] in jobs:
+                counter.update(f'{w["relation"]}/{w["failure"]}' for w in (lookup.get("warnings_sent") or []) + (lookup.get("warnings_withheld") or []))
+    return {"scope": "exploratory, after the pre-declared analysis; not part of the protocol's decision",
+            "splits": {name: paired(outcome, "C-W", "C", selected) for name, selected in splits.items()},
+            "by_seed": {s: {"all": paired(outcome, "C-W", "C", {k for k in keys if k[1] == s}),
+                            "c_warnings_only": paired(outcome, "C-W", "C", {k for k in only if k[1] == s})} for s in sorted({k[1] for k in keys})},
+            "attempt_outcomes_c_warnings_only": {arm: dict(sorted(Counter(attempt_outcome(a) for k in only for a in by_key[(arm, *k)]["attempts"]).items()))
+                                                 for arm in ARMS},
+            "own_job_class": {arm: {c: {"jobs": n, "accepted": sum(r["accepted"] for r in rows if r["arm"] == arm and own_class(r) == c)}
+                                    for c, n in sorted(Counter(own_class(r) for r in rows if r["arm"] == arm).items())} for arm in ARMS},
+            "discordant_c_warnings_only": [{"case": c, "seed": s, "accepted_C": outcome[("C", c, s)], "accepted_C-W": outcome[("C-W", c, s)]}
+                                           for c, s in sorted(only) if outcome[("C", c, s)] != outcome[("C-W", c, s)]],
+            "warning_kinds": {"databases_sha256": digests, "kinds": {arm: dict(sorted(c.items())) for arm, c in sorted(kinds.items())}}}
+
+
 def run(args, out, private):
     if setting("SAFEPATCH_PROFILE") != "lab" or Path(setting("PROJECTS_DIR", "")).resolve() != DEVELOPMENT.resolve():
         raise SystemExit("set SAFEPATCH_PROFILE=lab and PROJECTS_DIR=.runtime/dev-all/projects (and for the services)")
@@ -159,7 +197,7 @@ def run(args, out, private):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("action", choices=("exposure", "run"))
+    parser.add_argument("action", choices=("exposure", "run", "explore"))
     parser.add_argument("--run", required=True, help="name of this run; the same name resumes it")
     parser.add_argument("--seeds", nargs="+", type=int, default=list(SEEDS))
     parser.add_argument("--cases", nargs="+", help="only these cases (a trial; no summary is written)")
@@ -171,9 +209,16 @@ def main():
     out.mkdir(parents=True, exist_ok=True)
     if args.action == "exposure":
         return exposure(out)
+    private = ROOT / ".runtime" / "experiment" / args.run
+    if args.action == "explore":
+        target = out / "exploratory.json"
+        if not (out / "analysis.json").exists() or target.exists():
+            raise SystemExit("explore runs once, after the pre-declared analysis; evidence is never overwritten")
+        rows = [json.loads(p.read_text(encoding="utf-8")) for p in sorted((out / "runs").glob("*/*.json"))]
+        target.write_text(json.dumps(explore(rows, private), indent=2) + "\n", encoding="utf-8")
+        return print("written:", target)
     if (out / "summary.json").exists():
         raise SystemExit("Use a fresh EVIDENCE_DIR; evidence is never overwritten")
-    private = ROOT / ".runtime" / "experiment" / args.run
     private.mkdir(parents=True, exist_ok=True)
     run(args, out, private)
 

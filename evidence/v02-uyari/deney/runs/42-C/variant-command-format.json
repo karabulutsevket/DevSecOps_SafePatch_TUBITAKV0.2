@@ -1,0 +1,138 @@
+{
+  "case": "variant-command-format",
+  "cwe": "CWE-78",
+  "project": "safepatch-variants",
+  "source": "safepatch-synthetic",
+  "vulnerable": true,
+  "seed": 42,
+  "arm": "C",
+  "position": 5,
+  "job": "23208756802942deb0ff6903cac92586",
+  "status": "awaiting_review",
+  "reason": null,
+  "wall_seconds": 62.4,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 2,
+      "patch_sha256": "2bc378f06301aa50d4acd93b1e077e02b9582f9d2f4860a6f05bbbb4e825a4d1",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "behavior_regression",
+        "failed_tests": [
+          {
+            "suite": "behavior",
+            "test": "echoesHello",
+            "marker": "BEHAVIOR_REGRESSION"
+          },
+          {
+            "suite": "behavior",
+            "test": "echoesWorld",
+            "marker": "BEHAVIOR_REGRESSION"
+          },
+          {
+            "suite": "security",
+            "test": "shellMetacharactersAreLiteral",
+            "marker": "BEHAVIOR_REGRESSION"
+          }
+        ],
+        "remaining_rules": []
+      },
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 2
+      },
+      "security": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 1
+      },
+      "model_seconds": 8.156,
+      "prompt_tokens": 1024,
+      "output_tokens": 372,
+      "dropped": []
+    },
+    {
+      "number": 2,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 2,
+      "patch_sha256": "2bc378f06301aa50d4acd93b1e077e02b9582f9d2f4860a6f05bbbb4e825a4d1",
+      "policy_error": null,
+      "stopped": "duplicate_patch",
+      "passed": null,
+      "failure": null,
+      "no_change": null,
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 8.531,
+      "prompt_tokens": 1312,
+      "output_tokens": 387,
+      "dropped": []
+    },
+    {
+      "number": 3,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 4,
+      "patch_sha256": "64dba02f4c1abba8bf955da0f0b3163831740c6259662460e9fa346031781a2d",
+      "policy_error": null,
+      "stopped": null,
+      "passed": true,
+      "failure": null,
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "model_seconds": 8.985,
+      "prompt_tokens": 1384,
+      "output_tokens": 414,
+      "dropped": []
+    }
+  ],
+  "memory": {
+    "decision": "no_match",
+    "tier": null,
+    "use": null,
+    "selected_id": null,
+    "considered": 1,
+    "same_shape": null,
+    "similarity": null,
+    "warnings_sent": 1,
+    "warnings_withheld": 0
+  },
+  "infrastructure_retry": [],
+  "accepted": true,
+  "hidden": null,
+  "false_acceptance": null,
+  "correct": null,
+  "promoted": "b579ae3f8ad54ba7b121507dfe198ed3",
+  "accepted_attempt": 3
+}

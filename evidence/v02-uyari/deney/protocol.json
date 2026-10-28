@@ -1,0 +1,143 @@
+{
+  "schema": 1,
+  "run": "uyari-1",
+  "protocol": "docs/DENEY_UYARI.md",
+  "started_at": 1793217186.013175,
+  "git_commit": "e2ff4a31ef4ec277a86ce9bfd0f0b7bdfbc57cb6",
+  "git_dirty": false,
+  "code_sha256": "af6e24d4db1be011b897582df0e078558eb40841b0a008a471956216be954b8a",
+  "split": "development",
+  "catalog_sha256": "75841d71a49c33a1a7b33b442962f6082f473ac5aba2c2979f6957d5545c1b28",
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "arms": {
+    "C": {
+      "memory_mode": "guarded",
+      "fields": null
+    },
+    "C-W": {
+      "memory_mode": "guarded",
+      "fields": {
+        "experiment_failure_warnings": false
+      }
+    }
+  },
+  "arm_order": {
+    "42": [
+      "C",
+      "C-W"
+    ],
+    "43": [
+      "C-W",
+      "C"
+    ],
+    "44": [
+      "C",
+      "C-W"
+    ]
+  },
+  "case_order": {
+    "42": [
+      "sql-01",
+      "region-command",
+      "path-01",
+      "variant-sql-helper",
+      "variant-command-format",
+      "package-path-2",
+      "package-path-1",
+      "path-02",
+      "region-sql",
+      "variant-path-helper",
+      "path-03",
+      "sql-03",
+      "command-02",
+      "region-path-write",
+      "variant-sql-builder",
+      "region-path-read",
+      "command-03",
+      "sql-02",
+      "variant-sql-format",
+      "package-command-2",
+      "variant-path-file",
+      "package-sql-1",
+      "package-sql-2",
+      "command-01",
+      "package-command-1",
+      "variant-command-list"
+    ],
+    "43": [
+      "variant-sql-helper",
+      "variant-command-list",
+      "variant-sql-builder",
+      "variant-command-format",
+      "sql-02",
+      "package-sql-1",
+      "region-command",
+      "sql-01",
+      "command-03",
+      "path-02",
+      "package-path-2",
+      "package-sql-2",
+      "sql-03",
+      "package-path-1",
+      "variant-sql-format",
+      "region-path-read",
+      "command-01",
+      "region-sql",
+      "variant-path-file",
+      "package-command-1",
+      "path-03",
+      "region-path-write",
+      "package-command-2",
+      "variant-path-helper",
+      "path-01",
+      "command-02"
+    ],
+    "44": [
+      "variant-command-list",
+      "path-03",
+      "variant-command-format",
+      "region-sql",
+      "path-02",
+      "variant-path-file",
+      "variant-sql-helper",
+      "package-path-2",
+      "package-command-2",
+      "package-sql-2",
+      "command-03",
+      "region-path-write",
+      "variant-sql-format",
+      "variant-sql-builder",
+      "command-02",
+      "sql-03",
+      "command-01",
+      "path-01",
+      "package-sql-1",
+      "region-command",
+      "package-path-1",
+      "package-command-1",
+      "variant-path-helper",
+      "sql-02",
+      "sql-01",
+      "region-path-read"
+    ]
+  },
+  "model": "qwen2.5-coder:7b-instruct-q4_K_M",
+  "system_sha256": "5875a8dbf3d87fcae41a555b8f264de0e742bfa73e91b7f9dd24aa422b373757",
+  "weakness_notes_sha256": {
+    "CWE-22": "3a050cd2422101fdb1043a7f77f7a12539aa5fed0ad8d6c8d85ee55bfcfa0980",
+    "CWE-78": "d7ece8d5066d7255a566f0bb094bf85e356850b53a18040ade308a178176017e",
+    "CWE-89": "e306858e69812a98af4fb35f75dc06c3d3264fec724cfdb4f9dff3188efd0c22"
+  },
+  "budget": {
+    "strategy": "guided+context",
+    "max_attempts": 3,
+    "job_deadline_seconds": 1800
+  },
+  "memory_admission": "2a: every candidate the verifier accepts, simulated approval by SIMULATED-EXPERIMENT-REVIEWER",
+  "outcome": "verifier accepted (no hidden tests on the development cases)",
+  "human_approval": "SIMULATED"
+}

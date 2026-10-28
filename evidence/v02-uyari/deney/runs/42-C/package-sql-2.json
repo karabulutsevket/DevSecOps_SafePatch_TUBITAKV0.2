@@ -1,0 +1,65 @@
+{
+  "case": "package-sql-2",
+  "cwe": "CWE-89",
+  "project": "safepatch-package-dev",
+  "source": "safepatch-synthetic",
+  "vulnerable": true,
+  "seed": 42,
+  "arm": "C",
+  "position": 23,
+  "job": "536c8fbce1ad422495aba387dab1cee1",
+  "status": "awaiting_review",
+  "reason": null,
+  "wall_seconds": 66.2,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 11,
+      "patch_sha256": "d4c9e262eb5a763ff1390c7436edd54fa2879ee2888e840e7078d088757ba6b1",
+      "policy_error": null,
+      "stopped": null,
+      "passed": true,
+      "failure": null,
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "model_seconds": 25.14,
+      "prompt_tokens": 2000,
+      "output_tokens": 942,
+      "dropped": [
+        "src/main/java/demo/Case001.java",
+        "src/main/java/demo/Case002.java"
+      ]
+    }
+  ],
+  "memory": {
+    "decision": "match",
+    "tier": "L1",
+    "use": "example",
+    "selected_id": "abe8daee405e4665b21fd901b355cb6a",
+    "considered": 1,
+    "same_shape": null,
+    "similarity": null,
+    "warnings_sent": 0,
+    "warnings_withheld": 0
+  },
+  "infrastructure_retry": [],
+  "accepted": true,
+  "hidden": null,
+  "false_acceptance": null,
+  "correct": null,
+  "promoted": "aae4136ce24d4052acfab5cc44c2f7b1",
+  "accepted_attempt": 1
+}

@@ -36,3 +36,17 @@ def test_the_subgroups_are_where_arm_c_sent_the_warnings():
     assert result["secondary_c_sent_any_warning"]["pairs"] == 2 and result["c_w_withheld_jobs"] == 3
     summary = experiment.summarize([{**r, "seed": 42} for r in rows])
     assert summary["C"]["total"]["warnings_sent_jobs"] == 2 and summary["C-W"]["total"]["warnings_withheld_jobs"] == 3
+
+
+def test_the_exploration_separates_the_cascade_from_the_direct_effect(tmp_path):
+    rows = [{**r, "job": f"{r['arm']}-{r['case']}", "attempts": [{"passed": r["accepted"]}]} for r in (
+        row("C", "a", False, sent=2), row("C-W", "a", True, withheld=2),                         # direct
+        row("C", "b", False, sent=1), row("C-W", "b", True, example="example", withheld=1),      # cascade
+        row("C", "c", True), row("C-W", "c", True))]
+    result = experiment.explore(rows, tmp_path)
+    splits = result["splits"]
+    assert (splits["c_warnings_only_and_c_w_no_example"]["pairs"], splits["c_warnings_only_and_c_w_no_example"]["only_C-W"]) == (1, 1)
+    assert (splits["c_warnings_only_and_c_w_example"]["pairs"], splits["c_no_warning"]["pairs"]) == (1, 1)
+    assert [d["case"] for d in result["discordant_c_warnings_only"]] == ["a", "b"]
+    assert result["attempt_outcomes_c_warnings_only"] == {"C": {"unknown": 2}, "C-W": {"passed": 2}}
+    assert result["warning_kinds"] == {"databases_sha256": {}, "kinds": {}}
