@@ -1,0 +1,147 @@
+{
+  "case": "owasp-benchmark-00011",
+  "cwe": "CWE-22",
+  "project": "OWASP-Benchmark/BenchmarkJava",
+  "source": "owasp-benchmark",
+  "vulnerable": true,
+  "seed": 42,
+  "arm": "A",
+  "position": 27,
+  "job": "376ffb99b9fe46d0b4145c191a238a39",
+  "status": "needs_human",
+  "reason": "attempt_budget_exhausted",
+  "wall_seconds": 178.8,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 6,
+      "patch_sha256": "55fe0781a7347cee4d207f3450c581891d77c39c5f8d0d1e514ecf345e07dec5",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "behavior_regression",
+        "failed_tests": [
+          {
+            "suite": "behavior",
+            "test": "benignInputAnswersAsBefore",
+            "marker": "BEHAVIOR_REGRESSION"
+          },
+          {
+            "suite": "security",
+            "test": "attackHasNoEffect",
+            "marker": "PATH_TRAVERSAL_REGRESSION"
+          }
+        ],
+        "remaining_rules": []
+      },
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0
+      },
+      "model_seconds": 20.109,
+      "prompt_tokens": 1840,
+      "output_tokens": 833,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java"
+      ]
+    },
+    {
+      "number": 2,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 6,
+      "patch_sha256": "55fe0781a7347cee4d207f3450c581891d77c39c5f8d0d1e514ecf345e07dec5",
+      "policy_error": null,
+      "stopped": "duplicate_patch",
+      "passed": null,
+      "failure": null,
+      "no_change": null,
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 19.906,
+      "prompt_tokens": 2098,
+      "output_tokens": 820,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java"
+      ]
+    },
+    {
+      "number": 3,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 11,
+      "patch_sha256": "036614748e711a4a5b62b6ee0ab25e7010617b4cb797f96ecd6b040c1c389db9",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "behavior_regression",
+        "failed_tests": [
+          {
+            "suite": "behavior",
+            "test": "benignInputAnswersAsBefore",
+            "marker": "BEHAVIOR_REGRESSION"
+          }
+        ],
+        "remaining_rules": []
+      },
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "model_seconds": 21.141,
+      "prompt_tokens": 2230,
+      "output_tokens": 876,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java"
+      ]
+    }
+  ],
+  "memory": {
+    "decision": "disabled",
+    "tier": null,
+    "use": null,
+    "selected_id": null,
+    "considered": 0,
+    "same_shape": null,
+    "similarity": null,
+    "warnings_sent": 0
+  },
+  "infrastructure_retry": [],
+  "accepted": false,
+  "hidden": null,
+  "false_acceptance": null,
+  "correct": false,
+  "promoted": null
+}

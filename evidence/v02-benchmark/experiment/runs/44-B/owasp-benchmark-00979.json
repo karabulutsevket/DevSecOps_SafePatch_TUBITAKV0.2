@@ -1,0 +1,155 @@
+{
+  "case": "owasp-benchmark-00979",
+  "cwe": "CWE-78",
+  "project": "OWASP-Benchmark/BenchmarkJava",
+  "source": "owasp-benchmark",
+  "vulnerable": true,
+  "seed": 44,
+  "arm": "B",
+  "position": 41,
+  "job": "0ec0ba4706eb47e8bef32900fb00277a",
+  "status": "needs_human",
+  "reason": "attempt_budget_exhausted",
+  "wall_seconds": 197.1,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 2,
+      "patch_sha256": "26bcc96a23742520674e740de5bc8939e957ca85052086432ec437ce70c840a6",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "security_witness_failed",
+        "failed_tests": [
+          {
+            "suite": "security",
+            "test": "attackHasNoEffect",
+            "marker": "COMMAND_INJECTION_REGRESSION"
+          }
+        ],
+        "remaining_rules": []
+      },
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0
+      },
+      "model_seconds": 30.594,
+      "prompt_tokens": 2063,
+      "output_tokens": 1344,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java",
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00004.java"
+      ]
+    },
+    {
+      "number": 2,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 2,
+      "patch_sha256": "e6ab4e6976fad79761776bd160289a24fcb4ce596169dcb1e0a9423e59588bb7",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "security_witness_failed",
+        "failed_tests": [
+          {
+            "suite": "security",
+            "test": "attackHasNoEffect",
+            "marker": "COMMAND_INJECTION_REGRESSION"
+          }
+        ],
+        "remaining_rules": []
+      },
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0
+      },
+      "model_seconds": 27.25,
+      "prompt_tokens": 2275,
+      "output_tokens": 1306,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java",
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00004.java"
+      ]
+    },
+    {
+      "number": 3,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 26,
+      "patch_sha256": "9e31dfabb588af9968d7b3c6a35ce4f8571df30408eb0289527ce1c368fb7693",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "behavior_regression",
+        "failed_tests": [
+          {
+            "suite": "behavior",
+            "test": "benignInputAnswersAsBefore",
+            "marker": "BEHAVIOR_REGRESSION"
+          }
+        ],
+        "remaining_rules": []
+      },
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "model_seconds": 23.968,
+      "prompt_tokens": 2345,
+      "output_tokens": 1142,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java",
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00004.java"
+      ]
+    }
+  ],
+  "memory": {
+    "decision": "match",
+    "tier": "L1",
+    "use": "example",
+    "selected_id": "7d82d6988df448a284503de4e1b57d6f",
+    "considered": 3,
+    "same_shape": true,
+    "similarity": 0.622558,
+    "warnings_sent": 0
+  },
+  "infrastructure_retry": [],
+  "accepted": false,
+  "hidden": null,
+  "false_acceptance": null,
+  "correct": false,
+  "promoted": null
+}

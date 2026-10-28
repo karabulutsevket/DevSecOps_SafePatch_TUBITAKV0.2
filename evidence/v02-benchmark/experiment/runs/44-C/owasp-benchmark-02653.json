@@ -1,0 +1,132 @@
+{
+  "case": "owasp-benchmark-02653",
+  "cwe": "CWE-89",
+  "project": "OWASP-Benchmark/BenchmarkJava",
+  "source": "owasp-benchmark",
+  "vulnerable": true,
+  "seed": 44,
+  "arm": "C",
+  "position": 35,
+  "job": "e9b8b9d1c2df469f9965cdf44dfd235b",
+  "status": "needs_human",
+  "reason": "attempt_budget_exhausted",
+  "wall_seconds": 136.3,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 9,
+      "patch_sha256": "3bf853fc74345283e65d4c3b5b1793a63fc7bb0f967381c54f7f4599b5de1173",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/org/owasp/benchmark/testcode/BenchmarkTest02653.java:[76,63] cannot find symbol: getSqlPreparedStatement"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 22.516,
+      "prompt_tokens": 2117,
+      "output_tokens": 1081,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java"
+      ]
+    },
+    {
+      "number": 2,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 9,
+      "patch_sha256": "3bf853fc74345283e65d4c3b5b1793a63fc7bb0f967381c54f7f4599b5de1173",
+      "policy_error": null,
+      "stopped": "duplicate_patch",
+      "passed": null,
+      "failure": null,
+      "no_change": null,
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 22.531,
+      "prompt_tokens": 2455,
+      "output_tokens": 1070,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java"
+      ]
+    },
+    {
+      "number": 3,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 18,
+      "patch_sha256": "7cb217151ef1b33bf1f24320f46389f59a5aaf9fa5fa2d8797a2f52b819d699b",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/org/owasp/benchmark/testcode/BenchmarkTest02653.java:[78,63] cannot find symbol: getSqlPreparedStatement"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 22.954,
+      "prompt_tokens": 2495,
+      "output_tokens": 1103,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java"
+      ]
+    }
+  ],
+  "memory": {
+    "decision": "no_match",
+    "tier": null,
+    "use": null,
+    "selected_id": null,
+    "considered": 6,
+    "same_shape": null,
+    "similarity": null,
+    "warnings_sent": 0
+  },
+  "infrastructure_retry": [],
+  "accepted": false,
+  "hidden": null,
+  "false_acceptance": null,
+  "correct": false,
+  "promoted": null
+}

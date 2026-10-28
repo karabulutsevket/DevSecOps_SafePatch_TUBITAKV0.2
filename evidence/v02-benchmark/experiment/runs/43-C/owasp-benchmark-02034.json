@@ -1,0 +1,149 @@
+{
+  "case": "owasp-benchmark-02034",
+  "cwe": "CWE-22",
+  "project": "OWASP-Benchmark/BenchmarkJava",
+  "source": "owasp-benchmark",
+  "vulnerable": true,
+  "seed": 43,
+  "arm": "C",
+  "position": 22,
+  "job": "c4a632f909784311a42758ec8fca548c",
+  "status": "needs_human",
+  "reason": "attempt_budget_exhausted",
+  "wall_seconds": 165.3,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 14,
+      "patch_sha256": "40165e6bcc785d0a0ab999ea71f753967c4b0b1b9cdac44361bbd097c2d3e2ce",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/org/owasp/benchmark/testcode/BenchmarkTest02034.java:[55,70] cannot find symbol: toPath"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 19.547,
+      "prompt_tokens": 2417,
+      "output_tokens": 924,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java"
+      ]
+    },
+    {
+      "number": 2,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 10,
+      "patch_sha256": "b7141cb2e33e331b265653b04c88dbff722f23af3abb96f66a4d9efc402ed986",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "security_witness_failed",
+        "failed_tests": [
+          {
+            "suite": "security",
+            "test": "attackHasNoEffect",
+            "marker": "PATH_TRAVERSAL_REGRESSION"
+          }
+        ],
+        "remaining_rules": []
+      },
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0
+      },
+      "model_seconds": 21.5,
+      "prompt_tokens": 2072,
+      "output_tokens": 1029,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java",
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00004.java"
+      ]
+    },
+    {
+      "number": 3,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 24,
+      "patch_sha256": "81eccfc5a9f821d60c2d8c49b688c4eb4d4fcfb1a24f06a33e98585d6541ea0d",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "security_witness_failed",
+        "failed_tests": [
+          {
+            "suite": "security",
+            "test": "attackHasNoEffect",
+            "marker": "PATH_TRAVERSAL_REGRESSION"
+          }
+        ],
+        "remaining_rules": []
+      },
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0
+      },
+      "model_seconds": 19.297,
+      "prompt_tokens": 2182,
+      "output_tokens": 915,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java",
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00004.java"
+      ]
+    }
+  ],
+  "memory": {
+    "decision": "no_match",
+    "tier": null,
+    "use": null,
+    "selected_id": null,
+    "considered": 0,
+    "same_shape": null,
+    "similarity": null,
+    "warnings_sent": 2
+  },
+  "infrastructure_retry": [],
+  "accepted": false,
+  "hidden": null,
+  "false_acceptance": null,
+  "correct": false,
+  "promoted": null
+}

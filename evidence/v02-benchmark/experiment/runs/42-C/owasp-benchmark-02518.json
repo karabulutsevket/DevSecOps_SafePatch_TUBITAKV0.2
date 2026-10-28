@@ -1,0 +1,31 @@
+{
+  "case": "owasp-benchmark-02518",
+  "cwe": "CWE-78",
+  "project": "OWASP-Benchmark/BenchmarkJava",
+  "source": "owasp-benchmark",
+  "vulnerable": false,
+  "seed": 42,
+  "arm": "C",
+  "position": 31,
+  "job": "565f8aceddd944f784ab805f84fb652b",
+  "status": "needs_human",
+  "reason": "baseline_missing_expected_failing_security_assertion_or_finding",
+  "wall_seconds": 32.1,
+  "attempts": [],
+  "memory": {
+    "decision": null,
+    "tier": null,
+    "use": null,
+    "selected_id": null,
+    "considered": 0,
+    "same_shape": null,
+    "similarity": null,
+    "warnings_sent": 0
+  },
+  "infrastructure_retry": [],
+  "accepted": false,
+  "hidden": null,
+  "false_acceptance": null,
+  "correct": false,
+  "promoted": null
+}

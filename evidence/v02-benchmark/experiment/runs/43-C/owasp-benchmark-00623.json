@@ -1,0 +1,134 @@
+{
+  "case": "owasp-benchmark-00623",
+  "cwe": "CWE-22",
+  "project": "OWASP-Benchmark/BenchmarkJava",
+  "source": "owasp-benchmark",
+  "vulnerable": true,
+  "seed": 43,
+  "arm": "C",
+  "position": 40,
+  "job": "85c916de4af441c590a2b9f9fb8433c3",
+  "status": "needs_human",
+  "reason": "attempt_budget_exhausted",
+  "wall_seconds": 128.0,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 27,
+      "patch_sha256": "24d1ee98da3784e851af8353ee4c8fc7f83b30e86c9d426fb4e49c222dc08968",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00623.java:[92,23] cannot find symbol: exists"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 21.032,
+      "prompt_tokens": 2350,
+      "output_tokens": 997,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java"
+      ]
+    },
+    {
+      "number": 2,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 32,
+      "patch_sha256": "6699f3521d1152b0ea436e2fd8275369dafe2f819ff9bec90509b8735d2f41dd",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00623.java:[97,23] cannot find symbol: exists"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 21.125,
+      "prompt_tokens": 2021,
+      "output_tokens": 1004,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java",
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00004.java"
+      ]
+    },
+    {
+      "number": 3,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 32,
+      "patch_sha256": "6699f3521d1152b0ea436e2fd8275369dafe2f819ff9bec90509b8735d2f41dd",
+      "policy_error": null,
+      "stopped": "duplicate_patch",
+      "passed": null,
+      "failure": null,
+      "no_change": null,
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 21.359,
+      "prompt_tokens": 2187,
+      "output_tokens": 1020,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java",
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00004.java"
+      ]
+    }
+  ],
+  "memory": {
+    "decision": "no_match",
+    "tier": null,
+    "use": null,
+    "selected_id": null,
+    "considered": 1,
+    "same_shape": null,
+    "similarity": null,
+    "warnings_sent": 2
+  },
+  "infrastructure_retry": [],
+  "accepted": false,
+  "hidden": null,
+  "false_acceptance": null,
+  "correct": false,
+  "promoted": null
+}

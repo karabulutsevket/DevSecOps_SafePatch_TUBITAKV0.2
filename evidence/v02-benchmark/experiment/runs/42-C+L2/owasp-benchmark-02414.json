@@ -1,0 +1,141 @@
+{
+  "case": "owasp-benchmark-02414",
+  "cwe": "CWE-78",
+  "project": "OWASP-Benchmark/BenchmarkJava",
+  "source": "owasp-benchmark",
+  "vulnerable": true,
+  "seed": 42,
+  "arm": "C+L2",
+  "position": 37,
+  "job": "2e74a4dedec1409ab7bfaec3c7b596c0",
+  "status": "needs_human",
+  "reason": "attempt_budget_exhausted",
+  "wall_seconds": 93.3,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": null,
+      "patch_sha256": null,
+      "policy_error": "empty_patch",
+      "stopped": null,
+      "passed": null,
+      "failure": {
+        "category": "empty_patch"
+      },
+      "no_change": {
+        "answer": "repeats_shown_code",
+        "shown": "whole_file",
+        "change_required_by": "failing_security_witness"
+      },
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 21.25,
+      "prompt_tokens": 2430,
+      "output_tokens": 1002,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java"
+      ]
+    },
+    {
+      "number": 2,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": null,
+      "patch_sha256": null,
+      "policy_error": "empty_patch",
+      "stopped": null,
+      "passed": null,
+      "failure": {
+        "category": "empty_patch"
+      },
+      "no_change": {
+        "answer": "repeats_shown_code",
+        "shown": "whole_file",
+        "change_required_by": "failing_security_witness"
+      },
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 20.61,
+      "prompt_tokens": 2538,
+      "output_tokens": 984,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java"
+      ]
+    },
+    {
+      "number": 3,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": null,
+      "patch_sha256": null,
+      "policy_error": "empty_patch",
+      "stopped": null,
+      "passed": null,
+      "failure": {
+        "category": "empty_patch"
+      },
+      "no_change": {
+        "answer": "repeats_shown_code",
+        "shown": "whole_file",
+        "change_required_by": "failing_security_witness"
+      },
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 20.297,
+      "prompt_tokens": 1823,
+      "output_tokens": 988,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java",
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00004.java"
+      ]
+    }
+  ],
+  "memory": {
+    "decision": "match",
+    "tier": "L2",
+    "use": "example",
+    "selected_id": "l2:package-command-1-cef26115d033",
+    "considered": 8,
+    "same_shape": null,
+    "similarity": null,
+    "warnings_sent": 0
+  },
+  "infrastructure_retry": [],
+  "accepted": false,
+  "hidden": null,
+  "false_acceptance": null,
+  "correct": false,
+  "promoted": null
+}

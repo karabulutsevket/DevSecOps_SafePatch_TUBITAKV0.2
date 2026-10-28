@@ -1,0 +1,73 @@
+{
+  "case": "owasp-benchmark-02091",
+  "cwe": "CWE-89",
+  "project": "OWASP-Benchmark/BenchmarkJava",
+  "source": "owasp-benchmark",
+  "vulnerable": true,
+  "seed": 42,
+  "arm": "B",
+  "position": 16,
+  "job": "38ca370f2e4a4675b4db5d42b073589b",
+  "status": "awaiting_review",
+  "reason": null,
+  "wall_seconds": 99.3,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 4,
+      "patch_sha256": "3e437a75db88a2b0168e2f276678267a9b93159e625b1945d7e21e9b71cd6f21",
+      "policy_error": null,
+      "stopped": null,
+      "passed": true,
+      "failure": null,
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "model_seconds": 25.078,
+      "prompt_tokens": 1842,
+      "output_tokens": 1075,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java",
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00004.java"
+      ]
+    }
+  ],
+  "memory": {
+    "decision": "match",
+    "tier": "L1",
+    "use": "example",
+    "selected_id": "602c0efd89294a7cb3a95a524d0f2af2",
+    "considered": 1,
+    "same_shape": false,
+    "similarity": 0.723594,
+    "warnings_sent": 0
+  },
+  "infrastructure_retry": [],
+  "accepted": true,
+  "hidden": {
+    "passed": true,
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "details": [],
+    "duration_seconds": 12.875,
+    "reason": null
+  },
+  "false_acceptance": false,
+  "correct": true,
+  "promoted": "dc609213a1514ab6bfd19afd78c497bf",
+  "accepted_attempt": 1
+}

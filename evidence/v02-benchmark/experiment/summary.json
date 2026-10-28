@@ -1,0 +1,526 @@
+{
+  "run": "ana-1",
+  "scope": "evaluation",
+  "arms": {
+    "A": {
+      "vulnerable": {
+        "jobs": 90,
+        "accepted": 30,
+        "correct": 30,
+        "false_acceptances": 0,
+        "memory_used": 0,
+        "memory_used_correct": 0,
+        "wrong_transfer": 0,
+        "different_shape_examples": 0,
+        "statuses": {
+          "needs_human": 54,
+          "awaiting_review": 30,
+          "rejected": 6
+        },
+        "infrastructure_retries": 0
+      },
+      "safe": {
+        "jobs": 45,
+        "accepted": 0,
+        "correct": 0,
+        "false_acceptances": 0,
+        "memory_used": 0,
+        "memory_used_correct": 0,
+        "wrong_transfer": 0,
+        "different_shape_examples": 0,
+        "statuses": {
+          "needs_human": 45
+        },
+        "infrastructure_retries": 0
+      },
+      "by_cwe": {
+        "CWE-22": {
+          "jobs": 39,
+          "accepted": 5,
+          "correct": 5,
+          "false_acceptances": 0,
+          "memory_used": 0,
+          "memory_used_correct": 0,
+          "wrong_transfer": 0,
+          "different_shape_examples": 0,
+          "statuses": {
+            "needs_human": 33,
+            "awaiting_review": 5,
+            "rejected": 1
+          },
+          "infrastructure_retries": 0
+        },
+        "CWE-78": {
+          "jobs": 21,
+          "accepted": 7,
+          "correct": 7,
+          "false_acceptances": 0,
+          "memory_used": 0,
+          "memory_used_correct": 0,
+          "wrong_transfer": 0,
+          "different_shape_examples": 0,
+          "statuses": {
+            "needs_human": 9,
+            "rejected": 5,
+            "awaiting_review": 7
+          },
+          "infrastructure_retries": 0
+        },
+        "CWE-89": {
+          "jobs": 30,
+          "accepted": 18,
+          "correct": 18,
+          "false_acceptances": 0,
+          "memory_used": 0,
+          "memory_used_correct": 0,
+          "wrong_transfer": 0,
+          "different_shape_examples": 0,
+          "statuses": {
+            "needs_human": 12,
+            "awaiting_review": 18
+          },
+          "infrastructure_retries": 0
+        }
+      },
+      "by_seed": {
+        "42": {
+          "jobs": 30,
+          "accepted": 10,
+          "correct": 10,
+          "false_acceptances": 0,
+          "memory_used": 0,
+          "memory_used_correct": 0,
+          "wrong_transfer": 0,
+          "different_shape_examples": 0,
+          "statuses": {
+            "needs_human": 16,
+            "awaiting_review": 10,
+            "rejected": 4
+          },
+          "infrastructure_retries": 0
+        },
+        "43": {
+          "jobs": 30,
+          "accepted": 10,
+          "correct": 10,
+          "false_acceptances": 0,
+          "memory_used": 0,
+          "memory_used_correct": 0,
+          "wrong_transfer": 0,
+          "different_shape_examples": 0,
+          "statuses": {
+            "needs_human": 18,
+            "awaiting_review": 10,
+            "rejected": 2
+          },
+          "infrastructure_retries": 0
+        },
+        "44": {
+          "jobs": 30,
+          "accepted": 10,
+          "correct": 10,
+          "false_acceptances": 0,
+          "memory_used": 0,
+          "memory_used_correct": 0,
+          "wrong_transfer": 0,
+          "different_shape_examples": 0,
+          "statuses": {
+            "needs_human": 20,
+            "awaiting_review": 10
+          },
+          "infrastructure_retries": 0
+        }
+      }
+    },
+    "B": {
+      "vulnerable": {
+        "jobs": 90,
+        "accepted": 36,
+        "correct": 35,
+        "false_acceptances": 1,
+        "memory_used": 58,
+        "memory_used_correct": 26,
+        "wrong_transfer": 1,
+        "different_shape_examples": 38,
+        "statuses": {
+          "needs_human": 51,
+          "awaiting_review": 36,
+          "rejected": 3
+        },
+        "infrastructure_retries": 0
+      },
+      "safe": {
+        "jobs": 45,
+        "accepted": 0,
+        "correct": 0,
+        "false_acceptances": 0,
+        "memory_used": 0,
+        "memory_used_correct": 0,
+        "wrong_transfer": 0,
+        "different_shape_examples": 0,
+        "statuses": {
+          "needs_human": 45
+        },
+        "infrastructure_retries": 0
+      },
+      "by_cwe": {
+        "CWE-22": {
+          "jobs": 39,
+          "accepted": 5,
+          "correct": 4,
+          "false_acceptances": 1,
+          "memory_used": 17,
+          "memory_used_correct": 1,
+          "wrong_transfer": 1,
+          "different_shape_examples": 12,
+          "statuses": {
+            "needs_human": 33,
+            "awaiting_review": 5,
+            "rejected": 1
+          },
+          "infrastructure_retries": 0
+        },
+        "CWE-78": {
+          "jobs": 21,
+          "accepted": 12,
+          "correct": 12,
+          "false_acceptances": 0,
+          "memory_used": 15,
+          "memory_used_correct": 9,
+          "wrong_transfer": 0,
+          "different_shape_examples": 3,
+          "statuses": {
+            "awaiting_review": 12,
+            "rejected": 2,
+            "needs_human": 7
+          },
+          "infrastructure_retries": 0
+        },
+        "CWE-89": {
+          "jobs": 30,
+          "accepted": 19,
+          "correct": 19,
+          "false_acceptances": 0,
+          "memory_used": 26,
+          "memory_used_correct": 16,
+          "wrong_transfer": 0,
+          "different_shape_examples": 23,
+          "statuses": {
+            "needs_human": 11,
+            "awaiting_review": 19
+          },
+          "infrastructure_retries": 0
+        }
+      },
+      "by_seed": {
+        "42": {
+          "jobs": 30,
+          "accepted": 12,
+          "correct": 11,
+          "false_acceptances": 1,
+          "memory_used": 21,
+          "memory_used_correct": 8,
+          "wrong_transfer": 1,
+          "different_shape_examples": 13,
+          "statuses": {
+            "needs_human": 17,
+            "awaiting_review": 12,
+            "rejected": 1
+          },
+          "infrastructure_retries": 0
+        },
+        "43": {
+          "jobs": 30,
+          "accepted": 12,
+          "correct": 12,
+          "false_acceptances": 0,
+          "memory_used": 19,
+          "memory_used_correct": 9,
+          "wrong_transfer": 0,
+          "different_shape_examples": 13,
+          "statuses": {
+            "needs_human": 16,
+            "awaiting_review": 12,
+            "rejected": 2
+          },
+          "infrastructure_retries": 0
+        },
+        "44": {
+          "jobs": 30,
+          "accepted": 12,
+          "correct": 12,
+          "false_acceptances": 0,
+          "memory_used": 18,
+          "memory_used_correct": 9,
+          "wrong_transfer": 0,
+          "different_shape_examples": 12,
+          "statuses": {
+            "needs_human": 18,
+            "awaiting_review": 12
+          },
+          "infrastructure_retries": 0
+        }
+      }
+    },
+    "C": {
+      "vulnerable": {
+        "jobs": 90,
+        "accepted": 29,
+        "correct": 29,
+        "false_acceptances": 0,
+        "memory_used": 17,
+        "memory_used_correct": 13,
+        "wrong_transfer": 0,
+        "different_shape_examples": 0,
+        "statuses": {
+          "needs_human": 57,
+          "awaiting_review": 29,
+          "rejected": 4
+        },
+        "infrastructure_retries": 0
+      },
+      "safe": {
+        "jobs": 45,
+        "accepted": 0,
+        "correct": 0,
+        "false_acceptances": 0,
+        "memory_used": 0,
+        "memory_used_correct": 0,
+        "wrong_transfer": 0,
+        "different_shape_examples": 0,
+        "statuses": {
+          "needs_human": 45
+        },
+        "infrastructure_retries": 0
+      },
+      "by_cwe": {
+        "CWE-22": {
+          "jobs": 39,
+          "accepted": 5,
+          "correct": 5,
+          "false_acceptances": 0,
+          "memory_used": 2,
+          "memory_used_correct": 1,
+          "wrong_transfer": 0,
+          "different_shape_examples": 0,
+          "statuses": {
+            "needs_human": 33,
+            "awaiting_review": 5,
+            "rejected": 1
+          },
+          "infrastructure_retries": 0
+        },
+        "CWE-78": {
+          "jobs": 21,
+          "accepted": 7,
+          "correct": 7,
+          "false_acceptances": 0,
+          "memory_used": 8,
+          "memory_used_correct": 5,
+          "wrong_transfer": 0,
+          "different_shape_examples": 0,
+          "statuses": {
+            "awaiting_review": 7,
+            "needs_human": 11,
+            "rejected": 3
+          },
+          "infrastructure_retries": 0
+        },
+        "CWE-89": {
+          "jobs": 30,
+          "accepted": 17,
+          "correct": 17,
+          "false_acceptances": 0,
+          "memory_used": 7,
+          "memory_used_correct": 7,
+          "wrong_transfer": 0,
+          "different_shape_examples": 0,
+          "statuses": {
+            "needs_human": 13,
+            "awaiting_review": 17
+          },
+          "infrastructure_retries": 0
+        }
+      },
+      "by_seed": {
+        "42": {
+          "jobs": 30,
+          "accepted": 12,
+          "correct": 12,
+          "false_acceptances": 0,
+          "memory_used": 8,
+          "memory_used_correct": 6,
+          "wrong_transfer": 0,
+          "different_shape_examples": 0,
+          "statuses": {
+            "needs_human": 17,
+            "awaiting_review": 12,
+            "rejected": 1
+          },
+          "infrastructure_retries": 0
+        },
+        "43": {
+          "jobs": 30,
+          "accepted": 9,
+          "correct": 9,
+          "false_acceptances": 0,
+          "memory_used": 6,
+          "memory_used_correct": 4,
+          "wrong_transfer": 0,
+          "different_shape_examples": 0,
+          "statuses": {
+            "needs_human": 19,
+            "awaiting_review": 9,
+            "rejected": 2
+          },
+          "infrastructure_retries": 0
+        },
+        "44": {
+          "jobs": 30,
+          "accepted": 8,
+          "correct": 8,
+          "false_acceptances": 0,
+          "memory_used": 3,
+          "memory_used_correct": 3,
+          "wrong_transfer": 0,
+          "different_shape_examples": 0,
+          "statuses": {
+            "needs_human": 21,
+            "awaiting_review": 8,
+            "rejected": 1
+          },
+          "infrastructure_retries": 0
+        }
+      }
+    },
+    "C+L2": {
+      "vulnerable": {
+        "jobs": 90,
+        "accepted": 29,
+        "correct": 29,
+        "false_acceptances": 0,
+        "memory_used": 35,
+        "memory_used_correct": 13,
+        "wrong_transfer": 0,
+        "different_shape_examples": 0,
+        "statuses": {
+          "needs_human": 59,
+          "awaiting_review": 29,
+          "rejected": 2
+        },
+        "infrastructure_retries": 0
+      },
+      "safe": {
+        "jobs": 45,
+        "accepted": 0,
+        "correct": 0,
+        "false_acceptances": 0,
+        "memory_used": 0,
+        "memory_used_correct": 0,
+        "wrong_transfer": 0,
+        "different_shape_examples": 0,
+        "statuses": {
+          "needs_human": 45
+        },
+        "infrastructure_retries": 0
+      },
+      "by_cwe": {
+        "CWE-22": {
+          "jobs": 39,
+          "accepted": 3,
+          "correct": 3,
+          "false_acceptances": 0,
+          "memory_used": 11,
+          "memory_used_correct": 0,
+          "wrong_transfer": 0,
+          "different_shape_examples": 0,
+          "statuses": {
+            "needs_human": 36,
+            "awaiting_review": 3
+          },
+          "infrastructure_retries": 0
+        },
+        "CWE-78": {
+          "jobs": 21,
+          "accepted": 9,
+          "correct": 9,
+          "false_acceptances": 0,
+          "memory_used": 14,
+          "memory_used_correct": 6,
+          "wrong_transfer": 0,
+          "different_shape_examples": 0,
+          "statuses": {
+            "awaiting_review": 9,
+            "needs_human": 10,
+            "rejected": 2
+          },
+          "infrastructure_retries": 0
+        },
+        "CWE-89": {
+          "jobs": 30,
+          "accepted": 17,
+          "correct": 17,
+          "false_acceptances": 0,
+          "memory_used": 10,
+          "memory_used_correct": 7,
+          "wrong_transfer": 0,
+          "different_shape_examples": 0,
+          "statuses": {
+            "needs_human": 13,
+            "awaiting_review": 17
+          },
+          "infrastructure_retries": 0
+        }
+      },
+      "by_seed": {
+        "42": {
+          "jobs": 30,
+          "accepted": 11,
+          "correct": 11,
+          "false_acceptances": 0,
+          "memory_used": 13,
+          "memory_used_correct": 5,
+          "wrong_transfer": 0,
+          "different_shape_examples": 0,
+          "statuses": {
+            "needs_human": 19,
+            "awaiting_review": 11
+          },
+          "infrastructure_retries": 0
+        },
+        "43": {
+          "jobs": 30,
+          "accepted": 9,
+          "correct": 9,
+          "false_acceptances": 0,
+          "memory_used": 11,
+          "memory_used_correct": 4,
+          "wrong_transfer": 0,
+          "different_shape_examples": 0,
+          "statuses": {
+            "needs_human": 20,
+            "awaiting_review": 9,
+            "rejected": 1
+          },
+          "infrastructure_retries": 0
+        },
+        "44": {
+          "jobs": 30,
+          "accepted": 9,
+          "correct": 9,
+          "false_acceptances": 0,
+          "memory_used": 11,
+          "memory_used_correct": 4,
+          "wrong_transfer": 0,
+          "different_shape_examples": 0,
+          "statuses": {
+            "needs_human": 20,
+            "awaiting_review": 9,
+            "rejected": 1
+          },
+          "infrastructure_retries": 0
+        }
+      }
+    }
+  }
+}

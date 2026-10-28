@@ -250,12 +250,12 @@ Hafta 8'in sandbox sertleştirme maddeleri ayrı iş olarak açık.
 #### Hafta 9 · 21 – 27 Aralık
 **Hedef:** Ana deneyi çalıştırmak.
 
-- [ ] Kollar: **A** hafızasız · **B** yalnız benzerlik (yerel embedding modeli ile en benzer kayıt) · **C** SafePatch hafızası (L1) · **C+L2** soğuk başlangıç — *Kadir*
-- [ ] Koşullar: aynı model, aynı bütçe (3 deneme, süre ve token sınırı), en az 3 seed, sıra dengeli — *Kadir*
-- [ ] Onarım deneyi "bilinen bulgu" moduyla çalışır; böylece tarayıcının kaçırdığı vakalar da onarım ölçümüne girer. Tespit sonuçları (Hafta 7) ayrı raporlanır — *Kadir*
-- [ ] Yaklaşık yük: sınıf sayısına göre 40–80 değerlendirme vakası × 4 kol × 3 seed = 480–960 koşu. Koşu başına ~1–1,5 dk ile 8–24 saat GPU; birkaç geceye bölünür — *Kadir*
-- [ ] Sonuçlar hem toplam hem **sınıf bazında** raporlanır (hafızanın hangi sınıfta işe yaradığı ayrı görünür) — *Kadir*
-- [ ] Ham sonuçlar `evidence/v02-benchmark/` altında; başarısız koşular paydadan çıkarılmaz — *Reşat*
+- [x] Kollar: **A** hafızasız · **B** yalnız benzerlik (yerel embedding modeli ile en benzer kayıt) · **C** SafePatch hafızası (L1) · **C+L2** soğuk başlangıç — *Kadir*
+- [x] Koşullar: aynı model, aynı bütçe (3 deneme, süre ve token sınırı), en az 3 seed, sıra dengeli — *Kadir*
+- [x] Onarım deneyi "bilinen bulgu" moduyla çalışır; böylece tarayıcının kaçırdığı vakalar da onarım ölçümüne girer. Tespit sonuçları (Hafta 7) ayrı raporlanır — *Kadir*
+- [x] Yaklaşık yük: sınıf sayısına göre 40–80 değerlendirme vakası × 4 kol × 3 seed = 480–960 koşu. Koşu başına ~1–1,5 dk ile 8–24 saat GPU; birkaç geceye bölünür — *Kadir*
+- [x] Sonuçlar hem toplam hem **sınıf bazında** raporlanır (hafızanın hangi sınıfta işe yaradığı ayrı görünür) — *Kadir*
+- [x] Ham sonuçlar `evidence/v02-benchmark/` altında; başarısız koşular paydadan çıkarılmaz — *Reşat*
 
 #### Hafta 10 · 28 Aralık – 3 Ocak (yılbaşı haftası, hafif plan)
 **Hedef:** Sonuç raporu ve sertleştirme.

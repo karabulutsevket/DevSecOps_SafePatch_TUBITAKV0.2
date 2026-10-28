@@ -1,0 +1,143 @@
+{
+  "case": "vul4j-43",
+  "cwe": "CWE-22",
+  "project": "eclipse-rdf4j/rdf4j",
+  "source": "vul4j",
+  "vulnerable": true,
+  "seed": 44,
+  "arm": "C+L2",
+  "position": 5,
+  "job": "9119fdc51b0149b7a6cdf7f36ee16634",
+  "status": "needs_human",
+  "reason": "attempt_budget_exhausted",
+  "wall_seconds": 149.3,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 2,
+      "patch_sha256": "7402ad0d48cc9c1b6df585afe02d4f53b72fca1278273778fa37f08522186b1e",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "security_witness_failed",
+        "failed_tests": [
+          {
+            "suite": "security",
+            "test": "entryOutsideTheDestinationIsNotWritten",
+            "marker": "PATH_TRAVERSAL_REGRESSION"
+          }
+        ],
+        "remaining_rules": []
+      },
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 108,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0
+      },
+      "model_seconds": 21.296,
+      "prompt_tokens": 2301,
+      "output_tokens": 1014,
+      "dropped": [
+        "util/src/main/java/org/eclipse/rdf4j/common/io/IndentingWriter.java"
+      ]
+    },
+    {
+      "number": 2,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 13,
+      "patch_sha256": "3aee9d53825102d0b279d5b00dcf408464b0b51ea48ed1d74991207b6105f2cf",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] util/src/main/java/org/eclipse/rdf4j/common/io/ZipUtil.java:[105,27] error: incompatible types: Path cannot be converted to File"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 22.016,
+      "prompt_tokens": 2535,
+      "output_tokens": 1045,
+      "dropped": [
+        "util/src/main/java/org/eclipse/rdf4j/common/io/IndentingWriter.java"
+      ]
+    },
+    {
+      "number": 3,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 16,
+      "patch_sha256": "4548a34fff3bd8fd4c29ec6520cffedf3fab91371b62d300fe66ba02ec0ad653",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] util/src/main/java/org/eclipse/rdf4j/common/io/ZipUtil.java:[107,22] error: cannot find symbol",
+          "[ERROR] util/src/main/java/org/eclipse/rdf4j/common/io/ZipUtil.java:[110,27] error: incompatible types: Path cannot be converted to File"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 23.578,
+      "prompt_tokens": 2833,
+      "output_tokens": 1106,
+      "dropped": [
+        "util/src/main/java/org/eclipse/rdf4j/common/io/IndentingWriter.java"
+      ]
+    }
+  ],
+  "memory": {
+    "decision": "no_match",
+    "tier": null,
+    "use": null,
+    "selected_id": null,
+    "considered": 5,
+    "same_shape": null,
+    "similarity": null,
+    "warnings_sent": 0
+  },
+  "infrastructure_retry": [],
+  "accepted": false,
+  "hidden": null,
+  "false_acceptance": null,
+  "correct": false,
+  "promoted": null
+}

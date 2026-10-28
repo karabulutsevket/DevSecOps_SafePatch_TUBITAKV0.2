@@ -1,0 +1,153 @@
+{
+  "case": "owasp-benchmark-00526",
+  "cwe": "CWE-22",
+  "project": "OWASP-Benchmark/BenchmarkJava",
+  "source": "owasp-benchmark",
+  "vulnerable": true,
+  "seed": 42,
+  "arm": "B",
+  "position": 36,
+  "job": "758bdfcc99054803a5cdb4c75b664f35",
+  "status": "needs_human",
+  "reason": "attempt_budget_exhausted",
+  "wall_seconds": 160.2,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 10,
+      "patch_sha256": "0e7221a68c8fa6182dc6172fa7a083d73b3bf3a851be23827732419a23e147f4",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00526.java:[63,9] cannot find symbol: Path",
+          "[ERROR] src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00526.java:[65,36] cannot find symbol: Paths"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 22.328,
+      "prompt_tokens": 2492,
+      "output_tokens": 920,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java"
+      ]
+    },
+    {
+      "number": 2,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 11,
+      "patch_sha256": "9d0027485bfd837ef9b0f8d1619822f816d536fef7914d83f6ded59c65b66288",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "behavior_regression",
+        "failed_tests": [
+          {
+            "suite": "behavior",
+            "test": "benignInputAnswersAsBefore",
+            "marker": "BEHAVIOR_REGRESSION"
+          },
+          {
+            "suite": "security",
+            "test": "attackHasNoEffect",
+            "marker": "PATH_TRAVERSAL_REGRESSION"
+          }
+        ],
+        "remaining_rules": []
+      },
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0
+      },
+      "model_seconds": 18.75,
+      "prompt_tokens": 2075,
+      "output_tokens": 887,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java",
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00004.java"
+      ]
+    },
+    {
+      "number": 3,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 10,
+      "patch_sha256": "2bdeb8b99240aa8914451a95a4c28326ba842b7dda8fe75cb21379acd4ca7a66",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00526.java:[62,9] cannot find symbol: Path",
+          "[ERROR] src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00526.java:[62,21] cannot find symbol: Paths",
+          "[ERROR] src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00526.java:[63,9] cannot find symbol: Path",
+          "[ERROR] src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00526.java:[78,13] cannot find symbol: Files"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 18.781,
+      "prompt_tokens": 2206,
+      "output_tokens": 883,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java",
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00004.java"
+      ]
+    }
+  ],
+  "memory": {
+    "decision": "match",
+    "tier": "L1",
+    "use": "example",
+    "selected_id": "9d4c6a58e7b34511838bea10e86a7291",
+    "considered": 2,
+    "same_shape": false,
+    "similarity": 0.742196,
+    "warnings_sent": 0
+  },
+  "infrastructure_retry": [],
+  "accepted": false,
+  "hidden": null,
+  "false_acceptance": null,
+  "correct": false,
+  "promoted": null
+}

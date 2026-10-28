@@ -1,0 +1,157 @@
+{
+  "case": "vul4j-79",
+  "cwe": "CWE-22",
+  "project": "zeroturnaround/zt-zip",
+  "source": "vul4j",
+  "vulnerable": true,
+  "seed": 42,
+  "arm": "C",
+  "position": 13,
+  "job": "8efe822b8ab34ddfa8049532bbb4f48a",
+  "status": "needs_human",
+  "reason": "attempt_budget_exhausted",
+  "wall_seconds": 129.3,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "regions",
+      "regions_changed": [
+        1,
+        2,
+        3
+      ],
+      "imports_added": [],
+      "changed_lines": 46,
+      "patch_sha256": "db354e2a45928cd50dff7cf19f86b95d6edb7acaa150315edaed831fd5e2eaef",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1156,30] error: incompatible types: File cannot be converted to String",
+          "[ERROR] src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1213,38] error: no suitable method found for get(File)",
+          "[ERROR] src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1264,30] error: incompatible types: File cannot be converted to String",
+          "[ERROR] src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1229,36] error: incompatible types: File cannot be converted to String"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 24.985,
+      "prompt_tokens": 2491,
+      "output_tokens": 949,
+      "dropped": [
+        "src/main/java/org/zeroturnaround/zip/FileSource.java",
+        "src/main/java/org/zeroturnaround/zip/ByteSource.java"
+      ]
+    },
+    {
+      "number": 2,
+      "edit_mode": "regions",
+      "regions_changed": [
+        1,
+        2,
+        3
+      ],
+      "imports_added": [],
+      "changed_lines": 46,
+      "patch_sha256": "db354e2a45928cd50dff7cf19f86b95d6edb7acaa150315edaed831fd5e2eaef",
+      "policy_error": null,
+      "stopped": "duplicate_patch",
+      "passed": null,
+      "failure": null,
+      "no_change": null,
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 23.734,
+      "prompt_tokens": 2586,
+      "output_tokens": 896,
+      "dropped": [
+        "src/main/java/org/zeroturnaround/zip/FileSource.java",
+        "src/main/java/org/zeroturnaround/zip/ByteSource.java",
+        "src/main/java/org/zeroturnaround/zip/CloseShieldInputStream.java",
+        "src/main/java/org/zeroturnaround/zip/IdentityNameMapper.java"
+      ]
+    },
+    {
+      "number": 3,
+      "edit_mode": "regions",
+      "regions_changed": [
+        1,
+        2,
+        3
+      ],
+      "imports_added": [],
+      "changed_lines": 65,
+      "patch_sha256": "0c51a102c7fd7d7d1009ff3123c0846dbf30ea4a0e3509fe3224c80643ab4448",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1156,25] error: no suitable method found for get(File)",
+          "[ERROR] src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1208,25] error: no suitable method found for get(File)",
+          "[ERROR] src/main/java/org/zeroturnaround/zip/ZipUtil.java:[1277,29] error: no suitable method found for get(File)"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 28.922,
+      "prompt_tokens": 2621,
+      "output_tokens": 1058,
+      "dropped": [
+        "src/main/java/org/zeroturnaround/zip/FileSource.java",
+        "src/main/java/org/zeroturnaround/zip/ByteSource.java",
+        "src/main/java/org/zeroturnaround/zip/CloseShieldInputStream.java",
+        "src/main/java/org/zeroturnaround/zip/IdentityNameMapper.java",
+        "src/main/java/org/zeroturnaround/zip/ZipException.java"
+      ]
+    }
+  ],
+  "memory": {
+    "decision": "no_match",
+    "tier": null,
+    "use": null,
+    "selected_id": null,
+    "considered": 0,
+    "same_shape": null,
+    "similarity": null,
+    "warnings_sent": 0
+  },
+  "infrastructure_retry": [],
+  "accepted": false,
+  "hidden": null,
+  "false_acceptance": null,
+  "correct": false,
+  "promoted": null
+}

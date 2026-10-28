@@ -1,0 +1,149 @@
+{
+  "case": "owasp-benchmark-01116",
+  "cwe": "CWE-22",
+  "project": "OWASP-Benchmark/BenchmarkJava",
+  "source": "owasp-benchmark",
+  "vulnerable": true,
+  "seed": 42,
+  "arm": "C",
+  "position": 42,
+  "job": "543cab80e8aa4ddc8884fc2da54cab85",
+  "status": "awaiting_review",
+  "reason": null,
+  "wall_seconds": 154.4,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": null,
+      "patch_sha256": null,
+      "policy_error": "empty_patch",
+      "stopped": null,
+      "passed": null,
+      "failure": {
+        "category": "empty_patch"
+      },
+      "no_change": {
+        "answer": "repeats_shown_code",
+        "shown": "whole_file",
+        "change_required_by": "failing_security_witness"
+      },
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 24.109,
+      "prompt_tokens": 2326,
+      "output_tokens": 1152,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java",
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00004.java"
+      ]
+    },
+    {
+      "number": 2,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 26,
+      "patch_sha256": "5cbe93d64dc1644cf1934e26de1a6c736d5efb5ddd763ed4b596677deee112bf",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01116.java:[66,13] cannot find symbol: Path",
+          "[ERROR] src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01116.java:[66,25] cannot find symbol: Paths",
+          "[ERROR] src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01116.java:[67,13] cannot find symbol: Path"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 22.234,
+      "prompt_tokens": 2438,
+      "output_tokens": 1069,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java",
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00004.java"
+      ]
+    },
+    {
+      "number": 3,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 29,
+      "patch_sha256": "6bfd87e4e8f5ecfeeac36e8aec16c730317149c45d8b833ae97eb326102b90fd",
+      "policy_error": null,
+      "stopped": null,
+      "passed": true,
+      "failure": null,
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "model_seconds": 23.469,
+      "prompt_tokens": 2738,
+      "output_tokens": 1104,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java",
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00004.java",
+        "failed_repair_data"
+      ]
+    }
+  ],
+  "memory": {
+    "decision": "match",
+    "tier": "L1",
+    "use": "example",
+    "selected_id": "30874bea6f424a489add2a75956ea90c",
+    "considered": 2,
+    "same_shape": null,
+    "similarity": null,
+    "warnings_sent": 1
+  },
+  "infrastructure_retry": [],
+  "accepted": true,
+  "hidden": {
+    "passed": true,
+    "tests": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "details": [],
+    "duration_seconds": 11.828,
+    "reason": null
+  },
+  "false_acceptance": false,
+  "correct": true,
+  "promoted": "193989fded264ddd9172bbb83fb399e4",
+  "accepted_attempt": 3
+}

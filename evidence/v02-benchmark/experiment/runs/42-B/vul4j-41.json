@@ -1,0 +1,158 @@
+{
+  "case": "vul4j-41",
+  "cwe": "CWE-22",
+  "project": "codehaus-plexus/plexus-archiver",
+  "source": "vul4j",
+  "vulnerable": true,
+  "seed": 42,
+  "arm": "B",
+  "position": 33,
+  "job": "5c55f9e78b494edba5573926a47d1f5d",
+  "status": "needs_human",
+  "reason": "attempt_budget_exhausted",
+  "wall_seconds": 74.9,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "regions",
+      "regions_changed": [
+        1
+      ],
+      "imports_added": [],
+      "changed_lines": null,
+      "patch_sha256": null,
+      "policy_error": "empty_patch",
+      "stopped": null,
+      "passed": null,
+      "failure": {
+        "category": "empty_patch"
+      },
+      "no_change": {
+        "answer": "repeats_shown_code",
+        "shown": "regions",
+        "change_required_by": "failing_security_witness"
+      },
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 14.078,
+      "prompt_tokens": 2754,
+      "output_tokens": 507,
+      "dropped": [
+        "src/main/java/org/codehaus/plexus/archiver/UnixStat.java",
+        "src/main/java/org/codehaus/plexus/archiver/BaseFileSet.java",
+        "src/main/java/org/codehaus/plexus/archiver/ArchiverException.java",
+        "src/main/java/org/codehaus/plexus/archiver/ArchiveFile.java"
+      ]
+    },
+    {
+      "number": 2,
+      "edit_mode": "regions",
+      "regions_changed": [
+        1
+      ],
+      "imports_added": [],
+      "changed_lines": null,
+      "patch_sha256": null,
+      "policy_error": "empty_patch",
+      "stopped": null,
+      "passed": null,
+      "failure": {
+        "category": "empty_patch"
+      },
+      "no_change": {
+        "answer": "repeats_shown_code",
+        "shown": "regions",
+        "change_required_by": "failing_security_witness"
+      },
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 10.953,
+      "prompt_tokens": 2711,
+      "output_tokens": 502,
+      "dropped": [
+        "src/main/java/org/codehaus/plexus/archiver/UnixStat.java",
+        "src/main/java/org/codehaus/plexus/archiver/BaseFileSet.java",
+        "src/main/java/org/codehaus/plexus/archiver/ArchiverException.java",
+        "src/main/java/org/codehaus/plexus/archiver/ArchiveFile.java",
+        "src/main/java/org/codehaus/plexus/archiver/ArchiveFinalizer.java"
+      ]
+    },
+    {
+      "number": 3,
+      "edit_mode": "regions",
+      "regions_changed": [
+        1
+      ],
+      "imports_added": [],
+      "changed_lines": null,
+      "patch_sha256": null,
+      "policy_error": "empty_patch",
+      "stopped": null,
+      "passed": null,
+      "failure": {
+        "category": "empty_patch"
+      },
+      "no_change": {
+        "answer": "repeats_shown_code",
+        "shown": "regions",
+        "change_required_by": "failing_security_witness"
+      },
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 10.937,
+      "prompt_tokens": 2710,
+      "output_tokens": 500,
+      "dropped": [
+        "src/main/java/org/codehaus/plexus/archiver/UnixStat.java",
+        "src/main/java/org/codehaus/plexus/archiver/BaseFileSet.java",
+        "src/main/java/org/codehaus/plexus/archiver/ArchiverException.java",
+        "src/main/java/org/codehaus/plexus/archiver/ArchiveFile.java",
+        "src/main/java/org/codehaus/plexus/archiver/ArchiveFinalizer.java",
+        "src/main/java/org/codehaus/plexus/archiver/AbstractArchiveFinalizer.java"
+      ]
+    }
+  ],
+  "memory": {
+    "decision": "match",
+    "tier": "L1",
+    "use": "example",
+    "selected_id": "674c90cd536940d18091e3e744597c60",
+    "considered": 2,
+    "same_shape": true,
+    "similarity": 0.766704,
+    "warnings_sent": 0
+  },
+  "infrastructure_retry": [],
+  "accepted": false,
+  "hidden": null,
+  "false_acceptance": null,
+  "correct": false,
+  "promoted": null
+}

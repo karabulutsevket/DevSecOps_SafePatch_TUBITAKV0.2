@@ -1,6 +1,6 @@
 # Ana deney protokolü: A / B / C / C+L2 (27 Ekim 2026, Hafta 9)
 
-**Durum: kararlar verildi (27 Ekim, proje lideri), asıl koşu bekliyor.** Bu belge deney koşulmadan önce sabitlenir (ROADMAP.md Hafta 9). Koşu başladıktan sonra protokol de ürün kodu da değişmez. Değişirse koşu baştan alınır ve iki kayıt birlikte raporlanır. Betik bunu denetler: `safepatch/` değişmişse devam reddedilir.
+**Durum: kararlar verildi (27 Ekim, proje lideri), asıl koşu tamamlandı (`ana-1`, 28 Ekim; aşağıda "Koşu kaydı"). Analiz Hafta 10'da.** Bu belge deney koşulmadan önce sabitlenir (ROADMAP.md Hafta 9). Koşu başladıktan sonra protokol de ürün kodu da değişmez. Değişirse koşu baştan alınır ve iki kayıt birlikte raporlanır. Betik bunu denetler: `safepatch/` değişmişse devam reddedilir.
 
 **Betik:** `scripts/main_experiment.py`:
 - `l2` alt komutu L2 paketini üretir;
@@ -94,3 +94,42 @@ Düzeltmeler uzman yaması yoluyla doğrulanır, simüle onayla laboratuvar L1'i
 ## Değerlendirme setinden önce
 
 Betik, geliştirme vakalarında bir mekanik denemeden geçer. Bu deneme bir ölçüm değildir; değerlendirme setinde yalnız asıl koşu yapılır.
+
+## Koşu kaydı: `ana-1`
+
+**Ham kayıtlar** [`evidence/v02-benchmark/experiment/`](../evidence/v02-benchmark/experiment/) altında:
+- `protocol.json`: koşunun sabitleri;
+- `runs/<seed>-<kol>/<vaka>.json`: her satırın ham kaydı;
+- `summary.json`: özet sayılar.
+
+**Koşunun kendisi**
+- Başlangıç 27 Ekim 2026 21:51, bitiş 28 Ekim 12:47; yaklaşık 15 saat.
+- Satır sayısı 540: 4 kol × 3 seed × 45 vaka.
+- Altyapı hatası yüzünden yeniden koşu gerekmedi.
+- Kod koşu boyunca değişmedi: commit `166aeb8`, `code_sha256` `39cf00e2…9357`, başta ve sonda aynı.
+- 15 güvenli vaka her kolda ve her seed'de modele gitmeden tanık kapısında durdu: 180/180, gerekçe `baseline_missing_expected_failing_security_assertion_or_finding`.
+- Kabul edilen her adayda gizli testler koşuldu.
+
+**Ham sayılar.** 30 gerçek açık × 3 seed = kol başına 90 iş. Bu tablo yalnız sayıları verir; anlamlılık sınaması ve güven aralıkları Hafta 10 analizinin işidir.
+
+| Kol | Doğru onarım | Kabul | Yanlış kabul | Hafıza kullanılan iş | CWE-22 | CWE-78 | CWE-89 |
+|---|---|---|---|---|---|---|---|
+| A | 30/90 | 30 | 0 | 0 | 5/39 | 7/21 | 18/30 |
+| B | 35/90 | 36 | 1 | 58 | 4/39 | 12/21 | 19/30 |
+| C | 29/90 | 29 | 0 | 17 | 5/39 | 7/21 | 17/30 |
+| C+L2 | 29/90 | 29 | 0 | 35 | 3/39 | 9/21 | 17/30 |
+
+- B'deki yanlış kabul: `vul4j-43`, seed 42.
+  - Seçilen L1 kaydı yapısal imzası bulguyla uyuşmayan bir örnekti; kosinüs benzerliği 0,627.
+  - Gizli testte `BEHAVIOR_REGRESSION` ile kaldı.
+
+**Koşu sırasındaki operasyonel müdahale (ölçümü etkilemez)**
+- **Sorun.** Runner her doğrulama denemesinde projeyi `.runtime/runner-work` altına kopyalıyor ve iş bitince kopyayı silmiyordu. Bu V0.1'den kalma bir davranış. OWASP Benchmark'ta her kopya 228 MB; klasör koşu sırasında 163 GB'a ulaştı ve disk koşu bitmeden dolabilirdi.
+- **Neden kod düzeltilmedi.** Koşu sürerken ürün kodu değiştirilemez.
+- **Yapılan.** Proje liderinin onayıyla, 28 Ekim 02:40'tan itibaren koşunun dışında çalışan bir temizleyici kullanıldı:
+  - yalnız bu klasördeki 2 saatten eski kopyaları 30 dakikada bir sildi;
+  - bir iş en fazla 1800 sn sürdüğü için kullanımda olan bir kopyaya dokunmadı;
+  - ölçüm kayıtlarına, hafızaya, review kopyalarına ve doğrulanmış artifact'lere dokunmadı;
+  - 20 turda silme hatası olmadı.
+- **Kayıt.** Temizleyicinin günlüğü `.runtime/runner-work-cleaner.log` dosyasında; Git'e girmez.
+- **Kalıcı düzeltme.** Runner kendi kopyasını iş sonunda silecek; bu ayrı bir dalda yapılır.
