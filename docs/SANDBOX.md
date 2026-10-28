@@ -93,6 +93,15 @@ Kayıtlar `buyuk-projeler/` altında.
 
 **Linux sunucuda** aynı şart, ayrı bir bölüm ya da mantıksal birimle karşılanır; XFS proje kotası da olur, ama runner bugün ayrı bağlama noktası arıyor.
 
+**Windows tarafındaki kopya iş bitince siliniyor (28 Ekim).**
+- **Ne bu kopya.** Runner her doğrulama denemesinde projenin sabit commit'ini `.runtime/runner-work/<iş>-<deneme>-<rastgele>` altına açıyor; sandbox kopyası bundan hazırlanıyor.
+- **Sorun.** V0.1'den beri bu kopya hiç silinmiyordu. OWASP Benchmark'ta her deneme 228 MB yer tutuyor. Ana deneyde (`ana-1`) klasör 163 GB'a ulaştı; koşu, sürecin dışında çalışan bir temizleyiciyle tamamlandı ([DENEY_PROTOKOLU.md](DENEY_PROTOKOLU.md), "Koşu kaydı").
+- **Şimdi.** Runner kopyayı her işin sonunda siliyor: iş başarılı da olsa, hata ya da zaman aşımıyla da bitse.
+- **Silinemeyen dosya.** Başka bir sürecin tuttuğu bir dosya silinemezse iş hata vermez; dosya klasörde kalır.
+- **Etkilenmeyenler.**
+  - İnsan incelemesine giden kopya, worker2'nin `.runtime/review` altındaki kendi kopyası.
+  - Doğrulanmış paketler, `.runtime/verified-artifacts`.
+
 ## Sınırlar
 
 - **Runner'ın kendisi kısıtlı değil.** Runner, Docker'ı kullanıcının `docker` grubu üzerinden çağırıyor; bu grup fiilen root eşdeğeridir. Sandbox proje kodunu sınırlar, runner'ı değil. Runner güvenilir koddur (CLAUDE.md, kural 1).

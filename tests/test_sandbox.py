@@ -6,6 +6,7 @@ from pathlib import Path
 import subprocess
 import time
 import shutil
+import stat
 import sys
 import types
 import uuid
@@ -134,6 +135,54 @@ def test_sonar_needs_network_so_it_never_runs_in_the_sandbox(monkeypatch):
                             deadline=time.time() + 60, scanner="sonarqube+semgrep")
     with pytest.raises(PolicyError, match="sonar_scan_needs_network_not_sandboxed"):
         runner.execute(request)
+
+
+@pytest.mark.parametrize("failing", [None, "checkout", "outcome"])
+def test_the_runner_removes_its_checkout_whatever_the_job_did(monkeypatch, tmp_path, failing):
+    # A large project's checkout is 0.2+ GB per attempt; the main experiment left 2,700 behind (28 Oct 2026).
+    monkeypatch.setenv("DATA_ROOT", str(tmp_path))
+    monkeypatch.setattr(runner, "baseline", lambda *a: ({"spec": spec("safepatch-synthetic")}, {}))
+    monkeypatch.setattr(runner, "sandbox_mode", lambda _: "native")
+    seen = []
+
+    def checkout(case_id, commit, workspace):
+        pack = workspace / ".git" / "objects" / "pack" / "pack-1.pack"
+        pack.parent.mkdir(parents=True)
+        pack.write_bytes(b"PACK")
+        os.chmod(pack, stat.S_IREAD)   # read-only, as Git may leave pack files on Windows
+        seen.append(workspace)
+        if failing == "checkout":
+            raise RuntimeError("git_failed")
+
+    def outcome(req, spec_, workspace, *rest):
+        assert (workspace / ".git" / "objects" / "pack" / "pack-1.pack").is_file()
+        if failing == "outcome":
+            raise TimeoutError("child_timeout")
+        return {"passed": False}
+    monkeypatch.setattr(runner, "checkout", checkout)
+    monkeypatch.setattr(runner, "outcome", outcome)
+    request = VerifyRequest(job_id="a" * 32, case_id="sql-01", base_commit="b" * 40, attempt=0, deadline=time.time() + 60)
+    if failing:
+        with pytest.raises((RuntimeError, TimeoutError)):
+            runner.execute(request)
+    else:
+        assert runner.execute(request) == {"passed": False}
+    assert seen and not seen[0].exists() and list((tmp_path / "runner-work").iterdir()) == []
+
+
+def test_a_file_that_cannot_be_removed_does_not_fail_the_job(monkeypatch, tmp_path):
+    (tmp_path / "keep").mkdir()
+    (tmp_path / "keep" / "locked.jar").write_bytes(b"PK")
+    real = os.unlink
+
+    def locked(path, *args, **kwargs):
+        if str(path).endswith("locked.jar"):
+            raise PermissionError("in use by another process")
+        return real(path, *args, **kwargs)
+    monkeypatch.setattr(runner.os, "unlink", locked)
+    runner.discard(tmp_path / "keep")
+    runner.discard(tmp_path / "never-created")
+    assert (tmp_path / "keep" / "locked.jar").is_file()
 
 
 docker = pytest.mark.skipif(os.environ.get("RUN_DOCKER_INTEGRATION") != "1" or not os.environ.get("SANDBOX_MAVEN_CACHE"),
