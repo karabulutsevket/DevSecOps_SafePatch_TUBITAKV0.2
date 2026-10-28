@@ -1,6 +1,6 @@
 # Ana deney protokolü: A / B / C / C+L2 (27 Ekim 2026, Hafta 9)
 
-**Durum: kararlar verildi (27 Ekim, proje lideri), asıl koşu tamamlandı (`ana-1`, 28 Ekim; aşağıda "Koşu kaydı"). Analiz Hafta 10'da.** Bu belge deney koşulmadan önce sabitlenir (ROADMAP.md Hafta 9). Koşu başladıktan sonra protokol de ürün kodu da değişmez. Değişirse koşu baştan alınır ve iki kayıt birlikte raporlanır. Betik bunu denetler: `safepatch/` değişmişse devam reddedilir.
+**Durum: kararlar verildi (27 Ekim, proje lideri), asıl koşu tamamlandı (`ana-1`, 28 Ekim; aşağıda "Koşu kaydı"). Analiz: [OLCUM_SONUCLARI_V02.md](OLCUM_SONUCLARI_V02.md).** Bu belge deney koşulmadan önce sabitlenir (ROADMAP.md Hafta 9). Koşu başladıktan sonra protokol de ürün kodu da değişmez. Değişirse koşu baştan alınır ve iki kayıt birlikte raporlanır. Betik bunu denetler: `safepatch/` değişmişse devam reddedilir.
 
 **Betik:** `scripts/main_experiment.py`:
 - `l2` alt komutu L2 paketini üretir;

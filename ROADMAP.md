@@ -260,8 +260,8 @@ Hafta 8'in sandbox sertleştirme maddeleri ayrı iş olarak açık.
 #### Hafta 10 · 28 Aralık – 3 Ocak (yılbaşı haftası, hafif plan)
 **Hedef:** Sonuç raporu ve sertleştirme.
 
-- [ ] Analiz: kollar arası eşleştirilmiş karşılaştırma (McNemar), bootstrap güven aralıkları; sonuç olumlu ya da olumsuz raporlanır — *Kadir*
-- [ ] `docs/OLCUM_SONUCLARI_V02.md` — *Reşat*
+- [x] Analiz: kollar arası eşleştirilmiş karşılaştırma (McNemar), bootstrap güven aralıkları; sonuç olumlu ya da olumsuz raporlanır — *Kadir*
+- [x] `docs/OLCUM_SONUCLARI_V02.md` — *Reşat*
 - [ ] Bütün servisler için egress testi; temiz makinede çevrimdışı kurulum süresi ölçümü — *Yiğithan, Şevket*
 - [ ] SonarQube Community Build ile adaptörün canlı testi. Gerekli kural bu sürümde yoksa adaptörün işi güvenli şekilde durdurduğu belgelenir — *Yiğithan*
 - [ ] Audit log'a hash zinciri (kayıtların sonradan değiştirilemediğini gösterir) — *Reşat*
