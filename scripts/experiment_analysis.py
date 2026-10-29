@@ -9,7 +9,10 @@ exact McNemar test and a 95% bootstrap interval of the difference in correct-rep
 resamples cases (a case keeps its three seeds); in total, per CWE family and per seed.
 Extra comparisons and the split of jobs by what memory sent to the model are exploratory: they
 were chosen after the results were seen, and are labelled so. With --previous (ana-2, declared in
-docs/DENEY_ANA2.md) each arm is also compared with the same arm of the earlier run.
+docs/DENEY_ANA2.md) each arm is also compared with the same arm of the earlier run. --explore
+writes analiz/exploratory.json next to the analysis: the memory split again, a warning counting
+whether it was sent or only found and withheld, for this run and the earlier one (chosen after
+the ana-2 results were seen).
 """
 import argparse
 from collections import Counter, defaultdict
@@ -136,9 +139,11 @@ def arm_summary(rows, outcome):
     return out
 
 
-def memory_class(row):
-    """What memory sent to the model in this job (exploratory)."""
-    example, warned = bool(row["memory"]["use"]), bool(row["memory"]["warnings_sent"])
+def memory_class(row, found=False):
+    """What memory sent to the model in this job (exploratory). With found, a warning memory found
+    but withheld (ana-2) counts as well, so the jobs line up with the ones ana-1 warned."""
+    example = bool(row["memory"]["use"])
+    warned = bool(row["memory"]["warnings_sent"] or (found and row["memory"].get("warnings_withheld", 0)))
     return {(True, True): "example_and_warnings", (True, False): "example_only",
             (False, True): "warnings_only", (False, False): "neither"}[(example, warned)]
 
@@ -155,7 +160,7 @@ def failures(rows):
     return dict(sorted(Counter(attempt_outcome(a) for r in rows for a in r["attempts"]).items()))
 
 
-def exploratory(rows, outcome):
+def exploratory(rows, outcome, found=False):
     """Each memory arm's jobs split by what memory sent, paired with A on the same case and seed."""
     by_key = {(r["arm"], r["case"], r["seed"]): r for r in rows if r["vulnerable"]}
     out = {}
@@ -163,7 +168,7 @@ def exploratory(rows, outcome):
         groups = defaultdict(list)
         for r in rows:
             if r["arm"] == arm and r["vulnerable"]:
-                groups[memory_class(r)].append(r)
+                groups[memory_class(r, found)].append(r)
         out[arm] = {}
         for name, mine in sorted(groups.items()):
             keys = {(r["case"], r["seed"]) for r in mine}
@@ -257,15 +262,34 @@ def analyze(folder, private=None, previous=None):
             **({"cross_run": previous} if previous else {})}
 
 
+def explore(source, previous, analysis, target):
+    if not analysis.exists():
+        raise SystemExit("run the declared analysis first")
+    if target.exists():
+        raise SystemExit("evidence is never overwritten; use a fresh EVIDENCE_DIR")
+    runs = {"run": source} | ({"previous": previous} if previous else {})
+    result = {"schema": 1, "chosen_after_results": True,
+              "note": "a warning counts whether memory sent it or found and withheld it; groups are not randomised",
+              "analysis_sha256": sha256(analysis.read_bytes()).hexdigest()}
+    for name, folder in runs.items():
+        rows, runs_sha256 = load(folder)
+        result[name] = {"runs_sha256": runs_sha256, "memory_split_found": exploratory(rows, correct(rows), found=True)}
+    target.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    print("written:", target)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--private", type=Path, help="the run's local databases (default .runtime/experiment/<run>)")
     parser.add_argument("--previous", type=Path, help="an earlier run's experiment folder to compare arm by arm (ana-2 against ana-1)")
+    parser.add_argument("--explore", action="store_true", help="after the analysis: the memory split counting withheld warnings too")
     args = parser.parse_args()
     source, out = evidence("experiment"), evidence("analiz")
     if not (source / "summary.json").exists():
         raise SystemExit(f"{source} has no finished run (summary.json)")
     target = out / "analysis.json"
+    if args.explore:
+        return explore(source, args.previous, target, out / "exploratory.json")
     if target.exists():
         raise SystemExit("evidence is never overwritten; use a fresh EVIDENCE_DIR")
     out.mkdir(parents=True, exist_ok=True)

@@ -48,6 +48,14 @@ def test_memory_classes_follow_what_was_sent():
         ["example_and_warnings", "example_only", "warnings_only", "neither"]
 
 
+def test_a_withheld_warning_counts_only_in_the_found_split():
+    withheld = row("C", "a", 1, True)
+    withheld["memory"]["warnings_withheld"] = 2
+    assert analysis.memory_class(withheld) == "neither"
+    assert analysis.memory_class(withheld, found=True) == "warnings_only"
+    assert analysis.memory_class(row("C", "a", 1, True, warnings=1), found=True) == "warnings_only"
+
+
 def test_warning_kinds_come_from_the_arms_databases_as_counts_only(tmp_path):
     from safepatch.store import Store
     warned = {"warnings_sent": [{"id": "f1", "relation": "same_shape", "failure": "compilation_failed"}]}
