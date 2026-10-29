@@ -12,8 +12,9 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import Field
 
+from safepatch.audit import AuditLog
 from safepatch.auth import identity, require_role
-from safepatch.common import POLICY, PROJECT_ID, ROOT, Patch, Strict, digest, known_findings_enabled, request, seal, secret, setting
+from safepatch.common import POLICY, PROJECT_ID, ROOT, Patch, Strict, canonical, digest, known_findings_enabled, request, seal, secret, setting
 from safepatch.engine import Engine, check_expert_patch, expert_attempts_left, expert_scope, primary_finding
 from safepatch.memory import Memory, context_for
 from safepatch.acceptance import check_evidence
@@ -63,6 +64,11 @@ app = FastAPI(title="BiGG SafePatch", lifespan=lifespan)
 app.mount("/static", StaticFiles(directory=ROOT / "safepatch/static"), name="static")
 
 
+def audit(user, action, subject, **data):
+    """A human decision joins the hash-chained audit log right after it took effect."""
+    AuditLog(store).append(user["subject"], action, subject, **data)
+
+
 def ensure_memory_and_evidence(job):
     try:
         if job.get("evaluation"):
@@ -88,9 +94,11 @@ def promote(req: Promote, user=Depends(identity)):
         finding = primary_finding(job)
         context = context_for(case, files, finding)
         try:
-            return Memory(store).promote(job, context, files[finding["file"]], user["subject"], req.reason)
+            record = Memory(store).promote(job, context, files[finding["file"]], user["subject"], req.reason)
         except PolicyError as exc:
             raise HTTPException(409, str(exc)) from exc
+        audit(user, "memory.promoted", record["id"], job_id=req.job_id, reason=req.reason, evidence_sha256=record.get("evidence_sha256"))
+        return record
 
 
 @app.get("/v1/memory")
@@ -125,11 +133,13 @@ def memory_state(memory_id: str, req: MemoryDecision, user=Depends(identity)):
             record = memory.get(memory_id)
             if record["context"]["project"] not in user["projects"]:
                 raise HTTPException(404, "Hafıza kaydı bulunamadı")
-            return memory.change(memory_id, req.state, user["subject"], req.reason)
+            record = memory.change(memory_id, req.state, user["subject"], req.reason)
         except KeyError as exc:
             raise HTTPException(404, "Hafıza kaydı bulunamadı") from exc
         except PolicyError as exc:
             raise HTTPException(409, str(exc)) from exc
+        audit(user, "memory.state_changed", memory_id, state=req.state, reason=req.reason, affected_jobs=record.get("affected_jobs", []))
+        return record
 
 
 @app.middleware("http")
@@ -193,6 +203,8 @@ def create_job(req: NewJob, user=Depends(identity)):
     except ValueError as exc:
         raise HTTPException(409, str(exc)) from exc
     if created:
+        audit(user, "job.created", job["id"], case_id=req.case_id, base_commit=job["base_commit"], scanner=req.scanner,
+              memory_mode=req.memory_mode, strategy=req.strategy, policy_version=POLICY)
         work.put(job["id"])
     return job
 
@@ -239,7 +251,9 @@ def cancel(job_id: str, user=Depends(identity)):
             raise HTTPException(409, "Dağıtım iptal edilemez; rollback kullanın")
         j.update(status="cancelled", approval=None)
         j["events"].append({"time": time.time(), "status": "cancelled", "actor": user["subject"]})
-    return store.mutate(job_id, change)
+    job = store.mutate(job_id, change)
+    audit(user, "job.cancelled", job_id)
+    return job
 
 
 class ExpertPatch(Patch):
@@ -286,6 +300,7 @@ def expert_patch(job_id: str, req: ExpertPatch, user=Depends(identity)):
         except PolicyError as exc:
             # Refusals stay on the job's record; the job itself does not change.
             store.mutate(job_id, lambda j: j["events"].append({"time": time.time(), "status": "expert_patch_refused", "actor": user["subject"], "reason": str(exc)}))
+            audit(user, "expert_patch.refused", job_id, reason=str(exc), patch_sha256=digest(canonical(patch.model_dump())))
             raise HTTPException(409, str(exc)) from exc
         now = time.time()
         def submit(j):
@@ -293,6 +308,7 @@ def expert_patch(job_id: str, req: ExpertPatch, user=Depends(identity)):
                      pending_expert_patch={"patch": patch.model_dump(), "author": user["subject"], "submitted_at": now})
             j["events"].append({"time": now, "status": "queued", "actor": user["subject"], "origin": "human-authored"})
         job = store.mutate(job_id, submit)
+        audit(user, "expert_patch.submitted", job_id, patch_sha256=digest(canonical(patch.model_dump())), rationale=req.rationale)
     work.put(job_id)
     return job
 
@@ -322,6 +338,9 @@ def approval(job_id: str, req: Decision, user=Depends(identity)):
         j["status"] = "approved" if req.decision == "approve" else "rejected"
         j["events"].append({"time": time.time(), "status": j["status"], "actor": user["subject"]})
     job = store.mutate(job_id, change)
+    a = job["approval"]
+    audit(user, "job." + job["status"], job_id, candidate_commit=a["candidate_commit"], artifact_sha256=a["artifact_sha256"],
+          evidence_sha256=a["evidence_sha256"], policy_version=a["policy_version"], comment=a["comment"])
     # A reviewer's decision on a candidate built from memory is evidence about that record.
     for memory_id in job.get("memory_ids", []):
         Memory(store).settle(memory_id, job_id, review=req.decision)
@@ -352,14 +371,19 @@ def release(job_id, user):
         result = request(setting("DEPLOYER_URL", "http://127.0.0.1:8104") + "/deploy", "POST", token=secret("DEPLOYER_TOKEN"), body={"approval": payload, "signature": seal(payload, secret("APPROVAL_SIGNING_KEY"))}, timeout=90)
     except Exception as exc:
         store.mutate(job_id, lambda j: j.update(status="infrastructure_error", reason="staging_failed"))
+        audit(user, "job.deploy_failed", job_id, artifact_sha256=payload["artifact_sha256"])
         raise HTTPException(502, "Staging dağıtımı doğrulanamadı") from exc
-    return store.mutate(job_id, lambda j: j.update(status="deployed", deployment=result))
+    job = store.mutate(job_id, lambda j: j.update(status="deployed", deployment=result))
+    audit(user, "job.deployed", job_id, artifact_sha256=payload["artifact_sha256"], deployment_sha256=digest(canonical(result)))
+    return job
 
 
 @app.post("/v1/staging/rollback")
 def rollback(user=Depends(identity)):
     require_role(user, "deploy")
-    return request(setting("DEPLOYER_URL", "http://127.0.0.1:8104") + "/rollback", "POST", token=secret("DEPLOYER_TOKEN"), body={"actor": user["subject"]}, timeout=90)
+    result = request(setting("DEPLOYER_URL", "http://127.0.0.1:8104") + "/rollback", "POST", token=secret("DEPLOYER_TOKEN"), body={"actor": user["subject"]}, timeout=90)
+    audit(user, "staging.rolled_back", "staging", artifact_sha256=result.get("artifact_sha256"))
+    return result
 
 
 @app.get("/v1/jobs/{job_id}/evidence.json")

@@ -18,6 +18,7 @@ Usage (offline, on the orchestrator host; the database is DATABASE_URL):
   python -m safepatch.l2 list
 """
 import argparse
+import getpass
 import json
 from pathlib import Path
 import re
@@ -421,6 +422,7 @@ class Shared:
 
 
 def main(argv=None):
+    from safepatch.audit import AuditLog
     from safepatch.store import Store
     parser = argparse.ArgumentParser(description="L2 ortak bilgi paketi: doğrula, içeri al, listele (çevrimdışı)")
     sub = parser.add_subparsers(dest="action", required=True)
@@ -437,7 +439,12 @@ def main(argv=None):
             result = {"valid": True, "publisher": manifest["publisher"], "version": manifest["version"], "experiment": manifest["experiment"],
                       "manifest_sha256": manifest_sha256, "signer": signer, "records": [r["id"] for r in records]}
         elif args.action == "import":
-            result = Shared(Store()).install(args.package, args.trusted, args.identity)
+            store = Store()
+            result = Shared(store).install(args.package, args.trusted, args.identity)
+            if result["status"] == "installed":
+                # Offline, so the actor is the operator's account on this machine.
+                AuditLog(store).append("operator:" + getpass.getuser(), "l2.imported", result["manifest_sha256"], publisher=result["publisher"],
+                                       version=result["version"], signer=result["signer"], experiment=result["experiment"], records=len(result["records"]))
         else:
             shared = Shared(Store())
             result = {"packages": shared.installed(), "records": [{k: r[k] for k in ("id", "cwe_family", "state", "trust", "validated_here")} for r in shared.all()]}

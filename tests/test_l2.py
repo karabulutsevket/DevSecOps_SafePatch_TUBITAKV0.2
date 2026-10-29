@@ -10,6 +10,7 @@ import pytest
 
 from conftest import headers
 from test_memory import approved_record
+from safepatch.audit import AuditLog
 from safepatch import l2
 from safepatch.common import SOURCE
 from safepatch.feedback import NOTE_TITLE
@@ -295,3 +296,8 @@ def test_the_command_verifies_and_imports_offline(lab, monkeypatch, capsys):
     monkeypatch.setenv("DATABASE_URL", str(db.engine.url))
     assert l2.main(["import", path, "--trusted", str(trusted)]) == 0
     assert Shared(db).get(record["id"])["state"] == "available"
+    # The import joins the audit chain once; importing the same package again adds nothing.
+    assert l2.main(["import", path, "--trusted", str(trusted)]) == 0
+    imported = [e for e in AuditLog(db).entries() if e["action"] == "l2.imported"]
+    assert len(imported) == 1 and imported[0]["actor"].startswith("operator:")
+    assert imported[0]["data"]["publisher"] == "safepatch-lab" and imported[0]["data"]["records"] == 1
