@@ -1,0 +1,157 @@
+{
+  "case": "package-command-1",
+  "cwe": "CWE-78",
+  "project": "safepatch-package-dev",
+  "source": "safepatch-synthetic",
+  "vulnerable": true,
+  "seed": 42,
+  "arm": "C",
+  "position": 25,
+  "job": "08f7244001094769a2d1b8ba858127da",
+  "status": "needs_human",
+  "reason": "attempt_budget_exhausted",
+  "wall_seconds": 111.6,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": null,
+      "patch_sha256": null,
+      "policy_error": "empty_patch",
+      "stopped": null,
+      "passed": null,
+      "failure": {
+        "category": "empty_patch"
+      },
+      "no_change": {
+        "answer": "repeats_shown_code",
+        "shown": "whole_file",
+        "change_required_by": "failing_security_witness"
+      },
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 25.609,
+      "prompt_tokens": 2652,
+      "output_tokens": 935,
+      "dropped": [
+        "src/main/java/demo/Case001.java"
+      ]
+    },
+    {
+      "number": 2,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": null,
+      "patch_sha256": null,
+      "policy_error": "empty_patch",
+      "stopped": null,
+      "passed": null,
+      "failure": {
+        "category": "empty_patch"
+      },
+      "no_change": {
+        "answer": "repeats_shown_code",
+        "shown": "whole_file",
+        "change_required_by": "failing_security_witness"
+      },
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 24.328,
+      "prompt_tokens": 1757,
+      "output_tokens": 916,
+      "dropped": [
+        "src/main/java/demo/Case001.java",
+        "src/main/java/demo/Case002.java"
+      ]
+    },
+    {
+      "number": 3,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 6,
+      "patch_sha256": "a14812be9afdd1d435641d65b4f5500fdfe916ef2943cd2b72122ac383833d0b",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "behavior_regression",
+        "failed_tests": [
+          {
+            "suite": "behavior",
+            "test": "echoesHello",
+            "marker": "BEHAVIOR_REGRESSION"
+          },
+          {
+            "suite": "behavior",
+            "test": "echoesWorld",
+            "marker": "BEHAVIOR_REGRESSION"
+          },
+          {
+            "suite": "security",
+            "test": "shellMetacharactersAreLiteral",
+            "marker": "BEHAVIOR_REGRESSION"
+          }
+        ],
+        "remaining_rules": []
+      },
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 2
+      },
+      "security": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 1
+      },
+      "model_seconds": 23.625,
+      "prompt_tokens": 1829,
+      "output_tokens": 913,
+      "dropped": [
+        "src/main/java/demo/Case001.java",
+        "src/main/java/demo/Case002.java"
+      ]
+    }
+  ],
+  "memory": {
+    "decision": "no_match",
+    "tier": null,
+    "use": null,
+    "selected_id": null,
+    "considered": 0,
+    "same_shape": null,
+    "similarity": null,
+    "warnings_sent": 2,
+    "warnings_withheld": 0
+  },
+  "infrastructure_retry": [],
+  "accepted": false,
+  "hidden": null,
+  "false_acceptance": null,
+  "correct": null,
+  "promoted": null
+}

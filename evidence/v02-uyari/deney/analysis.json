@@ -1,0 +1,84 @@
+{
+  "outcome": "verifier accepted (development cases have no hidden tests)",
+  "primary": {
+    "pairs": 78,
+    "both": 43,
+    "only_C-W": 12,
+    "only_C": 4,
+    "neither": 19,
+    "correct_C-W": 55,
+    "correct_C": 47,
+    "difference": 0.1026,
+    "mcnemar_p": 0.0768,
+    "bootstrap_95": [
+      0.0,
+      0.2179
+    ]
+  },
+  "secondary_c_sent_warnings_only": {
+    "pairs": 24,
+    "both": 2,
+    "only_C-W": 12,
+    "only_C": 2,
+    "neither": 8,
+    "correct_C-W": 14,
+    "correct_C": 4,
+    "difference": 0.4167,
+    "mcnemar_p": 0.0129,
+    "bootstrap_95": [
+      0.1154,
+      0.7308
+    ]
+  },
+  "secondary_c_sent_any_warning": {
+    "pairs": 38,
+    "both": 14,
+    "only_C-W": 12,
+    "only_C": 3,
+    "neither": 9,
+    "correct_C-W": 26,
+    "correct_C": 17,
+    "difference": 0.2368,
+    "mcnemar_p": 0.0352,
+    "bootstrap_95": [
+      0.0263,
+      0.4571
+    ]
+  },
+  "c_w_withheld_jobs": 38,
+  "by_cwe_descriptive": {
+    "CWE-22": {
+      "pairs": 27,
+      "both": 13,
+      "only_C-W": 1,
+      "only_C": 3,
+      "neither": 10,
+      "correct_C-W": 14,
+      "correct_C": 16,
+      "difference": -0.0741,
+      "mcnemar_p": 0.625
+    },
+    "CWE-78": {
+      "pairs": 24,
+      "both": 4,
+      "only_C-W": 11,
+      "only_C": 1,
+      "neither": 8,
+      "correct_C-W": 15,
+      "correct_C": 5,
+      "difference": 0.4167,
+      "mcnemar_p": 0.0063
+    },
+    "CWE-89": {
+      "pairs": 27,
+      "both": 26,
+      "only_C-W": 0,
+      "only_C": 0,
+      "neither": 1,
+      "correct_C-W": 26,
+      "correct_C": 26,
+      "difference": 0.0,
+      "mcnemar_p": 1.0
+    }
+  }
+}

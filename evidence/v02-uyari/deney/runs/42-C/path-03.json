@@ -1,0 +1,62 @@
+{
+  "case": "path-03",
+  "cwe": "CWE-22",
+  "project": "safepatch-synthetic-lab",
+  "source": "safepatch-synthetic",
+  "vulnerable": true,
+  "seed": 42,
+  "arm": "C",
+  "position": 11,
+  "job": "87558e15e50b46c3839838bf244c0750",
+  "status": "awaiting_review",
+  "reason": null,
+  "wall_seconds": 43.6,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 9,
+      "patch_sha256": "f1d5bfc6ea077f92322794d65d02acff84f9aa7611dc6695001dab0d8ae744aa",
+      "policy_error": null,
+      "stopped": null,
+      "passed": true,
+      "failure": null,
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0
+      },
+      "model_seconds": 7.828,
+      "prompt_tokens": 1403,
+      "output_tokens": 289,
+      "dropped": []
+    }
+  ],
+  "memory": {
+    "decision": "match",
+    "tier": "L1",
+    "use": "example",
+    "selected_id": "d3da0aa3d85641bfa50d03a3d08ac302",
+    "considered": 3,
+    "same_shape": null,
+    "similarity": null,
+    "warnings_sent": 2,
+    "warnings_withheld": 0
+  },
+  "infrastructure_retry": [],
+  "accepted": true,
+  "hidden": null,
+  "false_acceptance": null,
+  "correct": null,
+  "promoted": "7c54882e55974907ad816a539da3f451",
+  "accepted_attempt": 1
+}

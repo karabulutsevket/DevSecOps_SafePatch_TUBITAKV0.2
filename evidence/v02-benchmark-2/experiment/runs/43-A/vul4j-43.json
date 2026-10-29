@@ -1,0 +1,142 @@
+{
+  "case": "vul4j-43",
+  "cwe": "CWE-22",
+  "project": "eclipse-rdf4j/rdf4j",
+  "source": "vul4j",
+  "vulnerable": true,
+  "seed": 43,
+  "arm": "A",
+  "position": 4,
+  "job": "6472a5684ca847d292ff89737d703871",
+  "status": "needs_human",
+  "reason": "attempt_budget_exhausted",
+  "wall_seconds": 135.8,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 11,
+      "patch_sha256": "83c852a47e824965ea1f9107d40eb953943b46ecc2236f3e8a8f18f21e891714",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] util/src/main/java/org/eclipse/rdf4j/common/io/ZipUtil.java:[105,27] error: incompatible types: Path cannot be converted to File"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 22.0,
+      "prompt_tokens": 2301,
+      "output_tokens": 1045,
+      "dropped": [
+        "util/src/main/java/org/eclipse/rdf4j/common/io/IndentingWriter.java"
+      ]
+    },
+    {
+      "number": 2,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 9,
+      "patch_sha256": "311ca375f97ebd3c08d1fc2db120ff90ee1053eb246a8cd1c540eda5277a5201",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] util/src/main/java/org/eclipse/rdf4j/common/io/ZipUtil.java:[102,10] error: cannot find symbol",
+          "[ERROR] util/src/main/java/org/eclipse/rdf4j/common/io/ZipUtil.java:[105,27] error: incompatible types: Path cannot be converted to File"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 22.953,
+      "prompt_tokens": 2671,
+      "output_tokens": 1088,
+      "dropped": [
+        "util/src/main/java/org/eclipse/rdf4j/common/io/IndentingWriter.java"
+      ]
+    },
+    {
+      "number": 3,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 15,
+      "patch_sha256": "c02c1ccd8bd0e9c2139664d4063573af020a839bb5f15a0ce8f56faf2c510ef4",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] util/src/main/java/org/eclipse/rdf4j/common/io/ZipUtil.java:[101,10] error: cannot find symbol",
+          "[ERROR] util/src/main/java/org/eclipse/rdf4j/common/io/ZipUtil.java:[102,28] error: cannot find symbol",
+          "[ERROR] util/src/main/java/org/eclipse/rdf4j/common/io/ZipUtil.java:[103,37] error: cannot find symbol",
+          "[ERROR] util/src/main/java/org/eclipse/rdf4j/common/io/ZipUtil.java:[107,27] error: incompatible types: Path cannot be converted to File"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 23.609,
+      "prompt_tokens": 2797,
+      "output_tokens": 1107,
+      "dropped": [
+        "util/src/main/java/org/eclipse/rdf4j/common/io/IndentingWriter.java"
+      ]
+    }
+  ],
+  "memory": {
+    "decision": "disabled",
+    "tier": null,
+    "use": null,
+    "selected_id": null,
+    "considered": 0,
+    "same_shape": null,
+    "similarity": null,
+    "warnings_sent": 0,
+    "warnings_withheld": 0
+  },
+  "infrastructure_retry": [],
+  "accepted": false,
+  "hidden": null,
+  "false_acceptance": null,
+  "correct": false,
+  "promoted": null
+}

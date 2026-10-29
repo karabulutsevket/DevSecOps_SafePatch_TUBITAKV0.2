@@ -8,6 +8,7 @@ import posixpath
 import re
 import shlex
 import shutil
+import stat
 import subprocess
 import tarfile
 import threading
@@ -494,21 +495,38 @@ def execute(req: VerifyRequest):
     if req.scanner == "known":
         known_findings(spec, req.base_commit, True)   # profile and answer-key checks before anything runs
     workspace = runtime("runner-work") / f"{req.job_id}-{req.attempt}-{uuid.uuid4().hex[:8]}"
-    checkout(req.case_id, req.base_commit, workspace)
-    patch_meta, view, revision = None, files, req.base_commit
-    if req.patch:
-        patch_meta = validate_patch(files, req.patch, workspace, allowed_files(spec, files, req.target_file))
-        # This source revision is the exact patched content; never label it as base HEAD.
-        revision = commit_candidate(workspace, req.base_commit, req.patch.edits, patch_meta["diff"])
-        view = ChainMap({edit.path: edit.content for edit in req.patch.edits}, files)
-    stage = Stage(workspace) if sandbox == "docker" else None
     try:
-        if stage:
-            stage.push()
-        return outcome(req, spec, workspace, stage, sandbox, patch_meta, view, revision, started)
+        checkout(req.case_id, req.base_commit, workspace)
+        patch_meta, view, revision = None, files, req.base_commit
+        if req.patch:
+            patch_meta = validate_patch(files, req.patch, workspace, allowed_files(spec, files, req.target_file))
+            # This source revision is the exact patched content; never label it as base HEAD.
+            revision = commit_candidate(workspace, req.base_commit, req.patch.edits, patch_meta["diff"])
+            view = ChainMap({edit.path: edit.content for edit in req.patch.edits}, files)
+        stage = Stage(workspace) if sandbox == "docker" else None
+        try:
+            if stage:
+                stage.push()
+            return outcome(req, spec, workspace, stage, sandbox, patch_meta, view, revision, started)
+        finally:
+            if stage:
+                stage.remove()
     finally:
-        if stage:
-            stage.remove()
+        # The checkout of a pinned commit is reproducible scratch (0.2+ GB per attempt for a large
+        # project) and nothing reads it after the response: the review copy is worker2's own.
+        discard(workspace)
+
+
+def discard(folder):
+    """Remove a scratch folder; a file left behind never turns a finished job into an error."""
+    def writable(func, path, _):
+        try:
+            os.chmod(path, stat.S_IWRITE)   # Git may mark pack files read-only on Windows
+            func(path)
+        except OSError:
+            pass
+    if Path(folder).exists():
+        shutil.rmtree(folder, onexc=writable)
 
 
 def outcome(req, spec, workspace, stage, sandbox, patch_meta, view, revision, started):

@@ -491,3 +491,39 @@ class Memory:
         failures = self.failures(context)
         return {"decision": "match" if selected else "no_match", "use": use, "tier": tier, "selected": selected, "considered": considered,
                 "rejected": rejected, "failures": failures, "duration_seconds": round(time.perf_counter() - start, 6)}
+
+    def similar(self, context, query, embed):
+        """Arm B of the main experiment (docs/DENEY_PROTOKOLU.md): among approved records of the
+        finding's CWE family, in any project, the one whose original code is most similar to the
+        finding's method by a local embedding model (`embed`: texts -> vectors). No applicability
+        rule and no failure warnings; an example only, never a replay. Experiment jobs only."""
+        start = time.perf_counter()
+        records = [r for r in self.all() if r["state"] == "approved" and normalized(r["context"]).get("cwe_family") == normalized(context).get("cwe_family")]
+        if not records:
+            return {"decision": "no_match", "use": None, "tier": None, "selected": None, "considered": [], "rejected": [], "failures": [],
+                    "duration_seconds": round(time.perf_counter() - start, 6)}
+        # nomic-embed-text asks for its task prefixes.
+        vectors = embed(["search_query: " + query[:EMBED_CHARS]] + ["search_document: " + original_code(r["diff"]) for r in records])
+        scores = [cosine(vectors[0], vector) for vector in vectors[1:]]
+        order = sorted(range(len(records)), key=lambda i: (-scores[i], -records[i]["created_at"]))
+        shape = lambda c: {k: (c.get("signature") or {}).get(k) for k in SHAPE} if c.get("signature") else None
+        considered = [{"id": records[i]["id"], "use": "example" if rank == 1 else None, "rank": rank, "similarity": round(scores[i], 6),
+                       # Whether the stored repair is for the same weakness shape: what the rules of arm C would have required.
+                       "same_shape": shape(records[i]["context"]) is not None and shape(records[i]["context"]) == shape(context),
+                       "differences": differences(records[i]["context"], context)} for rank, i in enumerate(order, 1)]
+        return {"decision": "match", "use": "example", "tier": "L1", "selected": records[order[0]], "considered": considered,
+                "rejected": [], "failures": [], "duration_seconds": round(time.perf_counter() - start, 6)}
+
+
+EMBED_CHARS = 4000
+
+
+def original_code(diff, limit=EMBED_CHARS):
+    """The code a stored repair changed, as it was before: the context and removed lines of its diff."""
+    return "".join(line[1:] + "\n" for line in diff.splitlines() if line[:1] in " -" and not line.startswith("---"))[:limit]
+
+
+def cosine(a, b):
+    dot = sum(x * y for x, y in zip(a, b))
+    norm = (sum(x * x for x in a) * sum(y * y for y in b)) ** 0.5
+    return dot / norm if norm else 0.0

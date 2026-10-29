@@ -25,7 +25,7 @@ Korumalı modda (`guarded`, yeni işlerin varsayılanı ve deneylerde C kolu) bi
 - **Kaynak türü:** değerin nereden geldiği (`source`) imza karşılaştırmasına girmez; düzeltme kalıbını değiştirmez.
 - **Farklı hedef çağrı:** imza biçimi açıkça farklı olan kayıt hiçbir şekilde kullanılmaz; aynı dosya ve aynı özetler olsa bile. Bu, kaydın bu bulgunun değil, aynı dosyadaki başka bir hedef çağrının düzeltmesi olduğu anlamına gelir (Hafta 5'te arayüz denemesinde bulundu). İmza bir tarafta bilinmiyorsa birebir tekrar eskisi gibi mümkündür; kod bayt bayt aynıdır.
 - **Kanıt:** her aday için iki karar, kullanım ve **farklı ya da bilinmeyen alanlar** (`differences`, ör. `build_sha256`, `signature.construction`, `jdk:unknown`) işin kanıtında, `memory_lookup.considered` alanında; elenenler ayrıca `rejected` alanında.
-- **"Neden seçildi / elendi?" paneli (Hafta 5):** iş ekranında her aday için sıra, kullanım ve Türkçe gerekçe (ör. "dosya farklı", "imzada değerin kuruluşu farklı") gösterilir. Seçilen kayıt vurgulanır; modele gönderilen başarısızlık uyarıları da listelenir.
+- **"Neden seçildi / elendi?" paneli (Hafta 5):** iş ekranında her aday için sıra, kullanım ve Türkçe gerekçe (ör. "dosya farklı", "imzada değerin kuruluşu farklı") gösterilir. Seçilen kayıt vurgulanır; aynı bağlamda daha önce başarısız olan yamalar da listelenir (29 Ekim'den beri modele gönderilmez).
 - **Ön koşulsuz kol** (`naive`, deneylerde B kolu): aynı ailedeki en yeni kaydı ön koşul aramadan örnek olarak verir, tekrar etmez.
 - **Başarısızlık kayıtları:** aynı kaynak (`same_source`), aynı sözleşme (`same_context`) ve aynı imza biçimi başka dosyada (`same_shape`) ilişkileriyle bulunur. `unknown` bağlamlar ders sayılmaz.
 
@@ -104,11 +104,18 @@ Her onaylı kayıt, kendi kabulünün ne kanıtladığını ve her yeniden kulla
 - **Puan kabul kararı vermez.** Birebir tekrar, kanıtı ne kadar güçlü olursa olsun en üstte kalır, ama yine tam doğrulamadan geçer ve başarısız olabilir. Bu bir testle sabit.
 - **Kanıt:** her adayın puanı ve sırası işin kanıtında, `memory_lookup.considered` alanında.
 
-**Başarısızlık uyarıları:** aynı kaynakta, aynı sözleşmede ya da aynı imza biçiminde başka bir dosyada daha önce başarısız olmuş en çok iki yama, yalnız değişen satırlarıyla (en çok 1200 karakter) modele veri olarak gider (`failed_repair_data`). Sistem talimatına tek bir not eklenir: "doğrulamadan geçemeyen önceki yamalar; bunları tekrarlama".
+**Başarısızlık uyarıları:** aynı kaynakta, aynı sözleşmede ya da aynı imza biçiminde başka bir dosyada daha önce başarısız olmuş en çok iki yama bulunur.
+
+**29 Ekim'den beri modele gönderilmez** (proje liderinin kararı; [DENEY_UYARI.md](DENEY_UYARI.md)):
+- Geliştirme setindeki denemede uyarı alan 7B model daha kötü sonuç verdi: yalnız uyarı giden çiftlerde uyarısız kol 12'ye 2 öndeydi.
+- Uyarılar yine bulunur ve işin kanıtında, `memory_lookup.warnings_withheld` alanında tutulur. İnceleme ekranında "modele gönderilmez" notuyla listelenir.
+- Hafta 5'teki gönderme davranışı yalnız deney seçeneği olarak duruyor: iş alanı `experiment_failure_warnings=true`, yalnız lab ve değerlendirme profilinde. API bu alanı sunmuyor.
+
+**Gönderildiğinde (deney seçeneği)** yamalar yalnız değişen satırlarıyla (en çok 1200 karakter) modele veri olarak gider (`failed_repair_data`). Sistem talimatına tek bir not eklenir: "doğrulamadan geçemeyen önceki yamalar; bunları tekrarlama".
 - **Güven sınırı:** doğrulayıcı notunu taklit eden bir diff gönderilmez; worker1 de aynı denetimi ayrıca yapar. Gönderilen uyarılar işin kanıtında, `memory_lookup.warnings_sent` alanında.
 - **Bütçe:** istem bütçesi aşılırsa önce bağlam dosyaları, sonra uyarılar, en son önceki denemenin diff'i bırakılır.
 - **Hafıza kapalıyken** (`memory_mode: off`) uyarı yoktur. Bu yüzden H2 tipi deneylerin istemleri değişmez.
-- **Etkisi:** H1 deneyinde hafızalı kolların istemlerini değiştirir ve ayrıca ölçülmeli.
+- **Etkisi:** ana deneyde (`ana-1`) C ve C+L2 kollarına uyarı gidiyordu. Uyarısız yeni koşu `ana-2`: [DENEY_ANA2.md](DENEY_ANA2.md).
 
 ## Geçersizleşme v1 (25 Ekim, Hafta 5)
 

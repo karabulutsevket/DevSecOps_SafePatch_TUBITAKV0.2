@@ -1,0 +1,778 @@
+{
+  "scope": "static, outcome-free coverage before the main experiment",
+  "summary": {
+    "vulnerable_cases": 30,
+    "with_l2_match": 5,
+    "with_l1_sibling": 21,
+    "unknown_signature": 0,
+    "by_family": {
+      "CWE-22": {
+        "cases": 13,
+        "with_l2_match": 3,
+        "with_l1_sibling": 9
+      },
+      "CWE-78": {
+        "cases": 7,
+        "with_l2_match": 1,
+        "with_l1_sibling": 6
+      },
+      "CWE-89": {
+        "cases": 10,
+        "with_l2_match": 1,
+        "with_l1_sibling": 6
+      }
+    },
+    "reference_fixes": [
+      "command-01",
+      "package-command-1",
+      "package-command-2",
+      "package-path-1",
+      "package-path-2",
+      "package-sql-1",
+      "package-sql-2",
+      "path-01",
+      "sql-01",
+      "variant-command-format",
+      "variant-command-list",
+      "variant-path-file",
+      "variant-path-helper",
+      "variant-sql-builder",
+      "variant-sql-format",
+      "variant-sql-helper"
+    ]
+  },
+  "evaluation": [
+    {
+      "case": "owasp-benchmark-00011",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-22",
+      "jdk": "17",
+      "shape": [
+        "java.io.File.<init>",
+        "literal",
+        "java-io",
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [],
+      "l1_siblings": [
+        "owasp-benchmark-00526",
+        "owasp-benchmark-00623"
+      ]
+    },
+    {
+      "case": "owasp-benchmark-00196",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-89",
+      "jdk": "17",
+      "shape": [
+        "execute",
+        "concatenation",
+        null,
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [],
+      "l1_siblings": []
+    },
+    {
+      "case": "owasp-benchmark-00306",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-78",
+      "jdk": "17",
+      "shape": [
+        "java.lang.Runtime.exec",
+        "other",
+        "java-process",
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [],
+      "l1_siblings": [
+        "owasp-benchmark-00823",
+        "owasp-benchmark-00825",
+        "owasp-benchmark-00979",
+        "owasp-benchmark-01066",
+        "owasp-benchmark-01286"
+      ]
+    },
+    {
+      "case": "owasp-benchmark-00452",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-22",
+      "jdk": "17",
+      "shape": [
+        "java.io.File.<init>",
+        "other",
+        "java-io",
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [
+        "package-path-2"
+      ],
+      "l1_siblings": [
+        "owasp-benchmark-01643",
+        "owasp-benchmark-02556"
+      ]
+    },
+    {
+      "case": "owasp-benchmark-00526",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-22",
+      "jdk": "17",
+      "shape": [
+        "java.io.File.<init>",
+        "literal",
+        "java-io",
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [],
+      "l1_siblings": [
+        "owasp-benchmark-00011",
+        "owasp-benchmark-00623"
+      ]
+    },
+    {
+      "case": "owasp-benchmark-00623",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-22",
+      "jdk": "17",
+      "shape": [
+        "java.io.File.<init>",
+        "literal",
+        "java-io",
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [],
+      "l1_siblings": [
+        "owasp-benchmark-00011",
+        "owasp-benchmark-00526"
+      ]
+    },
+    {
+      "case": "owasp-benchmark-00678",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-89",
+      "jdk": "17",
+      "shape": [
+        "queryForObject",
+        "concatenation",
+        null,
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [],
+      "l1_siblings": [
+        "owasp-benchmark-01087"
+      ]
+    },
+    {
+      "case": "owasp-benchmark-00823",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-78",
+      "jdk": "17",
+      "shape": [
+        "java.lang.Runtime.exec",
+        "other",
+        "java-process",
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [],
+      "l1_siblings": [
+        "owasp-benchmark-00306",
+        "owasp-benchmark-00825",
+        "owasp-benchmark-00979",
+        "owasp-benchmark-01066",
+        "owasp-benchmark-01286"
+      ]
+    },
+    {
+      "case": "owasp-benchmark-00825",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-78",
+      "jdk": "17",
+      "shape": [
+        "java.lang.Runtime.exec",
+        "other",
+        "java-process",
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [],
+      "l1_siblings": [
+        "owasp-benchmark-00306",
+        "owasp-benchmark-00823",
+        "owasp-benchmark-00979",
+        "owasp-benchmark-01066",
+        "owasp-benchmark-01286"
+      ]
+    },
+    {
+      "case": "owasp-benchmark-00979",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-78",
+      "jdk": "17",
+      "shape": [
+        "java.lang.Runtime.exec",
+        "other",
+        "java-process",
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [],
+      "l1_siblings": [
+        "owasp-benchmark-00306",
+        "owasp-benchmark-00823",
+        "owasp-benchmark-00825",
+        "owasp-benchmark-01066",
+        "owasp-benchmark-01286"
+      ]
+    },
+    {
+      "case": "owasp-benchmark-01066",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-78",
+      "jdk": "17",
+      "shape": [
+        "java.lang.Runtime.exec",
+        "other",
+        "java-process",
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [],
+      "l1_siblings": [
+        "owasp-benchmark-00306",
+        "owasp-benchmark-00823",
+        "owasp-benchmark-00825",
+        "owasp-benchmark-00979",
+        "owasp-benchmark-01286"
+      ]
+    },
+    {
+      "case": "owasp-benchmark-01087",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-89",
+      "jdk": "17",
+      "shape": [
+        "queryForObject",
+        "concatenation",
+        null,
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [],
+      "l1_siblings": [
+        "owasp-benchmark-00678"
+      ]
+    },
+    {
+      "case": "owasp-benchmark-01097",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-89",
+      "jdk": "17",
+      "shape": [
+        "java.sql.Statement.executeUpdate",
+        "concatenation",
+        "jdbc",
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [],
+      "l1_siblings": []
+    },
+    {
+      "case": "owasp-benchmark-01116",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-22",
+      "jdk": "17",
+      "shape": [
+        "java.io.FileOutputStream.<init>",
+        "other",
+        "java-io",
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [],
+      "l1_siblings": [
+        "owasp-benchmark-01839",
+        "owasp-benchmark-02034"
+      ]
+    },
+    {
+      "case": "owasp-benchmark-01286",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-78",
+      "jdk": "17",
+      "shape": [
+        "java.lang.Runtime.exec",
+        "other",
+        "java-process",
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [],
+      "l1_siblings": [
+        "owasp-benchmark-00306",
+        "owasp-benchmark-00823",
+        "owasp-benchmark-00825",
+        "owasp-benchmark-00979",
+        "owasp-benchmark-01066"
+      ]
+    },
+    {
+      "case": "owasp-benchmark-01620",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-89",
+      "jdk": "17",
+      "shape": [
+        "java.sql.Connection.prepareCall",
+        "concatenation",
+        "jdbc",
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [],
+      "l1_siblings": [
+        "owasp-benchmark-02630"
+      ]
+    },
+    {
+      "case": "owasp-benchmark-01643",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-22",
+      "jdk": "17",
+      "shape": [
+        "java.io.File.<init>",
+        "other",
+        "java-io",
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [
+        "package-path-2"
+      ],
+      "l1_siblings": [
+        "owasp-benchmark-00452",
+        "owasp-benchmark-02556"
+      ]
+    },
+    {
+      "case": "owasp-benchmark-01839",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-22",
+      "jdk": "17",
+      "shape": [
+        "java.io.FileOutputStream.<init>",
+        "other",
+        "java-io",
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [],
+      "l1_siblings": [
+        "owasp-benchmark-01116",
+        "owasp-benchmark-02034"
+      ]
+    },
+    {
+      "case": "owasp-benchmark-01964",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-89",
+      "jdk": "17",
+      "shape": [
+        "query",
+        "concatenation",
+        null,
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [],
+      "l1_siblings": [
+        "owasp-benchmark-02091"
+      ]
+    },
+    {
+      "case": "owasp-benchmark-02032",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-22",
+      "jdk": "17",
+      "shape": [
+        "java.io.FileInputStream.<init>",
+        "other",
+        "java-io",
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [],
+      "l1_siblings": []
+    },
+    {
+      "case": "owasp-benchmark-02034",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-22",
+      "jdk": "17",
+      "shape": [
+        "java.io.FileOutputStream.<init>",
+        "other",
+        "java-io",
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [],
+      "l1_siblings": [
+        "owasp-benchmark-01116",
+        "owasp-benchmark-01839"
+      ]
+    },
+    {
+      "case": "owasp-benchmark-02091",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-89",
+      "jdk": "17",
+      "shape": [
+        "query",
+        "concatenation",
+        null,
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [],
+      "l1_siblings": [
+        "owasp-benchmark-01964"
+      ]
+    },
+    {
+      "case": "owasp-benchmark-02181",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-89",
+      "jdk": "17",
+      "shape": [
+        "queryForMap",
+        "concatenation",
+        null,
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [],
+      "l1_siblings": []
+    },
+    {
+      "case": "owasp-benchmark-02414",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-78",
+      "jdk": "17",
+      "shape": [
+        "java.lang.ProcessBuilder.<init>",
+        "other",
+        "java-process",
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [
+        "package-command-1",
+        "package-command-2",
+        "variant-command-list"
+      ],
+      "l1_siblings": []
+    },
+    {
+      "case": "owasp-benchmark-02556",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-22",
+      "jdk": "17",
+      "shape": [
+        "java.io.File.<init>",
+        "other",
+        "java-io",
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [
+        "package-path-2"
+      ],
+      "l1_siblings": [
+        "owasp-benchmark-00452",
+        "owasp-benchmark-01643"
+      ]
+    },
+    {
+      "case": "owasp-benchmark-02630",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-89",
+      "jdk": "17",
+      "shape": [
+        "java.sql.Connection.prepareCall",
+        "concatenation",
+        "jdbc",
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [],
+      "l1_siblings": [
+        "owasp-benchmark-01620"
+      ]
+    },
+    {
+      "case": "owasp-benchmark-02653",
+      "project": "l3-owasp-benchmark",
+      "cwe_family": "CWE-89",
+      "jdk": "17",
+      "shape": [
+        "java.sql.Statement.executeQuery",
+        "concatenation",
+        "jdbc",
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [
+        "sql-01",
+        "variant-sql-helper"
+      ],
+      "l1_siblings": []
+    },
+    {
+      "case": "vul4j-41",
+      "project": "l3-plexus-archiver",
+      "cwe_family": "CWE-22",
+      "jdk": "8",
+      "shape": [
+        "java.io.File.<init>",
+        "direct",
+        "java-io",
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [],
+      "l1_siblings": []
+    },
+    {
+      "case": "vul4j-43",
+      "project": "l3-rdf4j",
+      "cwe_family": "CWE-22",
+      "jdk": "8",
+      "shape": [
+        "java.io.File.<init>",
+        "direct",
+        "java-io",
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [],
+      "l1_siblings": []
+    },
+    {
+      "case": "vul4j-79",
+      "project": "l3-vul4j-zt-zip",
+      "cwe_family": "CWE-22",
+      "jdk": "8",
+      "shape": [
+        "java.io.File.<init>",
+        "other",
+        "java-io",
+        null
+      ],
+      "vulnerable": true,
+      "l2_matches": [],
+      "l1_siblings": []
+    }
+  ],
+  "development": {
+    "command-01": {
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-78",
+      "jdk": "17",
+      "shape": [
+        "java.lang.ProcessBuilder.<init>",
+        "concatenation",
+        "java-process",
+        null
+      ],
+      "vulnerable": true
+    },
+    "package-command-1": {
+      "project": "safepatch-package-dev",
+      "cwe_family": "CWE-78",
+      "jdk": "17",
+      "shape": [
+        "java.lang.ProcessBuilder.<init>",
+        "other",
+        "java-process",
+        null
+      ],
+      "vulnerable": true
+    },
+    "package-command-2": {
+      "project": "safepatch-package-dev",
+      "cwe_family": "CWE-78",
+      "jdk": "17",
+      "shape": [
+        "java.lang.ProcessBuilder.<init>",
+        "other",
+        "java-process",
+        null
+      ],
+      "vulnerable": true
+    },
+    "package-path-1": {
+      "project": "safepatch-package-dev",
+      "cwe_family": "CWE-22",
+      "jdk": "17",
+      "shape": [
+        "java.nio.file.Files.readString",
+        "resolve",
+        "java-io",
+        null
+      ],
+      "vulnerable": true
+    },
+    "package-path-2": {
+      "project": "safepatch-package-dev",
+      "cwe_family": "CWE-22",
+      "jdk": "17",
+      "shape": [
+        "java.io.File.<init>",
+        "other",
+        "java-io",
+        null
+      ],
+      "vulnerable": true
+    },
+    "package-sql-1": {
+      "project": "safepatch-package-dev",
+      "cwe_family": "CWE-89",
+      "jdk": "17",
+      "shape": [
+        "java.sql.Statement.execute",
+        "literal",
+        "jdbc",
+        null
+      ],
+      "vulnerable": true
+    },
+    "package-sql-2": {
+      "project": "safepatch-package-dev",
+      "cwe_family": "CWE-89",
+      "jdk": "17",
+      "shape": [
+        "java.sql.Statement.execute",
+        "literal",
+        "jdbc",
+        null
+      ],
+      "vulnerable": true
+    },
+    "path-01": {
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-22",
+      "jdk": "17",
+      "shape": [
+        "java.nio.file.Files.readString",
+        "resolve",
+        "java-io",
+        null
+      ],
+      "vulnerable": true
+    },
+    "sql-01": {
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-89",
+      "jdk": "17",
+      "shape": [
+        "java.sql.Statement.executeQuery",
+        "concatenation",
+        "jdbc",
+        null
+      ],
+      "vulnerable": true
+    },
+    "variant-command-format": {
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-78",
+      "jdk": "17",
+      "shape": [
+        "java.lang.ProcessBuilder.<init>",
+        "format",
+        "java-process",
+        null
+      ],
+      "vulnerable": true
+    },
+    "variant-command-list": {
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-78",
+      "jdk": "17",
+      "shape": [
+        "java.lang.ProcessBuilder.<init>",
+        "other",
+        "java-process",
+        null
+      ],
+      "vulnerable": true
+    },
+    "variant-path-file": {
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-22",
+      "jdk": "17",
+      "shape": [
+        "java.io.File.<init>",
+        "direct",
+        "java-io",
+        null
+      ],
+      "vulnerable": true
+    },
+    "variant-path-helper": {
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-22",
+      "jdk": "17",
+      "shape": [
+        "java.nio.file.Files.readString",
+        "resolve",
+        "java-io",
+        null
+      ],
+      "vulnerable": true
+    },
+    "variant-sql-builder": {
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-89",
+      "jdk": "17",
+      "shape": [
+        "java.sql.Statement.executeQuery",
+        "string_builder",
+        "jdbc",
+        null
+      ],
+      "vulnerable": true
+    },
+    "variant-sql-format": {
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-89",
+      "jdk": "17",
+      "shape": [
+        "java.sql.Statement.executeQuery",
+        "format",
+        "jdbc",
+        null
+      ],
+      "vulnerable": true
+    },
+    "variant-sql-helper": {
+      "project": "owned-java-demo",
+      "cwe_family": "CWE-89",
+      "jdk": "17",
+      "shape": [
+        "java.sql.Statement.executeQuery",
+        "concatenation",
+        "jdbc",
+        null
+      ],
+      "vulnerable": true
+    }
+  }
+}

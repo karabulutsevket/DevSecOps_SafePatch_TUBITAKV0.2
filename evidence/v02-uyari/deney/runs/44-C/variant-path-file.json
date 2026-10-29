@@ -1,0 +1,148 @@
+{
+  "case": "variant-path-file",
+  "cwe": "CWE-22",
+  "project": "safepatch-variants",
+  "source": "safepatch-synthetic",
+  "vulnerable": true,
+  "seed": 44,
+  "arm": "C",
+  "position": 6,
+  "job": "cdd2ccc9af354a0081e6717c0b272c62",
+  "status": "awaiting_review",
+  "reason": null,
+  "wall_seconds": 60.1,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 10,
+      "patch_sha256": "d82345a0814c2c34b0858945dfd92940520fab6f07f2b5ac7cb172235268cfe5",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "security_witness_failed",
+        "failed_tests": [
+          {
+            "suite": "security",
+            "test": "cannotEscapeThroughLinkInsideRoot",
+            "marker": "PATH_TRAVERSAL_REGRESSION"
+          },
+          {
+            "suite": "security",
+            "test": "cannotReadParentSecret",
+            "marker": "PATH_TRAVERSAL_REGRESSION"
+          }
+        ],
+        "remaining_rules": []
+      },
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 3,
+        "failures": 2,
+        "errors": 0
+      },
+      "model_seconds": 6.547,
+      "prompt_tokens": 961,
+      "output_tokens": 319,
+      "dropped": []
+    },
+    {
+      "number": 2,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 11,
+      "patch_sha256": "66ead2b8b803778098b868bd82472e22fa0f26e0b48127ddb37d6cf588e9ac89",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "security_witness_failed",
+        "failed_tests": [
+          {
+            "suite": "security",
+            "test": "cannotEscapeThroughLinkInsideRoot",
+            "marker": "PATH_TRAVERSAL_REGRESSION"
+          },
+          {
+            "suite": "security",
+            "test": "cannotReadParentSecret",
+            "marker": "PATH_TRAVERSAL_REGRESSION"
+          }
+        ],
+        "remaining_rules": []
+      },
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 3,
+        "failures": 2,
+        "errors": 0
+      },
+      "model_seconds": 6.579,
+      "prompt_tokens": 1343,
+      "output_tokens": 299,
+      "dropped": []
+    },
+    {
+      "number": 3,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 12,
+      "patch_sha256": "af57686b3e15cb7617dc575062826f264bf2a23c29a67bb4d6b4315331855968",
+      "policy_error": null,
+      "stopped": null,
+      "passed": true,
+      "failure": null,
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0
+      },
+      "model_seconds": 6.796,
+      "prompt_tokens": 1487,
+      "output_tokens": 306,
+      "dropped": []
+    }
+  ],
+  "memory": {
+    "decision": "no_match",
+    "tier": null,
+    "use": null,
+    "selected_id": null,
+    "considered": 2,
+    "same_shape": null,
+    "similarity": null,
+    "warnings_sent": 2,
+    "warnings_withheld": 0
+  },
+  "infrastructure_retry": [],
+  "accepted": true,
+  "hidden": null,
+  "false_acceptance": null,
+  "correct": null,
+  "promoted": "630ece19ab534d81bbfdafe01682be16",
+  "accepted_attempt": 3
+}

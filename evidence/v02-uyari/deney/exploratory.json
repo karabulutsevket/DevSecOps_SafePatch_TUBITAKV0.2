@@ -1,0 +1,292 @@
+{
+  "scope": "exploratory, after the pre-declared analysis; not part of the protocol's decision",
+  "splits": {
+    "c_warnings_only_and_c_w_no_example": {
+      "pairs": 18,
+      "both": 2,
+      "only_C-W": 6,
+      "only_C": 2,
+      "neither": 8,
+      "correct_C-W": 8,
+      "correct_C": 4,
+      "difference": 0.2222,
+      "mcnemar_p": 0.2891
+    },
+    "c_warnings_only_and_c_w_example": {
+      "pairs": 6,
+      "both": 0,
+      "only_C-W": 6,
+      "only_C": 0,
+      "neither": 0,
+      "correct_C-W": 6,
+      "correct_C": 0,
+      "difference": 1.0,
+      "mcnemar_p": 0.0312
+    },
+    "c_example_and_warnings": {
+      "pairs": 14,
+      "both": 12,
+      "only_C-W": 0,
+      "only_C": 1,
+      "neither": 1,
+      "correct_C-W": 12,
+      "correct_C": 13,
+      "difference": -0.0714,
+      "mcnemar_p": 1.0
+    },
+    "c_no_warning": {
+      "pairs": 40,
+      "both": 29,
+      "only_C-W": 0,
+      "only_C": 1,
+      "neither": 10,
+      "correct_C-W": 29,
+      "correct_C": 30,
+      "difference": -0.025,
+      "mcnemar_p": 1.0
+    }
+  },
+  "by_seed": {
+    "42": {
+      "all": {
+        "pairs": 26,
+        "both": 17,
+        "only_C-W": 1,
+        "only_C": 2,
+        "neither": 6,
+        "correct_C-W": 18,
+        "correct_C": 19,
+        "difference": -0.0385,
+        "mcnemar_p": 1.0
+      },
+      "c_warnings_only": {
+        "pairs": 6,
+        "both": 1,
+        "only_C-W": 1,
+        "only_C": 1,
+        "neither": 3,
+        "correct_C-W": 2,
+        "correct_C": 2,
+        "difference": 0.0,
+        "mcnemar_p": 1.0
+      }
+    },
+    "43": {
+      "all": {
+        "pairs": 26,
+        "both": 14,
+        "only_C-W": 4,
+        "only_C": 0,
+        "neither": 8,
+        "correct_C-W": 18,
+        "correct_C": 14,
+        "difference": 0.1538,
+        "mcnemar_p": 0.125
+      },
+      "c_warnings_only": {
+        "pairs": 10,
+        "both": 1,
+        "only_C-W": 4,
+        "only_C": 0,
+        "neither": 5,
+        "correct_C-W": 5,
+        "correct_C": 1,
+        "difference": 0.4,
+        "mcnemar_p": 0.125
+      }
+    },
+    "44": {
+      "all": {
+        "pairs": 26,
+        "both": 12,
+        "only_C-W": 7,
+        "only_C": 2,
+        "neither": 5,
+        "correct_C-W": 19,
+        "correct_C": 14,
+        "difference": 0.1923,
+        "mcnemar_p": 0.1797
+      },
+      "c_warnings_only": {
+        "pairs": 8,
+        "both": 0,
+        "only_C-W": 7,
+        "only_C": 1,
+        "neither": 0,
+        "correct_C-W": 7,
+        "correct_C": 1,
+        "difference": 0.75,
+        "mcnemar_p": 0.0703
+      }
+    }
+  },
+  "attempt_outcomes_c_warnings_only": {
+    "C": {
+      "behavior_regression": 7,
+      "compilation_failed": 5,
+      "duplicate_patch": 19,
+      "empty_patch": 8,
+      "passed": 4,
+      "security_witness_failed": 27,
+      "source_requires_final_newline": 1
+    },
+    "C-W": {
+      "behavior_regression": 5,
+      "compilation_failed": 8,
+      "duplicate_patch": 8,
+      "empty_patch": 10,
+      "passed": 14,
+      "security_witness_failed": 11,
+      "source_requires_final_newline": 1
+    }
+  },
+  "own_job_class": {
+    "C": {
+      "example": {
+        "jobs": 15,
+        "accepted": 14
+      },
+      "example_and_warnings": {
+        "jobs": 14,
+        "accepted": 13
+      },
+      "no_example": {
+        "jobs": 25,
+        "accepted": 16
+      },
+      "no_example_and_warnings": {
+        "jobs": 24,
+        "accepted": 4
+      }
+    },
+    "C-W": {
+      "example": {
+        "jobs": 15,
+        "accepted": 14
+      },
+      "example_and_warnings": {
+        "jobs": 17,
+        "accepted": 17
+      },
+      "no_example": {
+        "jobs": 25,
+        "accepted": 15
+      },
+      "no_example_and_warnings": {
+        "jobs": 21,
+        "accepted": 9
+      }
+    }
+  },
+  "discordant_c_warnings_only": [
+    {
+      "case": "command-01",
+      "seed": 43,
+      "accepted_C": false,
+      "accepted_C-W": true
+    },
+    {
+      "case": "command-01",
+      "seed": 44,
+      "accepted_C": false,
+      "accepted_C-W": true
+    },
+    {
+      "case": "command-02",
+      "seed": 43,
+      "accepted_C": false,
+      "accepted_C-W": true
+    },
+    {
+      "case": "command-02",
+      "seed": 44,
+      "accepted_C": false,
+      "accepted_C-W": true
+    },
+    {
+      "case": "command-03",
+      "seed": 43,
+      "accepted_C": false,
+      "accepted_C-W": true
+    },
+    {
+      "case": "command-03",
+      "seed": 44,
+      "accepted_C": false,
+      "accepted_C-W": true
+    },
+    {
+      "case": "package-command-1",
+      "seed": 42,
+      "accepted_C": false,
+      "accepted_C-W": true
+    },
+    {
+      "case": "package-command-1",
+      "seed": 44,
+      "accepted_C": false,
+      "accepted_C-W": true
+    },
+    {
+      "case": "package-path-1",
+      "seed": 42,
+      "accepted_C": true,
+      "accepted_C-W": false
+    },
+    {
+      "case": "package-path-1",
+      "seed": 44,
+      "accepted_C": false,
+      "accepted_C-W": true
+    },
+    {
+      "case": "region-command",
+      "seed": 43,
+      "accepted_C": false,
+      "accepted_C-W": true
+    },
+    {
+      "case": "region-command",
+      "seed": 44,
+      "accepted_C": false,
+      "accepted_C-W": true
+    },
+    {
+      "case": "variant-command-format",
+      "seed": 44,
+      "accepted_C": false,
+      "accepted_C-W": true
+    },
+    {
+      "case": "variant-path-file",
+      "seed": 44,
+      "accepted_C": true,
+      "accepted_C-W": false
+    }
+  ],
+  "warning_kinds": {
+    "databases_sha256": {
+      "42-C-W.db": "38b26697d66d5c584144651e8e808400f176c3bf116da3af51424305eb4a8ef0",
+      "42-C.db": "baa6849b7420215c4ff5b22e932f34f9be62d68b2c1d8dd66b93de032e3c6ad8",
+      "43-C-W.db": "d1bd17caacd0982bffaea2cf42ef30d4e629ab8bcedba416f9fb9b5bf90b8f26",
+      "43-C.db": "d90d3faf812912c55f64273595db26b87d372e29287955de382497cbef1fafcf",
+      "44-C-W.db": "ee062576896ca7ae6e17befe9c00d9350c620271d28c7495f0763ba14d1beefd",
+      "44-C.db": "56a185181e7847171ed762c25937830843d30fa324b70fb5d9d5d12adfd8c15c"
+    },
+    "kinds": {
+      "C": {
+        "same_context/behavior_regression": 10,
+        "same_context/compilation_failed": 2,
+        "same_context/security_witness_failed": 53,
+        "same_shape/security_witness_failed": 4
+      },
+      "C-W": {
+        "same_context/behavior_regression": 15,
+        "same_context/compilation_failed": 12,
+        "same_context/security_witness_failed": 39,
+        "same_shape/compilation_failed": 1,
+        "same_shape/security_witness_failed": 2
+      }
+    }
+  }
+}

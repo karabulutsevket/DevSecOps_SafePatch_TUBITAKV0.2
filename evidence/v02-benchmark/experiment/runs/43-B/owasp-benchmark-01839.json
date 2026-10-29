@@ -1,0 +1,101 @@
+{
+  "case": "owasp-benchmark-01839",
+  "cwe": "CWE-22",
+  "project": "OWASP-Benchmark/BenchmarkJava",
+  "source": "owasp-benchmark",
+  "vulnerable": true,
+  "seed": 43,
+  "arm": "B",
+  "position": 32,
+  "job": "273716c17c53447880e4751e7744e476",
+  "status": "rejected",
+  "reason": "forbidden_capability_or_suppression",
+  "wall_seconds": 93.7,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 25,
+      "patch_sha256": "2777706a17b009f6746563451e9f719f0531df4ccb0a719bb8756aea6c860378",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01839.java:[81,70] variables in try-with-resources are not supported in -source 8",
+          "[ERROR] src/main/java/org/owasp/benchmark/testcode/BenchmarkTest01839.java:[81,21] the try-with-resources resource must either be a variable declaration or an expression denoting a reference to a final or effectively final variable"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 27.453,
+      "prompt_tokens": 2298,
+      "output_tokens": 1183,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java",
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00004.java"
+      ]
+    },
+    {
+      "number": 2,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": null,
+      "patch_sha256": null,
+      "policy_error": "forbidden_capability_or_suppression",
+      "stopped": null,
+      "passed": null,
+      "failure": null,
+      "no_change": null,
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 21.797,
+      "prompt_tokens": 2529,
+      "output_tokens": 1033,
+      "dropped": [
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00001.java",
+        "src/main/java/org/owasp/benchmark/testcode/BenchmarkTest00004.java",
+        "previous_patch_diff"
+      ]
+    }
+  ],
+  "memory": {
+    "decision": "match",
+    "tier": "L1",
+    "use": "example",
+    "selected_id": "63edf02d31f64fb880f1847fe544306c",
+    "considered": 1,
+    "same_shape": true,
+    "similarity": 0.749237,
+    "warnings_sent": 0
+  },
+  "infrastructure_retry": [],
+  "accepted": false,
+  "hidden": null,
+  "false_acceptance": null,
+  "correct": false,
+  "promoted": null
+}

@@ -2,7 +2,7 @@ import difflib
 import time
 import uuid
 
-from safepatch.common import MODEL_REGION_CHARS, MODEL_SOURCE_CHARS, POLICY, Patch, canonical, digest, remaining, request, secret, setting
+from safepatch.common import MODEL_REGION_CHARS, MODEL_SOURCE_CHARS, POLICY, Patch, canonical, digest, known_findings_enabled, remaining, request, secret, setting
 from safepatch.memory import Memory, context_for, reuse_result
 from safepatch.acceptance import manifest
 from safepatch.feedback import GUIDANCE_KEY, classify, guidance_for, imitates_note
@@ -44,7 +44,7 @@ EXPERT_ATTEMPTS = 3
 
 # Fields a per-file job keeps from the job whose scan it came from (week 4: one job per file).
 INHERITED = ("project", "memory_mode", "strategy", "case_id", "base_commit", "split", "policy_version", "scanner", "mode",
-             "max_attempts", "owner", "second_review", "evaluation", "seed")
+             "max_attempts", "owner", "second_review", "evaluation", "seed", "experiment_failure_warnings")
 
 
 def finding_groups(initial):
@@ -176,6 +176,25 @@ class Engine:
             job["events"].append({"time": time.time(), "status": status})
         return self.store.mutate(job_id, change)
 
+    def similar(self, job, context, target, source, finding):
+        """Arm B of the main experiment (memory_mode "similar", never offered by the API): the
+        record most similar to the finding's method, or to the lines around the finding."""
+        line = finding.get("line") or 1
+        view = region_view(target, source, [line])
+        query = "".join(r["content"] for r in view["regions"]) if view else "\n".join(source.splitlines()[max(0, line - 26):line + 25])
+        used = {}
+
+        def embed(texts):
+            vectors = []
+            for start in range(0, len(texts), 64):
+                answer = self.worker("worker1", "/embed", {"texts": texts[start:start + 64], "deadline": job["deadline"]}, job["deadline"])
+                used.update(model=answer["model"], model_digest=answer["model_digest"])
+                vectors += answer["embeddings"]
+            return vectors
+        lookup = self.memory.similar(context, query, embed)
+        lookup["embedding"] = used or None
+        return lookup
+
     def worker(self, name, path, body, deadline):
         port = {"worker1": 8101, "worker2": 8102}[name]
         return self.call(setting(name.upper() + "_URL", f"http://127.0.0.1:{port}") + path, "POST", token=secret(name.upper() + "_TOKEN"), body=body, timeout=remaining(deadline, 1200))
@@ -284,14 +303,22 @@ class Engine:
             self.set(job_id, "needs_human", reason="suspected_prompt_injection")
             return
         context = context_for(case, files, finding)
-        lookup = self.memory.search(context, job.get("memory_mode", "guarded"))
+        if job.get("memory_mode") == "similar":
+            lookup = self.similar(job, context, target, source, finding)
+        else:
+            lookup = self.memory.search(context, job.get("memory_mode", "guarded"))
         selected = lookup.pop("selected")
         lookup["selected_id"] = selected["id"] if selected else None
-        # Week 5: the closest failed candidates go to the model as "did not work here" data.
-        # Stored diffs are data; one that imitates the verifier note is never sent.
+        # The closest failed candidates ("did not work here") are found and recorded for the reviewer,
+        # but not sent to the model: on the development set the 7B model did worse with them
+        # (docs/DENEY_UYARI.md, decided 29 Oct). Week 5's sending stays as an experiment option,
+        # lab and evaluation profiles only. Stored diffs are data; one that imitates the verifier
+        # note is never sent.
         warnings = [w for w in self.memory.failure_warnings(lookup.get("failures", []), context["project"]) if not imitates_note(w["changed_lines"])]
-        lookup["warnings_sent"] = [{"id": w["id"], "relation": w["relation"], "failure": w["failure"]} for w in warnings]
-        failure_data = [{k: w[k] for k in ("relation", "failure", "changed_lines")} for w in warnings]
+        found = [{"id": w["id"], "relation": w["relation"], "failure": w["failure"]} for w in warnings]
+        send = job.get("experiment_failure_warnings") is True and known_findings_enabled()
+        lookup["warnings_sent"], lookup["warnings_withheld"] = (found, []) if send else ([], found)
+        failure_data = [{k: w[k] for k in ("relation", "failure", "changed_lines")} for w in warnings] if send else []
         self.set(job_id, "scanning", memory_lookup=lookup, memory_context=context, memory_ids=[])
         memory_data = None
         replay = None

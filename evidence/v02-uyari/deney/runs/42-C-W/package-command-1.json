@@ -1,0 +1,115 @@
+{
+  "case": "package-command-1",
+  "cwe": "CWE-78",
+  "project": "safepatch-package-dev",
+  "source": "safepatch-synthetic",
+  "vulnerable": true,
+  "seed": 42,
+  "arm": "C-W",
+  "position": 25,
+  "job": "fa8523f422cf4f889607a8053245b2cc",
+  "status": "awaiting_review",
+  "reason": null,
+  "wall_seconds": 92.9,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 15,
+      "patch_sha256": "4b30bb8eb1732adad321c25a23117d11d44586e99a944622bf784090af14e716",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "behavior_regression",
+        "failed_tests": [
+          {
+            "suite": "behavior",
+            "test": "echoesHello",
+            "marker": "BEHAVIOR_REGRESSION"
+          },
+          {
+            "suite": "behavior",
+            "test": "echoesWorld",
+            "marker": "BEHAVIOR_REGRESSION"
+          },
+          {
+            "suite": "security",
+            "test": "shellMetacharactersAreLiteral",
+            "marker": "COMMAND_INJECTION_REGRESSION"
+          }
+        ],
+        "remaining_rules": []
+      },
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 2,
+        "failures": 2,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0
+      },
+      "model_seconds": 20.625,
+      "prompt_tokens": 2409,
+      "output_tokens": 759,
+      "dropped": [
+        "src/main/java/demo/Case001.java"
+      ]
+    },
+    {
+      "number": 2,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 15,
+      "patch_sha256": "e76c49e1de90d711a9d99aa9f75534931318cb4a87f7dbb98a27e3c569fdd59b",
+      "policy_error": null,
+      "stopped": null,
+      "passed": true,
+      "failure": null,
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "model_seconds": 17.563,
+      "prompt_tokens": 1834,
+      "output_tokens": 766,
+      "dropped": [
+        "src/main/java/demo/Case001.java",
+        "src/main/java/demo/Case002.java"
+      ]
+    }
+  ],
+  "memory": {
+    "decision": "no_match",
+    "tier": null,
+    "use": null,
+    "selected_id": null,
+    "considered": 0,
+    "same_shape": null,
+    "similarity": null,
+    "warnings_sent": 0,
+    "warnings_withheld": 2
+  },
+  "infrastructure_retry": [],
+  "accepted": true,
+  "hidden": null,
+  "false_acceptance": null,
+  "correct": null,
+  "promoted": "c4383a0d5da9477b8c964c6d09cbe3f3",
+  "accepted_attempt": 2
+}

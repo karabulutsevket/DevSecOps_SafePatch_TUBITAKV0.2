@@ -44,4 +44,5 @@ Sonuçta yalnız özet bulunur: kimlik, ilişki, sınıf, yama özeti, köken, g
 
 - Başarısız yama hiçbir zaman onaylı örnek olarak önerilmez; ayrı tabloda durur.
 - Model başarısızlık kayıtlarını görmez. "Bu bağlamda şu kalıp çalışmadı" uyarısı Hafta 5'te (sıralama v1) eklenecek. O zamana kadar model istemleri ve H2 ölçümü değişmez. Uyarı eklenirken kayıttaki diff veri olarak kalmalı ve doğrulayıcı notu taklidi denetlenmeli.
+  - *Güncelleme:* uyarı Hafta 5'te eklendi. 29 Ekim'den beri yine modele gönderilmiyor; yalnız kaydediliyor ve inceleyiciye gösteriliyor ([HAFIZA_UYGUNLUK.md](HAFIZA_UYGUNLUK.md), "Başarısızlık uyarıları").
 - Kayıtların geçersizleşmesi Hafta 5'te.
