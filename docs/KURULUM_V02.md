@@ -215,6 +215,18 @@ taskkill /PID (Get-Content .runtime/ollama.pid) /T /F         # Ollama (yukarıd
 
 Komut, kurulumun veritabanını (`DATABASE_URL`, varsayılan `.runtime/jobs.db`) kullanır. Paket biçimi, ret durumları ve güven seviyesi: [L2_PAKETI.md](L2_PAKETI.md).
 
+### Denetim kaydı (Hafta 10)
+
+Kararlar, aynı veritabanında hash zinciriyle bağlı bir kayda yazılır.
+
+```powershell
+.venv/Scripts/python.exe -m safepatch.audit verify   # zincir sağlam mı (çıkış kodu 0/1)
+.venv/Scripts/python.exe -m safepatch.audit head     # zincirin başı: veritabanından ayrı bir yerde saklayın
+.venv/Scripts/python.exe -m safepatch.audit verify --checkpoint <seq>:<hash>
+```
+
+`head` çıktısını düzenli aralıklarla veritabanından ayrı bir yere kopyalayın. Bütün zincirin baştan yazılmasını yalnız böyle saklanan bir kontrol noktası gösterir. Ayrıntılar ve sınırlar: [DENETIM_KAYDI.md](DENETIM_KAYDI.md).
+
 ## 5. Çalıştığını doğrulama
 
 **Arayüz:** `http://127.0.0.1:8100` adresini açın, `.secrets/developer.token` dosyasındaki anahtarla girin, `sql-01` vakasını başlatın.

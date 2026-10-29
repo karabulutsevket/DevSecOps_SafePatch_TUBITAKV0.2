@@ -264,7 +264,11 @@ Hafta 8'in sandbox sertleştirme maddeleri ayrı iş olarak açık.
 - [x] `docs/OLCUM_SONUCLARI_V02.md` — *Reşat*
 - [ ] Bütün servisler için egress testi; temiz makinede çevrimdışı kurulum süresi ölçümü — *Yiğithan, Şevket*
 - [ ] SonarQube Community Build ile adaptörün canlı testi. Gerekli kural bu sürümde yoksa adaptörün işi güvenli şekilde durdurduğu belgelenir — *Yiğithan*
-- [ ] Audit log'a hash zinciri (kayıtların sonradan değiştirilemediğini gösterir) — *Reşat*
+- [x] Audit log'a hash zinciri (kayıtların sonradan değiştirilemediğini gösterir) — *Reşat*. **30 Ekim:** `safepatch/audit.py`.
+  - Zincirde: insan kararları, doğrulayıcının sonuçları ve L2 içe alma.
+  - `python -m safepatch.audit verify` ilk kırığı bulur.
+  - Bütün zincirin yeniden yazılmasını yalnız dışarıda saklanan bir kontrol noktası (`head`) gösterir.
+  - Ayrıntı: [docs/DENETIM_KAYDI.md](docs/DENETIM_KAYDI.md).
 
 **Faz 3 geçiş koşulu:** Benchmark tamamlandı, rapor yayımlandı, bütün sayılar ham kanıta bağlı.
 - **30 Ekim:** bu koşul karşılandı. Ölçüm `ana-1` ve `ana-2` ile kapandı ([docs/OLCUM_SONUCLARI_V02.md](docs/OLCUM_SONUCLARI_V02.md)).
