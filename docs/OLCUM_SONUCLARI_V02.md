@@ -200,6 +200,6 @@ Değerlendirme seti ayar için kullanılmaz. Uyarıları kapatıp aynı sette ye
 2. **Uyarı politikası sonuca göre seçilir.** Seçenekler: uyarıyı kaldırmak, yalnız aynı kaynağa ait başarısızlıklarla sınırlamak, metnini değiştirmek. Bu seçim ancak geliştirme setindeki sonuçla yapılır.
    - **Karar (29 Ekim, proje lideri):** uyarı modele gönderilmez; yalnız kaydedilir.
 3. **Gerekirse değerlendirmede yeni bir koşu.** Koşunun adı `ana-2` olur ve önceden sabitlenmiş bir protokolle yapılır. İki koşu birlikte raporlanır; `ana-1` geçerliliğini korur.
-   - Protokol taslağı: [DENEY_ANA2.md](DENEY_ANA2.md). Proje liderinin onayını bekliyor.
+   - Protokol: [DENEY_ANA2.md](DENEY_ANA2.md). Proje lideri 29 Ekim'de dört kolla onayladı.
 
 **Ayrıca açık soru.** B'nin komut ailesindeki işareti, C'nin örnek uygunluk kuralının komut ailesi için fazla katı olabileceğini düşündürüyor. Ama B'nin tek yanlış kabulü de imzası uyuşmayan bir örnekten geldi. Bu dengeyi de ancak geliştirme setinde ölçmek doğru olur.

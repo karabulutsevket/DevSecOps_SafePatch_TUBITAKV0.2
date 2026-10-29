@@ -1,7 +1,8 @@
 # Ana deney, ikinci koşu: `ana-2` (29 Ekim 2026, Hafta 10)
 
-**Durum: TASLAK. Proje liderinin onayını bekliyor.**
-- Onaydan sonra sabitlenir. Koşu başladıktan sonra ne protokol ne ürün kodu değişir; betik bunu denetler (`safepatch/` değişmişse devam reddedilir).
+**Durum: onaylandı ve koşudan önce sabitlendi.**
+- Proje liderinin onayı: 29 Ekim, "Olur, dört kolla ana-2'yi başlat". Kapsam: dört kol.
+- Koşu başladıktan sonra ne protokol ne ürün kodu değişir; betik bunu denetler (`safepatch/` değişmişse devam reddedilir).
 - `ana-1` geçerliliğini korur ([DENEY_PROTOKOLU.md](DENEY_PROTOKOLU.md), [OLCUM_SONUCLARI_V02.md](OLCUM_SONUCLARI_V02.md)). İki koşu birlikte raporlanır.
 
 ## Neden
@@ -80,9 +81,9 @@ Hepsi `ana-1` ile aynı ([DENEY_PROTOKOLU.md](DENEY_PROTOKOLU.md), "Kollar" ve "
   4. `EVIDENCE_DIR=evidence/v02-benchmark-2 python scripts/main_experiment.py run --run ana-2 --protocol docs/DENEY_ANA2.md`.
   5. Koşu bitince önceden tanımlı analiz; sonuçlar [OLCUM_SONUCLARI_V02.md](OLCUM_SONUCLARI_V02.md)'ye `ana-1` ile yan yana eklenir.
 
-## Proje liderine sorular
+## Kararlar (29 Ekim 2026, proje lideri)
 
-1. **Bu protokol onaylanıyor mu?**
-2. **Kapsam.** Önerilen: dört kolun hepsi yeniden koşar (~14 saat).
-   - Daha kısa seçenek: yalnız C ve C+L2 (~7 saat). Bu durumda A ve B için `ana-1`'in sonuçları kullanılır.
-   - Bu seçeneği önermiyorum. Koşular arası eşleştirmenin geçerliliği tekrarlanabilirliğe bağlı ve bunu ancak A'yı yeniden koşmak gösterir.
+1. **Protokol onaylandı.**
+2. **Kapsam: dört kolun hepsi yeniden koşar** (~14 saat).
+   - Daha kısa seçenek (yalnız C ve C+L2, ~7 saat) seçilmedi.
+   - Gerekçe: koşular arası eşleştirmenin geçerliliği tekrarlanabilirliğe bağlı ve bunu ancak A'yı yeniden koşmak gösterir.
