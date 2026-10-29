@@ -6,6 +6,10 @@
 
 `ana-1` geçerliliğini korur. Önce `ana-2` gelir, ardından `ana-1`. En sondaki "Sonraki adım" bölümü iki koşu için ortaktır.
 
+**Durum: V0.2'nin hafıza ölçümü bu iki koşuyla kapandı** (30 Ekim, proje lideri).
+- Sunumda ve başvuruda bu rapordaki rakamlar kullanılır.
+- Daha büyük bir değerlendirme seti proje sonrasına bırakıldı ([BACKLOG.md](BACKLOG.md)).
+
 ## İkinci koşu: `ana-2` (29 Ekim 2026)
 
 **Kayıtlar**
@@ -342,11 +346,10 @@ Değerlendirme seti ayar için kullanılmaz. Uyarıları kapatıp aynı sette ye
 3. **Gerekirse değerlendirmede yeni bir koşu.** Koşunun adı `ana-2` olur ve önceden sabitlenmiş bir protokolle yapılır. İki koşu birlikte raporlanır; `ana-1` geçerliliğini korur.
    - Protokol: [DENEY_ANA2.md](DENEY_ANA2.md). Proje lideri 29 Ekim'de dört kolla onayladı.
    - **Sonuç (29 Ekim, `ana-2`):** önceden tanımlı karşılaştırmaların hiçbiri anlamlı değil. C–A +5,6 puan (5'e 0, p = 0,063, Holm p = 0,19). Koşular arası karşılaştırmada C 29'dan 34'e çıktı, A ve B ise neredeyse yerinde kaldı. Ayrıntı yukarıda, "İkinci koşu: `ana-2`".
-4. **Açık karar: ölçüm burada kapanır mı?** Seçenekler:
-   - V0.2'nin hafıza ölçümünü bu iki koşuyla kapatmak: H1 ve H3 desteklenmedi, `ana-2`'de C yalnız yön olarak A'nın önünde.
-   - Gücü artırmak için daha büyük bir değerlendirme seti hazırlamak. Bunun için yeni vakalar ve önceden sabitlenmiş yeni bir protokol gerekir; aynı 30 vakayı yeniden koşmak yetmez.
-
-   Karar proje liderinin.
+4. **Ölçüm kapandı.** Proje liderinin kararı (30 Ekim): "Olur, ölçümü kapat ve BACKLOG'a yaz".
+   - **Sonuç:** V0.2'nin hafıza ölçümü `ana-1` ve `ana-2` ile kapandı. H1 ve H3 desteklenmedi; `ana-2`'de C, A'nın yalnız yön olarak önünde.
+   - **Değerlendirme seti kapalı kalır.** 30 açık vakaya bakarak ayar yapılmaz ve bu vakalar V0.2'de yeniden koşulmaz.
+   - **Daha büyük set proje sonrasında** ([BACKLOG.md](BACKLOG.md)). Yeni vakalar ve önceden sabitlenmiş yeni bir protokol gerekir; aynı 30 vakayı yeniden koşmak gücü artırmaz.
 
 **Ayrıca açık soru.** `ana-1`'de B'nin komut ailesindeki işareti, C'nin örnek uygunluk kuralının bu aile için fazla katı olabileceğini düşündürmüştü.
 - `ana-2`'de bu işaret yok: C ile B komut ailesinde eşit (0'a 0).

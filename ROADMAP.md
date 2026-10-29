@@ -267,6 +267,8 @@ Hafta 8'in sandbox sertleştirme maddeleri ayrı iş olarak açık.
 - [ ] Audit log'a hash zinciri (kayıtların sonradan değiştirilemediğini gösterir) — *Reşat*
 
 **Faz 3 geçiş koşulu:** Benchmark tamamlandı, rapor yayımlandı, bütün sayılar ham kanıta bağlı.
+- **30 Ekim:** bu koşul karşılandı. Ölçüm `ana-1` ve `ana-2` ile kapandı ([docs/OLCUM_SONUCLARI_V02.md](docs/OLCUM_SONUCLARI_V02.md)).
+- Daha büyük bir değerlendirme seti proje sonrasına kaldı ([docs/BACKLOG.md](docs/BACKLOG.md)).
 
 ### Faz 4 — Pilot paketi, jüri sunumu ve Aşama 2 hazırlığı (Hafta 11–12)
 
@@ -391,7 +393,7 @@ Kısıtlar: kapsam dışına çıkma, politika/doğrulayıcıyı gevşetme, say�
 - [ ] FindSecBugs adaptörü çalışıyor; Semgrep ve FindSecBugs'ın tespit oranları sınıf bazında ölçüldü
 - [ ] "Bilinen bulgu" modu yalnız laboratuvar profilinde çalışıyor
 - [ ] Doğrulama Docker sandbox'ta, ağ erişimi olmadan çalışıyor
-- [ ] L3'te en az 40 değerlendirme vakasıyla A/B/C/C+L2 deneyi tamamlandı ve raporlandı
+- [x] L3'te en az 40 değerlendirme vakasıyla A/B/C/C+L2 deneyi tamamlandı ve raporlandı: 45 vaka, iki koşu ([docs/OLCUM_SONUCLARI_V02.md](docs/OLCUM_SONUCLARI_V02.md))
 - [ ] Egress testi ve temiz makinede kurulum ölçümü yapıldı
 - [ ] Pilot paketi hazır; en az 12 müşteri görüşmesi, 2 pilot adayı
 - [ ] Sunum, başvuru ve depo aynı rakamları kullanıyor
