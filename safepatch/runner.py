@@ -521,7 +521,10 @@ def discard(folder):
     """Remove a scratch folder; a file left behind never turns a finished job into an error."""
     def writable(func, path, _):
         try:
-            os.chmod(path, stat.S_IWRITE)   # Git may mark pack files read-only on Windows
+            # Git may mark pack files read-only on Windows. Only the write bit is added: on Linux a
+            # folder left with just that bit could no longer be read, and a link is never followed.
+            if not os.path.islink(path):
+                os.chmod(path, stat.S_IMODE(os.stat(path).st_mode) | stat.S_IWRITE)
             func(path)
         except OSError:
             pass
