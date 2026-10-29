@@ -2,6 +2,7 @@ import difflib
 import time
 import uuid
 
+from safepatch.audit import AuditLog
 from safepatch.common import MODEL_REGION_CHARS, MODEL_SOURCE_CHARS, POLICY, Patch, canonical, digest, known_findings_enabled, remaining, request, secret, setting
 from safepatch.memory import Memory, context_for, reuse_result
 from safepatch.acceptance import manifest
@@ -13,6 +14,9 @@ from safepatch.repository import allowed_files, baseline
 from safepatch.weakness import family
 
 TERMINAL = {"awaiting_review", "rejected", "needs_human", "infrastructure_error", "cancelled", "expired", "approved", "deployed"}
+# The engine's own verdicts recorded in the audit log, and the candidate digests they carry.
+OUTCOMES = ("awaiting_review", "needs_human", "rejected", "infrastructure_error")
+AUDITED = ("evidence_sha256", "commit", "artifact_sha256", "patch_sha256", "origin", "author")
 # v01: original loop. sampling: retries at higher temperature. guided: plus classified
 # feedback and static guidance. guided+context: plus read-only sibling sources.
 STRATEGIES = ("v01", "sampling", "guided", "guided+context")
@@ -174,7 +178,13 @@ class Engine:
                 return
             job.update(fields, status=status)
             job["events"].append({"time": time.time(), "status": status})
-        return self.store.mutate(job_id, change)
+        job = self.store.mutate(job_id, change)
+        if job["status"] == status and status in OUTCOMES:
+            # The verifier's verdict joins the audit chain with its digests; the code stays in the job.
+            candidate = fields.get("candidate") or {}
+            AuditLog(self.store).append("safepatch", "job." + status, job_id, reason=fields.get("reason"),
+                                        **{k: candidate[k] for k in AUDITED if k in candidate})
+        return job
 
     def similar(self, job, context, target, source, finding):
         """Arm B of the main experiment (memory_mode "similar", never offered by the API): the
