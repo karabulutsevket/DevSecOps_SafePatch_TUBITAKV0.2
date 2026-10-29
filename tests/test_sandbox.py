@@ -180,8 +180,11 @@ def test_a_file_that_cannot_be_removed_does_not_fail_the_job(monkeypatch, tmp_pa
             raise PermissionError("in use by another process")
         return real(path, *args, **kwargs)
     monkeypatch.setattr(runner.os, "unlink", locked)
+    mode = stat.S_IMODE(os.stat(tmp_path / "keep").st_mode)
     runner.discard(tmp_path / "keep")
     runner.discard(tmp_path / "never-created")
+    # The folder keeps its permissions (on Linux, write-only would make it unreadable; CI 30 Oct 2026).
+    assert stat.S_IMODE(os.stat(tmp_path / "keep").st_mode) == mode
     assert (tmp_path / "keep" / "locked.jar").is_file()
 
 
