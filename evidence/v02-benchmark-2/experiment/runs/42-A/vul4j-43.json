@@ -1,0 +1,134 @@
+{
+  "case": "vul4j-43",
+  "cwe": "CWE-22",
+  "project": "eclipse-rdf4j/rdf4j",
+  "source": "vul4j",
+  "vulnerable": true,
+  "seed": 42,
+  "arm": "A",
+  "position": 30,
+  "job": "50a37b66cb6b467f948882955e445fb8",
+  "status": "rejected",
+  "reason": "forbidden_capability_or_suppression",
+  "wall_seconds": 126.5,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 11,
+      "patch_sha256": "83c852a47e824965ea1f9107d40eb953943b46ecc2236f3e8a8f18f21e891714",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] util/src/main/java/org/eclipse/rdf4j/common/io/ZipUtil.java:[105,27] error: incompatible types: Path cannot be converted to File"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 21.859,
+      "prompt_tokens": 2301,
+      "output_tokens": 1031,
+      "dropped": [
+        "util/src/main/java/org/eclipse/rdf4j/common/io/IndentingWriter.java"
+      ]
+    },
+    {
+      "number": 2,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 9,
+      "patch_sha256": "311ca375f97ebd3c08d1fc2db120ff90ee1053eb246a8cd1c540eda5277a5201",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] util/src/main/java/org/eclipse/rdf4j/common/io/ZipUtil.java:[102,10] error: cannot find symbol",
+          "[ERROR] util/src/main/java/org/eclipse/rdf4j/common/io/ZipUtil.java:[105,27] error: incompatible types: Path cannot be converted to File"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 22.39,
+      "prompt_tokens": 2671,
+      "output_tokens": 1041,
+      "dropped": [
+        "util/src/main/java/org/eclipse/rdf4j/common/io/IndentingWriter.java"
+      ]
+    },
+    {
+      "number": 3,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": null,
+      "patch_sha256": null,
+      "policy_error": "forbidden_capability_or_suppression",
+      "stopped": null,
+      "passed": null,
+      "failure": null,
+      "no_change": null,
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 24.266,
+      "prompt_tokens": 2795,
+      "output_tokens": 1119,
+      "dropped": [
+        "util/src/main/java/org/eclipse/rdf4j/common/io/IndentingWriter.java"
+      ]
+    }
+  ],
+  "memory": {
+    "decision": "disabled",
+    "tier": null,
+    "use": null,
+    "selected_id": null,
+    "considered": 0,
+    "same_shape": null,
+    "similarity": null,
+    "warnings_sent": 0,
+    "warnings_withheld": 0
+  },
+  "infrastructure_retry": [],
+  "accepted": false,
+  "hidden": null,
+  "false_acceptance": null,
+  "correct": false,
+  "promoted": null
+}

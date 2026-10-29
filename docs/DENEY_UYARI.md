@@ -1,10 +1,17 @@
 # Uyarı denemesi protokolü: C ile uyarısız C (28 Ekim 2026, Hafta 10)
 
 **Durum: koşudan önce sabitlendi; koşu (`uyari-1`) 29 Ekim'de bitti.** Sonuç en altta, "Sonuç: `uyari-1`" bölümünde.
-
-**Karar (29 Ekim, proje lideri): 1. seçenek.** "Olur, 1. seçenekle ilerle." Uyarılar artık modele gönderilmiyor; yalnız kaydediliyor ([HAFIZA_UYGUNLUK.md](HAFIZA_UYGUNLUK.md)). Değerlendirmedeki yeni koşunun protokolü: [DENEY_ANA2.md](DENEY_ANA2.md).
 - Proje liderinin onayı: 28 Ekim, "Olur, uyarı denemesiyle devam et".
 - Koşu başladıktan sonra protokol de ürün kodu da değişmez. Betik bunu denetler: `safepatch/` değişmişse devam reddedilir.
+
+**Karar (29 Ekim, proje lideri): 1. seçenek.** "Olur, 1. seçenekle ilerle." Uyarılar artık modele gönderilmiyor; yalnız kaydediliyor ([HAFIZA_UYGUNLUK.md](HAFIZA_UYGUNLUK.md)). Değerlendirmedeki yeni koşunun protokolü: [DENEY_ANA2.md](DENEY_ANA2.md).
+
+**Değerlendirmedeki sonuç (`ana-2`, 29 Ekim).**
+- `ana-1`'de, modele yalnız uyarı giden işlerde C ve C+L2, A'ya göre 0'a 11 kötüydü.
+- `ana-2`'de uyarı modele gönderilmeyince aynı türden işlerde sonuç 1'e 0.
+- C–A farkı +5,6 puan, ama anlamlı değil (p = 0,063).
+
+Ayrıntı: [OLCUM_SONUCLARI_V02.md](OLCUM_SONUCLARI_V02.md), "İkinci koşu: `ana-2`".
 
 **Betik:** `scripts/warning_experiment.py`. İki adımı var:
 - `exposure`: koşudan önce statik sayım;

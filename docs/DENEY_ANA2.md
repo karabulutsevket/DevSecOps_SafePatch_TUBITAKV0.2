@@ -1,6 +1,6 @@
 # Ana deney, ikinci koşu: `ana-2` (29 Ekim 2026, Hafta 10)
 
-**Durum: onaylandı ve koşudan önce sabitlendi.**
+**Durum: onaylandı, koşudan önce sabitlendi ve koşuldu (29 Ekim 03:03 – 17:34; aşağıda "Koşu kaydı"). Sonuçlar: [OLCUM_SONUCLARI_V02.md](OLCUM_SONUCLARI_V02.md), "İkinci koşu: `ana-2`".**
 - Proje liderinin onayı: 29 Ekim, "Olur, dört kolla ana-2'yi başlat". Kapsam: dört kol.
 - Koşu başladıktan sonra ne protokol ne ürün kodu değişir; betik bunu denetler (`safepatch/` değişmişse devam reddedilir).
 - `ana-1` geçerliliğini korur ([DENEY_PROTOKOLU.md](DENEY_PROTOKOLU.md), [OLCUM_SONUCLARI_V02.md](OLCUM_SONUCLARI_V02.md)). İki koşu birlikte raporlanır.
@@ -87,3 +87,25 @@ Hepsi `ana-1` ile aynı ([DENEY_PROTOKOLU.md](DENEY_PROTOKOLU.md), "Kollar" ve "
 2. **Kapsam: dört kolun hepsi yeniden koşar** (~14 saat).
    - Daha kısa seçenek (yalnız C ve C+L2, ~7 saat) seçilmedi.
    - Gerekçe: koşular arası eşleştirmenin geçerliliği tekrarlanabilirliğe bağlı ve bunu ancak A'yı yeniden koşmak gösterir.
+
+## Koşu kaydı: `ana-2`
+
+**Ham kayıtlar** [`evidence/v02-benchmark-2/experiment/`](../evidence/v02-benchmark-2/experiment/) altında: `protocol.json`, `runs/<seed>-<kol>/<vaka>.json`, `summary.json`.
+
+**Koşunun kendisi**
+- Başlangıç 29 Ekim 2026 03:03, bitiş 17:34; yaklaşık 14,5 saat.
+- 540 satır: 4 kol × 3 seed × 45 vaka.
+- Altyapı hatası yüzünden yeniden koşu gerekmedi; gizli test hatası olmadı.
+- Kod koşu boyunca değişmedi: commit `90b120e`, `code_sha256` `833658cb…`, çalışma ağacı temiz.
+- L2 paketi `ana-1`'inkiyle aynı (`l2_package_sha256` `f4975a6d…`). Katalog da aynı (`catalog_sha256` `75841d71…`).
+- Servisler değerlendirme profilinde, Docker sandbox'ıyla çalıştı.
+- **Disk:** runner her işin kopyasını iş bitince sildi. Koşu sırasında dışarıdan temizlik ya da başka bir müdahale olmadı. `ana-1`'den farkı bu.
+- 15 güvenli vaka her kolda ve her seed'de modele gitmeden tanık kapısında durdu: 180/180.
+
+**Analiz**
+- Önceden tanımlı analiz: `analiz/analysis.json`.
+  - Komut: `EVIDENCE_DIR=evidence/v02-benchmark-2 python scripts/experiment_analysis.py --previous evidence/v02-benchmark/experiment`.
+  - Kayıt, 540 satıra `runs_sha256` `f7810cf0…` ile bağlı.
+- Keşifsel ek: `analiz/exploratory.json`. Aynı komuta `--explore` eklenerek üretildi; sonuçlar görüldükten sonra seçildi.
+
+**Gözlem.** Koşunun ilk işi (seed 42, A, owasp-benchmark-01286) `ana-1`'den farklı bitti. Model aynı istemde her zaman aynı yamayı üretmiyor. Bunun ölçüsü, önceden tanımlı tekrarlanabilirlik denetimi (`same_attempt_patches`): sonuçlar raporda.

@@ -1,0 +1,79 @@
+{
+  "case": "vul4j-43",
+  "cwe": "CWE-22",
+  "project": "eclipse-rdf4j/rdf4j",
+  "source": "vul4j",
+  "vulnerable": true,
+  "seed": 42,
+  "arm": "B",
+  "position": 30,
+  "job": "fa9817e74c4543598e485ed3b38ff860",
+  "status": "awaiting_review",
+  "reason": null,
+  "wall_seconds": 88.3,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "whole_file",
+      "regions_changed": [],
+      "imports_added": [],
+      "changed_lines": 14,
+      "patch_sha256": "4147ff92e5c0c3c0e37ba153ed11ae0359fc560784f99c54369cf1d1bebff3c1",
+      "policy_error": null,
+      "stopped": null,
+      "passed": true,
+      "failure": null,
+      "no_change": null,
+      "build": true,
+      "behavior": {
+        "tests": 108,
+        "failures": 0,
+        "errors": 0
+      },
+      "security": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "model_seconds": 27.297,
+      "prompt_tokens": 2908,
+      "output_tokens": 1107,
+      "dropped": [
+        "util/src/main/java/org/eclipse/rdf4j/common/io/IndentingWriter.java"
+      ]
+    }
+  ],
+  "memory": {
+    "decision": "match",
+    "tier": "L1",
+    "use": "example",
+    "selected_id": "d9a128378a0746fb9a97e163c0573cb7",
+    "considered": 1,
+    "same_shape": false,
+    "similarity": 0.626992,
+    "warnings_sent": 0,
+    "warnings_withheld": 0
+  },
+  "infrastructure_retry": [],
+  "accepted": true,
+  "hidden": {
+    "passed": false,
+    "tests": 3,
+    "failures": 0,
+    "errors": 1,
+    "skipped": 0,
+    "details": [
+      {
+        "name": "namesWithDotsInsideTheDestinationStillExtract",
+        "type": "error",
+        "assertion": "BEHAVIOR_REGRESSION"
+      }
+    ],
+    "duration_seconds": 8.953,
+    "reason": null
+  },
+  "false_acceptance": true,
+  "correct": false,
+  "promoted": "3fea5195cc274180b5626fdb77416037",
+  "accepted_attempt": 1
+}

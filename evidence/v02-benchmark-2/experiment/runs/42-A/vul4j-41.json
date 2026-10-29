@@ -1,0 +1,146 @@
+{
+  "case": "vul4j-41",
+  "cwe": "CWE-22",
+  "project": "codehaus-plexus/plexus-archiver",
+  "source": "vul4j",
+  "vulnerable": true,
+  "seed": 42,
+  "arm": "A",
+  "position": 33,
+  "job": "61759983e40f4253abb6d6cea8f898b0",
+  "status": "needs_human",
+  "reason": "attempt_budget_exhausted",
+  "wall_seconds": 91.1,
+  "attempts": [
+    {
+      "number": 1,
+      "edit_mode": "regions",
+      "regions_changed": [
+        1
+      ],
+      "imports_added": [],
+      "changed_lines": 2,
+      "patch_sha256": "7a6c36d113ac429ecc6a48469156bda9497cd1842bee7261515ef78aac04259b",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/org/codehaus/plexus/archiver/AbstractUnArchiver.java:[327,83] cannot find symbol: toRealPath"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 11.562,
+      "prompt_tokens": 2522,
+      "output_tokens": 505,
+      "dropped": [
+        "src/main/java/org/codehaus/plexus/archiver/UnixStat.java",
+        "src/main/java/org/codehaus/plexus/archiver/BaseFileSet.java"
+      ]
+    },
+    {
+      "number": 2,
+      "edit_mode": "regions",
+      "regions_changed": [
+        1
+      ],
+      "imports_added": [],
+      "changed_lines": 2,
+      "patch_sha256": "7a6c36d113ac429ecc6a48469156bda9497cd1842bee7261515ef78aac04259b",
+      "policy_error": null,
+      "stopped": "duplicate_patch",
+      "passed": null,
+      "failure": null,
+      "no_change": null,
+      "build": null,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 11.625,
+      "prompt_tokens": 2495,
+      "output_tokens": 513,
+      "dropped": [
+        "src/main/java/org/codehaus/plexus/archiver/UnixStat.java",
+        "src/main/java/org/codehaus/plexus/archiver/BaseFileSet.java",
+        "src/main/java/org/codehaus/plexus/archiver/ArchiverException.java"
+      ]
+    },
+    {
+      "number": 3,
+      "edit_mode": "regions",
+      "regions_changed": [
+        1
+      ],
+      "imports_added": [],
+      "changed_lines": 6,
+      "patch_sha256": "d5ad363b0b228a9332674f1b2a92630b2ec16adf747caa96900094e82ec1fb60",
+      "policy_error": null,
+      "stopped": null,
+      "passed": false,
+      "failure": {
+        "category": "compilation_failed",
+        "diagnostics": [
+          "[ERROR] src/main/java/org/codehaus/plexus/archiver/AbstractUnArchiver.java:[327,65] cannot find symbol: toRealPath",
+          "[ERROR] src/main/java/org/codehaus/plexus/archiver/AbstractUnArchiver.java:[328,47] cannot find symbol: toRealPath"
+        ]
+      },
+      "no_change": null,
+      "build": false,
+      "behavior": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "security": {
+        "tests": null,
+        "failures": null,
+        "errors": null
+      },
+      "model_seconds": 12.265,
+      "prompt_tokens": 2409,
+      "output_tokens": 561,
+      "dropped": [
+        "src/main/java/org/codehaus/plexus/archiver/UnixStat.java",
+        "src/main/java/org/codehaus/plexus/archiver/BaseFileSet.java",
+        "src/main/java/org/codehaus/plexus/archiver/ArchiverException.java",
+        "src/main/java/org/codehaus/plexus/archiver/ArchiveFile.java"
+      ]
+    }
+  ],
+  "memory": {
+    "decision": "disabled",
+    "tier": null,
+    "use": null,
+    "selected_id": null,
+    "considered": 0,
+    "same_shape": null,
+    "similarity": null,
+    "warnings_sent": 0,
+    "warnings_withheld": 0
+  },
+  "infrastructure_retry": [],
+  "accepted": false,
+  "hidden": null,
+  "false_acceptance": null,
+  "correct": false,
+  "promoted": null
+}

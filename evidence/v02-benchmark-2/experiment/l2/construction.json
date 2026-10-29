@@ -1,0 +1,105 @@
+{
+  "rows": [
+    {
+      "case": "command-01",
+      "accepted": true,
+      "reason": null,
+      "memory_id": "aad6bb980fc54d2bab59bddb3b0eed0c"
+    },
+    {
+      "case": "package-command-1",
+      "accepted": true,
+      "reason": null,
+      "memory_id": "cef26115d0334b1488f65d34b1943197"
+    },
+    {
+      "case": "package-command-2",
+      "accepted": true,
+      "reason": null,
+      "memory_id": "d59a11c848fc4cc590e84fb533ad93b6"
+    },
+    {
+      "case": "package-path-1",
+      "accepted": true,
+      "reason": null,
+      "memory_id": "70a5d1e6098e4a4a8be07ebaf15243b5"
+    },
+    {
+      "case": "package-path-2",
+      "accepted": true,
+      "reason": null,
+      "memory_id": "2419903f2d674679b726df05daa09dd9"
+    },
+    {
+      "case": "package-sql-1",
+      "accepted": true,
+      "reason": null,
+      "memory_id": "d0e1f2d564444f859c278630718438ee"
+    },
+    {
+      "case": "package-sql-2",
+      "accepted": true,
+      "reason": null,
+      "memory_id": "450d8bff7d0445608b04cab242d32a12"
+    },
+    {
+      "case": "path-01",
+      "accepted": true,
+      "reason": null,
+      "memory_id": "4d90cf5fc05041869eea4b5967ad858b"
+    },
+    {
+      "case": "sql-01",
+      "accepted": true,
+      "reason": null,
+      "memory_id": "7ae2f67e4bc24ca290f9614b9b1982e6"
+    },
+    {
+      "case": "variant-command-format",
+      "accepted": true,
+      "reason": null,
+      "memory_id": "2d55f9fe869e4c60a6a5aae2c46cdfa2"
+    },
+    {
+      "case": "variant-command-list",
+      "accepted": true,
+      "reason": null,
+      "memory_id": "ff704905c8a74d7ab36c14516f52442f"
+    },
+    {
+      "case": "variant-path-file",
+      "accepted": true,
+      "reason": null,
+      "memory_id": "0625befe27d44ea2b54625d6e342792d"
+    },
+    {
+      "case": "variant-path-helper",
+      "accepted": true,
+      "reason": null,
+      "memory_id": "feb663596e514561bcbe528fc5088838"
+    },
+    {
+      "case": "variant-sql-builder",
+      "accepted": true,
+      "reason": null,
+      "memory_id": "92361c3ce3444a258482337be3594b25"
+    },
+    {
+      "case": "variant-sql-format",
+      "accepted": true,
+      "reason": null,
+      "memory_id": "a497e1d4dbe64d6ea94b6c9d5dac4f9c"
+    },
+    {
+      "case": "variant-sql-helper",
+      "accepted": true,
+      "reason": null,
+      "memory_id": "c119cf0b52424d37861e1223495694f7"
+    }
+  ],
+  "package": {
+    "path": "C:\\TUBITAKClaude\\SafePatch_V0.2\\.runtime\\experiment\\ana-1\\safepatch-l2-experiment-v1.zip",
+    "manifest_sha256": "f6e6e4546c96c5a36e5039e91e6f8950b0d1ae7454bbeb1c139d44286c6bcdd1",
+    "records": 16
+  }
+}
