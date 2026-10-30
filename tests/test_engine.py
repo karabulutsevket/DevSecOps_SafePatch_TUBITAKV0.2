@@ -56,6 +56,20 @@ def test_scanner_failure_is_not_clean(job_store):
     assert db.get(job["id"])["attempt_count"] == 0
 
 
+@pytest.mark.parametrize("detail,reason", [
+    ("RuntimeError:sonar_required_vulnerability_rule_unsupported", "dependency_failure:RuntimeError:sonar_required_vulnerability_rule_unsupported"),
+    ("OSError:[WinError 5] Access is denied: 'C:\work'", "dependency_failure:HTTPStatusError"),   # free text never reaches the job
+    ("RuntimeError:see http://10.0.0.5/x", "dependency_failure:HTTPStatusError"),
+])
+def test_a_services_fixed_failure_code_reaches_the_job_and_nothing_else(job_store, detail, reason):
+    import httpx
+    db, job = job_store
+    def failing(url, *args, **kwargs):
+        raise httpx.HTTPStatusError("503", request=httpx.Request("POST", url), response=httpx.Response(503, json={"detail": detail}))
+    Engine(db, failing).run(job["id"])
+    assert db.get(job["id"])["status"] == "infrastructure_error" and db.get(job["id"])["reason"] == reason
+
+
 def test_job_deadline(job_store):
     db, job = job_store
     db.mutate(job["id"], lambda j: j.update(deadline=time.time() - 1))

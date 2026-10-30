@@ -155,7 +155,7 @@ Bu ayarların çalışan bir kapsayıcının içinden doğrulanması ve kötü n
 **Dosya ve ayarlar:**
 - Maven önbelleği salt okunur bağlanır; yazmalar kapsayıcının geçici belleğine gider (`maven.repo.local.tail`).
 - Süre aşılırsa kapsayıcı öldürülür.
-- Sonar taraması Sonar sunucusuna ağ gerektirdiği için sandbox'ta reddedilir.
+- Sonar taraması Sonar sunucusuna ağ gerektirdiği için sandbox'ta reddedilir. Canlı test, sürüm ve kurulum: [OLCUM_SONAR.md](OLCUM_SONAR.md) (30 Ekim; Community Build 26.10, tarayıcı Java 21 ister).
 - İmajı proje tanımındaki `java` sürümü seçer (`17` ya da `8`); tanımlı imajı olmayan bir sürüm reddedilir.
 - Ayarlar: `SANDBOX_MEMORY`, `SANDBOX_CPUS`, `SANDBOX_USER`, `SANDBOX_IMAGE` (JDK 17), `SANDBOX_IMAGE_<sürüm>`, `WSL_DISTRO`.
 

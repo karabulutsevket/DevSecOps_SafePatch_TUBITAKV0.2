@@ -1,0 +1,12 @@
+{
+  "job": "a0f48abef27b4cd6b0ea091a86b483ce",
+  "status": "infrastructure_error",
+  "reason": "dependency_failure:RuntimeError:sonar_required_vulnerability_rule_unsupported",
+  "attempts": 0,
+  "events": [
+    "queued",
+    "scanning",
+    "infrastructure_error"
+  ],
+  "seconds": 21.3
+}

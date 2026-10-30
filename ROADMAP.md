@@ -266,7 +266,11 @@ Hafta 8'in sandbox sertleştirme maddeleri ayrı iş olarak açık.
   - **30 Ekim, egress testi yapıldı.** Koşu sırasında SafePatch'in hiçbir süreci makinenin dışına bağlanmadı. Ölçümün iki katmanı var: Windows çekirdek izi ve WSL gözlemcisi; ikisi de kontrollerle kanıtlandı.
   - **Bulgu:** WSL açılırken `www.msftconnecttest.com:80` adresine bir bağlantı kuruluyor; kapalı ağ kurulumu için bu açık iş ([docs/OLCUM_EGRESS.md](docs/OLCUM_EGRESS.md)).
   - Temiz makinede kurulum süresi ölçümü henüz yapılmadı.
-- [ ] SonarQube Community Build ile adaptörün canlı testi. Gerekli kural bu sürümde yoksa adaptörün işi güvenli şekilde durdurduğu belgelenir — *Yiğithan*
+- [x] SonarQube Community Build ile adaptörün canlı testi. Gerekli kural bu sürümde yoksa adaptörün işi güvenli şekilde durdurduğu belgelenir — *Yiğithan*. **30 Ekim:** Community Build 26.10 ile denendi.
+  - Taint kuralları bu sürümde yok. İş, modele gitmeden `sonar_required_vulnerability_rule_unsupported` gerekçesiyle duruyor.
+  - Test adaptörde dört hata buldu ve düzeltildi. Toplama yolu canlı sunucuda çalışıyor.
+  - Açık kararlar: tarayıcı için Java 21, Community Build için kural eşlemesi.
+  - Ayrıntı: [docs/OLCUM_SONAR.md](docs/OLCUM_SONAR.md).
 - [x] Audit log'a hash zinciri (kayıtların sonradan değiştirilemediğini gösterir) — *Reşat*. **30 Ekim:** `safepatch/audit.py`.
   - Zincirde: insan kararları, doğrulayıcının sonuçları ve L2 içe alma.
   - `python -m safepatch.audit verify` ilk kırığı bulur.

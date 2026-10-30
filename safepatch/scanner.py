@@ -102,20 +102,38 @@ def parse_spotbugs(data, commit, files, paths):
             "commit": commit, "unmapped_results": unmapped, "findings": findings, "other_findings": other}
 
 
+def sonar_path(component, project_key):
+    """A Sonar component key ('<project>:src/...') as the repository-relative path the other scanners give."""
+    return component[len(project_key) + 1:] if component.startswith(project_key + ":") else component
+
+
 class SonarAdapter:
     """Fresh unique project per scan; never query a shared project's moving HEAD."""
     def __init__(self, url, token, call=request):
         self.url, self.token, self.call = url.rstrip("/"), token, call
 
-    def get(self, path):
-        return self.call(self.url + path, token=self.token)
+    def get(self, path, **params):
+        """A Web API call; an HTTP error becomes a named failure the runner reports (live test, 30 Oct 2026)."""
+        try:
+            return self.call(self.url + path, token=self.token, params=params or None)
+        except Exception as exc:
+            status = getattr(getattr(exc, "response", None), "status_code", None)
+            if status is None:
+                raise
+            raise RuntimeError(f"sonar_http_{status}") from exc
 
     def preflight(self, expected_version, required_rule):
         status = self.get("/api/system/status")
         if status.get("status") != "UP" or status.get("version") != expected_version:
             raise RuntimeError("sonar_unavailable_or_version_mismatch")
-        # Unsupported rules cannot be represented as a clean scan.
-        rule = self.get("/api/rules/show?key=" + required_rule)["rule"]
+        # Unsupported rules cannot be represented as a clean scan. An edition without the rule
+        # (the Community Build has no taint rules) answers 404.
+        try:
+            rule = self.get("/api/rules/show", key=required_rule)["rule"]
+        except RuntimeError as exc:
+            if str(exc) == "sonar_http_404":
+                raise RuntimeError("sonar_required_vulnerability_rule_unsupported") from exc
+            raise
         if rule.get("type") != "VULNERABILITY" or rule.get("status") == "REMOVED":
             raise RuntimeError("sonar_required_vulnerability_rule_unsupported")
         return {"server_version": status["version"], "required_rule": required_rule, "rule_type": rule["type"]}
@@ -130,7 +148,7 @@ class SonarAdapter:
             raise RuntimeError("sonar_missing_task_id")
         while True:
             remaining(deadline)
-            task = self.get("/api/ce/task?id=" + task_id)["task"]
+            task = self.get("/api/ce/task", id=task_id)["task"]
             if task.get("componentKey") != project_key:
                 raise RuntimeError("sonar_wrong_project")
             status = task["status"]
@@ -144,24 +162,25 @@ class SonarAdapter:
         analysis_id = task.get("analysisId")
         if not analysis_id:
             raise RuntimeError("sonar_missing_analysis_id")
-        analyses = self.get(f"/api/project_analyses/search?project={project_key}&ps=100")["analyses"]
+        analyses = self.get("/api/project_analyses/search", project=project_key, ps=100)["analyses"]
         if not any(a.get("key") == analysis_id and a.get("revision") == revision for a in analyses):
             raise RuntimeError("sonar_revision_mismatch")
-        gate = self.get("/api/qualitygates/project_status?analysisId=" + analysis_id)["projectStatus"]
+        gate = self.get("/api/qualitygates/project_status", analysisId=analysis_id)["projectStatus"]
         if gate.get("status") not in ("OK", "ERROR"):
             raise RuntimeError("sonar_quality_gate_unknown")
         issues = []
         page = 1
         while True:
-            result = self.get(f"/api/issues/search?componentKeys={project_key}&resolved=false&types=VULNERABILITY&ps=100&p={page}")
+            result = self.get("/api/issues/search", componentKeys=project_key, resolved="false", types="VULNERABILITY", ps=100, p=page)
             issues.extend(result["issues"])
             if len(issues) >= result["paging"]["total"]:
                 break
             page += 1
             remaining(deadline)
-        hotspots = self.get(f"/api/hotspots/search?projectKey={project_key}&ps=100")
+        # 26.x names the parameter `project`; the older `projectKey` is refused with 400 (live, 30 Oct 2026).
+        hotspots = self.get("/api/hotspots/search", project=project_key, ps=100)
         # A second check catches concurrent replacement even on a unique project.
-        latest = self.get(f"/api/project_analyses/search?project={project_key}&ps=1")["analyses"]
+        latest = self.get("/api/project_analyses/search", project=project_key, ps=1)["analyses"]
         if not latest or latest[0]["key"] != analysis_id:
             raise RuntimeError("sonar_analysis_replaced")
-        return {"tool": "sonarqube", "status": "ok", "analysis_id": analysis_id, "commit": revision, "project_key": project_key, "quality_gate": gate["status"], "findings": [{"tool": "sonarqube", "rule_id": i["rule"], "type": i["type"], "file": i["component"], "line": i.get("line"), "severity": i["severity"], "fingerprint": i["key"]} for i in issues], "security_hotspots": hotspots, "coverage": "Edition/profile dependent; hotspots are not vulnerabilities"}
+        return {"tool": "sonarqube", "status": "ok", "analysis_id": analysis_id, "commit": revision, "project_key": project_key, "quality_gate": gate["status"], "findings": [{"tool": "sonarqube", "rule_id": i["rule"], "type": i["type"], "file": sonar_path(i["component"], project_key), "line": i.get("line"), "severity": i["severity"], "fingerprint": i["key"]} for i in issues], "security_hotspots": hotspots, "coverage": "Edition/profile dependent; hotspots are not vulnerabilities"}

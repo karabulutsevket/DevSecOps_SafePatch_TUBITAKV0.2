@@ -470,7 +470,7 @@ def scan(workspace, spec, files, commit, scanner, job_id, attempt, deadline, pat
         token = secret("SONAR_TOKEN")
         url = setting("SONAR_URL", "http://127.0.0.1:9000")
         adapter = SonarAdapter(url, token)
-        coverage = adapter.preflight(setting("SONAR_VERSION", "25.9.0.112764"), rule)
+        coverage = adapter.preflight(setting("SONAR_VERSION", "26.10.0.133078"), rule)
         # Unique key prevents another scan's issues from being mistaken for this scan.
         key = f"bigg-{job_id}-{attempt}-{uuid.uuid4().hex[:8]}"
         result = maven(workspace, ["org.sonarsource.scanner.maven:sonar-maven-plugin:5.1.0.4751:sonar", "-Dsonar.projectKey=" + key, "-Dsonar.scm.revision=" + commit, "-Dsonar.host.url=" + url, "-Dsonar.scanner.skipJreProvisioning=true"], deadline, {"SONAR_TOKEN": token, "SONAR_USER_HOME": str(runtime("sonar-cache"))})
