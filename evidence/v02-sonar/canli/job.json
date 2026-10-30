@@ -1,0 +1,12 @@
+{
+  "job": "f0eb88126f374cf4969bc0e84cf8e307",
+  "status": "infrastructure_error",
+  "reason": "dependency_failure:HTTPStatusError",
+  "attempts": 0,
+  "events": [
+    "queued",
+    "scanning",
+    "infrastructure_error"
+  ],
+  "seconds": 24.3
+}

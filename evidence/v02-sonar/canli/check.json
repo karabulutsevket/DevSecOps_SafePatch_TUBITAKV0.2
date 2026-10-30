@@ -1,0 +1,67 @@
+{
+  "server": {
+    "id": "147B411E-AaGMysgz71m5P--myHR2",
+    "version": "26.10.0.133078",
+    "status": "UP"
+  },
+  "required_rules": {
+    "sql": {
+      "ok": false,
+      "error": "HTTPStatusError",
+      "message": "Client error '404 ' for url 'http://127.0.0.1:9000/api/rules/show?key=javasecurity%3AS3649'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "http_status": 404
+    },
+    "path": {
+      "ok": false,
+      "error": "HTTPStatusError",
+      "message": "Client error '404 ' for url 'http://127.0.0.1:9000/api/rules/show?key=javasecurity%3AS2083'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "http_status": 404
+    },
+    "command": {
+      "ok": false,
+      "error": "HTTPStatusError",
+      "message": "Client error '404 ' for url 'http://127.0.0.1:9000/api/rules/show?key=javasecurity%3AS2076'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+      "http_status": 404
+    }
+  },
+  "java_rule_repositories": [
+    "external_checkstyle",
+    "external_fbcontrib",
+    "external_findsecbugs",
+    "external_pmd",
+    "external_spotbugs",
+    "java"
+  ],
+  "offered_for_family": {
+    "sql": [
+      {
+        "key": "java:S2077",
+        "type": "VULNERABILITY",
+        "status": "READY"
+      }
+    ],
+    "path": [],
+    "command": []
+  },
+  "adapter_preflight": {
+    "sql": {
+      "ok": false,
+      "error": "RuntimeError",
+      "message": "sonar_required_vulnerability_rule_unsupported",
+      "http_status": null
+    },
+    "path": {
+      "ok": false,
+      "error": "RuntimeError",
+      "message": "sonar_required_vulnerability_rule_unsupported",
+      "http_status": null
+    },
+    "command": {
+      "ok": false,
+      "error": "RuntimeError",
+      "message": "sonar_required_vulnerability_rule_unsupported",
+      "http_status": null
+    }
+  },
+  "checked_at": 1793363714.9397473
+}

@@ -1,0 +1,28 @@
+{
+  "project_key": "bigg-live-6e1d204a",
+  "build_exit": 0,
+  "plugin_fetched_online": false,
+  "jre_from_sonar_server": true,
+  "sonar_goal_exit": 0,
+  "sonar_goal_seconds": 11.6,
+  "maven_warnings_and_errors": [],
+  "collect": {
+    "ok": true
+  },
+  "collected": {
+    "quality_gate": "OK",
+    "vulnerabilities": 1,
+    "findings": [
+      {
+        "tool": "sonarqube",
+        "rule_id": "java:S2077",
+        "type": "VULNERABILITY",
+        "file": "bigg-live-6e1d204a:src/main/java/demo/DemoService.java",
+        "line": 17,
+        "severity": "MAJOR",
+        "fingerprint": "aeff5e70-c51c-4701-8d67-e9490708d8e4"
+      }
+    ],
+    "hotspots": []
+  }
+}
