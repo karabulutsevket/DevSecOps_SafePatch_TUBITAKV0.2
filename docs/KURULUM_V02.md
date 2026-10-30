@@ -255,6 +255,7 @@ Beklenen sonuç: `"status": "awaiting_review"`. SQL vakası tek denemede, yakla�
 | `run-tests.ps1 -Integration` bütün Java testlerinde `compilation_failed` veriyor, tanı satırı yok, derleme 2 sn; servislerde iş `verification_infrastructure:build_without_compiler_diagnostic` ile duruyor | Maven çevrimdışı çalışır ve `MAVEN_CACHE` verilmezse depo içindeki `.runtime/m2`'yi kullanır. Bölüm 3'te doldurulan önbelleği gösterin: `$env:MAVEN_CACHE = '<maven önbelleği>'` (25 Ekim'de görüldü) |
 | WSL Debian'da Git yok | Ürün için gerekmez; Semgrep yalnız dosya tarar |
 | Testler V0.1 kanıtını değiştirdi | Artık değiştiremez; çıktılar `EVIDENCE_DIR`'a yazılır |
+| WSL açılırken dışarıya bağlanıyor | WSL sanal makinesi açılırken `www.msftconnecttest.com:80` adresine bir bağlantı kuruluyor. SafePatch'ten gelmiyor, ama runner WSL'yi ilk kullandığında WSL açılıyor. Kapalı ağda bu bağlantı ağ düzeyinde engellenmeli. Egress testi: [OLCUM_EGRESS.md](OLCUM_EGRESS.md) (30 Ekim) |
 
 ## 8. Henüz doğrulanmayanlar
 
