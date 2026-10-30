@@ -1,0 +1,242 @@
+{
+  "trace": {
+    "clock_shift_seconds": 10800.0,
+    "events_lost": 0,
+    "buffers_lost": 0
+  },
+  "verdict": {
+    "safepatch_flows_beyond_host": 0,
+    "dns_names_asked_beyond_host": 0,
+    "wsl_sockets_beyond_host_during_run": 0,
+    "wsl_sockets_beyond_host_before_run": 1,
+    "wsl_dns_names_before_run": 1,
+    "instruments_proven": {
+      "host_tcp": true,
+      "host_udp": true,
+      "host_dns": true,
+      "wsl_tcp": true,
+      "wsl_udp": true,
+      "wsl_dns_on_host": true
+    }
+  },
+  "tree": {
+    "instances": 513,
+    "by_label": {
+      "control-host": [
+        "python.exe"
+      ],
+      "control-wsl": [
+        "conhost.exe",
+        "wsl.exe",
+        "wslhost.exe"
+      ],
+      "deployer": [
+        "conhost.exe",
+        "java.exe",
+        "python.exe",
+        "taskkill.exe"
+      ],
+      "ollama": [
+        "conhost.exe",
+        "llama-server.exe",
+        "ollama.exe"
+      ],
+      "orchestrator": [
+        "conhost.exe",
+        "git.exe",
+        "python.exe"
+      ],
+      "run": [
+        "powershell.exe",
+        "python.exe"
+      ],
+      "runner": [
+        "conhost.exe",
+        "git-upload-pack.exe",
+        "git.exe",
+        "python.exe",
+        "sh.exe",
+        "wsl.exe",
+        "wslhost.exe"
+      ],
+      "worker1": [
+        "conhost.exe",
+        "python.exe"
+      ],
+      "worker2": [
+        "conhost.exe",
+        "git-upload-pack.exe",
+        "git.exe",
+        "python.exe",
+        "sh.exe"
+      ]
+    }
+  },
+  "safepatch_flows": [],
+  "control_flows": [
+    {
+      "label": "control-host",
+      "image": "python.exe",
+      "remote": "192.0.2.1",
+      "port": "9",
+      "proto": "udp",
+      "events": 1,
+      "first": 1793358649.203031,
+      "last": 1793358649.203031
+    },
+    {
+      "label": "control-host",
+      "image": "python.exe",
+      "remote": "192.0.2.1",
+      "port": "9",
+      "proto": "tcp",
+      "events": 2,
+      "first": 1793358649.212777,
+      "last": 1793358649.704344
+    }
+  ],
+  "dns": {
+    "asked_beyond_host": [],
+    "wsl_before_run": [
+      {
+        "name": "www.msftconnecttest.com",
+        "source": "wsl-dns-proxy-before-run",
+        "events": 10,
+        "first": 1793358621.600065
+      }
+    ],
+    "local_or_control": [
+      {
+        "name": "host-egress-control-9529a5a87844.invalid",
+        "source": "control-host",
+        "events": 4,
+        "first": 1793358648.094967
+      },
+      {
+        "name": "host-egress-control-9529a5a87844.invalid",
+        "source": null,
+        "events": 13,
+        "first": 1793358648.095911
+      },
+      {
+        "name": "wsl-egress-control-ac3ef31ba600.invalid",
+        "source": "wsl-dns-proxy",
+        "events": 6,
+        "first": 1793358650.052584
+      },
+      {
+        "name": "wsl-egress-control-ac3ef31ba600.invalid",
+        "source": null,
+        "events": 26,
+        "first": 1793358650.052976
+      },
+      {
+        "name": "wsl-egress-control-ac3ef31ba600.invalid.home",
+        "source": "wsl-dns-proxy",
+        "events": 6,
+        "first": 1793358650.16807
+      },
+      {
+        "name": "wsl-egress-control-ac3ef31ba600.invalid.home",
+        "source": null,
+        "events": 26,
+        "first": 1793358650.16833
+      },
+      {
+        "name": "localhost",
+        "source": "ollama",
+        "events": 4,
+        "first": 1793358703.208359
+      }
+    ],
+    "other_queries_counted_only": 1205
+  },
+  "network_events": {
+    "other_events": 69160,
+    "other_beyond_events": 50093,
+    "member_events": 10027,
+    "member_beyond_events": 3,
+    "other_remote_addresses_counted_only": true
+  },
+  "wsl": {
+    "samples": 5560,
+    "interval_seconds": 0.05,
+    "control_sockets": [
+      {
+        "proto": "udp",
+        "local": "10.255.255.254:56548",
+        "remote": "10.255.255.254:53",
+        "state": "01",
+        "uid": 1000,
+        "inode": "23395",
+        "process": {
+          "pid": 445,
+          "comm": "python3"
+        },
+        "first": 1793358650.0545669,
+        "seen": 3,
+        "last": 1793358650.1573288
+      },
+      {
+        "proto": "udp",
+        "local": "10.255.255.254:54870",
+        "remote": "10.255.255.254:53",
+        "state": "01",
+        "uid": 1000,
+        "inode": "23396",
+        "process": {
+          "pid": 445,
+          "comm": "python3"
+        },
+        "first": 1793358650.2136037,
+        "seen": 2,
+        "last": 1793358650.2650647
+      },
+      {
+        "proto": "tcp",
+        "local": "172.23.8.121:45900",
+        "remote": "192.0.2.1:9",
+        "state": "SYN_SENT",
+        "uid": 1000,
+        "inode": "23397",
+        "process": {
+          "pid": 445,
+          "comm": "python3"
+        },
+        "first": 1793358650.3178608,
+        "seen": 68,
+        "last": 1793358653.7797859
+      },
+      {
+        "proto": "udp",
+        "local": "172.23.8.121:40109",
+        "remote": "192.0.2.1:9",
+        "state": "01",
+        "uid": 1000,
+        "inode": "23398",
+        "process": {
+          "pid": 445,
+          "comm": "python3"
+        },
+        "first": 1793358653.317139,
+        "seen": 10,
+        "last": 1793358653.7803955
+      }
+    ],
+    "before_run": [
+      {
+        "proto": "tcp",
+        "local": "172.23.8.121:39796",
+        "remote": "2.16.168.61:80",
+        "state": "TIME_WAIT",
+        "uid": 0,
+        "inode": "10355",
+        "process": null,
+        "first": 1793358621.7343836,
+        "seen": 1172,
+        "last": 1793358682.4263284
+      }
+    ],
+    "during_run": []
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "trace_started": "2026-10-30T11:10:00.1483598Z",
+  "trace_stopped": "2026-10-30T11:15:07.4021553Z",
+  "providers": [
+    "\"{22FB2CD6-0E7B-422B-A0C7-2FAD1FD0E716}\" 0x10 0x4",
+    "\"{7DD42A49-5329-4832-8DFD-43D979153A88}\" 0x30 0x4",
+    "\"{1C95126E-7EEA-49A9-A3FE-A378B03DDB4D}\" 0xFFFFFFFFFFFFFFFF 0x4"
+  ],
+  "raw_sha256": {
+    "trace.etl": "4e6e9335f10de21c4fa4379aca549a2f72562cd1db0a4fbc706790d07b7e9b1e",
+    "trace.xml": "1f7dc762ec5e0abbf1b9a6afda43c9ef7559a8ebdf862e6b074716cba0235fa2",
+    "wsl.json": "5174dd3f9e747b2d96209badef5079a548eddb0584544dc99354859db583a5b8",
+    "run.json": "8d4f1617a8daf1c17724e95883adb5db3025021a02b63665a1f0e14889d1c1db"
+  },
+  "raw_location": ".runtime/egress (not in Git: the trace holds this machine's other traffic)",
+  "control_target": "192.0.2.1:9",
+  "services": [
+    {
+      "pid": 30360,
+      "service": "runner",
+      "started": "2026-10-30T11:10:31.8708659Z"
+    },
+    {
+      "pid": 30384,
+      "service": "worker2",
+      "started": "2026-10-30T11:10:31.8938335Z"
+    },
+    {
+      "pid": 30416,
+      "service": "worker1",
+      "started": "2026-10-30T11:10:31.9040726Z"
+    },
+    {
+      "pid": 30448,
+      "service": "deployer",
+      "started": "2026-10-30T11:10:31.9163285Z"
+    },
+    {
+      "pid": 30504,
+      "service": "orchestrator",
+      "started": "2026-10-30T11:10:31.9277432Z"
+    }
+  ],
+  "ollama_pid": 28668,
+  "run_pid": 26100,
+  "run_started": 1793358646.8092415,
+  "run_finished": 1793358906.2209444,
+  "human_decisions": "SIMULATED (test identities of this run only)"
+}

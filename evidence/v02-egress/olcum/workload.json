@@ -1,0 +1,72 @@
+{
+  "steps": [
+    {
+      "step": "first.create",
+      "ok": true,
+      "seconds": 0.3
+    },
+    {
+      "step": "first.result",
+      "ok": true,
+      "job": "9761707cfd7441e3bed29e256ca3bdfb",
+      "status": "awaiting_review",
+      "reason": null,
+      "memory_ids": [],
+      "candidate": {
+        "evidence_sha256": "6cc224a2c1b49c01c32709285eb2c9f03c931c7f7c172420bbf66ce820318f5a",
+        "artifact_sha256": "09dfa9221e919cecb248e86183653e9681a6903a3628485cd0ff41523ba57792",
+        "origin": "real-local-model"
+      }
+    },
+    {
+      "step": "first.approve",
+      "ok": true,
+      "seconds": 0.1
+    },
+    {
+      "step": "first.promote",
+      "ok": true,
+      "seconds": 0.3
+    },
+    {
+      "step": "first.deploy",
+      "ok": true,
+      "seconds": 4.4
+    },
+    {
+      "step": "second.create",
+      "ok": true,
+      "seconds": 0.1
+    },
+    {
+      "step": "second.result",
+      "ok": true,
+      "job": "9ffcc6445889419dbf9e91e7a93fc7cf",
+      "status": "awaiting_review",
+      "reason": null,
+      "memory_ids": [
+        "e4e699994a504673852d5f0e9cb9d8bd"
+      ],
+      "candidate": {
+        "evidence_sha256": "8b574aa13a466400875681b883c2b2b1d597d717ebfb60d0c8d2a6d2a2d9aff8",
+        "artifact_sha256": "09dfa9221e919cecb248e86183653e9681a6903a3628485cd0ff41523ba57792",
+        "origin": "approved-memory-replay"
+      }
+    },
+    {
+      "step": "second.approve",
+      "ok": true,
+      "seconds": 0.1
+    },
+    {
+      "step": "second.deploy",
+      "ok": true,
+      "seconds": 4.0
+    },
+    {
+      "step": "rollback",
+      "ok": true,
+      "seconds": 3.5
+    }
+  ]
+}
