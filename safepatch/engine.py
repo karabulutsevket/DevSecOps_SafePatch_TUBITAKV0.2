@@ -3,7 +3,7 @@ import time
 import uuid
 
 from safepatch.audit import AuditLog
-from safepatch.common import MODEL_REGION_CHARS, MODEL_SOURCE_CHARS, POLICY, Patch, canonical, digest, known_findings_enabled, remaining, request, secret, setting
+from safepatch.common import MODEL_REGION_CHARS, MODEL_SOURCE_CHARS, POLICY, Patch, canonical, digest, failure_code, known_findings_enabled, remaining, request, secret, setting
 from safepatch.memory import Memory, context_for, reuse_result
 from safepatch.acceptance import manifest
 from safepatch.feedback import GUIDANCE_KEY, classify, guidance_for, imitates_note
@@ -219,8 +219,9 @@ class Engine:
         except TimeoutError:
             self.set(job_id, "needs_human", reason="job_deadline_exceeded")
         except Exception as exc:
-            # Never leak network URLs, tokens, raw model responses, or arbitrary code logs.
-            self.set(job_id, "infrastructure_error", reason="dependency_failure:" + type(exc).__name__)
+            # Never leak network URLs, tokens, raw model responses, or arbitrary code logs; a fixed
+            # failure code from a trusted service is none of these (common.failure_code).
+            self.set(job_id, "infrastructure_error", reason="dependency_failure:" + (failure_code(exc) or type(exc).__name__))
         # Each memory record learns how the job that used it ended (its evidence vector).
         job = self.store.get(job_id)
         for memory_id in job.get("memory_ids", []):

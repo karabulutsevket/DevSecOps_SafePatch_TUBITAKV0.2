@@ -1,8 +1,11 @@
 import json
 import time
 
+import httpx
 import pytest
 
+from safepatch import common
+from safepatch.common import local_url
 from safepatch.scanner import SonarAdapter, parse_semgrep, parse_spotbugs
 
 
@@ -16,6 +19,7 @@ def sonar_mock(tmp_path, override):
     report = tmp_path / "report-task.txt"
     report.write_text("projectKey=job-specific\nserverUrl=http://127.0.0.1:9000\nceTaskId=TASK1\n")
     def call(url, **kwargs):
+        local_url(url)   # what the real request() checks first: a query in the URL is refused
         if "/api/ce/task" in url:
             result = {"task": {"componentKey": "job-specific", "status": "SUCCESS", "analysisId": "ANALYSIS1"}}
         elif "/api/project_analyses" in url:
@@ -23,8 +27,10 @@ def sonar_mock(tmp_path, override):
         elif "/api/qualitygates" in url:
             result = {"projectStatus": {"status": "OK"}}
         elif "/api/issues" in url:
-            result = {"issues": [], "paging": {"total": 0}}
+            result = {"issues": [{"rule": "java:S2077", "type": "VULNERABILITY", "component": "job-specific:src/main/java/demo/DemoService.java",
+                                  "line": 17, "severity": "MAJOR", "key": "ISSUE1"}], "paging": {"total": 1}}
         elif "/api/hotspots" in url:
+            assert kwargs["params"]["project"] == "job-specific"   # the 26.x parameter name
             result = {"hotspots": [{"key": "HOTSPOT", "status": "TO_REVIEW"}]}
         else:
             raise AssertionError(url)
@@ -35,7 +41,8 @@ def sonar_mock(tmp_path, override):
 def test_sonar_contract_keeps_hotspots_separate(tmp_path):
     adapter, report = sonar_mock(tmp_path, lambda u, r: r)
     result = adapter.collect(report, "job-specific", "r1", time.time() + 10)
-    assert result["findings"] == []
+    # Sonar names a file by '<project>:<path>'; like the other scanners the finding carries the path.
+    assert [(f["rule_id"], f["file"], f["line"]) for f in result["findings"]] == [("java:S2077", "src/main/java/demo/DemoService.java", 17)]
     assert len(result["security_hotspots"]["hotspots"]) == 1
     assert result["analysis_id"] == "ANALYSIS1"
 
@@ -54,6 +61,34 @@ def test_sonar_failed_compute_not_green(tmp_path):
     adapter, report = sonar_mock(tmp_path, override)
     with pytest.raises(RuntimeError, match="compute_failed"):
         adapter.collect(report, "job-specific", "r1", time.time() + 10)
+
+
+def http_error(status):
+    def call(url, **kwargs):
+        if "system/status" in url:
+            return {"status": "UP", "version": "26.10.0.133078"}
+        raise httpx.HTTPStatusError("x", request=httpx.Request("GET", url), response=httpx.Response(status, request=httpx.Request("GET", url)))
+    return SonarAdapter("http://127.0.0.1:9000", "test", call)
+
+
+def test_an_edition_without_the_taint_rule_stops_with_a_named_reason():
+    # The Community Build answers 404 for javasecurity:S3649 (live, 30 Oct 2026).
+    with pytest.raises(RuntimeError, match="^sonar_required_vulnerability_rule_unsupported$"):
+        http_error(404).preflight("26.10.0.133078", "javasecurity:S3649")
+    with pytest.raises(RuntimeError, match="^sonar_http_401$"):
+        http_error(401).preflight("26.10.0.133078", "javasecurity:S3649")
+
+
+def test_request_sends_a_query_as_params_and_refuses_one_in_the_url(monkeypatch):
+    seen = []
+    def fake(self, method, url, **kwargs):
+        seen.append((url, kwargs.get("params")))
+        return httpx.Response(200, json={"ok": True}, request=httpx.Request(method, url))
+    monkeypatch.setattr(httpx.Client, "request", fake)
+    assert common.request("http://127.0.0.1:9000/api/rules/show", params={"key": "javasecurity:S3649"}) == {"ok": True}
+    assert seen == [("http://127.0.0.1:9000/api/rules/show", {"key": "javasecurity:S3649"})]
+    with pytest.raises(ValueError):
+        common.request("http://127.0.0.1:9000/api/rules/show?key=javasecurity:S3649")
 
 
 def test_sonar_wrong_project_rejected(tmp_path):
@@ -151,3 +186,19 @@ def test_spotbugs_findings_of_unsupported_families_are_kept_apart():
     report = parse_spotbugs(data, "a" * 40, LAB, ["src/main/java"])
     assert {f["cwe"] for f in report["findings"]} == {"CWE-89"}
     assert {(f["rule_id"], f["cwe"]) for f in report["other_findings"]} == {("CRLF_INJECTION_LOGS", "CWE-117"), ("SERVLET_HEADER", "CWE-807")}
+
+
+def test_worker2_passes_the_runners_failure_code_on(monkeypatch):
+    from fastapi import HTTPException
+    from safepatch import worker2
+    from safepatch.common import VerifyRequest
+    from safepatch.repository import registry
+    def runner(url, *args, **kwargs):
+        raise httpx.HTTPStatusError("503", request=httpx.Request("POST", url),
+                                    response=httpx.Response(503, json={"detail": "RuntimeError:sonar_required_vulnerability_rule_unsupported"}))
+    monkeypatch.setattr(worker2, "request", runner)
+    monkeypatch.setattr(worker2, "secret", lambda name: "x" * 32)
+    req = VerifyRequest(job_id="a" * 32, case_id="sql-01", base_commit=registry()[1]["sql-01"]["commit"], attempt=0, deadline=time.time() + 60, scanner="sonarqube+semgrep")
+    with pytest.raises(HTTPException) as caught:
+        worker2.verify(req)
+    assert (caught.value.status_code, caught.value.detail) == (503, "RuntimeError:sonar_required_vulnerability_rule_unsupported")

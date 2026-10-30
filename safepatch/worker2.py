@@ -5,7 +5,7 @@ import uuid
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import FileResponse
 
-from safepatch.common import VerifyRequest, digest, remaining, request, require_service, runtime, secret, setting
+from safepatch.common import VerifyRequest, digest, failure_code, remaining, request, require_service, runtime, secret, setting
 from safepatch.policy import validate_patch
 from safepatch.repository import allowed_files, baseline, checkout, commit_candidate
 from safepatch.acceptance import untolerated
@@ -23,7 +23,14 @@ def verify(req: VerifyRequest):
     case, files = baseline(req.case_id, req.base_commit)
     allowed = allowed_files(case["spec"], files, req.target_file)
     meta = validate_patch(files, req.patch, allowed=allowed) if req.patch else None
-    result = request(setting("RUNNER_URL", "http://127.0.0.1:8103") + "/execute", "POST", token=secret("RUNNER_TOKEN"), body=req.model_dump(), timeout=remaining(req.deadline, 1200))
+    try:
+        result = request(setting("RUNNER_URL", "http://127.0.0.1:8103") + "/execute", "POST", token=secret("RUNNER_TOKEN"), body=req.model_dump(), timeout=remaining(req.deadline, 1200))
+    except Exception as exc:
+        # The runner's fixed failure code (a Sonar edition without the rule, say) goes on to the job.
+        code = failure_code(exc)
+        if code:
+            raise HTTPException(503, code) from exc
+        raise
     if result.get("passed"):
         scans = result["scans"]
         if not req.patch or not result["behavior"]["passed"] or not result["security"]["passed"] or any(s["status"] != "ok" for s in scans) or untolerated([f for s in scans for f in s["findings"]], req.tolerated):

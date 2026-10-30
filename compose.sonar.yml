@@ -1,8 +1,13 @@
-# Optional live SonarQube profile. No successful live run is claimed for this file.
+# Optional live SonarQube profile. The image and its settings were live-tested with `docker run` on
+# 30 Oct 2026 (docs/OLCUM_SONAR.md); this compose file itself was not. The Community Build has no
+# taint rules, so a sonarqube+semgrep job stops with sonar_required_vulnerability_rule_unsupported.
 services:
   sonarqube:
-    image: sonarqube:25.9.0.112764-community@sha256:294f862e5f4a9eb3a363597de3607d0ea4d79f14633d7df6015fd464baab1728
+    image: sonarqube:26.10.0.133078-community@sha256:bf10a99dd098e5f9005f194100b7301fb938650833ec3b07b92e81c327a03b36
     ports: [127.0.0.1:9000:9000]
+    environment:
+      SONAR_TELEMETRY_ENABLE: "false"
+      SONAR_UPDATECENTER_ACTIVATE: "false"
     networks: [validation]
     volumes: [sonar-data:/opt/sonarqube/data, sonar-logs:/opt/sonarqube/logs, sonar-extensions:/opt/sonarqube/extensions]
     mem_limit: 4g
@@ -11,7 +16,7 @@ services:
   runner:
     environment:
       SONAR_URL: http://sonarqube:9000
-      SONAR_VERSION: 25.9.0.112764
+      SONAR_VERSION: 26.10.0.133078
       SONAR_TOKEN_FILE: /run/secrets/sonar_token
     secrets: [sonar_token]
 volumes:

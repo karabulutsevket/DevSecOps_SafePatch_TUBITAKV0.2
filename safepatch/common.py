@@ -109,11 +109,27 @@ def local_url(url):
     return url.rstrip("/")
 
 
-def request(url, method="GET", *, token=None, body=None, timeout=30):
+# A failure a trusted service reports: an exception name and a fixed snake_case code, nothing else
+# (no path, URL, address or free text), so it may travel on to the job record.
+FAILURE_CODE = re.compile(r"[A-Za-z]{1,40}:[a-z0-9_]{1,80}")
+
+
+def failure_code(exc):
+    """The fixed failure code in another SafePatch service's HTTP error answer, if it carries one."""
+    response = getattr(exc, "response", None)
+    try:
+        detail = response.json().get("detail") if response is not None else None
+    except (ValueError, AttributeError):
+        return None
+    return detail if isinstance(detail, str) and FAILURE_CODE.fullmatch(detail) else None
+
+
+def request(url, method="GET", *, token=None, body=None, timeout=30, params=None):
+    # A query goes in params, encoded by httpx; the URL itself stays a bare local endpoint.
     local_url(url)
     headers = {"Authorization": "Bearer " + token} if token else {}
     with httpx.Client(trust_env=False, follow_redirects=False, timeout=timeout) as client:
-        response = client.request(method, url, headers=headers, json=body)
+        response = client.request(method, url, headers=headers, json=body, params=params)
     if response.is_redirect:
         raise RuntimeError("Redirect refused")
     response.raise_for_status()
