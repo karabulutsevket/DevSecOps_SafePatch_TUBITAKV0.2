@@ -1,0 +1,750 @@
+{
+  "files": [
+    {
+      "path": "linux/Debian_WSL_AMD64_v1.26.0.0.wsl",
+      "bytes": 89228801,
+      "sha256": "5ec7dc68216e75d1d4d4761474e99d8461a98d316537110314b137122a879e0f"
+    },
+    {
+      "path": "linux/debs/adduser_3.152_all.deb",
+      "bytes": 190932,
+      "sha256": "e50984d2e1ef6300e3fd51303839842189a077b10cb5cadff1923df10c61c493"
+    },
+    {
+      "path": "linux/debs/base-passwd_3.6.7_amd64.deb",
+      "bytes": 53712,
+      "sha256": "cf31c6956ab5f65815d9d9ea1615c4f78ecd2893c31119658248a4756cee83e7"
+    },
+    {
+      "path": "linux/debs/cdebconf_0.280_amd64.deb",
+      "bytes": 135560,
+      "sha256": "e296ed2345e0f117f318b1d429b414558bcc89240225582193630711feeb7230"
+    },
+    {
+      "path": "linux/debs/containerd_1.7.24~ds1-6+deb13u1_amd64.deb",
+      "bytes": 32784720,
+      "sha256": "ed708deb96fe476a3bce4efa5c0538dfbcf717ab9a7c7944ba7260342c25899c"
+    },
+    {
+      "path": "linux/debs/debconf_1.5.91_all.deb",
+      "bytes": 121088,
+      "sha256": "1ddc7e6c5925f748eefb7ca811d98e049f18c158bb21fbc7e122262ce6011e49"
+    },
+    {
+      "path": "linux/debs/docker.io_26.1.5+dfsg1-9+deb13u1_amd64.deb",
+      "bytes": 23037844,
+      "sha256": "142fe32f839a20720b2e6074b8d28d883b01bc45345f7315586b0c2d348dae87"
+    },
+    {
+      "path": "linux/debs/gcc-14-base_14.2.0-19_amd64.deb",
+      "bytes": 49432,
+      "sha256": "5b6825de4263824b78c4c51f6476414f3b4e89c2ab63e81dc8b9b5501e867cf6"
+    },
+    {
+      "path": "linux/debs/init-system-helpers_1.69~deb13u1_all.deb",
+      "bytes": 39360,
+      "sha256": "addf78073e1cbc5a5508937e11d2571055e29835e00ee8fab52a66775649378f"
+    },
+    {
+      "path": "linux/debs/iptables_1.8.11-2_amd64.deb",
+      "bytes": 360924,
+      "sha256": "95ba166bb68a76ca1513196dd59d91e3c33b2096884c6de80406f302b18a030e"
+    },
+    {
+      "path": "linux/debs/libacl1_2.3.2-2+b1_amd64.deb",
+      "bytes": 32860,
+      "sha256": "08074f01e384bc07c0c2d79a58cf4a6523f71cf75d1808101c79617656c9a39d"
+    },
+    {
+      "path": "linux/debs/libattr1_1%3a2.5.2-3_amd64.deb",
+      "bytes": 22876,
+      "sha256": "606b5ee12ea2786be607a17f40c1fb5e65c76ceaff66665bdf8f8c6c1b71d1fb"
+    },
+    {
+      "path": "linux/debs/libaudit-common_1%3a4.0.2-2+deb13u1_all.deb",
+      "bytes": 12812,
+      "sha256": "b9d32e5ff04fd747aacb7d6b3ebbbbf734ddefb2f1695f0b1b2a4b5e51b1052e"
+    },
+    {
+      "path": "linux/debs/libaudit1_1%3a4.0.2-2+deb13u1_amd64.deb",
+      "bytes": 57680,
+      "sha256": "3d1dd3f031a56f01b747e2acc0e14575212580e6fa63d800c44cb0a31f1edfd7"
+    },
+    {
+      "path": "linux/debs/libbsd0_0.12.2-2_amd64.deb",
+      "bytes": 130968,
+      "sha256": "e5a85986fa6bec3307ab1bc860736b478b331882bc45e17675a7bdf88eecb43a"
+    },
+    {
+      "path": "linux/debs/libbz2-1.0_1.0.8-6_amd64.deb",
+      "bytes": 37912,
+      "sha256": "cba4cda04244b5e481bb15524bc3c983a7d1b6f330013b9b381706a2fcb65310"
+    },
+    {
+      "path": "linux/debs/libc6_2.41-12+deb13u4_amd64.deb",
+      "bytes": 2846580,
+      "sha256": "967aa62605721081c3eb2a17650611a792aa802d76a6511d1840242623d204c9"
+    },
+    {
+      "path": "linux/debs/libcap-ng0_0.8.5-4+b1_amd64.deb",
+      "bytes": 17584,
+      "sha256": "20a9e4b0619a3eb2566338223bed135dde5a601eaa2f8fdd5f20b94506addcac"
+    },
+    {
+      "path": "linux/debs/libcap2_1%3a2.75-10+deb13u1+b3_amd64.deb",
+      "bytes": 28988,
+      "sha256": "89fc4d34fc7a28ad6f0fcd0c561ab253b9dedf6f77f5a000b47c276c8295bf67"
+    },
+    {
+      "path": "linux/debs/libcrypt1_1%3a4.4.38-1_amd64.deb",
+      "bytes": 90072,
+      "sha256": "0ebc144d662e3197982d1bf3a7b8b35ca845e54c68811de0328b1f0d7c67585c"
+    },
+    {
+      "path": "linux/debs/libdb5.3t64_5.3.28+dfsg2-9_amd64.deb",
+      "bytes": 703676,
+      "sha256": "18d02510ee78b67e4504ba050176797a200ff24214a7cd318082ab60ad7bf3fc"
+    },
+    {
+      "path": "linux/debs/libdebconfclient0_0.280_amd64.deb",
+      "bytes": 10632,
+      "sha256": "25acadc8b394bc86d05df16e70975e523f8f839a7d8d6d5e22c1cafdcef741aa"
+    },
+    {
+      "path": "linux/debs/libdebian-installer4_0.125_amd64.deb",
+      "bytes": 24032,
+      "sha256": "09f0328604971f4aef19048ebb1935c91cdee93662190d7cbdbd2d0dac653189"
+    },
+    {
+      "path": "linux/debs/libgcc-s1_14.2.0-19_amd64.deb",
+      "bytes": 72772,
+      "sha256": "3c71917b490d1a17aed43196a2787a256ecf060526cdb20216a74bedc061b150"
+    },
+    {
+      "path": "linux/debs/libip4tc2_1.8.11-2_amd64.deb",
+      "bytes": 19964,
+      "sha256": "762e4d9c7f86b3fdaefee2baf61ce40073d46d7602651433f2cb7a5eabfb47b4"
+    },
+    {
+      "path": "linux/debs/libip6tc2_1.8.11-2_amd64.deb",
+      "bytes": 20260,
+      "sha256": "d5ecaad5595dc88d08f317997beb53a4906c45ea79ee14ec89103f72573e3f99"
+    },
+    {
+      "path": "linux/debs/libmd0_1.1.0-2+b1_amd64.deb",
+      "bytes": 36272,
+      "sha256": "7244ec3839b61fac0c1884fe08aaa040f26e8f1f35f1f5d3482eacefd30d1b44"
+    },
+    {
+      "path": "linux/debs/libmnl0_1.0.5-3_amd64.deb",
+      "bytes": 11928,
+      "sha256": "4ec9c1096e0b954e3bdb03a62314ee7f49999045d3d55be3e4ded520ffc9baf5"
+    },
+    {
+      "path": "linux/debs/libnetfilter-conntrack3_1.1.0-1_amd64.deb",
+      "bytes": 42064,
+      "sha256": "ffbac5d06fbe432d5171f2eb5b2504968377f27be133f72c81e71250a9957506"
+    },
+    {
+      "path": "linux/debs/libnewt0.52_0.52.25-1_amd64.deb",
+      "bytes": 60040,
+      "sha256": "083faa786377345d00669886b50eb4b3767d572518a668e94cda1ae34d027d28"
+    },
+    {
+      "path": "linux/debs/libnfnetlink0_1.0.2-3_amd64.deb",
+      "bytes": 14416,
+      "sha256": "5e4c3c40a04ffdb4139e4bef1136585e151a8eb8c71efa6c7250b636b3c0d1b1"
+    },
+    {
+      "path": "linux/debs/libnftnl11_1.2.9-1_amd64.deb",
+      "bytes": 65012,
+      "sha256": "1b3eae46bfb9c6ab44e404797fb45278045f926d73974a84097ad47a3e27d983"
+    },
+    {
+      "path": "linux/debs/libpam-modules-bin_1.7.0-5_amd64.deb",
+      "bytes": 49116,
+      "sha256": "cc72066d008444317738e8e931d6131b301466b4e2dd5ef5baa75fb1a45d61a7"
+    },
+    {
+      "path": "linux/debs/libpam-modules_1.7.0-5_amd64.deb",
+      "bytes": 178696,
+      "sha256": "9679ade117f8775ac0471f48a92652ab8e8dcda4e2ff06de75158cded9cfd83c"
+    },
+    {
+      "path": "linux/debs/libpam0g_1.7.0-5_amd64.deb",
+      "bytes": 69880,
+      "sha256": "4f5bde27d8df2de6ea8990319b42d9974f56a3ba9907ce7296fd0f8964fc9fb1"
+    },
+    {
+      "path": "linux/debs/libpcre2-8-0_10.46-1~deb13u3_amd64.deb",
+      "bytes": 299148,
+      "sha256": "e226f661d918f04daf38cdbc4806b7ed7d6ef95c7eb0ade692fc350e31970040"
+    },
+    {
+      "path": "linux/debs/libreadline8t64_8.2-6_amd64.deb",
+      "bytes": 168832,
+      "sha256": "eeadf2b5e755c9f183883feea2d9b5b28560284275d5f54d3e55d0923b1d0967"
+    },
+    {
+      "path": "linux/debs/libseccomp2_2.6.0-2_amd64.deb",
+      "bytes": 51712,
+      "sha256": "89d5138e05fb6a86b9afd8b54dc0fb4b14f4c27c05e6c5f767c2132bdf808531"
+    },
+    {
+      "path": "linux/debs/libselinux1_3.8.1-1_amd64.deb",
+      "bytes": 84680,
+      "sha256": "68bb8d32bd8d6d7d2f5952a169db03d1484b46ae1e52abccdec42a19dccea5d5"
+    },
+    {
+      "path": "linux/debs/libsemanage-common_3.8.1-1_all.deb",
+      "bytes": 7812,
+      "sha256": "65375d886749c236bd1da4d9990b7c2469d2fe66019a28e5614f6814376d3dcb"
+    },
+    {
+      "path": "linux/debs/libsemanage2_3.8.1-1_amd64.deb",
+      "bytes": 95284,
+      "sha256": "f97da7505d17ad3bdd8fc56302256df7e158e5e0d8b02cb766654199cbc406a9"
+    },
+    {
+      "path": "linux/debs/libsepol2_3.8.1-1_amd64.deb",
+      "bytes": 295588,
+      "sha256": "3595d2d3a6d24695e7953f4f00cdfe6974c9242d9a8dfee8998e77fbf7b2ba09"
+    },
+    {
+      "path": "linux/debs/libslang2_2.3.3-5+b2_amd64.deb",
+      "bytes": 549496,
+      "sha256": "49b52a2cbe0f2257f4f7c68a0eaecd90962edabf08097611548b3ea4bd73292e"
+    },
+    {
+      "path": "linux/debs/libsystemd0_257.13-1~deb13u1_amd64.deb",
+      "bytes": 454648,
+      "sha256": "ab0d4127b5e46e6f8c015a1db15a62ba9ae274cdefa150083adf90ada0600ea1"
+    },
+    {
+      "path": "linux/debs/libtextwrap1_0.1-17+b1_amd64.deb",
+      "bytes": 9928,
+      "sha256": "a902510dbb9fe53f035f86cd02b9869aa48b9a8733cae541166e9f40d819e6fe"
+    },
+    {
+      "path": "linux/debs/libtinfo6_6.5+20250216-2_amd64.deb",
+      "bytes": 348380,
+      "sha256": "8b9f6a7983e9418564e48a627518de4c03917b56efe68d7f3e93bd8fffa1cc10"
+    },
+    {
+      "path": "linux/debs/libxtables12_1.8.11-2_amd64.deb",
+      "bytes": 31896,
+      "sha256": "4de5aa59faef5e98d6ba9f5f521a915be5641f224f597862f8d29e8319e8db16"
+    },
+    {
+      "path": "linux/debs/login.defs_1%3a4.17.4-2_all.deb",
+      "bytes": 186124,
+      "sha256": "b4bbb8242cbf5588de7aafeb9d578a3dee1db2891f444ab454fd30bd80ccf2b4"
+    },
+    {
+      "path": "linux/debs/netbase_6.5_all.deb",
+      "bytes": 12436,
+      "sha256": "76bafa92947ebd37b0a6f9ec6570412041f56edebc1c66d323731216d318471e"
+    },
+    {
+      "path": "linux/debs/passwd_1%3a4.17.4-2_amd64.deb",
+      "bytes": 1228860,
+      "sha256": "c5eaef41c6947d2888fa3462f787a7e02158b997bd0119154283f425ba57b8b8"
+    },
+    {
+      "path": "linux/debs/readline-common_8.2-6_all.deb",
+      "bytes": 69360,
+      "sha256": "f77e8aa0bf0de618f11cb0b21658a4ed60f177d63b3cf26d7fc3706b6d0eaaa9"
+    },
+    {
+      "path": "linux/debs/runc_1.1.15+ds1-2+b4_amd64.deb",
+      "bytes": 3229748,
+      "sha256": "fad4f807a369677f0954bd4c61e56ddb2dd8b3f4aec30c3834c3165fc6d3c19f"
+    },
+    {
+      "path": "linux/debs/sysvinit-utils_3.14-4_amd64.deb",
+      "bytes": 34060,
+      "sha256": "c7e957360dff89675b491e501b00047cf750695178cabab167c92fc260d358ec"
+    },
+    {
+      "path": "linux/debs/tini_0.19.0-3+b8_amd64.deb",
+      "bytes": 280384,
+      "sha256": "a443b12107331f67836a64cb6efe1dd92d2765e15568eb4567dccb409a8cd2a0"
+    },
+    {
+      "path": "linux/python-linux.tar.gz",
+      "bytes": 33325991,
+      "sha256": "96dd7a44cd7f884d186dc3b84baa23e03be0f76bbe04b87ce8f3e44087cb4e55"
+    },
+    {
+      "path": "linux/sandbox-images.json",
+      "bytes": 447,
+      "sha256": "5fd37bfe22fc1f1af891c1c2e6f22afd9ad0ef3164abd1fc2f22cb18d5b3400d"
+    },
+    {
+      "path": "linux/sandbox-images.tar",
+      "bytes": 811146240,
+      "sha256": "c2f10570e8590ee8ed0e4f43eb80375135e76f9b20fd0169f85640748c2615cc"
+    },
+    {
+      "path": "maven/m2.zip",
+      "bytes": 85538802,
+      "sha256": "1eacf22db8c1fb038aa0a6ae3abb13b7d93f52cd7f5c9d946832e28549d994a4"
+    },
+    {
+      "path": "models/blobs/sha256-1e65450c30670713aa47fe23e8b9662bdf4065e81cc8e3cbfaa98924fcc0d320",
+      "bytes": 1615,
+      "sha256": "1e65450c30670713aa47fe23e8b9662bdf4065e81cc8e3cbfaa98924fcc0d320"
+    },
+    {
+      "path": "models/blobs/sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463",
+      "bytes": 4683074048,
+      "sha256": "60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463"
+    },
+    {
+      "path": "models/blobs/sha256-66b9ea09bd5b7099cbb4fc820f31b575c0366fa439b08245566692c6784e281e",
+      "bytes": 68,
+      "sha256": "66b9ea09bd5b7099cbb4fc820f31b575c0366fa439b08245566692c6784e281e"
+    },
+    {
+      "path": "models/blobs/sha256-832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e",
+      "bytes": 11343,
+      "sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e"
+    },
+    {
+      "path": "models/blobs/sha256-d9bb33f2786931fea42f50936a2424818aa2f14500638af2f01861eb2c8fb446",
+      "bytes": 487,
+      "sha256": "d9bb33f2786931fea42f50936a2424818aa2f14500638af2f01861eb2c8fb446"
+    },
+    {
+      "path": "models/manifests/registry.ollama.ai/library/qwen2.5-coder/7b-instruct-q4_K_M",
+      "bytes": 858,
+      "sha256": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364"
+    },
+    {
+      "path": "offline_install.ps1",
+      "bytes": 14677,
+      "sha256": "616dad51651b7e06e06457221c9c37b3a6acd86109e7cfb1473465b3e260af48"
+    },
+    {
+      "path": "safepatch/safepatch.bundle",
+      "bytes": 4296110,
+      "sha256": "1d1ee077f6cecafbccd6b956d89ad4b4f97dd99a5f034ba20b8edb261b70ff1a"
+    },
+    {
+      "path": "tools/tools.zip",
+      "bytes": 32016023,
+      "sha256": "e9e792563b46edf7fb1df99ce24a862663b9390f709bbba4171b793b833fc853"
+    },
+    {
+      "path": "wheels/linux/attrs-26.1.0-py3-none-any.whl",
+      "bytes": 67548,
+      "sha256": "c647aa4a12dfbad9333ca4e71fe62ddc36f4e63b2d260a37a8b83d2f043ac309"
+    },
+    {
+      "path": "wheels/linux/boltons-21.0.0-py2.py3-none-any.whl",
+      "bytes": 193723,
+      "sha256": "b9bb7b58b2b420bbe11a6025fdef6d3e5edc9f76a42fb467afe7ca212ef9948b"
+    },
+    {
+      "path": "wheels/linux/bracex-3.0.1-py3-none-any.whl",
+      "bytes": 11940,
+      "sha256": "6523ad83aeb5098a4ee597cff0f964442ff74e460bd3fafaffab6a013ff2288c"
+    },
+    {
+      "path": "wheels/linux/certifi-2026.7.22-py3-none-any.whl",
+      "bytes": 136983,
+      "sha256": "62f22742b58a1a33014a2b6b706588a8d7e2a88ae7bd1a6ebe8c992928483775"
+    },
+    {
+      "path": "wheels/linux/charset_normalizer-3.5.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "bytes": 248801,
+      "sha256": "b9af956078716df40d985fb0dfeb2c2120c5ca92ba4ff4b388acfd01cdc14d08"
+    },
+    {
+      "path": "wheels/linux/click-8.1.8-py3-none-any.whl",
+      "bytes": 98188,
+      "sha256": "63c132bbbed01578a06712a2d1f497bb62d9c1c0d329b7903a866228027263b2"
+    },
+    {
+      "path": "wheels/linux/click_option_group-0.5.9-py3-none-any.whl",
+      "bytes": 11553,
+      "sha256": "ad2599248bd373e2e19bec5407967c3eec1d0d4fc4a5e77b08a0481e75991080"
+    },
+    {
+      "path": "wheels/linux/colorama-0.4.6-py2.py3-none-any.whl",
+      "bytes": 25335,
+      "sha256": "4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"
+    },
+    {
+      "path": "wheels/linux/defusedxml-0.7.1-py2.py3-none-any.whl",
+      "bytes": 25604,
+      "sha256": "a352e7e428770286cc899e2542b6cdaedb2b4953ff269a210103ec58f6198a61"
+    },
+    {
+      "path": "wheels/linux/deprecated-1.3.1-py2.py3-none-any.whl",
+      "bytes": 11298,
+      "sha256": "597bfef186b6f60181535a29fbe44865ce137a5079f295b479886c82729d5f3f"
+    },
+    {
+      "path": "wheels/linux/exceptiongroup-1.2.2-py3-none-any.whl",
+      "bytes": 16453,
+      "sha256": "3111b9d131c238bec2f8f516e123e14ba243563fb135d3fe885990585aa7795b"
+    },
+    {
+      "path": "wheels/linux/face-26.0.1-py3-none-any.whl",
+      "bytes": 57572,
+      "sha256": "ab0a83c37c9789dce658a67a9a80eafaa113c9ec37c5a9d950ff5480542a062d"
+    },
+    {
+      "path": "wheels/linux/glom-22.1.0-py2.py3-none-any.whl",
+      "bytes": 100687,
+      "sha256": "5339da206bf3532e01a83a35aca202960ea885156986d190574b779598e9e772"
+    },
+    {
+      "path": "wheels/linux/googleapis_common_protos-1.75.0-py3-none-any.whl",
+      "bytes": 300631,
+      "sha256": "961ed60399c457ceb0ee8f285a84c870aabc9c6a832b9d37bb281b5bebde43ed"
+    },
+    {
+      "path": "wheels/linux/idna-3.19-py3-none-any.whl",
+      "bytes": 68550,
+      "sha256": "815e7be7a7806d54abb586dc943addc79e8b2ee16915059658cbeff4b1b43bf4"
+    },
+    {
+      "path": "wheels/linux/importlib_metadata-7.1.0-py3-none-any.whl",
+      "bytes": 24409,
+      "sha256": "30962b96c0c223483ed6cc7280e7f0199feb01a0e40cfae4d4450fc6fab1f570"
+    },
+    {
+      "path": "wheels/linux/jsonschema-4.26.0-py3-none-any.whl",
+      "bytes": 90630,
+      "sha256": "d489f15263b8d200f8387e64b4c3a75f06629559fb73deb8fdfb525f2dab50ce"
+    },
+    {
+      "path": "wheels/linux/jsonschema_specifications-2025.9.1-py3-none-any.whl",
+      "bytes": 18437,
+      "sha256": "98802fee3a11ee76ecaca44429fda8a41bff98b00a0f2838151b113f210cc6fe"
+    },
+    {
+      "path": "wheels/linux/markdown_it_py-4.2.0-py3-none-any.whl",
+      "bytes": 91687,
+      "sha256": "9f7ebbcd14fe59494226453aed97c1070d83f8d24b6fc3a3bcf9a38092641c4a"
+    },
+    {
+      "path": "wheels/linux/mdurl-0.1.2-py3-none-any.whl",
+      "bytes": 9979,
+      "sha256": "84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8"
+    },
+    {
+      "path": "wheels/linux/opentelemetry_api-1.25.0-py3-none-any.whl",
+      "bytes": 59910,
+      "sha256": "757fa1aa020a0f8fa139f8959e53dec2051cc26b832e76fa839a6d76ecefd737"
+    },
+    {
+      "path": "wheels/linux/opentelemetry_exporter_otlp_proto_common-1.25.0-py3-none-any.whl",
+      "bytes": 17762,
+      "sha256": "15637b7d580c2675f70246563363775b4e6de947871e01d0f4e3881d1848d693"
+    },
+    {
+      "path": "wheels/linux/opentelemetry_exporter_otlp_proto_http-1.25.0-py3-none-any.whl",
+      "bytes": 16790,
+      "sha256": "2eca686ee11b27acd28198b3ea5e5863a53d1266b91cda47c839d95d5e0541a6"
+    },
+    {
+      "path": "wheels/linux/opentelemetry_instrumentation-0.46b0-py3-none-any.whl",
+      "bytes": 29108,
+      "sha256": "89cd721b9c18c014ca848ccd11181e6b3fd3f6c7669e35d59c48dc527408c18b"
+    },
+    {
+      "path": "wheels/linux/opentelemetry_instrumentation_requests-0.46b0-py3-none-any.whl",
+      "bytes": 12170,
+      "sha256": "a8c2472800d8686f3f286cd524b8746b386154092e85a791ba14110d1acc9b81"
+    },
+    {
+      "path": "wheels/linux/opentelemetry_proto-1.25.0-py3-none-any.whl",
+      "bytes": 52450,
+      "sha256": "f07e3341c78d835d9b86665903b199893befa5e98866f63d22b00d0b7ca4972f"
+    },
+    {
+      "path": "wheels/linux/opentelemetry_sdk-1.25.0-py3-none-any.whl",
+      "bytes": 107028,
+      "sha256": "d97ff7ec4b351692e9d5a15af570c693b8715ad78b8aafbec5c7100fe966b4c9"
+    },
+    {
+      "path": "wheels/linux/opentelemetry_semantic_conventions-0.46b0-py3-none-any.whl",
+      "bytes": 130549,
+      "sha256": "6daef4ef9fa51d51855d9f8e0ccd3a1bd59e0e545abe99ac6203804e36ab3e07"
+    },
+    {
+      "path": "wheels/linux/opentelemetry_util_http-0.46b0-py3-none-any.whl",
+      "bytes": 6920,
+      "sha256": "8dc1949ce63caef08db84ae977fdc1848fe6dc38e6bbaad0ae3e6ecd0d451629"
+    },
+    {
+      "path": "wheels/linux/packaging-26.3-py3-none-any.whl",
+      "bytes": 129956,
+      "sha256": "d7193f7c8e4e93f444fde0262bf90af30e16fa0ad0ad44cb553c87339b23cd1c"
+    },
+    {
+      "path": "wheels/linux/peewee-3.19.0-py3-none-any.whl",
+      "bytes": 411885,
+      "sha256": "de220b94766e6008c466e00ce4ba5299b9a832117d9eb36d45d0062f3cfd7417"
+    },
+    {
+      "path": "wheels/linux/protobuf-4.25.9-cp37-abi3-manylinux2014_x86_64.whl",
+      "bytes": 295178,
+      "sha256": "438c636de8fb706a0de94a12a268ef1ae8f5ba5ae655a7671fcda5968ba3c9be"
+    },
+    {
+      "path": "wheels/linux/pygments-2.21.0-py3-none-any.whl",
+      "bytes": 1250147,
+      "sha256": "2363c69b61c4a97c838da3b130dcd6468f4848992b21a82f2a63ec34377137d9"
+    },
+    {
+      "path": "wheels/linux/referencing-0.37.0-py3-none-any.whl",
+      "bytes": 26766,
+      "sha256": "381329a9f99628c9069361716891d34ad94af76e461dcb0335825aecc7692231"
+    },
+    {
+      "path": "wheels/linux/requests-2.34.2-py3-none-any.whl",
+      "bytes": 73075,
+      "sha256": "2a0d60c172f83ac6ab31e4554906c0f3b3588d37b5cb939b1c061f4907e278e0"
+    },
+    {
+      "path": "wheels/linux/rich-13.5.3-py3-none-any.whl",
+      "bytes": 239782,
+      "sha256": "9257b468badc3d347e146a4faa268ff229039d4c2d176ab0cffb4c4fbc73d5d9"
+    },
+    {
+      "path": "wheels/linux/rpds_py-2026.6.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "bytes": 366189,
+      "sha256": "ecabd69db66de867690f9797f2f8fa27ba501bbc24540cbdbdc649cd15888ba6"
+    },
+    {
+      "path": "wheels/linux/ruamel_yaml-0.19.1-py3-none-any.whl",
+      "bytes": 118102,
+      "sha256": "27592957fedf6e0b62f281e96effd28043345e0e66001f97683aa9a40c667c93"
+    },
+    {
+      "path": "wheels/linux/semgrep-1.136.0-cp39.cp310.cp311.py39.py310.py311-none-musllinux_1_0_x86_64.manylinux2014_x86_64.whl",
+      "bytes": 49484485,
+      "sha256": "94dbd9a9f145ebd192441d5d826a1fba485f87496f353c5ba24ad2e16bc250ed"
+    },
+    {
+      "path": "wheels/linux/setuptools-80.9.0-py3-none-any.whl",
+      "bytes": 1201486,
+      "sha256": "062d34222ad13e0cc312a4c02d73f059e86a4acbfbdea8f8f76b28c99f306922"
+    },
+    {
+      "path": "wheels/linux/tomli-2.0.2-py3-none-any.whl",
+      "bytes": 13237,
+      "sha256": "2ebe24485c53d303f690b0ec092806a085f07af5a5aa1464f3931eec36caaa38"
+    },
+    {
+      "path": "wheels/linux/typing_extensions-4.16.0-py3-none-any.whl",
+      "bytes": 45571,
+      "sha256": "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8"
+    },
+    {
+      "path": "wheels/linux/urllib3-2.7.0-py3-none-any.whl",
+      "bytes": 131087,
+      "sha256": "9fb4c81ebbb1ce9531cce37674bbc6f1360472bc18ca9a553ede278ef7276897"
+    },
+    {
+      "path": "wheels/linux/wcmatch-8.5.2-py3-none-any.whl",
+      "bytes": 39397,
+      "sha256": "17d3ad3758f9d0b5b4dedc770b65420d4dac62e680229c287bf24c9db856a478"
+    },
+    {
+      "path": "wheels/linux/wrapt-1.17.3-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl",
+      "bytes": 88036,
+      "sha256": "042ec3bb8f319c147b1301f2393bc19dba6e176b7da446853406d041c36c7828"
+    },
+    {
+      "path": "wheels/linux/zipp-4.1.0-py3-none-any.whl",
+      "bytes": 10238,
+      "sha256": "25ad4e16390cd314347dd8f1de67a2ac538ae658ed4ab9db16029c07c188e97f"
+    },
+    {
+      "path": "wheels/windows/annotated_doc-0.0.5-py3-none-any.whl",
+      "bytes": 5302,
+      "sha256": "117bac03a25ede5df5440e855b32d556049ca169ead221505badf432fed4b101"
+    },
+    {
+      "path": "wheels/windows/annotated_types-0.8.0-py3-none-any.whl",
+      "bytes": 13427,
+      "sha256": "f072f4d804ea359e4eaf198b1af7a8b0943881a87f31bb764f8bf219bb9419e0"
+    },
+    {
+      "path": "wheels/windows/anyio-4.15.1-py3-none-any.whl",
+      "bytes": 132079,
+      "sha256": "6152fdbbf9a77fdec97731721bebf7c4c44f7c29b424b0065826173efc7ed101"
+    },
+    {
+      "path": "wheels/windows/certifi-2026.7.22-py3-none-any.whl",
+      "bytes": 136983,
+      "sha256": "62f22742b58a1a33014a2b6b706588a8d7e2a88ae7bd1a6ebe8c992928483775"
+    },
+    {
+      "path": "wheels/windows/click-8.5.0-py3-none-any.whl",
+      "bytes": 125251,
+      "sha256": "255bc9599cf7748b4b1a446ccc735421bd08a2ae529a8b88597d3de5664ee360"
+    },
+    {
+      "path": "wheels/windows/colorama-0.4.6-py2.py3-none-any.whl",
+      "bytes": 25335,
+      "sha256": "4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"
+    },
+    {
+      "path": "wheels/windows/fastapi-0.141.1-py3-none-any.whl",
+      "bytes": 131954,
+      "sha256": "bfb91aa2d334c61cb35ba9a116fc123b3d3df31640b801cf57a7a78ec3f603b3"
+    },
+    {
+      "path": "wheels/windows/greenlet-3.5.5-cp312-cp312-win_amd64.whl",
+      "bytes": 324171,
+      "sha256": "49ddacd36af37735fab103846f4ee4d18a492dde72730d1699c0c8ebe30d9f18"
+    },
+    {
+      "path": "wheels/windows/h11-0.16.0-py3-none-any.whl",
+      "bytes": 37515,
+      "sha256": "63cf8bbe7522de3bf65932fda1d9c2772064ffb3dae62d55932da54b31cb6c86"
+    },
+    {
+      "path": "wheels/windows/httpcore-1.0.9-py3-none-any.whl",
+      "bytes": 78784,
+      "sha256": "2d400746a40668fc9dec9810239072b40b4484b640a8c38fd654a024c7a1bf55"
+    },
+    {
+      "path": "wheels/windows/httpx-0.28.1-py3-none-any.whl",
+      "bytes": 73517,
+      "sha256": "d909fcccc110f8c7faf814ca82a9a4d816bc5a6dbfea25d6591d6985b8ba59ad"
+    },
+    {
+      "path": "wheels/windows/idna-3.19-py3-none-any.whl",
+      "bytes": 68550,
+      "sha256": "815e7be7a7806d54abb586dc943addc79e8b2ee16915059658cbeff4b1b43bf4"
+    },
+    {
+      "path": "wheels/windows/iniconfig-2.3.0-py3-none-any.whl",
+      "bytes": 7484,
+      "sha256": "f631c04d2c48c52b84d0d0549c99ff3859c98df65b3101406327ecc7d53fbf12"
+    },
+    {
+      "path": "wheels/windows/packaging-26.3-py3-none-any.whl",
+      "bytes": 129956,
+      "sha256": "d7193f7c8e4e93f444fde0262bf90af30e16fa0ad0ad44cb553c87339b23cd1c"
+    },
+    {
+      "path": "wheels/windows/pluggy-1.6.0-py3-none-any.whl",
+      "bytes": 20538,
+      "sha256": "e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746"
+    },
+    {
+      "path": "wheels/windows/psycopg-3.2.9-py3-none-any.whl",
+      "bytes": 202705,
+      "sha256": "01a8dadccdaac2123c916208c96e06631641c0566b22005493f09663c7a8d3b6"
+    },
+    {
+      "path": "wheels/windows/psycopg_binary-3.2.9-cp312-cp312-win_amd64.whl",
+      "bytes": 2927400,
+      "sha256": "7a838852e5afb6b4126f93eb409516a8c02a49b788f4df8b6469a40c2157fa21"
+    },
+    {
+      "path": "wheels/windows/pydantic-2.13.5-py3-none-any.whl",
+      "bytes": 472589,
+      "sha256": "346a034f080da3755d8e9cb5e00e8b07de1d39e4f6e2c87d8ab7cafa0b269a73"
+    },
+    {
+      "path": "wheels/windows/pydantic_core-2.46.5-cp312-cp312-win_amd64.whl",
+      "bytes": 2043140,
+      "sha256": "5e81740c09e310f5aa5cbd3e434a01c154d4bef93241c7877b39f211d2b78ba8"
+    },
+    {
+      "path": "wheels/windows/pygments-2.21.0-py3-none-any.whl",
+      "bytes": 1250147,
+      "sha256": "2363c69b61c4a97c838da3b130dcd6468f4848992b21a82f2a63ec34377137d9"
+    },
+    {
+      "path": "wheels/windows/pytest-9.1.1-py3-none-any.whl",
+      "bytes": 386536,
+      "sha256": "37a86b45efb9a47a61a36449063e8e18d0cab3161329fc099eb21783169c4f0c"
+    },
+    {
+      "path": "wheels/windows/PyYAML-6.0.2-cp312-cp312-win_amd64.whl",
+      "bytes": 156338,
+      "sha256": "7e7401d0de89a9a855c839bc697c079a4af81cf878373abd7dc625847d25cbd8"
+    },
+    {
+      "path": "wheels/windows/sqlalchemy-2.0.43-cp312-cp312-win_amd64.whl",
+      "bytes": 2126260,
+      "sha256": "1c6d85327ca688dbae7e2b06d7d84cfe4f3fffa5b5f9e21bb6ce9d0e1a0e0e0a"
+    },
+    {
+      "path": "wheels/windows/starlette-1.6.0-py3-none-any.whl",
+      "bytes": 75969,
+      "sha256": "a86dd39d14bb45f85a3d18525215a9ef0cfd1f192ac793220e72598c90335f0c"
+    },
+    {
+      "path": "wheels/windows/tree_sitter-0.26.0-cp312-cp312-win_amd64.whl",
+      "bytes": 129619,
+      "sha256": "ca89e361a276dbc934b28a43dd881199e25d34ff5493ee0ce45f3c52a6124a37"
+    },
+    {
+      "path": "wheels/windows/tree_sitter_java-0.23.5-cp39-abi3-win_amd64.whl",
+      "bytes": 60650,
+      "sha256": "1ee45e790f8d31d416bc84a09dac2e2c6bc343e89b8a2e1d550513498eedfde7"
+    },
+    {
+      "path": "wheels/windows/typing_extensions-4.16.0-py3-none-any.whl",
+      "bytes": 45571,
+      "sha256": "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8"
+    },
+    {
+      "path": "wheels/windows/typing_inspection-0.4.4-py3-none-any.whl",
+      "bytes": 14750,
+      "sha256": "65b8397ba37ccbce054456aaccddfc91e6e3083c92824df348d96ca832f3f147"
+    },
+    {
+      "path": "wheels/windows/tzdata-2026.3-py2.py3-none-any.whl",
+      "bytes": 348168,
+      "sha256": "dc096730c87af6cab1b171c9d532be840741ff5d459015e7f6947bd7d7e54931"
+    },
+    {
+      "path": "wheels/windows/uvicorn-0.35.0-py3-none-any.whl",
+      "bytes": 66406,
+      "sha256": "197535216b25ff9b785e29a0b79199f55222193d47f820816e7da751e9bc8d4a"
+    },
+    {
+      "path": "windows/amazon-corretto-17.0.20.10.1-windows-x64.msi",
+      "bytes": 168656896,
+      "sha256": "b9175f5b8466fc42028470a67d8989fe6b528dd1132050e5bba7a4d5a3c201a4"
+    },
+    {
+      "path": "windows/apache-maven-3.9.16-bin.zip",
+      "bytes": 9395475,
+      "sha256": "5af3b743dd8b876b5c45da33b676251e5f1687712644abb4ee519ca56e1d89ce"
+    },
+    {
+      "path": "windows/Git-2.55.0.5-64-bit.exe",
+      "bytes": 65343712,
+      "sha256": "d065a4e23c3d9a6b5073d609b5be0830227ec3ca053c083ba385061ddfaf94c6"
+    },
+    {
+      "path": "windows/ollama-0.34.0.zip",
+      "bytes": 1469375054,
+      "sha256": "a7dd1b174f39d3d1b8a25d4cbc86045d0e190b17187bfdcbe2f2ee3b5a11470e"
+    },
+    {
+      "path": "windows/python-3.12.10-amd64.exe",
+      "bytes": 26964224,
+      "sha256": "67b5635e80ea51072b87941312d00ec8927c4db9ba18938f7ad2d27b328b95fb"
+    },
+    {
+      "path": "windows/wsl.2.7.12.0.x64.msi",
+      "bytes": 258998272,
+      "sha256": "a460d4560215f2efe003c136244b78ea3415d773824d7a688ea9ded36dbe9145"
+    }
+  ],
+  "total_bytes": 7873842589
+}

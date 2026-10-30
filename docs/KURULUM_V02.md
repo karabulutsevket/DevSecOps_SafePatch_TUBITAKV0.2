@@ -35,7 +35,7 @@ python -m venv .venv
 ./scripts/run-tests.ps1 -PythonExecutable C:\yol\python.exe
 ```
 
-Kapalı ağ kurulumu için paketler internetli makinede `pip download -r requirements.lock -d wheels` ile indirilir, hedefte `pip install --no-index --find-links wheels -r requirements.lock` ile kurulur. tree-sitter paketleri Windows ve Linux için hazır derlenmiş (wheel) gelir; derleyici gerekmez.
+Kapalı ağ kurulumu için paketler internetli makinede `pip download -r requirements.lock -d wheels` ile indirilir, hedefte `pip install --no-index --find-links wheels -r requirements.lock` ile kurulur. Bütün bileşenleri tek pakette toplayan çevrimdışı kurulum: [KURULUM_CEVRIMDISI.md](KURULUM_CEVRIMDISI.md). tree-sitter paketleri Windows ve Linux için hazır derlenmiş (wheel) gelir; derleyici gerekmez.
 
 ## 3. Model, Maven ve Semgrep hazırlığı (internetli hazırlık aşaması)
 

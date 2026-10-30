@@ -266,6 +266,7 @@ Hafta 8'in sandbox sertleştirme maddeleri ayrı iş olarak açık.
   - **30 Ekim, egress testi yapıldı.** Koşu sırasında SafePatch'in hiçbir süreci makinenin dışına bağlanmadı. Ölçümün iki katmanı var: Windows çekirdek izi ve WSL gözlemcisi; ikisi de kontrollerle kanıtlandı.
   - **Bulgu:** WSL açılırken `www.msftconnecttest.com:80` adresine bir bağlantı kuruluyor; kapalı ağ kurulumu için bu açık iş ([docs/OLCUM_EGRESS.md](docs/OLCUM_EGRESS.md)).
   - Temiz makinede kurulum süresi ölçümü henüz yapılmadı.
+  - **30 Ekim:** çevrimdışı paket (7,87 GB) ve süreleri kendisi kaydeden kurulum betiği hazır. Ölçüm, ekipten birinin temiz makinesinde yapılacak ([docs/KURULUM_CEVRIMDISI.md](docs/KURULUM_CEVRIMDISI.md)).
 - [x] SonarQube Community Build ile adaptörün canlı testi. Gerekli kural bu sürümde yoksa adaptörün işi güvenli şekilde durdurduğu belgelenir — *Yiğithan*. **30 Ekim:** Community Build 26.10 ile denendi.
   - Taint kuralları bu sürümde yok. İş, modele gitmeden `sonar_required_vulnerability_rule_unsupported` gerekçesiyle duruyor.
   - Test adaptörde dört hata buldu ve düzeltildi. Toplama yolu canlı sunucuda çalışıyor.
