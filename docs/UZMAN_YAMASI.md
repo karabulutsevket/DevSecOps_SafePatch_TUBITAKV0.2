@@ -4,6 +4,8 @@ Model bir bulguyu çözemediğinde iş `needs_human` durumuna düşer. Bu belge,
 
 Kod: `safepatch/orchestrator.py` (uç nokta), `safepatch/engine.py` (`check_expert_patch`, `expert_scope`, `Engine._run_expert`). Testler: `tests/test_expert_patch.py`, gerçek Maven/JUnit ile `tests/test_java_integration.py`.
 
+Model hiç denemeden, dışarıdan gelen bir yama da (geliştirici, Copilot Autofix, Sonar AI CodeFix) `git diff` olarak aynı doğrulamaya gönderilebilir: [YAMA_DOGRULAMA.md](YAMA_DOGRULAMA.md). Böyle bir yama doğrulamadan geçemezse iş `needs_human` olur ve buradaki uzman yaması akışı aynen işler.
+
 ## İstek
 
 ```

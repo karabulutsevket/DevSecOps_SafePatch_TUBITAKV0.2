@@ -1,0 +1,114 @@
+{
+  "id": "8f764b936075492c85e94f94ea579da8",
+  "case_id": "sql-01",
+  "mode": "submitted-patch",
+  "scanner": "semgrep",
+  "status": "approved",
+  "reason": null,
+  "base_commit": "bac9cf9a007e5ad2ca6203822409991b4fbe4c1c",
+  "target_file": "src/main/java/demo/DemoService.java",
+  "submission": {
+    "tool": "handwritten-control",
+    "author": "SIMULATED-developer",
+    "diff_sha256": "ca82beed032ee78e6b03e6c0445d3a9c0fffebb568d4b8a1b42a41e1546fb7b8",
+    "rationale": "Bind the input with a PreparedStatement parameter instead of concatenating it into the query."
+  },
+  "findings": [
+    "bigg.java.sql-concatenation line 17"
+  ],
+  "baseline": {
+    "baseline_valid": true,
+    "security": {
+      "passed": false,
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "assertions": [
+        "SQL_INJECTION_REGRESSION"
+      ]
+    },
+    "runner_profile": "docker:maven:3.9.16-eclipse-temurin-17@sha256:1a352420f7aba21f5ad08df31bab55f74c013fb491f1ae8ab1dd7ff9ed698584",
+    "duration_seconds": 25.187
+  },
+  "attempts": [
+    {
+      "number": 1,
+      "mode": "submitted-patch",
+      "author": "SIMULATED-developer",
+      "tool": "handwritten-control",
+      "diff_sha256": "ca82beed032ee78e6b03e6c0445d3a9c0fffebb568d4b8a1b42a41e1546fb7b8",
+      "changed_lines": 9,
+      "patch_sha256": "1d94e00ec271b9de49285cf9b80468fca3f698e6d2505d314520e294ca466975",
+      "passed": true,
+      "failure": null,
+      "build": true,
+      "behavior": {
+        "passed": true,
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "assertions": []
+      },
+      "security": {
+        "passed": true,
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "assertions": []
+      },
+      "scans": [
+        {
+          "tool": "semgrep",
+          "version": "1.136.0",
+          "status": "ok",
+          "findings": 0
+        }
+      ],
+      "remaining_rules": [],
+      "runner_profile": "docker:maven:3.9.16-eclipse-temurin-17@sha256:1a352420f7aba21f5ad08df31bab55f74c013fb491f1ae8ab1dd7ff9ed698584",
+      "duration_seconds": 20.0
+    }
+  ],
+  "candidate": {
+    "origin": "submitted-patch",
+    "author": "SIMULATED-developer",
+    "tool": "handwritten-control",
+    "commit": "729c049c720cd89c29e2d27d084bf1a7c1f1e7ec",
+    "artifact_sha256": "09dfa9221e919cecb248e86183653e9681a6903a3628485cd0ff41523ba57792",
+    "patch_sha256": "1d94e00ec271b9de49285cf9b80468fca3f698e6d2505d314520e294ca466975",
+    "evidence_sha256": "58c18ff3bd510b5bbf672b9e26c7644eff334dc8bf1c7f5cbe023cd8d0cfaf31"
+  },
+  "approval": {
+    "reviewer": "SIMULATED-reviewer",
+    "decision": "approve",
+    "mode": "submitted-patch"
+  },
+  "events": [
+    {
+      "status": "queued",
+      "origin": "submitted-patch"
+    },
+    {
+      "status": "scanning"
+    },
+    {
+      "status": "scanning"
+    },
+    {
+      "status": "scanning"
+    },
+    {
+      "status": "verifying"
+    },
+    {
+      "status": "awaiting_review"
+    },
+    {
+      "status": "approved",
+      "actor": "SIMULATED-reviewer"
+    }
+  ]
+}

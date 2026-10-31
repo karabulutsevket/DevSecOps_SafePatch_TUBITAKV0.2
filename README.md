@@ -39,6 +39,8 @@ Bu depo çalışan bir **demo ve Ar-Ge başlangıcıdır**. Yalnız sahip olunan
 
 Kayıtlı Java deposu → başlangıç taraması ve testler → onaylı hafızanın uygunluk kontrolü → aynı kaynaksa önceki yama, aksi halde yerel model → politika → derleme + davranış testi + güvenlik tanığı + yeniden tarama → insan incelemesi → ayrı dağıtım rolüyle staging.
 
+Düzeltme SafePatch dışında da yazılmış olabilir: bir geliştiricinin, Copilot Autofix'in ya da Sonar AI CodeFix'in `git diff` çıktısı modeli çağırmadan aynı doğrulamaya ve aynı onaya gider ([docs/YAMA_DOGRULAMA.md](docs/YAMA_DOGRULAMA.md)).
+
 Onaylanan düzeltme, inceleyenin ayrıca **hafızaya al** kararıyla kaydedilir. Geri çekilen kayıt yeniden kullanılamaz ve bağlı bekleyen onayları geçersizleştirir. Model kendisini eğitmez. Tarama sonucunun temiz olması tek başına kabul için yeterli değildir.
 
 ## Çalıştırma — Windows / PowerShell

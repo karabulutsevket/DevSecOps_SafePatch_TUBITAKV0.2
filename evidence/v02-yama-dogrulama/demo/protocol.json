@@ -1,0 +1,288 @@
+{
+  "schema": 1,
+  "what": "Patches submitted from outside SafePatch through POST /v1/verifications: three synthetic families, four kinds of hand-written patch each, as real git diff output; Semgrep in the Docker sandbox; four-eyes approval and memory for the reference patches",
+  "recorded_at": 1793459621.9281976,
+  "git_commit": "cd5df677a4946e5b661b854cae878174cdc26e02",
+  "git_dirty": false,
+  "policy": "java-synthetic-v1",
+  "scanner": "semgrep",
+  "runner_sandbox": "docker (worker2 and runner as services; see each job's runner_profile)",
+  "identities": "SIMULATED-developer (submit+review), SIMULATED-reviewer (review): test identities driven by scripts/submitted_patch_demo.py; SIMULATED decisions, not human ones",
+  "patches": {
+    "reference": "tests/mock_patches.py correct_patch",
+    "scanner_quiet": {
+      "sql": [
+        [
+          "\"SELECT name FROM accounts WHERE name = '\" + input + \"'\"",
+          "String.format(\"SELECT name FROM accounts WHERE name = '%s'\", input)"
+        ]
+      ],
+      "path": [
+        [
+          "Path target = root.resolve(input);\n",
+          "Path target = root.resolve(input);\n        if (!target.startsWith(root)) { throw new SecurityException(\"outside root\"); }\n"
+        ]
+      ],
+      "command": [
+        [
+          "new ProcessBuilder(shell, flag, command)",
+          "new ProcessBuilder(List.of(shell, flag, command))"
+        ],
+        [
+          "import java.nio.file.*;\n",
+          "import java.nio.file.*;\nimport java.util.List;\n"
+        ]
+      ]
+    },
+    "disabled": "package demo;\npublic class DemoService {\n    public String lookup(String input) throws Exception { return \"\"; }\n}\n",
+    "test_change": "@Test -> @org.junit.jupiter.api.Disabled @Test in src/test/java/demo/SecurityTest.java"
+  },
+  "label": "every patch is submitted with tool='handwritten-control': written for this check, no tool's output",
+  "model": "not called: a submitted patch is verified as it is",
+  "jobs": [
+    "8f764b936075492c85e94f94ea579da8",
+    "338521f0aeeb40d69a0fb0d85d3eb9d4",
+    "5b98913fd3a24190a0791c3e50c9520c",
+    "ce5672b11b3d4a6586c2f4c363bd4e0e",
+    "52b9cfcd3bce4bafbf1c79e1343e2b2b",
+    "88a5872277f3456d853833539f3b3f61",
+    "82ccba934f4649e4932a9f1bd2e2e2a2",
+    "8f7c278aedfc432cbd0098a8fde0556b",
+    "1837e6228ffb4cafb5b315350423b646"
+  ],
+  "steps": [
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/verifications/preview",
+      "status": 200
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/verifications",
+      "status": 201
+    },
+    {
+      "engine": "8f764b936075492c85e94f94ea579da8",
+      "status": "awaiting_review",
+      "reason": null,
+      "seconds": 46.7
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/jobs/8f764b936075492c85e94f94ea579da8/approval",
+      "status": 409,
+      "detail": "Kendi yazdığınız yamayı onaylayamazsınız"
+    },
+    {
+      "actor": "SIMULATED-reviewer",
+      "call": "POST /v1/jobs/8f764b936075492c85e94f94ea579da8/approval",
+      "status": 200
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/memory/promote",
+      "status": 409,
+      "detail": "author_cannot_promote_own_patch"
+    },
+    {
+      "actor": "SIMULATED-reviewer",
+      "call": "POST /v1/memory/promote",
+      "status": 201
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/verifications/preview",
+      "status": 200
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/verifications",
+      "status": 201
+    },
+    {
+      "engine": "338521f0aeeb40d69a0fb0d85d3eb9d4",
+      "status": "needs_human",
+      "reason": "submitted_patch_failed_verification",
+      "seconds": 46.1
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/verifications/preview",
+      "status": 200
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/verifications",
+      "status": 201
+    },
+    {
+      "engine": "5b98913fd3a24190a0791c3e50c9520c",
+      "status": "needs_human",
+      "reason": "submitted_patch_failed_verification",
+      "seconds": 42.6
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/verifications",
+      "status": 409,
+      "detail": "protected_or_unauthorized_path"
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/verifications/preview",
+      "status": 200
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/verifications",
+      "status": 201
+    },
+    {
+      "engine": "ce5672b11b3d4a6586c2f4c363bd4e0e",
+      "status": "awaiting_review",
+      "reason": null,
+      "seconds": 42.9
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/jobs/ce5672b11b3d4a6586c2f4c363bd4e0e/approval",
+      "status": 409,
+      "detail": "Kendi yazdığınız yamayı onaylayamazsınız"
+    },
+    {
+      "actor": "SIMULATED-reviewer",
+      "call": "POST /v1/jobs/ce5672b11b3d4a6586c2f4c363bd4e0e/approval",
+      "status": 200
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/memory/promote",
+      "status": 409,
+      "detail": "author_cannot_promote_own_patch"
+    },
+    {
+      "actor": "SIMULATED-reviewer",
+      "call": "POST /v1/memory/promote",
+      "status": 201
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/verifications/preview",
+      "status": 200
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/verifications",
+      "status": 201
+    },
+    {
+      "engine": "52b9cfcd3bce4bafbf1c79e1343e2b2b",
+      "status": "needs_human",
+      "reason": "submitted_patch_failed_verification",
+      "seconds": 42.9
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/verifications/preview",
+      "status": 200
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/verifications",
+      "status": 201
+    },
+    {
+      "engine": "88a5872277f3456d853833539f3b3f61",
+      "status": "needs_human",
+      "reason": "submitted_patch_failed_verification",
+      "seconds": 39.5
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/verifications",
+      "status": 409,
+      "detail": "protected_or_unauthorized_path"
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/verifications/preview",
+      "status": 200
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/verifications",
+      "status": 201
+    },
+    {
+      "engine": "82ccba934f4649e4932a9f1bd2e2e2a2",
+      "status": "awaiting_review",
+      "reason": null,
+      "seconds": 40.3
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/jobs/82ccba934f4649e4932a9f1bd2e2e2a2/approval",
+      "status": 409,
+      "detail": "Kendi yazdığınız yamayı onaylayamazsınız"
+    },
+    {
+      "actor": "SIMULATED-reviewer",
+      "call": "POST /v1/jobs/82ccba934f4649e4932a9f1bd2e2e2a2/approval",
+      "status": 200
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/memory/promote",
+      "status": 409,
+      "detail": "author_cannot_promote_own_patch"
+    },
+    {
+      "actor": "SIMULATED-reviewer",
+      "call": "POST /v1/memory/promote",
+      "status": 201
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/verifications/preview",
+      "status": 200
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/verifications",
+      "status": 201
+    },
+    {
+      "engine": "8f7c278aedfc432cbd0098a8fde0556b",
+      "status": "needs_human",
+      "reason": "submitted_patch_failed_verification",
+      "seconds": 47.7
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/verifications/preview",
+      "status": 200
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/verifications",
+      "status": 201
+    },
+    {
+      "engine": "1837e6228ffb4cafb5b315350423b646",
+      "status": "needs_human",
+      "reason": "submitted_patch_failed_verification",
+      "seconds": 45.5
+    },
+    {
+      "actor": "SIMULATED-developer",
+      "call": "POST /v1/verifications",
+      "status": 409,
+      "detail": "protected_or_unauthorized_path"
+    },
+    {
+      "actor": "SIMULATED-reviewer",
+      "call": "GET /v1/memory",
+      "status": 200
+    }
+  ]
+}

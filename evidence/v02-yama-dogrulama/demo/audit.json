@@ -1,0 +1,444 @@
+{
+  "verify": {
+    "ok": true,
+    "entries": 27,
+    "head": {
+      "seq": 27,
+      "hash": "ba2858b9b7e9b856c03e7f94b022f520232e87be06297ae2447dc4614f1641bf"
+    }
+  },
+  "entries": [
+    {
+      "action": "job.created",
+      "actor": "SIMULATED-developer",
+      "at": 1793459221.5457966,
+      "data": {
+        "base_commit": "bac9cf9a007e5ad2ca6203822409991b4fbe4c1c",
+        "case_id": "sql-01",
+        "diff_sha256": "ca82beed032ee78e6b03e6c0445d3a9c0fffebb568d4b8a1b42a41e1546fb7b8",
+        "mode": "submitted-patch",
+        "patch_sha256": "1d94e00ec271b9de49285cf9b80468fca3f698e6d2505d314520e294ca466975",
+        "policy_version": "java-synthetic-v1",
+        "scanner": "semgrep",
+        "tool": "handwritten-control"
+      },
+      "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+      "seq": 1,
+      "subject": "8f764b936075492c85e94f94ea579da8",
+      "hash": "d414b116b033f7ca2ac2ba17a8d95f19452f4b641fd2253bafc70233cc55b035"
+    },
+    {
+      "action": "job.awaiting_review",
+      "actor": "safepatch",
+      "at": 1793459268.2462792,
+      "data": {
+        "artifact_sha256": "09dfa9221e919cecb248e86183653e9681a6903a3628485cd0ff41523ba57792",
+        "author": "SIMULATED-developer",
+        "commit": "729c049c720cd89c29e2d27d084bf1a7c1f1e7ec",
+        "evidence_sha256": "58c18ff3bd510b5bbf672b9e26c7644eff334dc8bf1c7f5cbe023cd8d0cfaf31",
+        "origin": "submitted-patch",
+        "patch_sha256": "1d94e00ec271b9de49285cf9b80468fca3f698e6d2505d314520e294ca466975",
+        "reason": null,
+        "tool": "handwritten-control"
+      },
+      "prev": "d414b116b033f7ca2ac2ba17a8d95f19452f4b641fd2253bafc70233cc55b035",
+      "seq": 2,
+      "subject": "8f764b936075492c85e94f94ea579da8",
+      "hash": "7d83944dbfbe810d8ec5ea8d3c19977ad6a371a9d4e55f57304af87bc8c661b3"
+    },
+    {
+      "action": "job.approved",
+      "actor": "SIMULATED-reviewer",
+      "at": 1793459268.2730746,
+      "data": {
+        "artifact_sha256": "09dfa9221e919cecb248e86183653e9681a6903a3628485cd0ff41523ba57792",
+        "candidate_commit": "729c049c720cd89c29e2d27d084bf1a7c1f1e7ec",
+        "comment": "",
+        "evidence_sha256": "58c18ff3bd510b5bbf672b9e26c7644eff334dc8bf1c7f5cbe023cd8d0cfaf31",
+        "policy_version": "java-synthetic-v1"
+      },
+      "prev": "7d83944dbfbe810d8ec5ea8d3c19977ad6a371a9d4e55f57304af87bc8c661b3",
+      "seq": 3,
+      "subject": "8f764b936075492c85e94f94ea579da8",
+      "hash": "a3ab7ce1bf2623cd064f0ed29952e60cf108c8043b98be66b33cf752225b5e6a"
+    },
+    {
+      "action": "memory.promoted",
+      "actor": "SIMULATED-reviewer",
+      "at": 1793459268.5605977,
+      "data": {
+        "evidence_sha256": "58c18ff3bd510b5bbf672b9e26c7644eff334dc8bf1c7f5cbe023cd8d0cfaf31",
+        "job_id": "8f764b936075492c85e94f94ea579da8",
+        "reason": "Submitted reference fix, reviewed (simulated)"
+      },
+      "prev": "a3ab7ce1bf2623cd064f0ed29952e60cf108c8043b98be66b33cf752225b5e6a",
+      "seq": 4,
+      "subject": "97f32e9cdc3642e3979733633e9f4a7e",
+      "hash": "1bd0c38c7aa69acf85bf22cd557c52856016a8272e84072ed6069e3752f0e897"
+    },
+    {
+      "action": "job.created",
+      "actor": "SIMULATED-developer",
+      "at": 1793459268.968853,
+      "data": {
+        "base_commit": "bac9cf9a007e5ad2ca6203822409991b4fbe4c1c",
+        "case_id": "sql-01",
+        "diff_sha256": "de692e2f87c16b139cf478843c6f92a1549b83da6bcb2ed9c65f9083af3d13b6",
+        "mode": "submitted-patch",
+        "patch_sha256": "c80e6e135a57f7c5a2db1dce88541093e2e95b231d0973c1dc038b92cb189418",
+        "policy_version": "java-synthetic-v1",
+        "scanner": "semgrep",
+        "tool": "handwritten-control"
+      },
+      "prev": "1bd0c38c7aa69acf85bf22cd557c52856016a8272e84072ed6069e3752f0e897",
+      "seq": 5,
+      "subject": "338521f0aeeb40d69a0fb0d85d3eb9d4",
+      "hash": "a54f631a847106683347ce8b7e44a6f6c64f33d33a2d23424acc7399a208fb71"
+    },
+    {
+      "action": "job.needs_human",
+      "actor": "safepatch",
+      "at": 1793459315.0387697,
+      "data": {
+        "reason": "submitted_patch_failed_verification"
+      },
+      "prev": "a54f631a847106683347ce8b7e44a6f6c64f33d33a2d23424acc7399a208fb71",
+      "seq": 6,
+      "subject": "338521f0aeeb40d69a0fb0d85d3eb9d4",
+      "hash": "e5a458bb357aa91a5b52b2f2f7c1e4b5de04fbf91cd8cc22336cd5f33a761692"
+    },
+    {
+      "action": "job.created",
+      "actor": "SIMULATED-developer",
+      "at": 1793459315.4943578,
+      "data": {
+        "base_commit": "bac9cf9a007e5ad2ca6203822409991b4fbe4c1c",
+        "case_id": "sql-01",
+        "diff_sha256": "73c0e022de6b897a88967108619706a3302bdd3c381f6ed8b56f00caf92ad6d2",
+        "mode": "submitted-patch",
+        "patch_sha256": "7d80f10dfe14c38bd47a0fe439e00c9c0c0887ecfa30eeab7d33681ecf33cf87",
+        "policy_version": "java-synthetic-v1",
+        "scanner": "semgrep",
+        "tool": "handwritten-control"
+      },
+      "prev": "e5a458bb357aa91a5b52b2f2f7c1e4b5de04fbf91cd8cc22336cd5f33a761692",
+      "seq": 7,
+      "subject": "5b98913fd3a24190a0791c3e50c9520c",
+      "hash": "0997f9b6172939e9e84bd6596c8c4596ab65679563814ab2ff102a54026aa253"
+    },
+    {
+      "action": "job.needs_human",
+      "actor": "safepatch",
+      "at": 1793459358.0948327,
+      "data": {
+        "reason": "submitted_patch_failed_verification"
+      },
+      "prev": "0997f9b6172939e9e84bd6596c8c4596ab65679563814ab2ff102a54026aa253",
+      "seq": 8,
+      "subject": "5b98913fd3a24190a0791c3e50c9520c",
+      "hash": "21a332aeefd685014cceda767b97f48c6457670ff1ebe1ea228cca42c7e9e335"
+    },
+    {
+      "action": "patch_submission.refused",
+      "actor": "SIMULATED-developer",
+      "at": 1793459358.443874,
+      "data": {
+        "diff_sha256": "79b62bef0fb73b4bf9cef878e6164362b0c4d872d75dc6e4e62c94f3d5d64ef4",
+        "reason": "protected_or_unauthorized_path",
+        "tool": "handwritten-control"
+      },
+      "prev": "21a332aeefd685014cceda767b97f48c6457670ff1ebe1ea228cca42c7e9e335",
+      "seq": 9,
+      "subject": "sql-01",
+      "hash": "e0973dddc174e2efcbc36bc1f3043e726d9623b085ab6441b29dae836019d851"
+    },
+    {
+      "action": "job.created",
+      "actor": "SIMULATED-developer",
+      "at": 1793459358.9587617,
+      "data": {
+        "base_commit": "7a3ce43adc8e1845c8a42903218bac47e1939429",
+        "case_id": "path-01",
+        "diff_sha256": "fba0e47947ecad58f84dd8688c061feb62fd7a9cff79c66d5fc11f7d4e039139",
+        "mode": "submitted-patch",
+        "patch_sha256": "4594b81352bb426a733f0cba563c569539d1de3ca5436fc40bee165653c66680",
+        "policy_version": "java-synthetic-v1",
+        "scanner": "semgrep",
+        "tool": "handwritten-control"
+      },
+      "prev": "e0973dddc174e2efcbc36bc1f3043e726d9623b085ab6441b29dae836019d851",
+      "seq": 10,
+      "subject": "ce5672b11b3d4a6586c2f4c363bd4e0e",
+      "hash": "79a41760028e03b7f1e5c3d5a6f441ec6b9e094c8c990ed6cad084840ea7a0ca"
+    },
+    {
+      "action": "job.awaiting_review",
+      "actor": "safepatch",
+      "at": 1793459401.8830788,
+      "data": {
+        "artifact_sha256": "b287908f4dc0deac0e305ba03295a62254a805a8913d61718824ef1034cbeaf1",
+        "author": "SIMULATED-developer",
+        "commit": "ca778e9abd1e55976b6a3b32bf2475b776a69314",
+        "evidence_sha256": "e299983df0ad52ac42d1f74fe5cb04330ec82f1814f259389434108ddcbbf883",
+        "origin": "submitted-patch",
+        "patch_sha256": "4594b81352bb426a733f0cba563c569539d1de3ca5436fc40bee165653c66680",
+        "reason": null,
+        "tool": "handwritten-control"
+      },
+      "prev": "79a41760028e03b7f1e5c3d5a6f441ec6b9e094c8c990ed6cad084840ea7a0ca",
+      "seq": 11,
+      "subject": "ce5672b11b3d4a6586c2f4c363bd4e0e",
+      "hash": "d15b5b2e3dae9ac988fd04d0a4d79a67f874e949b4c6a6ee134f7243691b1468"
+    },
+    {
+      "action": "job.approved",
+      "actor": "SIMULATED-reviewer",
+      "at": 1793459401.9071803,
+      "data": {
+        "artifact_sha256": "b287908f4dc0deac0e305ba03295a62254a805a8913d61718824ef1034cbeaf1",
+        "candidate_commit": "ca778e9abd1e55976b6a3b32bf2475b776a69314",
+        "comment": "",
+        "evidence_sha256": "e299983df0ad52ac42d1f74fe5cb04330ec82f1814f259389434108ddcbbf883",
+        "policy_version": "java-synthetic-v1"
+      },
+      "prev": "d15b5b2e3dae9ac988fd04d0a4d79a67f874e949b4c6a6ee134f7243691b1468",
+      "seq": 12,
+      "subject": "ce5672b11b3d4a6586c2f4c363bd4e0e",
+      "hash": "f3db7eb7e9f0f820a99014d329d60ea45e62bb69fb58ff5393eb446ea979bcfc"
+    },
+    {
+      "action": "memory.promoted",
+      "actor": "SIMULATED-reviewer",
+      "at": 1793459402.2511222,
+      "data": {
+        "evidence_sha256": "e299983df0ad52ac42d1f74fe5cb04330ec82f1814f259389434108ddcbbf883",
+        "job_id": "ce5672b11b3d4a6586c2f4c363bd4e0e",
+        "reason": "Submitted reference fix, reviewed (simulated)"
+      },
+      "prev": "f3db7eb7e9f0f820a99014d329d60ea45e62bb69fb58ff5393eb446ea979bcfc",
+      "seq": 13,
+      "subject": "570ac61282844472ab8bf27e5c90233e",
+      "hash": "61e173e81802f7a14cb626f46e2b7af7ee1768ea0f02de2a52c23f73a68b97e0"
+    },
+    {
+      "action": "job.created",
+      "actor": "SIMULATED-developer",
+      "at": 1793459402.7261336,
+      "data": {
+        "base_commit": "7a3ce43adc8e1845c8a42903218bac47e1939429",
+        "case_id": "path-01",
+        "diff_sha256": "40351cfa0863a13d70a0f1f88f0eaf14e88acefd6d7e7cd65133533518d013aa",
+        "mode": "submitted-patch",
+        "patch_sha256": "17db5ed93040f9486efb454edf7a6b7747711e1cce7115fc2686865552da2c3f",
+        "policy_version": "java-synthetic-v1",
+        "scanner": "semgrep",
+        "tool": "handwritten-control"
+      },
+      "prev": "61e173e81802f7a14cb626f46e2b7af7ee1768ea0f02de2a52c23f73a68b97e0",
+      "seq": 14,
+      "subject": "52b9cfcd3bce4bafbf1c79e1343e2b2b",
+      "hash": "d4618f42e18bdcae0bc4ae03be29ce4fd3931b0ab237a4f425c8d38da4113ed3"
+    },
+    {
+      "action": "job.needs_human",
+      "actor": "safepatch",
+      "at": 1793459445.667069,
+      "data": {
+        "reason": "submitted_patch_failed_verification"
+      },
+      "prev": "d4618f42e18bdcae0bc4ae03be29ce4fd3931b0ab237a4f425c8d38da4113ed3",
+      "seq": 15,
+      "subject": "52b9cfcd3bce4bafbf1c79e1343e2b2b",
+      "hash": "c864fca31c8b0a2c76621a06932ffc50baa700d64d292d99e26cc63ddb6f9d29"
+    },
+    {
+      "action": "job.created",
+      "actor": "SIMULATED-developer",
+      "at": 1793459446.1937077,
+      "data": {
+        "base_commit": "7a3ce43adc8e1845c8a42903218bac47e1939429",
+        "case_id": "path-01",
+        "diff_sha256": "c78a9a890d6b5041f53749b615e46744a69133dfcf3dd5b7b3b1774120434c59",
+        "mode": "submitted-patch",
+        "patch_sha256": "33b71a4d79ed08a023870b1d1249cea76dcca767a1d6e82ca1ff81f84dbe54d1",
+        "policy_version": "java-synthetic-v1",
+        "scanner": "semgrep",
+        "tool": "handwritten-control"
+      },
+      "prev": "c864fca31c8b0a2c76621a06932ffc50baa700d64d292d99e26cc63ddb6f9d29",
+      "seq": 16,
+      "subject": "88a5872277f3456d853833539f3b3f61",
+      "hash": "ddf8960f1416904a67c613d181d5d4c2b3132bfd1218cd54dea2fe219737de76"
+    },
+    {
+      "action": "job.needs_human",
+      "actor": "safepatch",
+      "at": 1793459485.6566167,
+      "data": {
+        "reason": "submitted_patch_failed_verification"
+      },
+      "prev": "ddf8960f1416904a67c613d181d5d4c2b3132bfd1218cd54dea2fe219737de76",
+      "seq": 17,
+      "subject": "88a5872277f3456d853833539f3b3f61",
+      "hash": "385bf59d5a22aaaa0b079bef225ba1199d856ee6d8a3fe1250f6e724572f8561"
+    },
+    {
+      "action": "patch_submission.refused",
+      "actor": "SIMULATED-developer",
+      "at": 1793459486.010948,
+      "data": {
+        "diff_sha256": "92212cc7d44f79d690cdea4605badcf0de363bc75e69d0fa6843c41d5a18b58c",
+        "reason": "protected_or_unauthorized_path",
+        "tool": "handwritten-control"
+      },
+      "prev": "385bf59d5a22aaaa0b079bef225ba1199d856ee6d8a3fe1250f6e724572f8561",
+      "seq": 18,
+      "subject": "path-01",
+      "hash": "ae627d947e3acb540251c79878af1d9ca8ce25987a31235117a1f6ca6473b8f9"
+    },
+    {
+      "action": "job.created",
+      "actor": "SIMULATED-developer",
+      "at": 1793459486.5921185,
+      "data": {
+        "base_commit": "00268862eb7cbd232b95ccf0fab24ec882ca32ee",
+        "case_id": "command-01",
+        "diff_sha256": "4b946dc154995ff8bc7e5000a710234951860c3a8c1d8145cd633f2e1925454e",
+        "mode": "submitted-patch",
+        "patch_sha256": "2905add5929e34eea8e8fa5f32fd8842b4697be7e6b747f3a05b839f837f6394",
+        "policy_version": "java-synthetic-v1",
+        "scanner": "semgrep",
+        "tool": "handwritten-control"
+      },
+      "prev": "ae627d947e3acb540251c79878af1d9ca8ce25987a31235117a1f6ca6473b8f9",
+      "seq": 19,
+      "subject": "82ccba934f4649e4932a9f1bd2e2e2a2",
+      "hash": "39b32a077341163b239d35eb93009fac2e8eed36f7683a512f88982477a374b6"
+    },
+    {
+      "action": "job.awaiting_review",
+      "actor": "safepatch",
+      "at": 1793459526.905652,
+      "data": {
+        "artifact_sha256": "4cba12753810462e60a36bc068a50359ca0d33cf0516b2ad13756bbcc8491c3a",
+        "author": "SIMULATED-developer",
+        "commit": "9763123e22539377863ea16e6ffc353f8c14af6c",
+        "evidence_sha256": "77618e16e0a0654e6e1d01a2ecdb550df523f5884da65f3ad7cf7984909fa3dc",
+        "origin": "submitted-patch",
+        "patch_sha256": "2905add5929e34eea8e8fa5f32fd8842b4697be7e6b747f3a05b839f837f6394",
+        "reason": null,
+        "tool": "handwritten-control"
+      },
+      "prev": "39b32a077341163b239d35eb93009fac2e8eed36f7683a512f88982477a374b6",
+      "seq": 20,
+      "subject": "82ccba934f4649e4932a9f1bd2e2e2a2",
+      "hash": "1f686a2cb9639a2fcc7848a14c6be85ece71143ac16f5518b862a793cdba8a3c"
+    },
+    {
+      "action": "job.approved",
+      "actor": "SIMULATED-reviewer",
+      "at": 1793459526.946217,
+      "data": {
+        "artifact_sha256": "4cba12753810462e60a36bc068a50359ca0d33cf0516b2ad13756bbcc8491c3a",
+        "candidate_commit": "9763123e22539377863ea16e6ffc353f8c14af6c",
+        "comment": "",
+        "evidence_sha256": "77618e16e0a0654e6e1d01a2ecdb550df523f5884da65f3ad7cf7984909fa3dc",
+        "policy_version": "java-synthetic-v1"
+      },
+      "prev": "1f686a2cb9639a2fcc7848a14c6be85ece71143ac16f5518b862a793cdba8a3c",
+      "seq": 21,
+      "subject": "82ccba934f4649e4932a9f1bd2e2e2a2",
+      "hash": "dc392a579d83c4d465e0c4e6223b5f64c144541b9595f37e3bb557b2c3082b05"
+    },
+    {
+      "action": "memory.promoted",
+      "actor": "SIMULATED-reviewer",
+      "at": 1793459527.2923265,
+      "data": {
+        "evidence_sha256": "77618e16e0a0654e6e1d01a2ecdb550df523f5884da65f3ad7cf7984909fa3dc",
+        "job_id": "82ccba934f4649e4932a9f1bd2e2e2a2",
+        "reason": "Submitted reference fix, reviewed (simulated)"
+      },
+      "prev": "dc392a579d83c4d465e0c4e6223b5f64c144541b9595f37e3bb557b2c3082b05",
+      "seq": 22,
+      "subject": "a268ca424223493aa99229482983ed48",
+      "hash": "66025790ab302df7b3c11f7f76e6b95ceceb74bf1167345044d6a42a59aedeb9"
+    },
+    {
+      "action": "job.created",
+      "actor": "SIMULATED-developer",
+      "at": 1793459527.7733092,
+      "data": {
+        "base_commit": "00268862eb7cbd232b95ccf0fab24ec882ca32ee",
+        "case_id": "command-01",
+        "diff_sha256": "ed5eb218d148c13344b8dadee80ce6ff70f412cca92a831c6ada2500c080f25c",
+        "mode": "submitted-patch",
+        "patch_sha256": "d75d29f4f95248f280ca21e155d2fe4286cb5e64e8edc83bf3d9118fc44b6b64",
+        "policy_version": "java-synthetic-v1",
+        "scanner": "semgrep",
+        "tool": "handwritten-control"
+      },
+      "prev": "66025790ab302df7b3c11f7f76e6b95ceceb74bf1167345044d6a42a59aedeb9",
+      "seq": 23,
+      "subject": "8f7c278aedfc432cbd0098a8fde0556b",
+      "hash": "dbbb779ccb818b91cdefb3f1bffb33aa87817a0c7792898da01691190ef0e897"
+    },
+    {
+      "action": "job.needs_human",
+      "actor": "safepatch",
+      "at": 1793459575.4853384,
+      "data": {
+        "reason": "submitted_patch_failed_verification"
+      },
+      "prev": "dbbb779ccb818b91cdefb3f1bffb33aa87817a0c7792898da01691190ef0e897",
+      "seq": 24,
+      "subject": "8f7c278aedfc432cbd0098a8fde0556b",
+      "hash": "30a4c0bdedf2959b1b8d84da3781fd4c2cd016f7e29d828868a554ad8aaff406"
+    },
+    {
+      "action": "job.created",
+      "actor": "SIMULATED-developer",
+      "at": 1793459575.9396195,
+      "data": {
+        "base_commit": "00268862eb7cbd232b95ccf0fab24ec882ca32ee",
+        "case_id": "command-01",
+        "diff_sha256": "5d2f28aaf44b23aaa82a3a62669863bf254040ee68c041ea1e92432fd4c466e8",
+        "mode": "submitted-patch",
+        "patch_sha256": "e0b3f96bbce11887a6b438fcfa4f9a712e2f26b41e9ed9f35486f61f386fbd0d",
+        "policy_version": "java-synthetic-v1",
+        "scanner": "semgrep",
+        "tool": "handwritten-control"
+      },
+      "prev": "30a4c0bdedf2959b1b8d84da3781fd4c2cd016f7e29d828868a554ad8aaff406",
+      "seq": 25,
+      "subject": "1837e6228ffb4cafb5b315350423b646",
+      "hash": "5f8044cc483f1e72f78ffadacb08953facb09549d8e3db69dc5fe82abc184e3a"
+    },
+    {
+      "action": "job.needs_human",
+      "actor": "safepatch",
+      "at": 1793459621.4687355,
+      "data": {
+        "reason": "submitted_patch_failed_verification"
+      },
+      "prev": "5f8044cc483f1e72f78ffadacb08953facb09549d8e3db69dc5fe82abc184e3a",
+      "seq": 26,
+      "subject": "1837e6228ffb4cafb5b315350423b646",
+      "hash": "05f69b1b57761e3ffe114820918e8b9168a92988bedb2f33398a56ee2e07c38b"
+    },
+    {
+      "action": "patch_submission.refused",
+      "actor": "SIMULATED-developer",
+      "at": 1793459621.8420362,
+      "data": {
+        "diff_sha256": "ea6cb08802bddc8d0916d1166b1721646b4d8679e9ad158e3cdb34b0ec63fd19",
+        "reason": "protected_or_unauthorized_path",
+        "tool": "handwritten-control"
+      },
+      "prev": "05f69b1b57761e3ffe114820918e8b9168a92988bedb2f33398a56ee2e07c38b",
+      "seq": 27,
+      "subject": "command-01",
+      "hash": "ba2858b9b7e9b856c03e7f94b022f520232e87be06297ae2447dc4614f1641bf"
+    }
+  ]
+}

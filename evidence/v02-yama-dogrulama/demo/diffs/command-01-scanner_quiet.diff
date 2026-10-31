@@ -1,0 +1,21 @@
+diff --git a/src/main/java/demo/DemoService.java b/src/main/java/demo/DemoService.java
+index e8021b6..9a897a6 100644
+--- a/src/main/java/demo/DemoService.java
++++ b/src/main/java/demo/DemoService.java
+@@ -1,6 +1,7 @@
+ package demo;
+ 
+ import java.nio.file.*;
++import java.util.List;
+ import java.nio.charset.StandardCharsets;
+ import java.util.concurrent.TimeUnit;
+ 
+@@ -13,7 +14,7 @@ public class DemoService {
+         String shell = windows ? "cmd.exe" : "/bin/sh";
+         String flag = windows ? "/c" : "-c";
+         String command = "echo echo:" + input;
+-        Process child = new ProcessBuilder(shell, flag, command).redirectErrorStream(true).start();
++        Process child = new ProcessBuilder(List.of(shell, flag, command)).redirectErrorStream(true).start();
+         if (!child.waitFor(5, TimeUnit.SECONDS)) { child.destroyForcibly(); throw new IllegalStateException("child timeout"); }
+         if (child.exitValue() != 0) throw new IllegalStateException("child failed");
+         return new String(child.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();

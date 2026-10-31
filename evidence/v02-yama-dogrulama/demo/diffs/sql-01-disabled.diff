@@ -1,0 +1,30 @@
+diff --git a/src/main/java/demo/DemoService.java b/src/main/java/demo/DemoService.java
+index ad81b5f..9fc165f 100644
+--- a/src/main/java/demo/DemoService.java
++++ b/src/main/java/demo/DemoService.java
+@@ -1,24 +1,4 @@
+ package demo;
+-
+-import java.sql.*;
+-import java.util.*;
+-
+-// Case sql-01.
+-// Deliberately vulnerable synthetic example. Never use with real data.
+ public class DemoService {
+-    public String lookup(String input) throws Exception {
+-        try (Connection conn = DriverManager.getConnection("jdbc:h2:mem:demo;DB_CLOSE_DELAY=-1")) {
+-            try (Statement init = conn.createStatement()) {
+-                init.execute("CREATE TABLE IF NOT EXISTS accounts(name VARCHAR PRIMARY KEY)");
+-                init.execute("MERGE INTO accounts KEY(name) VALUES ('alice'), ('bob')");
+-            }
+-            String sql = "SELECT name FROM accounts WHERE name = '" + input + "'";
+-            List<String> names = new ArrayList<>();
+-            try (Statement statement = conn.createStatement(); ResultSet rows = statement.executeQuery(sql)) {
+-                while (rows.next()) names.add(rows.getString(1));
+-            }
+-            Collections.sort(names);
+-            return String.join(",", names);
+-        }
+-    }
++    public String lookup(String input) throws Exception { return ""; }
+ }
