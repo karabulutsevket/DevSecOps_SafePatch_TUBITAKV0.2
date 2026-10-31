@@ -334,7 +334,9 @@ class Engine:
         initial = job.get("baseline") if job.get("parent_job") else None
         if initial is None:
             self.set(job_id, "scanning")
-            initial = self.worker("worker2", "/verify", verify, job["deadline"])
+            # Imported findings (SARIF) go with the baseline scan only: they are never rescanned.
+            imported = (job.get("imported") or {}).get("findings")
+            initial = self.worker("worker2", "/verify", {**verify, **({"imported": imported} if imported else {})}, job["deadline"])
             self.active(job_id)
             self.set(job_id, "scanning", baseline=initial)
             if not initial.get("baseline_valid"):

@@ -1,4 +1,5 @@
 import asyncio
+from collections import Counter
 from contextlib import asynccontextmanager
 import html
 import json
@@ -14,13 +15,14 @@ from pydantic import Field
 
 from safepatch.audit import AuditLog
 from safepatch.auth import identity, require_role
-from safepatch.common import POLICY, PROJECT_ID, ROOT, Patch, Strict, canonical, digest, known_findings_enabled, request, seal, secret, setting
+from safepatch.common import OWN_SCANNERS, POLICY, PROJECT_ID, ROOT, Patch, Strict, canonical, digest, known_findings_enabled, request, seal, secret, setting
 from safepatch.engine import Engine, check_expert_patch, expert_attempts_left, expert_scope, primary_finding
 from safepatch.memory import Memory, context_for
 from safepatch.acceptance import check_evidence
 from safepatch.policy import PolicyError
 from safepatch.repository import baseline
 from safepatch.repository import projects, registry
+from safepatch.sarif import MAX_BYTES as SARIF_BYTES, read_sarif
 from safepatch.store import Store
 from safepatch.submission import ORIGIN as SUBMITTED, TOOL, submitted_patch
 
@@ -203,21 +205,97 @@ def registered_case(case_id, user, scanner=None):
     return cases[case_id]
 
 
-@app.post("/v1/jobs", status_code=201)
-def create_job(req: NewJob, user=Depends(identity)):
-    require_role(user, "submit")
-    case = registered_case(req.case_id, user, req.scanner)
+def queue_job(req, case, user, scanner, audited=None, **fields):
+    """Store and queue a model job for a registered project, once per idempotency key."""
     now = time.time()
-    data = {"id": uuid.uuid4().hex, "project": case.get("project", "owned-java-demo"), "memory_mode": req.memory_mode, "strategy": req.strategy, "case_id": req.case_id, "base_commit": case["commit"], "split": case["split"], "policy_version": POLICY, "scanner": req.scanner, "mode": "real-local-model", "status": "queued", "started_at": now, "deadline": now + int(setting("JOB_BUDGET_SECONDS", "1200")), "max_attempts": req.max_attempts, "attempt_count": 0, "attempts": [], "events": [{"time": now, "status": "queued"}], "owner": user["subject"], "second_review": req.second_review, "approval": None}
+    data = {"id": uuid.uuid4().hex, "project": case.get("project", "owned-java-demo"), "memory_mode": req.memory_mode, "strategy": req.strategy, "case_id": req.case_id, "base_commit": case["commit"], "split": case["split"], "policy_version": POLICY, "scanner": scanner, "mode": "real-local-model", "status": "queued", "started_at": now, "deadline": now + int(setting("JOB_BUDGET_SECONDS", "1200")), "max_attempts": req.max_attempts, "attempt_count": 0, "attempts": [], "events": [{"time": now, "status": "queued"}], "owner": user["subject"], "second_review": req.second_review, "approval": None, **fields}
     try:
         job, created = store.create(data, user["subject"] + ":" + req.idempotency_key)
     except ValueError as exc:
         raise HTTPException(409, str(exc)) from exc
     if created:
-        audit(user, "job.created", job["id"], case_id=req.case_id, base_commit=job["base_commit"], scanner=req.scanner,
-              memory_mode=req.memory_mode, strategy=req.strategy, policy_version=POLICY)
+        audit(user, "job.created", job["id"], case_id=req.case_id, base_commit=job["base_commit"], scanner=scanner,
+              memory_mode=req.memory_mode, strategy=req.strategy, policy_version=POLICY, **(audited or {}))
         work.put(job["id"])
     return job
+
+
+@app.post("/v1/jobs", status_code=201)
+def create_job(req: NewJob, user=Depends(identity)):
+    require_role(user, "submit")
+    case = registered_case(req.case_id, user, req.scanner)
+    return queue_job(req, case, user, req.scanner)
+
+
+class FindingFile(Strict):
+    case_id: str = Field(pattern=PROJECT_ID)
+    # A SARIF 2.1.0 export as text; safepatch.sarif checks its byte size and everything else.
+    sarif: str = Field(min_length=1, max_length=SARIF_BYTES)
+
+
+class FindingImport(NewJob):
+    # SafePatch's own scanner runs beside the imported findings (option a); the witness decides (option b).
+    scanner: str = Field(default="semgrep", pattern=rf"^({OWN_SCANNERS})$")
+    sarif: str = Field(min_length=1, max_length=SARIF_BYTES)
+
+
+def imported_reports(req, case):
+    """The export's reports for the project at its pinned commit. Acceptance rests on the project's
+    security witness, so a project without one takes no import."""
+    spec = projects()[req.case_id]
+    if not spec.tests.security:
+        raise PolicyError("imported_findings_need_security_witness")
+    _, files = baseline(req.case_id, case["commit"])
+    return read_sarif(req.sarif.encode("utf-8"), case["commit"], files, spec.scan.paths)
+
+
+def import_summary(reports):
+    """What an import holds: the files that become jobs, what is kept apart and what is not taken."""
+    findings = [f for r in reports for f in r["findings"]]
+    other = [f for r in reports for f in r["other_findings"]]
+    files = {}
+    for finding in findings:
+        files.setdefault(finding["file"], []).append(finding)
+    return {"sarif_sha256": reports[0]["sarif_sha256"], "producers": [r["producer"] for r in reports],
+            "commit_declared": any(r["commit_declared"] for r in reports), "findings": len(findings),
+            "files": [{"file": path, "findings": len(found), "cwes": sorted({f["cwe"] for f in found}), "rules": sorted({f["rule_id"] for f in found})}
+                      for path, found in sorted(files.items())],
+            "other_findings": {"count": len(other), "reasons": dict(Counter(f["kept_apart"] for f in other)),
+                               "cwes": dict(Counter(f["cwe"] for f in other if f["cwe"]))},
+            "skipped": {k: sum(r["skipped"][k] for r in reports) for k in reports[0]["skipped"]}}
+
+
+@app.post("/v1/finding-imports/preview")
+def finding_import_preview(req: FindingFile, user=Depends(identity)):
+    """The import's checks without storing anything: what would become jobs and what is kept apart."""
+    require_role(user, "submit")
+    case = registered_case(req.case_id, user)
+    try:
+        return import_summary(imported_reports(req, case))
+    except PolicyError as exc:
+        raise HTTPException(409, str(exc)) from exc
+
+
+@app.post("/v1/finding-imports", status_code=201)
+def import_findings(req: FindingImport, user=Depends(identity)):
+    """A job from the institution's own scanner findings (docs/SARIF_ICERI_ALMA.md). That tool does not
+    run after a patch: the security witness decides, SafePatch's own scanner runs beside it."""
+    require_role(user, "submit")
+    case = registered_case(req.case_id, user)
+    try:
+        reports = imported_reports(req, case)
+        if not any(r["findings"] for r in reports):
+            raise PolicyError("sarif_no_supported_findings")
+    except PolicyError as exc:
+        # Nothing is stored; who sent which file, and why it was refused, joins the audit log.
+        audit(user, "finding_import.refused", req.case_id, reason=str(exc), sarif_sha256=digest(req.sarif))
+        raise HTTPException(409, str(exc)) from exc
+    summary = import_summary(reports)
+    imported = {**{k: summary[k] for k in ("sarif_sha256", "producers", "commit_declared", "other_findings", "skipped")},
+                "findings": [f for r in reports for f in r["findings"]], "imported_by": user["subject"]}
+    audited = {"sarif_sha256": summary["sarif_sha256"], "producers": summary["producers"], "findings": summary["findings"],
+               "files": len(summary["files"]), "other_findings": summary["other_findings"]["count"]}
+    return queue_job(req, case, user, "sarif+" + req.scanner, audited, import_sha256=summary["sarif_sha256"], imported=imported)
 
 
 def get_job(job_id, user):

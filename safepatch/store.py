@@ -20,7 +20,7 @@ class Store:
         with self.lock, self.engine.begin() as conn:
             row = conn.execute(select(self.jobs.c.data).where(self.jobs.c.idempotency == idempotency)).first()
             if row:
-                if any(row[0].get(key) != data.get(key) for key in ("case_id", "scanner", "max_attempts", "second_review", "memory_mode", "project", "mode", "submission_sha256")):
+                if any(row[0].get(key) != data.get(key) for key in ("case_id", "scanner", "max_attempts", "second_review", "memory_mode", "project", "mode", "submission_sha256", "import_sha256")):
                     raise ValueError("idempotency_payload_conflict")
                 return row[0], False
             conn.execute(self.jobs.insert().values(id=data["id"], idempotency=idempotency, created=time.time(), data=data))
