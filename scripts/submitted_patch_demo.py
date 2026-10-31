@@ -165,7 +165,8 @@ def main():
             job = d.call(SUBMITTER, "POST", "/v1/verifications", {"case_id": case_id, "idempotency_key": uuid.uuid4().hex, "scanner": "semgrep",
                                                                    "tool": LABEL, "diff": diff, "rationale": rationale}, 201)
             job = d.work(job["id"])
-            if name == "reference" and job["status"] == "awaiting_review":
+            verdict = job["status"]   # the engine's; a reference patch moves on to approved below
+            if name == "reference" and verdict == "awaiting_review":
                 c = job["candidate"]
                 decision = {"candidate_commit": c["commit"], "artifact_sha256": c["artifact_sha256"], "policy_version": c["policy_version"], "decision": "approve"}
                 d.call(SUBMITTER, "POST", f"/v1/jobs/{job['id']}/approval", decision, 409)   # four eyes: the submitter counts as the author
@@ -175,16 +176,21 @@ def main():
                 d.call(REVIEWER, "POST", "/v1/memory/promote", promote, 201)
             job = d.store.get(job["id"])
             jobs.append(job["id"])
-            failure = (job["attempts"][-1].get("failure") or {}) if job["attempts"] else {}
-            rows.append({"case": case_id, "patch": name, "expected": EXPECTED[name], "status": job["status"], "reason": job.get("reason"),
-                         "failure": failure.get("category"), "changed_lines": preview["changed_lines"], "job": job["id"],
+            last = job["attempts"][-1] if job["attempts"] else {}
+            v = last.get("verification") or {}
+            rows.append({"case": case_id, "patch": name, "expected": EXPECTED[name], "verdict": verdict, "status": job["status"], "reason": job.get("reason"),
+                         "failure": (last.get("failure") or {}).get("category"), "build": (v.get("build") or {}).get("passed"),
+                         "behavior": (v.get("behavior") or {}).get("passed"), "witness": (v.get("security") or {}).get("passed"),
+                         # What a gate that looks only at the rescan would decide (V0.1's scanner-only gate).
+                         "rescan_clean": bool(v.get("scans")) and all(s["status"] == "ok" and not s["findings"] for s in v["scans"]),
+                         "changed_lines": preview["changed_lines"], "job": job["id"],
                          "seconds": next(s["seconds"] for s in reversed(d.steps) if s.get("engine") == job["id"])})
             print(json.dumps(rows[-1]), flush=True)
         diff = diffs[f"{case_id}-test_change"] = d.diff(case_id, files, files[TEST].replace("@Test", "@org.junit.jupiter.api.Disabled @Test"), TEST)
         refused = d.call(SUBMITTER, "POST", "/v1/verifications", {"case_id": case_id, "idempotency_key": uuid.uuid4().hex, "scanner": "semgrep",
                                                                    "tool": LABEL, "diff": diff, "rationale": RATIONALES["test_change"]}, 409)
-        rows.append({"case": case_id, "patch": "test_change", "expected": "refused", "status": "refused", "reason": refused["detail"],
-                     "failure": None, "changed_lines": None, "job": None, "seconds": None})
+        rows.append({"case": case_id, "patch": "test_change", "expected": "refused", "verdict": "refused", "status": "refused", "reason": refused["detail"],
+                     "failure": None, "build": None, "behavior": None, "witness": None, "rescan_clean": None, "changed_lines": None, "job": None, "seconds": None})
         print(json.dumps(rows[-1]), flush=True)
 
     out.mkdir(parents=True, exist_ok=True)
@@ -196,8 +202,12 @@ def main():
     log = AuditLog(d.store)
     (out / "audit.json").write_text(json.dumps({"verify": log.verify(), "entries": log.entries()}, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     memory = [{k: r.get(k) for k in ("id", "provenance", "tool", "author", "model", "source_job", "state")} for r in d.call(REVIEWER, "GET", "/v1/memory")]
-    matched = sum(r["status"] == r["expected"] for r in rows)
-    (out / "summary.json").write_text(json.dumps({"rows": rows, "matched_expectation": matched, "patches": len(rows), "memory": memory}, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    matched = sum(r["verdict"] == r["expected"] for r in rows)
+    bad = [r for r in rows if r["patch"] in ("scanner_quiet", "disabled")]
+    gates = {"bad_patches_verified": len(bad), "accepted_by_safepatch": sum(r["verdict"] == "awaiting_review" for r in bad),
+             "rescan_clean_so_scanner_only_gate_accepts": sum(bool(r["rescan_clean"]) for r in bad)}
+    (out / "summary.json").write_text(json.dumps({"rows": rows, "matched_expectation": matched, "patches": len(rows), "gates": gates, "memory": memory},
+                                                 indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True).stdout.strip()
     dirty = bool(subprocess.run(["git", "status", "--porcelain", "--untracked-files=no"], cwd=ROOT, capture_output=True, text=True).stdout.strip())
     protocol = {"schema": 1, "what": "Patches submitted from outside SafePatch through POST /v1/verifications: three synthetic families, four kinds of hand-written "
@@ -210,7 +220,7 @@ def main():
                 "label": f"every patch is submitted with tool={LABEL!r}: written for this check, no tool's output",
                 "model": "not called: a submitted patch is verified as it is", "jobs": jobs, "steps": d.steps}
     (out / "protocol.json").write_text(json.dumps(protocol, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    print(json.dumps({"matched_expectation": matched, "patches": len(rows), "audit_ok": log.verify()["ok"]}))
+    print(json.dumps({"matched_expectation": matched, "patches": len(rows), **gates, "audit_ok": log.verify()["ok"]}))
     print("written:", out)
 
 
