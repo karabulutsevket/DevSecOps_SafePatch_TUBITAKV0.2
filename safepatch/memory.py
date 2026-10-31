@@ -124,12 +124,16 @@ def evidence_vector(job, attempt):
     findings = [f for scan in verified.get("scans", []) for f in scan.get("findings", [])]
     approval = job.get("approval") or {}
     tools = sorted({s.get("tool") for s in verified.get("scans", []) if s.get("tool")})
-    # Answer-key findings are not rescanned after a patch (the witness decides): no rescan result.
-    rescanned = any(tool != "known-finding" for tool in tools)
+    # Answer-key and imported (SARIF) findings are not rescanned after a patch (the witness decides):
+    # only another tool's rescan is a result, and the imported tool is named as not rescanned.
+    rescanned = any(tool not in ("known-finding", "sarif") for tool in tools)
+    rescan = {"tools": tools, "remaining": len(untolerated(findings, verified.get("tolerated", []))) if rescanned else None,
+              "tolerated": len(verified.get("tolerated", []))} if "scans" in verified else None
+    if rescan and "sarif" in tools:
+        rescan["not_rescanned"] = ["sarif"]
     return {"build": (verified.get("build") or {}).get("passed"),
             "behavior": suite(verified.get("behavior")), "security": suite(verified.get("security")),
-            "rescan": {"tools": tools, "remaining": len(untolerated(findings, verified.get("tolerated", []))) if rescanned else None,
-                       "tolerated": len(verified.get("tolerated", []))} if "scans" in verified else None,
+            "rescan": rescan,
             "approval": {"reviewer": approval.get("reviewer"), "at": approval.get("approved_at")},
             "reuse": {"verified": 0, "failed": 0, "inconclusive": 0, "approved_by_reviewer": 0, "rejected_by_reviewer": 0}}
 

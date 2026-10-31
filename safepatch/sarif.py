@@ -5,8 +5,8 @@ cannot run those tools itself (closed network, licences). The export is untruste
 strictly: SARIF 2.1.0 only, bounded in size and counts, every location a repository-relative file
 of the pinned commit, every text kept short and checked like other untrusted text. Weaknesses
 outside the supported CWE families are kept apart as other findings: reported, never a job.
-What shows an imported finding gone after a patch is the project lead's open decision, so
-neither the runner nor the API reads these reports yet.
+The import (POST /v1/finding-imports) turns the findings into a job; that tool is not rerun after
+a patch, so the security witness decides, with SafePatch's own scanner beside it (decided 31 Oct 2026).
 """
 import json
 from pathlib import PurePosixPath

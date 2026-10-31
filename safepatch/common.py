@@ -7,11 +7,12 @@ from pathlib import Path, PurePosixPath
 import re
 import socket
 import time
+from typing import Literal
 from urllib.parse import urlsplit
 
 import httpx
 from fastapi import Header, HTTPException
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 ROOT = Path(__file__).resolve().parents[1]
 POLICY = "java-synthetic-v1"
@@ -152,6 +153,32 @@ class Patch(Strict):
     rationale: str = Field(max_length=1600)
 
 
+class ImportedFinding(Strict):
+    """A finding of the institution's own scanner as safepatch.sarif read it from a SARIF export:
+    data, never an instruction (docs/SARIF_ICERI_ALMA.md)."""
+    tool: Literal["sarif"]
+    producer: str = Field(min_length=1, max_length=100)
+    rule_id: str = Field(min_length=1, max_length=200)
+    type: Literal["VULNERABILITY"]
+    file: str = Field(max_length=300)
+    line: int | None = Field(default=None, ge=1)
+    severity: Literal["none", "note", "warning", "error"]
+    message: str = Field(max_length=300)
+    cwe: str = Field(pattern=r"^CWE-[0-9]{1,5}$")
+    fingerprint: str = Field(pattern=r"^[a-f0-9]{64}$")
+
+    @field_validator("file")
+    @classmethod
+    def file_path(cls, value):
+        if not safe_path(value):
+            raise ValueError("unsafe finding path")
+        return value
+
+
+# SafePatch's own scanners; "sarif+" puts imported findings beside one of them (decided 31 Oct 2026).
+OWN_SCANNERS = r"builtin|semgrep|findsecbugs|semgrep\+findsecbugs"
+
+
 class VerifyRequest(Strict):
     job_id: str = Field(pattern=r"^[a-f0-9]{32}$")
     case_id: str = Field(pattern=PROJECT_ID)
@@ -159,7 +186,10 @@ class VerifyRequest(Strict):
     attempt: int = Field(ge=0, le=6)   # 0 baseline; up to 3 model and then 3 expert attempts
     deadline: float
     patch: Patch | None = None
-    scanner: str = Field(default="builtin", pattern=r"^(builtin|semgrep|sonarqube\+semgrep|known|findsecbugs|semgrep\+findsecbugs)$")
+    scanner: str = Field(default="builtin", pattern=rf"^(builtin|semgrep|sonarqube\+semgrep|known|findsecbugs|semgrep\+findsecbugs|sarif\+({OWN_SCANNERS}))$")
+    # The institution's findings of a "sarif+" job, sent with its baseline scan only: that tool cannot
+    # run here, so a patched revision is not rescanned with it (safepatch.sarif bounds the count).
+    imported: list[ImportedFinding] = Field(default_factory=list, max_length=10_000)
     # The finding's file: the only file a patch may change (decision 5, 25 Oct 2026).
     target_file: str | None = Field(default=None, max_length=300)
     # Fingerprints of baseline findings in other files. Only the target file changes, so they
@@ -179,6 +209,12 @@ class VerifyRequest(Strict):
         if value is not None and not safe_path(value):
             raise ValueError("unsafe target file")
         return value
+
+    @model_validator(mode="after")
+    def imported_with_sarif(self):
+        if self.imported and not self.scanner.startswith("sarif+"):
+            raise ValueError("imported findings need a sarif scanner")
+        return self
 
 
 def remaining(deadline, cap=240):

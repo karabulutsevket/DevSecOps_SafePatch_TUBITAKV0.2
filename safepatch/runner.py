@@ -367,6 +367,19 @@ def known_findings(spec, commit, patched):
              "coverage": "answer key; a patched revision is not rescanned, the security witness decides"}]
 
 
+def imported_findings(spec, files, commit, imported, patched):
+    """Findings of the institution's own scanner, imported as SARIF (docs/SARIF_ICERI_ALMA.md). That
+    tool cannot run here, so a patched revision is not rescanned with it: the security witness
+    decides, and SafePatch's own scanner, run beside it, must leave nothing in the patched file
+    (options b and a, the project lead's decision of 31 Oct 2026)."""
+    if not spec.tests.security:
+        raise PolicyError("imported_findings_need_security_witness")
+    if any(f.file not in files for f in imported):
+        raise PolicyError("imported_finding_unknown_file")
+    return {"tool": "sarif", "version": "2.1.0", "status": "ok", "commit": commit, "findings": [] if patched else [f.model_dump() for f in imported],
+            "coverage": "institution's scanner, imported as SARIF; a patched revision is not rescanned with it, the security witness decides"}
+
+
 def tools_dir():
     return Path(setting("TOOLS_DIR", str(ROOT / ".runtime/tools")))
 
@@ -435,8 +448,11 @@ def findsecbugs_scan(workspace, spec, files, commit, deadline, sandbox="native",
     return parse_spotbugs(json.loads((workspace / sarif).read_text(encoding="utf-8")), commit, files, spec.scan.paths)
 
 
-def scan(workspace, spec, files, commit, scanner, job_id, attempt, deadline, patched=False, sandbox="native", stage=None):
+def scan(workspace, spec, files, commit, scanner, job_id, attempt, deadline, patched=False, sandbox="native", stage=None, imported=()):
     paths, kind = spec.scan.paths, spec.labels.get("kind")
+    if scanner.startswith("sarif+"):
+        own = scan(workspace, spec, files, commit, scanner[len("sarif+"):], job_id, attempt, deadline, patched, sandbox, stage)
+        return [imported_findings(spec, files, commit, imported, patched), *own]
     if scanner == "known":
         return known_findings(spec, commit, patched)
     if scanner == "builtin":
@@ -494,6 +510,8 @@ def execute(req: VerifyRequest):
         raise PolicyError("sonar_scan_needs_network_not_sandboxed")
     if req.scanner == "known":
         known_findings(spec, req.base_commit, True)   # profile and answer-key checks before anything runs
+    if req.scanner.startswith("sarif+"):
+        imported_findings(spec, files, req.base_commit, req.imported, True)   # witness and files, likewise
     workspace = runtime("runner-work") / f"{req.job_id}-{req.attempt}-{uuid.uuid4().hex[:8]}"
     try:
         checkout(req.case_id, req.base_commit, workspace)
@@ -540,7 +558,7 @@ def outcome(req, spec, workspace, stage, sandbox, patch_meta, view, revision, st
     witness = spec.tests.security
     behavior = tests(workspace, spec.tests.behavior, req.deadline, spec.limits.test_seconds, sandbox, spec.java, spec.build, stage)
     security = tests(workspace, witness, req.deadline, spec.limits.test_seconds, sandbox, spec.java, spec.build, stage) if witness else dict(MISSING_WITNESS)
-    reports = scan(workspace, spec, view, revision, req.scanner, req.job_id, req.attempt, req.deadline, patched=bool(req.patch), sandbox=sandbox, stage=stage)
+    reports = scan(workspace, spec, view, revision, req.scanner, req.job_id, req.attempt, req.deadline, patched=bool(req.patch), sandbox=sandbox, stage=stage, imported=req.imported)
     if stage.changed() if stage else tracked_changes(workspace):
         raise PolicyError("tracked_file_changed_during_execution")
     findings = [f for report in reports for f in report["findings"]]

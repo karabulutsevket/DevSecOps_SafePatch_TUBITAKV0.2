@@ -7,10 +7,11 @@ import uuid
 
 import pytest
 
-from safepatch.common import ROOT, SOURCE, Patch, VerifyRequest, digest, evidence
+from safepatch.common import ROOT, SOURCE, ImportedFinding, Patch, VerifyRequest, digest, evidence
 from safepatch.policy import PolicyError
 from safepatch.repository import baseline, checkout, registry, run_git
 from safepatch.runner import execute
+from safepatch.sarif import read_sarif
 from safepatch.submission import submitted_patch
 from mock_patches import correct_patch
 
@@ -164,6 +165,50 @@ def test_findsecbugs_reports_the_lab_weakness_on_the_baseline(kind, rule):
 def test_findsecbugs_does_not_see_the_lab_path_pattern():
     # Path.resolve(input) then Files.readString: not a FindSecBugs 1.14 sink, so no finding and no job.
     assert not run_case("path-01", scanner="findsecbugs")["baseline_valid"]
+
+
+def imported(case_id):
+    """The lab case's real Semgrep SARIF export, read as the institution's own findings."""
+    case, files = baseline(case_id, registry()[1][case_id]["commit"])
+    raw = (ROOT / f"tests/fixtures/sarif/semgrep-{case_id}.sarif").read_bytes()
+    return [ImportedFinding.model_validate(f) for f in read_sarif(raw, case["commit"], files, case["spec"].scan.paths)[0]["findings"]]
+
+
+def run_import(case_id, scanner, patch=None):
+    """Imported findings go with the baseline only (docs/SARIF_ICERI_ALMA.md)."""
+    return execute(VerifyRequest(job_id=uuid.uuid4().hex, case_id=case_id, base_commit=registry()[1][case_id]["commit"], attempt=1 if patch else 0,
+                                 deadline=time.time() + 300, scanner=scanner, patch=patch, target_file=SOURCE if patch else None,
+                                 imported=[] if patch else imported(case_id)))
+
+
+def test_imported_findings_beside_an_own_scanner_that_sees_them_too():
+    # Options b and a on sql-01: the narrow builtin scanner also reports the weakness, so after the
+    # fix its rescan must be clean as well; the imported finding itself is not rescanned.
+    initial = run_import("sql-01", "sarif+builtin")
+    record("sql-01-sarif-baseline", initial)
+    assert initial["baseline_valid"] and [(s["tool"], len(s["findings"])) for s in initial["scans"]] == [("sarif", 1), ("builtin-demo", 1)]
+    _, files = baseline("sql-01", registry()[1]["sql-01"]["commit"])
+    fixed = run_import("sql-01", "sarif+builtin", correct_patch("sql", files))
+    record("sql-01-sarif-reference-fix", fixed)
+    assert fixed["passed"] and [(s["tool"], len(s["findings"])) for s in fixed["scans"]] == [("sarif", 0), ("builtin-demo", 0)], fixed
+
+
+@findsecbugs
+def test_an_imported_finding_the_own_scanner_misses_is_decided_by_the_witness():
+    # Option b on path-01: FindSecBugs alone sees nothing here, so no job (see above). With the
+    # imported finding the baseline is valid; the witness accepts the reference fix and refuses a
+    # change that only rewrites the flagged expression.
+    initial = run_import("path-01", "sarif+findsecbugs")
+    assert initial["baseline_valid"] and [(s["tool"], len(s["findings"])) for s in initial["scans"]] == [("sarif", 1), ("findsecbugs", 0)], initial["scans"]
+    _, files = baseline("path-01", registry()[1]["path-01"]["commit"])
+    fixed = run_import("path-01", "sarif+findsecbugs", correct_patch("path", files))
+    record("path-01-sarif-findsecbugs-reference-fix", fixed)
+    assert fixed["passed"], fixed
+    disguised = Patch.model_validate({"edits": [{"path": SOURCE, "old_sha256": digest(files[SOURCE]), "content": files[SOURCE].replace("root.resolve(input)", 'root.resolve("" + input)')}],
+                                      "rationale": "MOCK TEST ONLY: same traversal, other expression"})
+    result = run_import("path-01", "sarif+findsecbugs", disguised)
+    record("path-01-sarif-findsecbugs-disguised", result)
+    assert not result["passed"] and not result["security"]["passed"] and result["behavior"]["passed"]
 
 
 @findsecbugs
