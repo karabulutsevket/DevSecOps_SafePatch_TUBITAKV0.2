@@ -11,12 +11,13 @@ from safepatch.region import RegionPatch, complete_imports, region_view, splice
 from safepatch.policy import PolicyError, validate_patch
 from safepatch.project import is_protected
 from safepatch.repository import allowed_files, baseline
+from safepatch.submission import ORIGIN as SUBMITTED, submitted_patch
 from safepatch.weakness import family
 
 TERMINAL = {"awaiting_review", "rejected", "needs_human", "infrastructure_error", "cancelled", "expired", "approved", "deployed"}
 # The engine's own verdicts recorded in the audit log, and the candidate digests they carry.
 OUTCOMES = ("awaiting_review", "needs_human", "rejected", "infrastructure_error")
-AUDITED = ("evidence_sha256", "commit", "artifact_sha256", "patch_sha256", "origin", "author")
+AUDITED = ("evidence_sha256", "commit", "artifact_sha256", "patch_sha256", "origin", "author", "tool")
 # v01: original loop. sampling: retries at higher temperature. guided: plus classified
 # feedback and static guidance. guided+context: plus read-only sibling sources.
 STRATEGIES = ("v01", "sampling", "guided", "guided+context")
@@ -237,10 +238,10 @@ class Engine:
         created, _ = self.store.create(child, job["id"] + ":" + digest(path)[:32])
         return created["id"]
 
-    def accept(self, job_id, verified, meta, origin, author=None):
+    def accept(self, job_id, verified, meta, origin, author=None, tool=None):
         current = self.active(job_id)
         self.memory.assert_active(current.get("memory_ids", []))
-        acceptance_manifest = manifest(current, verified, meta["patch_sha256"], origin, author)
+        acceptance_manifest = manifest(current, verified, meta["patch_sha256"], origin, author, tool)
         self.store.mutate(job_id, lambda j: j.update(acceptance_manifest=acceptance_manifest))
         review = None
         if current.get("second_review"):
@@ -249,29 +250,36 @@ class Engine:
             except Exception:
                 review = {"status": "not_executed_or_failed", "authority": "advisory-only"}
         self.active(job_id)
-        self.set(job_id, "awaiting_review", candidate={"evidence_sha256": digest(canonical(acceptance_manifest)), "commit": verified["candidate_commit"], "artifact_sha256": verified["artifact_sha256"], "patch_sha256": meta["patch_sha256"], "policy_version": POLICY, "diff": meta["diff"], "review_repository": verified["review_repository"], "review_branch": verified["review_branch"], "origin": origin, "author": author}, advisory=review, review_expires_at=time.time() + int(setting("REVIEW_TTL_SECONDS", "86400")), duration_seconds=round(time.time() - current["started_at"], 3))
+        self.set(job_id, "awaiting_review", candidate={"evidence_sha256": digest(canonical(acceptance_manifest)), "commit": verified["candidate_commit"], "artifact_sha256": verified["artifact_sha256"], "patch_sha256": meta["patch_sha256"], "policy_version": POLICY, "diff": meta["diff"], "review_repository": verified["review_repository"], "review_branch": verified["review_branch"], "origin": origin, "author": author, **({"tool": tool} if tool else {})}, advisory=review, review_expires_at=time.time() + int(setting("REVIEW_TTL_SECONDS", "86400")), duration_seconds=round(time.time() - current["started_at"], 3))
+
+    def verify_once(self, job, case, files, finding, patch, meta, proposal, strategy, **fields):
+        """One verification of a patch SafePatch did not generate (an expert's or a submitted one),
+        recorded as the job's next attempt. Returns the verifier's result and the failure class."""
+        job_id, target = job["id"], finding["file"]
+        number = max((a["number"] for a in job["attempts"]), default=0) + 1
+        record = {"number": number, "proposal": proposal, **meta}
+        self.set(job_id, "verifying", **fields)
+        verified = self.worker("worker2", "/verify", {"job_id": job_id, "case_id": job["case_id"], "base_commit": job["base_commit"], "deadline": job["deadline"], "scanner": job["scanner"], "attempt": number, "patch": patch.model_dump(), "target_file": target, "tolerated": tolerated(job["baseline"], target)}, job["deadline"])
+        current = self.active(job_id)
+        record.update(verification=verified, failure=None if verified.get("passed") else classify(verified))
+        lesson = self.memory.record_failure(current, context_for(case, files, finding), record, strategy) if record["failure"] else None
+        if lesson:
+            record["failure_memory_id"] = lesson
+        self.store.mutate(job_id, lambda j: j["attempts"].append(record))
+        return verified, record["failure"]
 
     def _run_expert(self, job):
         """A human-authored patch: no model call, the same policy and verifier as a model patch."""
         job_id, pending = job["id"], job["pending_expert_patch"]
         case, files, finding, allowed = expert_scope(job)
-        target = finding["file"]
         self.memory.assert_active(job.get("memory_ids", []))
         patch = Patch.model_validate(pending["patch"])
         meta = validate_patch(files, patch, allowed=allowed)
-        number = max((a["number"] for a in job["attempts"]), default=0) + 1
-        record = {"number": number, "proposal": {"mode": "human-authored", "patch": patch.model_dump(), "author": pending["author"], "submitted_at": pending["submitted_at"]}, **meta}
-        self.set(job_id, "verifying", pending_expert_patch=None)
-        verified = self.worker("worker2", "/verify", {"job_id": job_id, "case_id": job["case_id"], "base_commit": job["base_commit"], "deadline": job["deadline"], "scanner": job["scanner"], "attempt": number, "patch": patch.model_dump(), "target_file": target, "tolerated": tolerated(job["baseline"], target)}, job["deadline"])
-        current = self.active(job_id)
-        record.update(verification=verified, failure=None if verified.get("passed") else classify(verified))
-        lesson = self.memory.record_failure(current, context_for(case, files, finding), record, "expert") if record["failure"] else None
-        if lesson:
-            record["failure_memory_id"] = lesson
-        self.store.mutate(job_id, lambda j: j["attempts"].append(record))
-        if record["failure"] and record["failure"]["category"] == "infrastructure":
+        proposal = {"mode": "human-authored", "patch": patch.model_dump(), "author": pending["author"], "submitted_at": pending["submitted_at"]}
+        verified, failure = self.verify_once(job, case, files, finding, patch, meta, proposal, "expert", pending_expert_patch=None)
+        if failure and failure["category"] == "infrastructure":
             # Back to the expert, who may resend once the environment is fixed (still one of the three attempts).
-            self.set(job_id, "needs_human", reason="verification_infrastructure:" + record["failure"]["reason"])
+            self.set(job_id, "needs_human", reason="verification_infrastructure:" + failure["reason"])
         elif verified.get("feedback", {}).get("code") == "security_witness_missing":
             self.set(job_id, "needs_human", reason="security_witness_missing")
         elif verified.get("passed"):
@@ -279,10 +287,47 @@ class Engine:
         else:
             self.set(job_id, "needs_human", reason="expert_patch_failed_verification")
 
+    def _run_submitted(self, job):
+        """A patch made outside SafePatch (docs/YAMA_DOGRULAMA.md): derived again from the submitted
+        diff by trusted code, then the baseline scan and the same verifier as a model patch. No
+        model call and no memory: the patch is verified as it was submitted."""
+        job_id, submission = job["id"], job["submission"]
+        case, files = baseline(job["case_id"], job["base_commit"])
+        patch, meta = submitted_patch(case, files, submission["diff"], submission["rationale"])
+        target = patch.edits[0].path
+        self.set(job_id, "scanning", target_file=target)
+        initial = self.worker("worker2", "/verify", {"job_id": job_id, "case_id": job["case_id"], "base_commit": job["base_commit"], "deadline": job["deadline"], "scanner": job["scanner"], "attempt": 0, "patch": None, "target_file": None}, job["deadline"])
+        self.active(job_id)
+        self.set(job_id, "scanning", baseline=initial)
+        if not initial.get("baseline_valid"):
+            self.set(job_id, "needs_human", reason="baseline_missing_expected_failing_security_assertion_or_finding")
+            return
+        found = dict(finding_groups(initial)).get(target)
+        if not found:
+            # The scan found nothing in the patched file, so nothing shows what the patch would fix.
+            self.set(job_id, "rejected", reason="no_finding_in_patched_file")
+            return
+        job = self.set(job_id, "scanning", findings=found)
+        proposal = {"mode": SUBMITTED, "patch": patch.model_dump(), "author": submission["author"], "tool": submission["tool"],
+                    "submitted_at": submission["submitted_at"], "diff_sha256": submission["diff_sha256"]}
+        verified, failure = self.verify_once(job, case, files, found[0], patch, meta, proposal, "submitted", attempt_count=1)
+        if failure and failure["category"] == "infrastructure":
+            # The environment failed, not the patch: the same diff can be sent again.
+            self.set(job_id, "infrastructure_error", reason="verification_infrastructure:" + failure["reason"])
+        elif verified.get("feedback", {}).get("code") == "security_witness_missing":
+            self.set(job_id, "needs_human", reason="security_witness_missing")
+        elif verified.get("passed"):
+            # The submitter counts as the author: they cannot approve the patch they brought in.
+            self.accept(job_id, verified, meta, SUBMITTED, submission["author"], submission["tool"])
+        else:
+            self.set(job_id, "needs_human", reason="submitted_patch_failed_verification")
+
     def _run(self, job_id):
         job = self.active(job_id)
         if job.get("pending_expert_patch"):
             return self._run_expert(job)
+        if job.get("mode") == SUBMITTED:
+            return self._run_submitted(job)
         case, files = baseline(job["case_id"], job["base_commit"])
         verify = {"job_id": job_id, "case_id": job["case_id"], "base_commit": job["base_commit"], "deadline": job["deadline"], "scanner": job["scanner"], "attempt": 0, "patch": None, "target_file": None}
         # A per-file job reuses the scan of the job it was split from; every other job scans.

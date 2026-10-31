@@ -22,6 +22,7 @@ from safepatch.policy import PolicyError
 from safepatch.repository import baseline
 from safepatch.repository import projects, registry
 from safepatch.store import Store
+from safepatch.submission import ORIGIN as SUBMITTED, TOOL, submitted_patch
 
 store = None
 # Queued work: new jobs, and needs_human jobs that received an expert patch.
@@ -174,10 +175,14 @@ def cases(user=Depends(identity)):
             for k, v in registry()[1].items() if v.get("project", "owned-java-demo") in user["projects"]}
 
 
+SCANNERS = r"^(builtin|semgrep|sonarqube\+semgrep|known|findsecbugs|semgrep\+findsecbugs)$"
+IDEMPOTENCY = r"^[A-Za-z0-9_-]+$"
+
+
 class NewJob(Strict):
     case_id: str = Field(pattern=PROJECT_ID)   # registered project id (descriptor)
-    idempotency_key: str = Field(min_length=8, max_length=100, pattern=r"^[A-Za-z0-9_-]+$")
-    scanner: str = Field(default="semgrep", pattern=r"^(builtin|semgrep|sonarqube\+semgrep|known|findsecbugs|semgrep\+findsecbugs)$")
+    idempotency_key: str = Field(min_length=8, max_length=100, pattern=IDEMPOTENCY)
+    scanner: str = Field(default="semgrep", pattern=SCANNERS)
     max_attempts: int = Field(default=3, ge=1, le=3)
     second_review: bool = False
     memory_mode: str = Field(default="guarded", pattern=r"^(off|guarded)$")
@@ -186,18 +191,24 @@ class NewJob(Strict):
     strategy: str = Field(default="guided+context", pattern=r"^(v01|sampling|guided|guided\+context)$")
 
 
+def registered_case(case_id, user, scanner=None):
+    """A registered project this user may submit to; the known-finding scanner's own conditions."""
+    _, cases = registry()
+    if case_id not in cases or cases[case_id].get("project", "owned-java-demo") not in user["projects"]:
+        raise HTTPException(404, "Yetkili proje bulunamadı")
+    if scanner == "known" and not known_findings_enabled():
+        raise HTTPException(409, "known_findings_only_in_lab_profile")
+    if scanner == "known" and not projects()[case_id].scan.known:
+        raise HTTPException(409, "known_findings_need_answer_key_and_witness")
+    return cases[case_id]
+
+
 @app.post("/v1/jobs", status_code=201)
 def create_job(req: NewJob, user=Depends(identity)):
     require_role(user, "submit")
-    _, cases = registry()
-    if req.case_id not in cases or cases[req.case_id].get("project", "owned-java-demo") not in user["projects"]:
-        raise HTTPException(404, "Yetkili proje bulunamadı")
-    if req.scanner == "known" and not known_findings_enabled():
-        raise HTTPException(409, "known_findings_only_in_lab_profile")
-    if req.scanner == "known" and not projects()[req.case_id].scan.known:
-        raise HTTPException(409, "known_findings_need_answer_key_and_witness")
+    case = registered_case(req.case_id, user, req.scanner)
     now = time.time()
-    data = {"id": uuid.uuid4().hex, "project": cases[req.case_id].get("project", "owned-java-demo"), "memory_mode": req.memory_mode, "strategy": req.strategy, "case_id": req.case_id, "base_commit": cases[req.case_id]["commit"], "split": cases[req.case_id]["split"], "policy_version": POLICY, "scanner": req.scanner, "mode": "real-local-model", "status": "queued", "started_at": now, "deadline": now + int(setting("JOB_BUDGET_SECONDS", "1200")), "max_attempts": req.max_attempts, "attempt_count": 0, "attempts": [], "events": [{"time": now, "status": "queued"}], "owner": user["subject"], "second_review": req.second_review, "approval": None}
+    data = {"id": uuid.uuid4().hex, "project": case.get("project", "owned-java-demo"), "memory_mode": req.memory_mode, "strategy": req.strategy, "case_id": req.case_id, "base_commit": case["commit"], "split": case["split"], "policy_version": POLICY, "scanner": req.scanner, "mode": "real-local-model", "status": "queued", "started_at": now, "deadline": now + int(setting("JOB_BUDGET_SECONDS", "1200")), "max_attempts": req.max_attempts, "attempt_count": 0, "attempts": [], "events": [{"time": now, "status": "queued"}], "owner": user["subject"], "second_review": req.second_review, "approval": None}
     try:
         job, created = store.create(data, user["subject"] + ":" + req.idempotency_key)
     except ValueError as exc:
@@ -310,6 +321,62 @@ def expert_patch(job_id: str, req: ExpertPatch, user=Depends(identity)):
         job = store.mutate(job_id, submit)
         audit(user, "expert_patch.submitted", job_id, patch_sha256=digest(canonical(patch.model_dump())), rationale=req.rationale)
     work.put(job_id)
+    return job
+
+
+class SubmittedDiff(Strict):
+    case_id: str = Field(pattern=PROJECT_ID)
+    # A unified diff (`git diff`) against the project's pinned base commit.
+    diff: str = Field(min_length=1, max_length=200_000)
+    rationale: str = Field(default="", max_length=1600)   # a draft may preview before its rationale is written
+
+
+class Submission(SubmittedDiff):
+    idempotency_key: str = Field(min_length=8, max_length=100, pattern=IDEMPOTENCY)
+    scanner: str = Field(default="semgrep", pattern=SCANNERS)
+    # The submitter comes from the backend identity, never from the request body.
+    tool: str = Field(pattern=TOOL)
+    rationale: str = Field(min_length=20, max_length=1600)
+
+
+@app.post("/v1/verifications/preview")
+def verification_preview(req: SubmittedDiff, user=Depends(identity)):
+    """The submission checks without storing anything: the file and the diff exactly as they would be verified."""
+    require_role(user, "submit")
+    case = registered_case(req.case_id, user)
+    try:
+        patch, meta = submitted_patch(*baseline(req.case_id, case["commit"]), req.diff, req.rationale)
+    except PolicyError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    return {"path": patch.edits[0].path, **meta}
+
+
+@app.post("/v1/verifications", status_code=201)
+def submit_verification(req: Submission, user=Depends(identity)):
+    """A patch written outside SafePatch, verified as it is: no model call, no memory (docs/YAMA_DOGRULAMA.md)."""
+    require_role(user, "submit")
+    case = registered_case(req.case_id, user, req.scanner)
+    try:
+        patch, meta = submitted_patch(*baseline(req.case_id, case["commit"]), req.diff, req.rationale)
+    except PolicyError as exc:
+        # Nothing is stored; who sent what, and why it was refused, joins the audit log.
+        audit(user, "patch_submission.refused", req.case_id, reason=str(exc), diff_sha256=digest(req.diff), tool=req.tool)
+        raise HTTPException(409, str(exc)) from exc
+    now = time.time()
+    submission = {"diff": req.diff, "diff_sha256": digest(req.diff), "rationale": req.rationale, "tool": req.tool, "author": user["subject"], "submitted_at": now}
+    data = {"id": uuid.uuid4().hex, "project": case.get("project", "owned-java-demo"), "memory_mode": "off", "case_id": req.case_id, "base_commit": case["commit"], "split": case["split"],
+            "policy_version": POLICY, "scanner": req.scanner, "mode": SUBMITTED, "status": "queued", "started_at": now, "deadline": now + int(setting("JOB_BUDGET_SECONDS", "1200")),
+            "max_attempts": 1, "attempt_count": 0, "attempts": [], "events": [{"time": now, "status": "queued", "origin": SUBMITTED}], "owner": user["subject"],
+            "second_review": False, "approval": None, "target_file": patch.edits[0].path, "submission": submission,
+            "submission_sha256": digest(canonical({k: submission[k] for k in ("diff", "rationale", "tool")}))}
+    try:
+        job, created = store.create(data, user["subject"] + ":" + req.idempotency_key)
+    except ValueError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    if created:
+        audit(user, "job.created", job["id"], case_id=req.case_id, base_commit=job["base_commit"], scanner=req.scanner, mode=SUBMITTED,
+              tool=req.tool, diff_sha256=submission["diff_sha256"], patch_sha256=meta["patch_sha256"], policy_version=POLICY)
+        work.put(job["id"])
     return job
 
 
