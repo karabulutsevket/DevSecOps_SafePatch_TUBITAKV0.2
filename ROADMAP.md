@@ -290,6 +290,7 @@ Hafta 8'in sandbox sertleştirme maddeleri ayrı iş olarak açık.
 - [ ] Demo videosu (yedek) ve canlı demo provası — *Yiğithan*
 - [ ] Soru-cevap provası: "Copilot Autofix de hafıza tutuyor, farkınız ne?", "Kod MIT lisanslı, avantajınız ne?", "Neden Java?", "Neden önce SaaS değil?", "Ekipte kim neyi yaptı?" — *tüm ekip*
 - [ ] Pilot protokolü: kapsam (1–2 Java deposu, 4–6 hafta), kurumdan istenecek ve istenmeyecek veriler, başarı ölçütleri (pilot öncesi müşteriyle sabitlenir) — *Şevket, Reşat*
+  - **31 Ekim, taslak:** görüşme ve pilot ölçüm planı, karar kuralları ve anonim görüşme şablonu hazır; proje liderinin onayını bekliyor ([docs/GORUSME_VE_PILOT_PLANI.md](docs/GORUSME_VE_PILOT_PLANI.md), [docs/musteri/GORUSME_SABLONU.md](docs/musteri/GORUSME_SABLONU.md)).
 - [ ] Pilot teklifi (başvuru formundaki fiyat hipotezleriyle tutarlı; müşteri görüşmelerine göre güncellenir) — *Reşat*
 - [ ] Demo senaryosu: sentetik depo + L3'ten bir Vul4J vakası; uzman yaması → hafıza → sonraki işte kullanım; geri çekme — *Yiğithan*
 - [ ] Aşama 2 iş planı güncellemesi: yeni ölçümler, görüşme notları, pilot adayları — *Şevket*
