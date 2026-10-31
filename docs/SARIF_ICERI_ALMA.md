@@ -23,13 +23,13 @@
 | `version` "2.1.0" değil ya da `$schema` başka bir sürümü gösteriyor | `sarif_version_unsupported` |
 | Hiç koşu yok ya da bir koşunun `results` dizisi yok (araç bitirmemiş) | `sarif_run_without_results` |
 | `executionSuccessful` true değil | `sarif_incomplete_scan` |
-| 20'den çok koşu, 10 000'den çok sonuç ya da 500'den çok desteklenen bulgu | `sarif_too_many_runs`, `sarif_too_many_results`, `sarif_too_many_findings` |
+| 20'den çok koşu, 10 000'den çok sonuç ya da 500'den çok farklı desteklenen bulgu (kural ve dosya çifti) | `sarif_too_many_runs`, `sarif_too_many_results`, `sarif_too_many_findings` |
 | Beyan edilen commit (`revisionId`) sabit commit değil | `sarif_commit_mismatch` |
 | Depo dışını gösterebilen konum: `..`, sürücü harfi, ters bölü, NUL, yüzde kodlu `..`, beyan edilmiş bir kökün altında olmayan mutlak yol | `sarif_path_outside_repository` |
 | Şemaya uymayan alan: tanımsız `level` ya da `kind`, mesajsız sonuç, çelişen ya da yazdırılamayan kural kimliği, geçersiz satır | `sarif_malformed` |
 | Kural kimliği, mesaj, dosya ya da araç adı SafePatch doğrulayıcı notunu taklit ediyor | `suspected_prompt_injection` |
 
-**500 sınırı.** Bir işin doğrulama isteği diğer dosyalardaki en çok 500 bulgunun parmak izini taşıyabiliyor (`VerifyRequest.tolerated`).
+**500 sınırı.** Bir işin doğrulama isteği diğer dosyalardaki bulguların en çok 500 parmak izini taşıyabiliyor (`VerifyRequest.tolerated`). Aynı kuralın aynı dosyada birçok satırda raporlanması tek parmak izidir. Daha büyük bir dışa aktarım modül ya da klasör başına bölünür.
 
 **Sayılan ama içeri alınmayanlar (`skipped`).**
 - `not_failure`: `kind` değeri `fail` değil (`pass`, `review`, `open`…).

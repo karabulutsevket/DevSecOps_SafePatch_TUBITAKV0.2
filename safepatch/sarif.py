@@ -24,7 +24,8 @@ VERSION = "2.1.0"
 MAX_BYTES = 32 * 1024 * 1024
 MAX_RUNS = 20
 MAX_RESULTS = 10_000
-# A job's verify request carries at most 500 fingerprints of other files' findings (`tolerated`).
+# Distinct supported findings (rule and file): a job's verify request carries at most 500
+# fingerprints of other files' findings (`tolerated`).
 MAX_FINDINGS = 500
 MAX_ID = 200
 MAX_MESSAGE = 300
@@ -288,7 +289,7 @@ def read_sarif(raw, commit, files, paths):
     need(sum(len(run["results"]) for run in runs) <= MAX_RESULTS, "sarif_too_many_results")
     sha256 = digest(raw)
     reports = [read_run(run, number, commit, files, paths, sha256) for number, run in enumerate(runs)]
-    need(sum(len(r["findings"]) for r in reports) <= MAX_FINDINGS, "sarif_too_many_findings")
+    need(len({f["fingerprint"] for r in reports for f in r["findings"]}) <= MAX_FINDINGS, "sarif_too_many_findings")
     texts = [r["producer"][k] for r in reports for k in ("name", "version")]
     texts += [f[k] for r in reports for f in r["findings"] + r["other_findings"] for k in ("rule_id", "message", "file")]
     # Finding fields reach the model as data; one that imitates the trusted note never gets that far.

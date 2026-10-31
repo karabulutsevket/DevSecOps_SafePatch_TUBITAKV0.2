@@ -145,6 +145,8 @@ def test_size_and_count_limits(monkeypatch):
     monkeypatch.setattr(sarif, "MAX_RESULTS", 10)
     monkeypatch.setattr(sarif, "MAX_FINDINGS", 1)
     refused(log(two_files), "sarif_too_many_findings")
+    # The limit counts fingerprints: one rule on many lines of one file is one of them.
+    assert len(read(log([result(line=17), result(line=40), result(line=63)]))[0]["findings"]) == 3
 
 
 def test_the_limits_fit_what_a_job_can_carry():
