@@ -9,13 +9,14 @@ def untolerated(findings, tolerated):
     return [f for f in findings if f.get("fingerprint") not in allowed]
 
 
-def manifest(job, verified, patch_sha256, origin=None, author=None):
-    # origin: the proposal mode, or "human-authored"; author binds the expert to the evidence.
+def manifest(job, verified, patch_sha256, origin=None, author=None, tool=None):
+    # origin: the proposal mode, or "human-authored"; author binds the expert, or the submitter of
+    # an outside patch, to the evidence; tool: what that submitter declared made the patch.
     return {"schema": "safepatch-evidence-v1", "job_id": job["id"],
             "base_commit": job["base_commit"], "policy": POLICY,
             "patch_sha256": patch_sha256, "verification": verified,
             "memory_ids": job.get("memory_ids", []), "mode": job["mode"],
-            "origin": origin, "author": author}
+            "origin": origin, "author": author, **({"tool": tool} if tool else {})}
 
 
 def check_evidence(job):
@@ -30,5 +31,5 @@ def check_evidence(job):
         raise PolicyError("verified_artifact_changed")
     if evidence.get("memory_ids") != job.get("memory_ids", []):
         raise PolicyError("memory_provenance_changed")
-    if evidence.get("origin") != candidate.get("origin") or evidence.get("author") != candidate.get("author"):
+    if any(evidence.get(k) != candidate.get(k) for k in ("origin", "author", "tool")):
         raise PolicyError("authorship_changed")

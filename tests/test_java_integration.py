@@ -9,8 +9,9 @@ import pytest
 
 from safepatch.common import ROOT, SOURCE, Patch, VerifyRequest, digest, evidence
 from safepatch.policy import PolicyError
-from safepatch.repository import baseline, registry
+from safepatch.repository import baseline, checkout, registry, run_git
 from safepatch.runner import execute
+from safepatch.submission import submitted_patch
 from mock_patches import correct_patch
 
 pytestmark = [pytest.mark.integration, pytest.mark.skipif(os.environ.get("RUN_JAVA_INTEGRATION") != "1", reason="Set RUN_JAVA_INTEGRATION=1 after Java/Maven preparation")]
@@ -55,6 +56,18 @@ def test_expert_attempt_numbers_reach_the_real_verifier():
     # Expert patches are numbered after the model's three attempts (4-6).
     _, files = baseline("sql-01", registry()[1]["sql-01"]["commit"])
     assert run_case("sql-01", correct_patch("sql", files), attempt=6)["passed"]
+
+
+def test_a_submitted_git_diff_reaches_the_real_verifier(tmp_path):
+    # A patch made outside SafePatch arrives as `git diff` output (docs/YAMA_DOGRULAMA.md).
+    case, files = baseline("sql-01", registry()[1]["sql-01"]["commit"])
+    work = tmp_path / "clone"
+    checkout("sql-01", case["commit"], work)
+    (work / SOURCE).write_text(correct_patch("sql", files).edits[0].content, encoding="utf-8", newline="\n")
+    patch, _ = submitted_patch(case, files, run_git(work, "diff").decode("utf-8"), "Bound parameter instead of concatenating the input.")
+    result = run_case("sql-01", patch)
+    record("sql-01-submitted-git-diff", result)
+    assert result["passed"], result
 
 
 OTHER_DAO = "src/main/java/demo/OtherDao.java"

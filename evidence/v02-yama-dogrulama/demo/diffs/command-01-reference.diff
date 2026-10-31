@@ -1,0 +1,13 @@
+diff --git a/src/main/java/demo/DemoService.java b/src/main/java/demo/DemoService.java
+index e8021b6..8d3e92b 100644
+--- a/src/main/java/demo/DemoService.java
++++ b/src/main/java/demo/DemoService.java
+@@ -13,7 +13,7 @@ public class DemoService {
+         String shell = windows ? "cmd.exe" : "/bin/sh";
+         String flag = windows ? "/c" : "-c";
+         String command = "echo echo:" + input;
+-        Process child = new ProcessBuilder(shell, flag, command).redirectErrorStream(true).start();
++        Process child = new ProcessBuilder(java, "-cp", System.getProperty("java.class.path"), "demo.EchoMain", input).redirectErrorStream(true).start();
+         if (!child.waitFor(5, TimeUnit.SECONDS)) { child.destroyForcibly(); throw new IllegalStateException("child timeout"); }
+         if (child.exitValue() != 0) throw new IllegalStateException("child failed");
+         return new String(child.getInputStream().readAllBytes(), StandardCharsets.UTF_8).trim();

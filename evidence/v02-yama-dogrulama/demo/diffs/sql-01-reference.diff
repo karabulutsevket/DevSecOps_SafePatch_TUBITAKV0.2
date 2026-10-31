@@ -1,0 +1,21 @@
+diff --git a/src/main/java/demo/DemoService.java b/src/main/java/demo/DemoService.java
+index ad81b5f..82fd233 100644
+--- a/src/main/java/demo/DemoService.java
++++ b/src/main/java/demo/DemoService.java
+@@ -12,10 +12,13 @@ public class DemoService {
+                 init.execute("CREATE TABLE IF NOT EXISTS accounts(name VARCHAR PRIMARY KEY)");
+                 init.execute("MERGE INTO accounts KEY(name) VALUES ('alice'), ('bob')");
+             }
+-            String sql = "SELECT name FROM accounts WHERE name = '" + input + "'";
++            String sql = "SELECT name FROM accounts WHERE name = ?";
+             List<String> names = new ArrayList<>();
+-            try (Statement statement = conn.createStatement(); ResultSet rows = statement.executeQuery(sql)) {
+-                while (rows.next()) names.add(rows.getString(1));
++            try (PreparedStatement statement = conn.prepareStatement(sql)) {
++                statement.setString(1, input);
++                try (ResultSet rows = statement.executeQuery()) {
++                    while (rows.next()) names.add(rows.getString(1));
++                }
+             }
+             Collections.sort(names);
+             return String.join(",", names);

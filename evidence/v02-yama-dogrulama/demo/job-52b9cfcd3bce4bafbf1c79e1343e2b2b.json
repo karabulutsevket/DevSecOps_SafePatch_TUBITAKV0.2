@@ -1,0 +1,127 @@
+{
+  "id": "52b9cfcd3bce4bafbf1c79e1343e2b2b",
+  "case_id": "path-01",
+  "mode": "submitted-patch",
+  "scanner": "semgrep",
+  "status": "needs_human",
+  "reason": "submitted_patch_failed_verification",
+  "base_commit": "7a3ce43adc8e1845c8a42903218bac47e1939429",
+  "target_file": "src/main/java/demo/DemoService.java",
+  "submission": {
+    "tool": "handwritten-control",
+    "author": "SIMULATED-developer",
+    "diff_sha256": "40351cfa0863a13d70a0f1f88f0eaf14e88acefd6d7e7cd65133533518d013aa",
+    "rationale": "Check that the resolved path stays under the root before reading it."
+  },
+  "findings": [
+    "bigg.java.path-resolution line 11"
+  ],
+  "baseline": {
+    "baseline_valid": true,
+    "security": {
+      "passed": false,
+      "tests": 3,
+      "failures": 3,
+      "errors": 0,
+      "skipped": 0,
+      "assertions": [
+        "PATH_TRAVERSAL_REGRESSION"
+      ]
+    },
+    "runner_profile": "docker:maven:3.9.16-eclipse-temurin-17@sha256:1a352420f7aba21f5ad08df31bab55f74c013fb491f1ae8ab1dd7ff9ed698584",
+    "duration_seconds": 19.234
+  },
+  "attempts": [
+    {
+      "number": 1,
+      "mode": "submitted-patch",
+      "author": "SIMULATED-developer",
+      "tool": "handwritten-control",
+      "diff_sha256": "40351cfa0863a13d70a0f1f88f0eaf14e88acefd6d7e7cd65133533518d013aa",
+      "changed_lines": 1,
+      "patch_sha256": "17db5ed93040f9486efb454edf7a6b7747711e1cce7115fc2686865552da2c3f",
+      "passed": false,
+      "failure": {
+        "category": "security_witness_failed",
+        "failed_tests": [
+          {
+            "suite": "security",
+            "test": "cannotEscapeThroughLinkInsideRoot",
+            "marker": "PATH_TRAVERSAL_REGRESSION"
+          },
+          {
+            "suite": "security",
+            "test": "cannotReadParentSecret",
+            "marker": "PATH_TRAVERSAL_REGRESSION"
+          }
+        ],
+        "remaining_rules": []
+      },
+      "build": true,
+      "behavior": {
+        "passed": true,
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "assertions": []
+      },
+      "security": {
+        "passed": false,
+        "tests": 3,
+        "failures": 2,
+        "errors": 0,
+        "skipped": 0,
+        "assertions": [
+          "PATH_TRAVERSAL_REGRESSION"
+        ]
+      },
+      "scans": [
+        {
+          "tool": "semgrep",
+          "version": "1.136.0",
+          "status": "ok",
+          "findings": 0
+        }
+      ],
+      "remaining_rules": [],
+      "runner_profile": "docker:maven:3.9.16-eclipse-temurin-17@sha256:1a352420f7aba21f5ad08df31bab55f74c013fb491f1ae8ab1dd7ff9ed698584",
+      "duration_seconds": 22.938
+    }
+  ],
+  "candidate": {
+    "origin": null,
+    "author": null,
+    "tool": null,
+    "commit": null,
+    "artifact_sha256": null,
+    "patch_sha256": null,
+    "evidence_sha256": null
+  },
+  "approval": {
+    "reviewer": null,
+    "decision": null,
+    "mode": null
+  },
+  "events": [
+    {
+      "status": "queued",
+      "origin": "submitted-patch"
+    },
+    {
+      "status": "scanning"
+    },
+    {
+      "status": "scanning"
+    },
+    {
+      "status": "scanning"
+    },
+    {
+      "status": "verifying"
+    },
+    {
+      "status": "needs_human"
+    }
+  ]
+}

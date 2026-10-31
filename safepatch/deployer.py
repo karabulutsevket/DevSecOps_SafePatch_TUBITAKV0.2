@@ -16,6 +16,9 @@ from safepatch.process import child_env, terminate
 app = FastAPI(title="Human-approved local staging")
 lock = threading.Lock()
 process = None
+# Jobs whose candidate ran through the real verifier: the local model's, and patches submitted from
+# outside SafePatch (docs/YAMA_DOGRULAMA.md). Mock-test results never reach staging.
+REAL_MODES = ("real-local-model", "submitted-patch")
 
 
 class Deployment(Strict):
@@ -29,7 +32,7 @@ def check_approval(approval, signature, key, now=None, historical=False):
         raise ValueError("invalid_approval")
     if not historical and (now or time.time()) > approval["expires_at"]:
         raise ValueError("expired_approval")
-    if approval.get("mode") != "real-local-model" and setting("ALLOW_TEST_DEPLOYMENT") != "1":
+    if approval.get("mode") not in REAL_MODES and setting("ALLOW_TEST_DEPLOYMENT") != "1":
         raise ValueError("mock_artifact_refused")
 
 

@@ -1,0 +1,12 @@
+diff --git a/src/main/java/demo/DemoService.java b/src/main/java/demo/DemoService.java
+index d361d80..b32a0cc 100644
+--- a/src/main/java/demo/DemoService.java
++++ b/src/main/java/demo/DemoService.java
+@@ -8,6 +8,7 @@ public class DemoService {
+     public String lookup(String input) throws Exception {
+         Path root = Path.of(System.getProperty("demo.root"));
+         Path target = root.resolve(input);
++        if (!target.startsWith(root)) { throw new SecurityException("outside root"); }
+         return Files.readString(target);
+     }
+ }

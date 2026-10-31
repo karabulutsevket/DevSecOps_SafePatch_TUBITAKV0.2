@@ -53,6 +53,9 @@ def context_for(case, files, finding):
 REQUIRED = ("project", "cwe_family", "jdk", "source_path", "build_sha256", "contract_sha256")
 ADAPTIVE = ("project", "cwe_family", "jdk")
 SHAPE = ("sink", "construction", "library", "library_version")
+# Where an approved record's patch came from, by the mode of the attempt that passed; the local
+# model's patches are the default. A submitted patch keeps the tool its submitter declared.
+PROVENANCE = {"human-authored": "human-authored", "submitted-patch": "human-approved-submitted-patch"}
 
 
 def normalized(context):
@@ -230,12 +233,13 @@ class Memory:
         # Nobody labels their own patch as institutional knowledge.
         if candidate.get("author") is not None and actor == candidate["author"]:
             raise PolicyError("author_cannot_promote_own_patch")
-        human = attempt["proposal"].get("mode") == "human-authored"
+        proposal = attempt["proposal"]
         record = {"id": uuid.uuid4().hex, "state": "approved", "version": 1,
                   "created_at": time.time(), "context": context, "before": before,
-                  "patch": attempt["proposal"]["patch"], "diff": candidate["diff"], "source_job": job["id"],
-                  "model": attempt["proposal"].get("model"), "author": attempt["proposal"].get("author"),
-                  "provenance": "human-authored" if human else "human-approved-local-repair",
+                  "patch": proposal["patch"], "diff": candidate["diff"], "source_job": job["id"],
+                  "model": proposal.get("model"), "author": proposal.get("author"),
+                  "provenance": PROVENANCE.get(proposal.get("mode"), "human-approved-local-repair"),
+                  **({"tool": proposal["tool"]} if proposal.get("tool") else {}),
                   "evidence_sha256": candidate["evidence_sha256"], "evidence": evidence_vector(job, attempt),
                   "rule_sha256": RULE_DIGESTS.get(context.get("rule_id")),
                   "approval": copy.deepcopy(approved), "uses": [], "reuse": [],

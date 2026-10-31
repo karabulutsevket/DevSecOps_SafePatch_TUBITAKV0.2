@@ -1,0 +1,16 @@
+diff --git a/src/main/java/demo/DemoService.java b/src/main/java/demo/DemoService.java
+index d361d80..2f8df71 100644
+--- a/src/main/java/demo/DemoService.java
++++ b/src/main/java/demo/DemoService.java
+@@ -6,8 +6,9 @@ import java.nio.file.*;
+ // Deliberately vulnerable synthetic example. Root is supplied by trusted runner.
+ public class DemoService {
+     public String lookup(String input) throws Exception {
+-        Path root = Path.of(System.getProperty("demo.root"));
+-        Path target = root.resolve(input);
++        Path root = Path.of(System.getProperty("demo.root")).toRealPath();
++        Path target = root.resolve(input).toRealPath();
++        if (!target.startsWith(root)) { throw new SecurityException("outside root"); }
+         return Files.readString(target);
+     }
+ }
